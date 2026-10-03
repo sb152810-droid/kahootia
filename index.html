@@ -2,30 +2,211 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Школа-Табір: Мега-Платформа</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Школа-Табір: Мега-Аркадна Платформа</title>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f0f1a; color: #fff; text-align: center; margin: 0; padding: 20px; }
-        .container { max-width: 700px; margin: auto; background: #1a1a2e; padding: 30px; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.6); border: 2px solid #ffcc00; }
-        h1, h2 { color: #ffcc00; }
-        .screen { display: none; }
-        .active { display: block; }
-        input, select, textarea, button { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: none; font-size: 16px; box-sizing: border-box; }
-        input, select, textarea { background: #16213e; color: #fff; border: 1px solid #0f3460; }
-        textarea { height: 90px; resize: none; }
-        button { background: #ffcc00; color: #000; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        button:hover { background: #e6b800; transform: scale(1.02); }
-        .btn-sec { background: #0f3460; color: #fff; }
-        .btn-sec:hover { background: #1a4b8c; }
-        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
-        .ans-btn { background: #e94560; color: white; padding: 20px; font-size: 18px; border-radius: 12px; cursor: pointer; border: none; font-weight: bold; }
-        .ans-btn:nth-child(2) { background: #0f3460; }
-        .ans-btn:nth-child(3) { background: #533483; }
-        .ans-btn:nth-child(4) { background: #00b4d8; }
-        .box { background: #16213e; padding: 15px; border-radius: 12px; margin-top: 15px; text-align: left; }
-        .leaderboard { background: #16213e; padding: 15px; border-radius: 12px; margin-top: 15px; text-align: left; max-height: 250px; overflow-y: auto; }
-        .lb-item { display: flex; justify-content: space-between; padding: 8px 12px; margin: 5px 0; background: #0f3460; border-radius: 6px; }
-        .timer { font-size: 24px; color: #ffcc00; font-weight: bold; margin-bottom: 10px; }
-        .track { background: #0f3460; padding: 10px; border-radius: 10px; margin-bottom: 15px; text-align: left; font-size: 14px; }
+        :root {
+            --bg-color: #0b0b16;
+            --panel-bg: #15152b;
+            --accent-yellow: #ffcc00;
+            --accent-pink: #e94560;
+            --accent-blue: #00b4d8;
+            --accent-purple: #7b2cbf;
+            --text-color: #ffffff;
+            --text-dim: #a0a0c0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--panel-bg);
+            padding: 35px;
+            border-radius: 24px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+            border: 2px solid rgba(255, 204, 0, 0.3);
+            position: relative;
+        }
+
+        h1, h2, h3 {
+            color: var(--accent-yellow);
+            text-align: center;
+            margin-top: 0;
+        }
+
+        p {
+            color: var(--text-dim);
+            text-align: center;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 14px 16px;
+            margin: 10px 0;
+            border-radius: 12px;
+            border: 1px solid #2a2a4e;
+            background: #1e1e3f;
+            color: var(--text-color);
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--accent-yellow);
+            outline: none;
+            box-shadow: 0 0 10px rgba(255, 204, 0, 0.2);
+        }
+
+        textarea {
+            height: 100px;
+            resize: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            margin: 12px 0;
+            border-radius: 12px;
+            border: none;
+            background: var(--accent-yellow);
+            color: #000;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 15px rgba(255, 204, 0, 0.3);
+        }
+
+        button:hover {
+            background: #ffdb4d;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 204, 0, 0.4);
+        }
+
+        .btn-sec {
+            background: #2a2a4e;
+            color: var(--text-color);
+            box-shadow: none;
+        }
+
+        .btn-sec:hover {
+            background: #3b3b6d;
+            box-shadow: none;
+        }
+
+        .box {
+            background: #1a1a38;
+            padding: 20px;
+            border-radius: 16px;
+            margin-top: 15px;
+            border: 1px solid #2e2e5c;
+            text-align: left;
+        }
+
+        /* Візуальні арени для режимів */
+        .arcade-visual {
+            background: #0f0f24;
+            padding: 15px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            border: 1px dashed var(--accent-yellow);
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .answers-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .ans-btn {
+            padding: 22px;
+            font-size: 18px;
+            border-radius: 14px;
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+            color: white;
+            transition: 0.2s;
+        }
+
+        .ans-btn:nth-child(1) { background: var(--accent-pink); }
+        .ans-btn:nth-child(2) { background: var(--accent-blue); }
+        .ans-btn:nth-child(3) { background: var(--accent-purple); }
+        .ans-btn:nth-child(4) { background: #e07a5f; }
+
+        .ans-btn:hover {
+            transform: scale(1.03);
+            filter: brightness(1.15);
+        }
+
+        .leaderboard {
+            background: #1a1a38;
+            padding: 15px;
+            border-radius: 14px;
+            margin-top: 20px;
+            max-height: 220px;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        .lb-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 14px;
+            margin: 6px 0;
+            background: #24244a;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .timer-bar {
+            font-size: 22px;
+            color: var(--accent-yellow);
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .pin-display {
+            font-size: 48px;
+            color: var(--accent-yellow);
+            background: #111122;
+            padding: 15px;
+            border-radius: 14px;
+            letter-spacing: 5px;
+            margin: 15px 0;
+            border: 2px solid var(--accent-yellow);
+        }
     </style>
 </head>
 <body>
@@ -33,101 +214,102 @@
     <div class="container">
         <!-- ГОЛОВНЕ МЕНЮ -->
         <div id="screen-home" class="screen active">
-            <h1>🏕️ Школа-Табір: Аркадна Платформа</h1>
-            <p style="color: #aaa;">Обери свою роль для початку свята</p>
-            <button onclick="showScreen('screen-teacher')">👩‍‍🏫 Я Вчитель (Створити гру та ботів)</button>
-            <button class="btn-sec" onclick="showScreen('screen-student')">🎮 Я Учень / Гравець (Зайти за PIN)</button>
+            <h1>🏕️ Школа-Табір: Мега-Платформа</h1>
+            <p>Обери свою роль, створюй незабутні ігри та змагайся з друзями!</p>
+            <button onclick="showScreen('screen-teacher')">👩‍🏫 Кабінет Вчителя (Створити гру)</button>
+            <button class="btn-sec" onclick="showScreen('screen-student')">🎮 Увійти як Учень / Гравець</button>
         </div>
 
         <!-- КАБІНЕТ ВЧИТЕЛЯ -->
         <div id="screen-teacher" class="screen">
-            <h2>🛠️ Налаштування гри</h2>
+            <h2>🛠️ Налаштування Табірної Вікторини</h2>
             
             <div class="box">
-                <label>Обери аркадний режим:</label>
+                <label style="color: var(--accent-yellow); font-weight: bold;">Обери аркадний режим гри:</label>
                 <select id="tGameMode">
-                    <option value="escape">🤖 Втеча від Табірного Робота</option>
-                    <option value="treasure">💎 Полювання на скарби та діаманти</option>
-                    <option value="hackers">💻 Хакери проти системи (Крипта та Зломи)</option>
-                    <option value="chest">📦 Золота лихоманка (Таємні скрині)</option>
+                    <option value="escape">🤖 Втеча від Табірного Робота (Динамічне переслідування)</option>
+                    <option value="treasure">💎 Полювання на скарби (Накопичення діамантів)</option>
+                    <option value="hackers">💻 Хакери проти системи (Зломи та криптовалюта)</option>
+                    <option value="chest">📦 Золота лихоманка (Таємні скрині з сюрпризами)</option>
                 </select>
             </div>
 
             <div class="box">
-                <label>Додати питання:</label>
-                <input type="text" id="tQ" placeholder="Питання (наприклад: Що головне в таборі?)">
-                <input type="text" id="tA0" placeholder="Варіант 1 (Правильний)">
+                <label style="color: var(--accent-yellow); font-weight: bold;">Додати питання:</label>
+                <input type="text" id="tQ" placeholder="Введи питання (наприклад: Головна фішка нашого табору?)">
+                <input type="text" id="tA0" placeholder="Варіант 1 (Правильна відповідь)">
                 <input type="text" id="tA1" placeholder="Варіант 2">
-                <input type="text" id="tA2" placeholder="Варіант 3">
-                <input type="text" id="tA3" placeholder="Варіант 4">
-                <button onclick="addTeacherQuestion()" class="btn-sec">+ Додати питання</button>
+                <input type="text" id="tA2" placeholder="Варіант 3 (можна залишити пустим)">
+                <input type="text" id="tA3" placeholder="Варіант 4 (можна залишити пустим)">
+                <button onclick="addTeacherQuestion()" class="btn-sec">+ Додати питання у список</button>
             </div>
 
             <div class="box">
-                <label style="color: #ffcc00;">🤖 Імена твоїх власних ботів (кожне з нового рядка):</label>
-                <textarea id="tBots" placeholder="Кіт_Батон&#10;Хакер_Макс&#10;Привид_Табору"></textarea>
-                <button onclick="saveTeacherBots()" class="btn-sec">Зберегти ботів</button>
+                <label style="color: var(--accent-yellow); font-weight: bold;">🤖 Імена власних ботів (кожне з нового рядка):</label>
+                <textarea id="tBots" placeholder="Кіт_Батон&#10;Хакер_Макс&#10;Привид_Табору&#10;Супер_Бот"></textarea>
+                <button onclick="saveTeacherBots()" class="btn-sec">Зберегти ботів у гру</button>
             </div>
 
-            <p id="statsCounter" style="color: #aaa;">Питань: 0 | Ботів: 0</p>
+            <p id="statsCounter" style="color: var(--text-dim);">Додано питань: 0 | Ботів: 0</p>
             <button onclick="launchGameRoom()">🚀 Створити гру та отримати PIN</button>
-            <button class="btn-sec" onclick="showScreen('screen-home')">Назад</button>
+            <button class="btn-sec" onclick="showScreen('screen-home')">Назад у головне меню</button>
         </div>
 
         <!-- ЛОБІ ТА ПОСИЛАННЯ -->
         <div id="screen-lobby" class="screen">
-            <h2>🔑 Кімнату створено!</h2>
-            <p>Дай цей PIN-код гравцям або відправ посилання:</p>
-            <h1 id="roomPin" style="font-size: 42px; color: #ffcc00; background: #16213e; padding: 10px; border-radius: 10px;"></h1>
-            <p id="roomLink" style="font-size: 13px; color: #888; word-break: break-all;"></p>
+            <h2>🔑 Кімнату успішно створено!</h2>
+            <p>Дай цей PIN-код учням або відправ посилання для швидкого підключення:</p>
+            <div class="pin-display" id="roomPin">1234</div>
+            <p id="roomLink" style="font-size: 13px; color: var(--accent-blue); word-break: break-all; background: #111122; padding: 10px; border-radius: 8px;"></p>
             
             <div class="leaderboard">
-                <h4>👥 Учасники в кімнаті:</h4>
+                <h4 style="margin: 0 0 10px 0; color: var(--accent-yellow);">👥 Гравці у кімнаті:</h4>
                 <div id="lobbyList"></div>
             </div>
-            <button onclick="startActionGame()">Старт гри!</button>
+            <button onclick="startActionGame()">Стартуємо змагання!</button>
         </div>
 
         <!-- ВХІД ДЛЯ ГРАВЦЯ -->
         <div id="screen-student" class="screen">
-            <h2>🎮 Вхід гравця</h2>
-            <input type="text" id="sPinInput" placeholder="Введи PIN-код гри">
-            <input type="text" id="sNameInput" placeholder="Твоє ім'я">
-            <button onclick="joinAsPlayer()">Увійти в кімнату</button>
-            <button class="btn-sec" onclick="showScreen('screen-home')">Назад</button>
+            <h2>🎮 Вхід у табірну кімнату</h2>
+            <input type="text" id="sPinInput" placeholder="Введи 4-значний PIN-код гри">
+            <input type="text" id="sNameInput" placeholder="Твоє круте ім'я або нікнейм">
+            <button onclick="joinAsPlayer()">Приєднатися до гри</button>
+            <button class="btn-sec" onclick="showScreen('screen-home')">Назад у меню</button>
         </div>
 
         <!-- ІГРОВИЙ ЕКРАН -->
         <div id="screen-game" class="screen">
-            <div class="timer" id="gameTimer">Час: 15</div>
-            <div class="track" id="trackStatus">🤖 Робот на відстані: 5 кроків позаду!</div>
-            <h3 id="questionBox" style="font-size: 20px; min-height: 50px;"></h3>
+            <div class="timer-bar" id="gameTimer">⏳ Час: 15</div>
+            <div class="arcade-visual" id="arcadeVisualStatus">Завантаження ігрового режиму...</div>
+            
+            <h3 id="questionBox" style="font-size: 21px; min-height: 60px; margin-bottom: 20px;">Питання з'явиться тут...</h3>
             
             <div class="answers-grid">
-                <button class="ans-btn" onclick="answerSelected(0)" id="b0"></button>
-                <button class="ans-btn" onclick="answerSelected(1)" id="b1"></button>
-                <button class="ans-btn" onclick="answerSelected(2)" id="b2"></button>
-                <button class="ans-btn" onclick="answerSelected(3)" id="b3"></button>
+                <button class="ans-btn" onclick="answerSelected(0)" id="b0">Відповідь 1</button>
+                <button class="ans-btn" onclick="answerSelected(1)" id="b1">Відповідь 2</button>
+                <button class="ans-btn" onclick="answerSelected(2)" id="b2">Відповідь 3</button>
+                <button class="ans-btn" onclick="answerSelected(3)" id="b3">Відповідь 4</button>
             </div>
 
             <div class="leaderboard">
-                <h4 style="margin: 0 0 10px 0; color: #ffcc00;">🏆 Поточний рейтинг:</h4>
+                <h4 style="margin: 0 0 10px 0; color: var(--accent-yellow);">🏆 Жива таблиця лідерів:</h4>
                 <div id="liveLeaderboard"></div>
             </div>
         </div>
 
-        <!-- ФІНАЛ -->
+        <!-- ЕКРАН ФІНАЛУ -->
         <div id="screen-win" class="screen">
-            <h1>🎉 Гра завершена!</h1>
-            <h2 id="winnerText" style="color: #ffcc00;"></h2>
+            <h1>🎉 Гра завершена! Ура!</h1>
+            <h2 id="winnerText" style="color: var(--accent-yellow); font-size: 26px;">Переможець: Невідомо</h2>
             <div class="leaderboard" id="finalLeaderboard"></div>
-            <button onclick="location.reload()" style="margin-top: 20px;">У головне меню</button>
+            <button onclick="location.reload()" style="margin-top: 20px;">Повернутися в меню</button>
         </div>
     </div>
 
     <script>
         let room = {
-            pin: "123",
+            pin: "7777",
             mode: "escape",
             questions: [],
             players: []
@@ -137,7 +319,7 @@
         let timer = 15;
         let tInterval;
         let currentPlayerName = "";
-        let robotDistance = 5; // Для режиму "Втеча від робота"
+        let robotDistance = 4; // Спеціальний параметр для режиму робота
 
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -152,14 +334,14 @@
             let a3 = document.getElementById('tA3').value.trim();
 
             if (!q || !a0 || !a1) {
-                alert('Введи питання та хоча б дві відповіді!');
+                alert('Будь ласка, введи питання та мінімум два варіанти відповіді!');
                 return;
             }
 
             room.questions.push({
                 q: q,
-                answers: [a0, a1, a2 || "Інше", a3 || "Інше"].filter(Boolean),
-                correct: 0
+                answers: [a0, a1, a2, a3].filter(item => item !== ""),
+                correct: 0 // Перший варіант завжди правильний за замовчуванням
             });
 
             document.getElementById('tQ').value = '';
@@ -179,28 +361,28 @@
                 room.players.push({ name: "🤖 " + n, score: 0, isBot: true, smart: 0.65 });
             });
             updateCounters();
-            alert('Боти успішно додані!');
+            alert('Боти успішно додані до гри!');
         }
 
         function updateCounters() {
             let bCount = room.players.filter(p => p.isBot).length;
-            document.getElementById('statsCounter').innerText = `Питань: ${room.questions.length} | Ботів: ${bCount}`;
+            document.getElementById('statsCounter').innerText = `Додано питань: ${room.questions.length} | Ботів: ${bCount}`;
         }
 
         function launchGameRoom() {
             if (room.questions.length === 0) {
-                alert('Додай хоча б одне питання!');
+                alert('Створи хоча б одне питання перед запуском гри!');
                 return;
             }
             room.mode = document.getElementById('tGameMode').value;
             room.pin = Math.floor(1000 + Math.random() * 9000).toString();
             
             document.getElementById('roomPin').innerText = room.pin;
-            let currentUrl = window.location.href.split('?')[0];
-            document.getElementById('roomLink').innerText = `Посилання для друзів: ${currentUrl}?pin=${room.pin}`;
+            let cleanUrl = window.location.href.split('?')[0];
+            document.getElementById('roomLink').innerText = `Посилання: ${cleanUrl}?pin=${room.pin}`;
 
             if (!room.players.some(p => p.name.includes("Вчитель"))) {
-                room.players.unshift({ name: "Вчитель (Ти)", score: 0, isBot: false });
+                room.players.unshift({ name: "👩‍🏫 Вчитель (Ти)", score: 0, isBot: false });
             }
 
             renderLobby();
@@ -210,7 +392,7 @@
         function renderLobby() {
             let html = '';
             room.players.forEach(p => {
-                html += `<div class="lb-item"><span>${p.name}</span> <b>Готовий</b></div>`;
+                html += `<div class="lb-item"><span>${p.name}</span> <b style="color: var(--accent-yellow);">Готовий до бою</b></div>`;
             });
             document.getElementById('lobbyList').innerHTML = html;
         }
@@ -220,7 +402,7 @@
             let name = document.getElementById('sNameInput').value.trim();
 
             if (pin !== room.pin) {
-                alert('Невірний PIN-код!');
+                alert('Невірний PIN-код кімнати! Перевір цифри.');
                 return;
             }
             if (!name) {
@@ -229,13 +411,13 @@
             }
 
             currentPlayerName = name;
-            room.players.push({ name: name + " (Учень)", score: 0, isBot: false });
+            room.players.push({ name: "🎮 " + name, score: 0, isBot: false });
             showScreen('screen-game');
             startQuestionLoop();
         }
 
         function startActionGame() {
-            currentPlayerName = "Вчитель (Ти)";
+            currentPlayerName = "👩‍🏫 Вчитель (Ти)";
             showScreen('screen-game');
             startQuestionLoop();
         }
@@ -247,24 +429,21 @@
             }
 
             timer = 15;
-            document.getElementById('gameTimer').innerText = `Час: ${timer}`;
+            document.getElementById('gameTimer').innerText = `⏳ Час: ${timer}`;
             
             let qData = room.questions[currentQ];
             document.getElementById('questionBox').innerText = `Питання ${currentQ + 1}: ${qData.q}`;
 
-            // Налаштування статусів залежно від обраного вчителем режиму
+            // Оновлення інформації про режим на ігровому полі
+            let vis = document.getElementById('arcadeVisualStatus');
             if (room.mode === 'escape') {
-                document.getElementById('trackStatus').style.display = "block";
-                document.getElementById('trackStatus').innerText = `🤖 Робот наближається! Дистанція: ${robotDistance} кроків`;
+                vis.innerHTML = `🤖 <b>Втеча від робота:</b> Дистанція до переслідувача — <b>${robotDistance} кроків</b>. Не помилайся!`;
             } else if (room.mode === 'treasure') {
-                document.getElementById('trackStatus').style.display = "block";
-                document.getElementById('trackStatus').innerText = `💎 Збирай діаманти за швидкі та правильні відповіді!`;
+                vis.innerHTML = `💎 <b>Полювання на скарби:</b> Заробляй діаманти за швидкі та правильні відповіді у свою скриню!`;
             } else if (room.mode === 'hackers') {
-                document.getElementById('trackStatus').style.display = "block";
-                document.getElementById('trackStatus').innerText = `💻 Режим хакерів: захищай криптоферму та роби зломи!`;
+                vis.innerHTML = `💻 <b>Хакерський злом:</b> Захищай свою криптоферму та отримуй токени за правильні відповіді!`;
             } else {
-                document.getElementById('trackStatus').style.display = "block";
-                document.getElementById('trackStatus').innerText = `📦 Золота лихоманка: обирай скрині з сюрпризами!`;
+                vis.innerHTML = `📦 <b>Золота лихоманка:</b> Відкривай таємні скрині зі скарбами та сюрпризами!`;
             }
 
             for (let i = 0; i < 4; i++) {
@@ -283,7 +462,7 @@
             clearInterval(tInterval);
             tInterval = setInterval(() => {
                 timer--;
-                document.getElementById('gameTimer').innerText = `Час: ${timer}`;
+                document.getElementById('gameTimer').innerText = `⏳ Час: ${timer}`;
                 if (timer <= 0) {
                     clearInterval(tInterval);
                     nextQuestionStep();
@@ -296,14 +475,14 @@
         function simulateBotsActions(correctIdx) {
             room.players.forEach(p => {
                 if (p.isBot) {
-                    let delay = Math.random() * 4000 + 1500;
+                    let delay = Math.random() * 3500 + 1200;
                     setTimeout(() => {
                         if (timer > 0) {
                             let isCorrect = Math.random() < p.smart;
                             if (isCorrect) {
                                 p.score += 250 + Math.floor(Math.random() * 50);
                             } else {
-                                p.score = Math.max(0, p.score - 50); // Ціна помилки
+                                p.score = Math.max(0, p.score - 70);
                             }
                             updateLiveLeaderboard();
                         }
@@ -320,17 +499,17 @@
                 document.getElementById(`b${i}`).disabled = true;
             }
 
-            let me = room.players.find(p => p.name.includes(currentPlayerName) || p.name.includes("Ти"));
+            let me = room.players.find(p => p.name.includes(currentPlayerName));
             if (me) {
                 if (idx === qData.correct) {
-                    let bonus = timer * 15;
+                    let bonus = timer * 18;
                     me.score += 300 + bonus;
-                    alert('🎉 Правильно! Потужний ривок вперед!');
-                    if(room.mode === 'escape') robotDistance++;
+                    alert('🎉 Блискуче! Правильна відповідь!');
+                    if (room.mode === 'escape') robotDistance++;
                 } else {
-                    me.score = Math.max(0, me.score - 100);
-                    alert('❌ Помилка! Робот підбирається ближче...');
-                    if(room.mode === 'escape') robotDistance = Math.max(0, robotDistance - 1);
+                    me.score = Math.max(0, me.score - 120);
+                    alert('❌ Помилка! Робот підійшов ближче...');
+                    if (room.mode === 'escape') robotDistance = Math.max(0, robotDistance - 1);
                 }
             }
 
@@ -347,8 +526,8 @@
             let html = '';
             room.players.forEach((p, idx) => {
                 let badge = idx === 0 ? '👑' : `#${idx + 1}`;
-                let currency = room.mode === 'hackers' ? ' токенів' : (room.mode === 'treasure' ? ' діамантів' : ' очок');
-                html += `<div class="lb-item"><span>${badge} ${p.name}</span> <b>${p.score}${currency}</b></div>`;
+                let currency = room.mode === 'hackers' ? ' токенів' : (room.mode === 'treasure' ? ' діамантів' : ' балів');
+                html += `<div class="lb-item"><span>${badge} ${p.name}</span> <b style="color: var(--accent-yellow);">${p.score}${currency}</b></div>`;
             });
             document.getElementById('liveLeaderboard').innerHTML = html;
         }
@@ -356,11 +535,11 @@
         function endGameProcess() {
             showScreen('screen-win');
             room.players.sort((a, b) => b.score - a.score);
-            document.getElementById('winnerText').innerText = `Головний тріумфатор: ${room.players[0].name} !`;
+            document.getElementById('winnerText').innerText = `👑 Головний тріумфатор: ${room.players[0].name} !`;
 
             let html = '';
             room.players.forEach((p, idx) => {
-                html += `<div class="lb-item"><span>Місце ${idx + 1}: ${p.name}</span> <b>${p.score} очок</b></div>`;
+                html += `<div class="lb-item"><span>Місце ${idx + 1}: ${p.name}</span> <b style="color: var(--accent-yellow);">${p.score} очок</b></div>`;
             });
             document.getElementById('finalLeaderboard').innerHTML = html;
         }
