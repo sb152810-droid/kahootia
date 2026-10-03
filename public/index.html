@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Школа-Табір: Панель Гравців</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #1e1e2f; color: #fff; text-align: center; padding: 30px; }
+        .container { max-width: 600px; margin: auto; background: #2a2a40; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        input, textarea, select, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; font-size: 16px; box-sizing: border-box; }
+        textarea { height: 120px; resize: none; }
+        select { background: #fff; color: #000; font-weight: bold; }
+        button { background: #ffcc00; color: #000; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        button:hover { background: #e6b800; }
+        .bot-list { margin-top: 20px; text-align: left; background: #1e1e2f; padding: 15px; border-radius: 8px; }
+        .btn-bot { background: #4CAF50 !important; color: white !important; margin: 5px 0; padding: 10px; text-align: left; display: flex; justify-content: space-between; align-items: center; text-decoration: none; border-radius: 8px; font-weight: bold;}
+        .btn-bot span { background: rgba(0,0,0,0.2); padding: 3px 8px; border-radius: 5px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🏕️ Школа-Табір: Запуск Гравців</h2>
+        
+        <label for="platform" style="float: left; font-size: 14px; color: #aaa;">Обери платформу:</label>
+        <select id="platform">
+            <option value="kahoot">Kahoot</option>
+            <option value="blooket">Blooket</option>
+        </select>
+
+        <input type="text" id="gamePin" placeholder="Введи PIN-код гри">
+        <textarea id="botNames" placeholder="Введи імена (кожне з нового рядка):&#10;Кіт_Батон&#10;Братчик&#10;Шкільний_Привид"></textarea>
+        <button onclick="generateLinks()">Згенерувати кнопки для входу</button>
+        
+        <div class="bot-list" id="output"></div>
+    </div>
+
+    <script>
+        function generateLinks() {
+            const platform = document.getElementById('platform').value;
+            const pin = document.getElementById('gamePin').value.trim();
+            const rawNames = document.getElementById('botNames').value.trim();
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = '';
+
+            if (!pin || !rawNames) {
+                alert('Введи пін-код та хоча б одне ім\'я!');
+                return;
+            }
+
+            const names = rawNames.split('\n').map(n => n.trim()).filter(n => n.length > 0);
+            
+            let html = `<h3>Твої гравці (${names.length}):</h3><p style="font-size: 14px; color: #aaa;">Натискай на кнопку — відкриється вкладка. Якщо вилізе перевірка (капча), проходь її сама, а імена підтягнуться автоматично!</p>`;
+            
+            names.forEach((name, index) => {
+                let url = '';
+                if (platform === 'kahoot') {
+                    // Посилання для Kahoot з пін-кодом та ім'ям
+                    url = `https://kahoot.it/?pin=${pin}&name=${encodeURIComponent(name)}`;
+                } else {
+                    // Посилання для Blooket (відкриває сторінку гри з пін-кодом)
+                    url = `https://play.blooket.com/play?id=${pin}`;
+                }
+
+                html += `<a class="btn-bot" href="${url}" target="_blank">
+                            <span>Гравець #${index + 1}</span> <b>${name}</b> ➡️ Увійти
+                         </a>`;
+            });
+
+            outputDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
