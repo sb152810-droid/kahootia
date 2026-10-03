@@ -2,131 +2,229 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Школа-Табір: Грандіозна Вікторина</title>
+    <title>Школа-Табір: Платформа Вікторин</title>
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f0f1a; color: #fff; text-align: center; margin: 0; padding: 20px; }
-        .container { max-width: 700px; margin: auto; background: #1a1a2e; padding: 30px; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid #ffcc00; }
-        h1 { color: #ffcc00; margin-bottom: 10px; }
+        .container { max-width: 650px; margin: auto; background: #1a1a2e; padding: 30px; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 2px solid #ffcc00; }
+        h1, h2 { color: #ffcc00; }
         .screen { display: none; }
         .active { display: block; }
-        input, select, button { width: 100%; padding: 14px; margin: 12px 0; border-radius: 10px; border: none; font-size: 16px; box-sizing: border-box; }
-        input, select { background: #16213e; color: #fff; border: 1px solid #0f3460; }
+        input, select, textarea, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: none; font-size: 16px; box-sizing: border-box; }
+        input, select, textarea { background: #16213e; color: #fff; border: 1px solid #0f3460; }
+        textarea { height: 80px; resize: none; }
         button { background: #ffcc00; color: #000; font-weight: bold; cursor: pointer; transition: 0.2s; }
         button:hover { background: #e6b800; transform: scale(1.02); }
+        .btn-sec { background: #0f3460; color: #fff; }
+        .btn-sec:hover { background: #1a4b8c; }
         .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
-        .ans-btn { background: #e94560; color: #white; padding: 20px; font-size: 18px; border-radius: 12px; cursor: pointer; border: none; font-weight: bold; }
+        .ans-btn { background: #e94560; color: white; padding: 20px; font-size: 18px; border-radius: 12px; cursor: pointer; border: none; font-weight: bold; }
         .ans-btn:nth-child(2) { background: #0f3460; }
         .ans-btn:nth-child(3) { background: #533483; }
         .ans-btn:nth-child(4) { background: #00b4d8; }
-        .leaderboard { background: #16213e; padding: 15px; border-radius: 12px; margin-top: 20px; text-align: left; }
+        .leaderboard, .box { background: #16213e; padding: 15px; border-radius: 12px; margin-top: 15px; text-align: left; }
         .lb-item { display: flex; justify-content: space-between; padding: 8px 12px; margin: 5px 0; background: #0f3460; border-radius: 6px; }
-        .timer { font-size: 24px; color: #ffcc00; font-weight: bold; margin-bottom: 15px; }
+        .timer { font-size: 22px; color: #ffcc00; font-weight: bold; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- ЕКРАН 1: Головне меню -->
-        <div id="screen-menu" class="screen active">
-            <h1>🏕️ Школа-Табір: Арена Ігор</h1>
-            <p style="color: #aaa;">Обери режим табірного змагання з власними ботами!</p>
-            
-            <input type="text" id="playerName" placeholder="Введи своє ім'я (наприклад, Аня чи Марія)" value="Аня">
-            
-            <label style="float: left; color: #aaa; font-size: 14px;">Режим гри:</label>
-            <select id="gameMode">
-                <option value="escape">🤖 Втеча від Табірного Робота</option>
-                <option value="hackers">💻 Хакери проти системи</option>
-                <option value="treasure">💎 Полювання на діаманти табору</option>
-            </select>
-
-            <button onclick="startGame()">Розпочати свято!</button>
+        <!-- ГОЛОВНЕ МЕНЮ: Вибір ролі -->
+        <div id="screen-home" class="screen active">
+            <h1>🏕️ Школа-Табір: Платформа</h1>
+            <p style="color: #aaa;">Створи свою гру як вчитель або заходь як учень!</p>
+            <button onclick="showScreen('screen-teacher')">👩‍🏫 Я Вчитель (Створити гру)</button>
+            <button class="btn-sec" onclick="showScreen('screen-student')">🎮 Я Учениця / Гравець (Зайти за PIN)</button>
         </div>
 
-        <!-- ЕКРАН 2: Сама гра (питання + боти) -->
+        <!-- ЕКРАН ВЧИТЕЛЯ: Створення питання та ботів -->
+        <div id="screen-teacher" class="screen">
+            <h2>🛠️ Кабінет Вчителя</h2>
+            <div class="box">
+                <label>Питання:</label>
+                <input type="text" id="tQuestion" placeholder="Наприклад: Що головне у таборі?">
+                
+                <label>Варіанти відповіді:</label>
+                <input type="text" id="tAns0" placeholder="Варіант 1 (Правильний)">
+                <input type="text" id="tAns1" placeholder="Варіант 2">
+                <input type="text" id="tAns2" placeholder="Варіант 3">
+                <input type="text" id="tAns3" placeholder="Варіант 4">
+                <button onclick="addQuestion()" class="btn-sec">+ Додати це питання у вікторину</button>
+            </div>
+
+            <div class="box">
+                <label style="color: #ffcc00; font-weight: bold;">🤖 Додати власних ботів (свої імена):</label>
+                <textarea id="tBotNames" placeholder="Введи імена ботів кожне з нового рядка:&#10;Кіт_Батон&#10;Хакер_Макс&#10;Привид"></textarea>
+                <button onclick="saveBots()" class="btn-sec">Зберегти ботів</button>
+            </div>
+
+            <p id="qCounter" style="color: #aaa;">Додано питань: 0 | Ботів: 0</p>
+            <button onclick="startHostGame()">🚀 Запустити гру (Отримати PIN)</button>
+            <button class="btn-sec" onclick="showScreen('screen-home')">Назад у меню</button>
+        </div>
+
+        <!-- ЕКРАН ВЧИТЕЛЯ/ЛОБІ: Показує PIN-код -->
+        <div id="screen-lobby" class="screen">
+            <h2>🔑 Гру створено!</h2>
+            <p>Дай цей PIN-код своїм гравцям:</p>
+            <h1 id="displayPin" style="font-size: 40px; color: #ffcc00; background: #16213e; padding: 10px; border-radius: 10px;"></h1>
+            <div class="leaderboard">
+                <h4>👥 Учасники в кімнаті (Ви + Боти + Гравці):</h4>
+                <div id="lobbyPlayers"></div>
+            </div>
+            <button onclick="beginGamePlay()">Почати змагання!</button>
+        </div>
+
+        <!-- ЕКРАН УЧНЯ: Вхід за пін-кодом -->
+        <div id="screen-student" class="screen">
+            <h2>🎮 Вхід у гру</h2>
+            <input type="text" id="sPin" placeholder="Введи PIN-код гри">
+            <input type="text" id="sName" placeholder="Твоє круте ім'я">
+            <button onclick="joinGame()">Увійти в гру</button>
+            <button class="btn-sec" onclick="showScreen('screen-home')">Назад у меню</button>
+        </div>
+
+        <!-- ІГРОВИЙ ПРОЦЕС (Питання, таймер, боти) -->
         <div id="screen-game" class="screen">
             <div class="timer" id="timer">Час: 15</div>
-            <h3 id="questionText" style="font-size: 22px; min-height: 60px;">Питання завантажується...</h3>
+            <h3 id="questionText" style="font-size: 20px; min-height: 50px;"></h3>
             
             <div class="answers-grid">
-                <button class="ans-btn" onclick="checkAnswer(0)" id="btn0">Варіант 1</button>
-                <button class="ans-btn" onclick="checkAnswer(1)" id="btn1">Варіант 2</button>
-                <button class="ans-btn" onclick="checkAnswer(2)" id="btn2">Варіант 3</button>
-                <button class="ans-btn" onclick="checkAnswer(3)" id="btn3">Варіант 4</button>
+                <button class="ans-btn" onclick="submitAnswer(0)" id="abtn0"></button>
+                <button class="ans-btn" onclick="submitAnswer(1)" id="abtn1"></button>
+                <button class="ans-btn" onclick="submitAnswer(2)" id="abtn2"></button>
+                <button class="ans-btn" onclick="submitAnswer(3)" id="abtn3"></button>
             </div>
 
             <div class="leaderboard">
-                <h4 style="margin: 0 0 10px 0; color: #ffcc00;">🏆 Таблиця лідерів (Ти + Табірні Боти):</h4>
+                <h4 style="margin: 0 0 10px 0; color: #ffcc00;">🏆 Таблиця лідерів:</h4>
                 <div id="lbList"></div>
             </div>
         </div>
 
-        <!-- ЕКРАН 3: Фінал -->
+        <!-- ЕКРАН ФІНАЛУ -->
         <div id="screen-win" class="screen">
-            <h1>🎉 Фінал свята!</h1>
+            <h1>🎉 Гра завершена!</h1>
             <h2 id="winMessage" style="color: #ffcc00;"></h2>
             <div class="leaderboard" id="finalLb"></div>
-            <button onclick="location.reload()" style="margin-top: 20px;">Зіграти ще раз</button>
+            <button onclick="location.reload()" style="margin-top: 20px;">Головне меню</button>
         </div>
     </div>
 
     <script>
-        // Список наших власних розумних табірних ботів з різними характерами
-        let players = [
-            { name: "Аня (Ти)", score: 0, isBot: false },
-            { name: "🤖 Бот_Кіт_Батон", score: 0, isBot: true, smartness: 0.7 }, // Розумний бот
-            { name: "💻 Хакер_Макс", score: 0, isBot: true, smartness: 0.5 },    // Середній
-            { name: "👻 Табірний_Привид", score: 0, isBot: true, smartness: 0.3 }, // Часто помиляється
-            { name: "⚡ Енерджайзер", score: 0, isBot: true, smartness: 0.6 }
-        ];
-
-        // Наша власна база питань для школи-табору
-        const questions = [
-            {
-                q: "Яка головна мета учасників у нашому таборі?",
-                answers: ["Вижити й отримати грамоту", "Спати до обіду", "З'їсти весь запас печива", "Побудувати ракету"],
-                correct: 0
-            },
-            {
-                q: "Що робить справжній таборянин, коли чує ранковий підйом?",
-                answers: ["Співає гімн", "Робить вигляд, що спить", "Шукає телефон", "Бере скрипку"],
-                correct: 1
-            },
-            {
-                q: "Який предмет найважливіший для онлайн-уроків?",
-                answers: ["Каструля", "Wi-Fi та терпіння", "Кіт", "Лінійка"],
-                correct: 1
-            },
-            {
-                q: "Скільки годин триває ідеальна перерва між квестами?",
-                answers: ["5 хвилин", "Вічність", "Ровно 10 хвилин", "Ніколи не закінчується"],
-                correct: 2
-            },
-            {
-                q: "Хто головний режисер цього крутого свята?",
-                answers: ["Директор школи", "Аня та Марія", "Погода", "Інопланетяни"],
-                correct: 1
-            }
-        ];
+        let gameData = {
+            pin: "777",
+            questions: [],
+            players: []
+        };
 
         let currentQIndex = 0;
         let timeLeft = 15;
         let timerInterval;
-        let botInterval;
+        let myName = "";
 
-        function startGame() {
-            const userName = document.getElementById('playerName').value.trim();
-            if (userName) players[0].name = `${userName} (Ти)`;
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // --- ВЧИТЕЛЬСЬКА ЛОГІКА ---
+        function addQuestion() {
+            let q = document.getElementById('tQuestion').value.trim();
+            let a0 = document.getElementById('tAns0').value.trim();
+            let a1 = document.getElementById('tAns1').value.trim();
+            let a2 = document.getElementById('tAns2').value.trim();
+            let a3 = document.getElementById('tAns3').value.trim();
+
+            if (!q || !a0 || !a1) {
+                alert('Введи хоча б питання і два варіанти відповіді!');
+                return;
+            }
+
+            gameData.questions.push({
+                q: q,
+                answers: [a0, a1, a2 || "Немає", a3 || "Немає"].filter(Boolean),
+                correct: 0 // Перший варіант завжди правильний (або можна рандомити)
+            });
+
+            document.getElementById('tQuestion').value = '';
+            document.getElementById('tAns0').value = '';
+            document.getElementById('tAns1').value = '';
+            document.getElementById('tAns2').value = '';
+            document.getElementById('tAns3').value = '';
+            updateCounter();
+        }
+
+        function saveBots() {
+            let rawBots = document.getElementById('tBotNames').value.trim();
+            if (!rawBots) return;
             
-            // Змінюємо екран
-            document.getElementById('screen-menu').classList.remove('active');
-            document.getElementById('screen-game').classList.add('active');
+            let botNames = rawBots.split('\n').map(b => b.trim()).filter(b => b.length > 0);
+            botNames.forEach(name => {
+                gameData.players.push({ name: "🤖 " + name, score: 0, isBot: true, smartness: 0.6 });
+            });
+            updateCounter();
+            alert('Боти успішно додані до гри!');
+        }
 
+        function updateCounter() {
+            document.getElementById('qCounter').innerText = `Додано питань: ${gameData.questions.length} | Ботів: ${gameData.players.filter(p => p.isBot).length}`;
+        }
+
+        function startHostGame() {
+            if (gameData.questions.length === 0) {
+                alert('Створи хоча б одне питання як вчитель!');
+                return;
+            }
+            gameData.pin = Math.floor(100 + Math.random() * 900).toString();
+            document.getElementById('displayPin').innerText = gameData.pin;
+            
+            // Додаємо вчителя у список гравців, якщо його ще нема
+            if(!gameData.players.some(p => p.name === "Вчитель (Ти)")) {
+                gameData.players.unshift({ name: "Вчитель (Ти)", score: 0, isBot: false });
+            }
+
+            updateLobby();
+            showScreen('screen-lobby');
+        }
+
+        function updateLobby() {
+            let html = '';
+            gameData.players.forEach(p => {
+                html += `<div class="lb-item"><span>${p.name}</span> <b>Готовий</b></div>`;
+            });
+            document.getElementById('lobbyPlayers').innerHTML = html;
+        }
+
+        function beginGamePlay() {
+            currentQIndex = 0;
+            showScreen('screen-game');
             loadQuestion();
         }
 
+        // --- УЧНІВСЬКА ЛОГІКА ---
+        function joinGame() {
+            let pin = document.getElementById('sPin').value.trim();
+            let name = document.getElementById('sName').value.trim();
+
+            if (pin !== gameData.pin) {
+                alert('Неправильний PIN-код гри!');
+                return;
+            }
+            if (!name) {
+                alert('Введи своє ім\'я!');
+                return;
+            }
+
+            myName = name;
+            gameData.players.push({ name: name + " (Учень)", score: 0, isBot: false });
+            showScreen('screen-game');
+            loadQuestion();
+        }
+
+        // --- ІГРОВИЙ ПРОЦЕС ТА БОТИ ---
         function loadQuestion() {
-            if (currentQIndex >= questions.length) {
+            if (currentQIndex >= gameData.questions.length) {
                 endGame();
                 return;
             }
@@ -134,17 +232,22 @@
             timeLeft = 15;
             document.getElementById('timer').innerText = `Час: ${timeLeft}`;
             
-            const q = questions[currentQIndex];
+            let q = gameData.questions[currentQIndex];
             document.getElementById('questionText').innerText = `Питання ${currentQIndex + 1}: ${q.q}`;
             
             for (let i = 0; i < 4; i++) {
-                document.getElementById(`btn${i}`).innerText = q.answers[i];
-                document.getElementById(`btn${i}`).disabled = false;
+                let btn = document.getElementById(`abtn${i}`);
+                if (q.answers[i]) {
+                    btn.innerText = q.answers[i];
+                    btn.style.display = "block";
+                    btn.disabled = false;
+                } else {
+                    btn.style.display = "none";
+                }
             }
 
             updateLeaderboard();
 
-            // Запускаємо таймер секундоміра
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 timeLeft--;
@@ -155,29 +258,19 @@
                 }
             }, 1000);
 
-            // БОТИ ПОЧИНАЮТЬ ДУМАТИ І ГРАТИ САМІ!
-            startBotsThinking(q.correct);
+            // БОТИ САМІ ДУМАЮТЬ І ГРАЮТЬ!
+            runBots(q.correct);
         }
 
-        function startBotsThinking(correctIndex) {
-            clearInterval(botInterval);
-            
-            // Кожен бот обирає випадковий час на "роздуми" (від 2 до 9 секунд)
-            players.forEach(p => {
+        function runBots(correctIndex) {
+            gameData.players.forEach(p => {
                 if (p.isBot) {
-                    let thinkTime = Math.random() * 6000 + 2000;
+                    let thinkTime = Math.random() * 5000 + 1500;
                     setTimeout(() => {
                         if (timeLeft > 0) {
-                            // Перевіряємо кмітливість бота: чи дасть правильну відповідь
-                            let chosenAns;
-                            if (Math.random() < p.smartness) {
-                                chosenAns = correctIndex; // Правильна
-                            } else {
-                                chosenAns = Math.floor(Math.random() * 4); // Помиляється
-                            }
-
-                            if (chosenAns === correctIndex) {
-                                p.score += 250; // Нараховуємо бали боту
+                            let chosen = Math.random() < p.smartness ? correctIndex : Math.floor(Math.random() * 2);
+                            if (chosen === correctIndex) {
+                                p.score += 250;
                             }
                             updateLeaderboard();
                         }
@@ -186,20 +279,23 @@
             });
         }
 
-        function checkAnswer(selectedIndex) {
+        function submitAnswer(selectedIndex) {
             clearInterval(timerInterval);
-            const q = questions[currentQIndex];
+            let q = gameData.questions[currentQIndex];
 
-            // Вимикаємо кнопки на цей раунд
             for (let i = 0; i < 4; i++) {
-                document.getElementById(`btn${i}`).disabled = true;
+                document.getElementById(`abtn${i}`).disabled = true;
             }
 
-            if (selectedIndex === q.correct) {
-                players[0].score += 300 + timeLeft * 10; // Бонус за швидкість для тебе
-                alert('🎉 Правильно! Ти заробила бали!');
-            } else {
-                alert('❌ Ой, трішки не туди! Але нічого, боти теж помиляються.');
+            // Нараховуємо бали поточному гравцю (хто залогинився)
+            let activePlayer = gameData.players.find(p => p.name.includes("Ти") || p.name.includes(myName));
+            if (activePlayer) {
+                if (selectedIndex === q.correct) {
+                    activePlayer.score += 300 + timeLeft * 10;
+                    alert('🎉 Правильно!');
+                } else {
+                    alert('❌ Помилка!');
+                }
             }
 
             nextQuestion();
@@ -211,11 +307,9 @@
         }
 
         function updateLeaderboard() {
-            // Сортуємо гравців і ботів за балами (хто вище)
-            players.sort((a, b) => b.score - a.score);
-
+            gameData.players.sort((a, b) => b.score - a.score);
             let html = '';
-            players.forEach((p, index) => {
+            gameData.players.forEach((p, index) => {
                 let badge = index === 0 ? '👑' : `#${index + 1}`;
                 html += `<div class="lb-item"><span>${badge} ${p.name}</span> <b>${p.score} очок</b></div>`;
             });
@@ -223,14 +317,12 @@
         }
 
         function endGame() {
-            document.getElementById('screen-game').classList.remove('active');
-            document.getElementById('screen-win').classList.add('active');
-
-            players.sort((a, b) => b.score - a.score);
-            document.getElementById('winMessage').innerText = `Переможець гри: ${players[0].name} !`;
+            showScreen('screen-win');
+            gameData.players.sort((a, b) => b.score - a.score);
+            document.getElementById('winMessage').innerText = `Переможець: ${gameData.players[0].name} !`;
 
             let html = '';
-            players.forEach((p, index) => {
+            gameData.players.forEach((p, index) => {
                 html += `<div class="lb-item"><span>Місце ${index + 1}: ${p.name}</span> <b>${p.score} очок</b></div>`;
             });
             document.getElementById('finalLb').innerHTML = html;
