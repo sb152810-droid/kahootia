@@ -2,547 +2,2864 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Школа-Табір: Мега-Аркадна Платформа</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SunLorem: Школа-Табір 5 Клас</title>
     <style>
+        /* ===== CSS RESET & VARIABLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         :root {
-            --bg-color: #0b0b16;
-            --panel-bg: #15152b;
-            --accent-yellow: #ffcc00;
-            --accent-pink: #e94560;
-            --accent-blue: #00b4d8;
-            --accent-purple: #7b2cbf;
-            --text-color: #ffffff;
-            --text-dim: #a0a0c0;
+            --bg-dark: #0a0c14;
+            --bg-panel: rgba(18, 25, 45, 0.85);
+            --bg-panel-light: rgba(30, 40, 65, 0.7);
+            --accent-cyan: #00e5ff;
+            --accent-magenta: #ff00aa;
+            --accent-purple: #8a2be2;
+            --accent-green: #00ff88;
+            --accent-orange: #ffaa00;
+            --accent-red: #ff3355;
+            --text-primary: #eef4ff;
+            --text-secondary: #a0b0d0;
+            --text-dim: #667799;
+            --border-glow: 0 0 15px rgba(0, 229, 255, 0.3);
+            --shadow-deep: 0 20px 50px rgba(0, 0, 0, 0.8);
+            --font-main: 'Segoe UI', 'Roboto', system-ui, sans-serif;
+            --font-mono: 'Courier New', monospace;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg-dark);
+            font-family: var(--font-main);
+            color: var(--text-primary);
+            user-select: none;
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
+            background: radial-gradient(ellipse at 20% 10%, #1a1f3a 0%, #0a0c14 70%);
         }
 
-        .container {
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-cyan);
+            border-radius: 10px;
+            box-shadow: 0 0 8px var(--accent-cyan);
+        }
+
+        /* ===== APP CONTAINER ===== */
+        #app {
             width: 100%;
-            max-width: 800px;
-            background: var(--panel-bg);
-            padding: 35px;
-            border-radius: 24px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
-            border: 2px solid rgba(255, 204, 0, 0.3);
+            max-width: 1200px;
+            height: 100%;
+            max-height: 820px;
             position: relative;
+            background: var(--bg-panel);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            border-radius: 24px;
+            box-shadow: var(--shadow-deep), inset 0 0 80px rgba(0, 229, 255, 0.03);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        h1, h2, h3 {
-            color: var(--accent-yellow);
-            text-align: center;
-            margin-top: 0;
+        /* ===== ANIMATED BACKGROUND LINES ===== */
+        .bg-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.15;
+            background-image: 
+                linear-gradient(rgba(0, 229, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 229, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridPulse 8s ease-in-out infinite;
         }
 
-        p {
-            color: var(--text-dim);
-            text-align: center;
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.1; }
+            50% { opacity: 0.25; }
         }
 
+        /* ===== SCREEN SYSTEM ===== */
         .screen {
-            display: none;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        .active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        input, select, textarea {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            padding: 14px 16px;
-            margin: 10px 0;
-            border-radius: 12px;
-            border: 1px solid #2a2a4e;
-            background: #1e1e3f;
-            color: var(--text-color);
-            font-size: 16px;
-            box-sizing: border-box;
-            transition: 0.2s;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--accent-yellow);
-            outline: none;
-            box-shadow: 0 0 10px rgba(255, 204, 0, 0.2);
-        }
-
-        textarea {
-            height: 100px;
-            resize: none;
-        }
-
-        button {
-            width: 100%;
-            padding: 16px;
-            margin: 12px 0;
-            border-radius: 12px;
-            border: none;
-            background: var(--accent-yellow);
-            color: #000;
-            font-size: 17px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 4px 15px rgba(255, 204, 0, 0.3);
-        }
-
-        button:hover {
-            background: #ffdb4d;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 204, 0, 0.4);
-        }
-
-        .btn-sec {
-            background: #2a2a4e;
-            color: var(--text-color);
-            box-shadow: none;
-        }
-
-        .btn-sec:hover {
-            background: #3b3b6d;
-            box-shadow: none;
-        }
-
-        .box {
-            background: #1a1a38;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
             padding: 20px;
-            border-radius: 16px;
-            margin-top: 15px;
-            border: 1px solid #2e2e5c;
-            text-align: left;
+            opacity: 0;
+            transform: translateY(30px) scale(0.98);
+            pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+            z-index: 1;
         }
 
-        /* Візуальні арени для режимів */
-        .arcade-visual {
-            background: #0f0f24;
-            padding: 15px;
-            border-radius: 14px;
+        .screen.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: all;
+            z-index: 10;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 229, 255, 0.15);
             margin-bottom: 20px;
-            border: 1px dashed var(--accent-yellow);
+            flex-shrink: 0;
+            position: relative;
+            z-index: 5;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .logo:hover {
+            transform: scale(1.02);
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .role-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid;
+        }
+
+        .role-badge.organizer {
+            color: var(--accent-magenta);
+            border-color: var(--accent-magenta);
+            background: rgba(255, 0, 170, 0.1);
+            box-shadow: 0 0 15px rgba(255, 0, 170, 0.2);
+        }
+
+        .role-badge.player {
+            color: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            background: rgba(0, 229, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan), #0099cc);
+            color: #0a0c14;
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 45px rgba(0, 229, 255, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(0, 229, 255, 0.08);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 229, 255, 0.15);
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.2);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--accent-red), #cc0033);
+            color: white;
+            box-shadow: 0 0 25px rgba(255, 51, 85, 0.3);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 0 45px rgba(255, 51, 85, 0.6);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--accent-green), #00aa55);
+            color: #0a0c14;
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.3);
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 0 45px rgba(0, 255, 136, 0.6);
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            border-radius: 8px;
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* ===== INPUTS ===== */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .input-group label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+            font-weight: 600;
+        }
+
+        .input-field {
+            padding: 14px 18px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.2);
+            background: rgba(0, 229, 255, 0.03);
+        }
+
+        .input-field::placeholder {
+            color: var(--text-dim);
+            opacity: 0.6;
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: var(--bg-panel-light);
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            border-color: rgba(0, 229, 255, 0.3);
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .card-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* ===== SCREEN 1: WELCOME ===== */
+        #screen-welcome {
+            justify-content: center;
+            align-items: center;
             text-align: center;
-            font-size: 15px;
+            gap: 30px;
+        }
+
+        .welcome-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: gradientShift 4s ease infinite;
+            line-height: 1.1;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .welcome-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 300;
+        }
+
+        .welcome-desc {
+            max-width: 500px;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.8;
+        }
+
+        .welcome-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .welcome-actions .btn {
+            width: 100%;
+        }
+
+        /* ===== SCREEN 2: ORGANIZER PANEL ===== */
+        #screen-organizer {
+            gap: 20px;
+        }
+
+        .organizer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .organizer-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .organizer-section .card {
+            flex-shrink: 0;
+        }
+
+        .pin-generator {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .pin-display {
+            font-family: var(--font-mono);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent-green);
+            letter-spacing: 6px;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+            padding: 10px 20px;
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px dashed rgba(0, 255, 136, 0.3);
+            border-radius: 12px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .room-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .room-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+
+        .room-item:hover {
+            background: rgba(0, 229, 255, 0.05);
+            border-color: rgba(0, 229, 255, 0.2);
+        }
+
+        .room-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .room-pin {
+            font-family: var(--font-mono);
+            color: var(--accent-cyan);
+            font-weight: 700;
+            letter-spacing: 3px;
+            font-size: 0.95rem;
+        }
+
+        .room-status {
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .room-status.active {
+            background: rgba(0, 255, 136, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .room-status.waiting {
+            background: rgba(255, 170, 0, 0.15);
+            color: var(--accent-orange);
+            border: 1px solid rgba(255, 170, 0, 0.3);
+        }
+
+        .bot-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .bot-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(138, 43, 226, 0.08);
+            border-radius: 8px;
+            border: 1px solid rgba(138, 43, 226, 0.15);
+            font-size: 0.85rem;
+        }
+
+        .bot-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bot-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            box-shadow: 0 0 8px var(--accent-green);
+            animation: pulseDot 1.5s infinite;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .bot-score {
+            color: var(--accent-cyan);
+            font-weight: 700;
+            font-family: var(--font-mono);
+        }
+
+        /* ===== SCREEN 3: ROOM JOIN ===== */
+        #screen-join {
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .join-box {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 30px;
+            background: var(--bg-panel-light);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.05);
+        }
+
+        .join-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            text-align: center;
+            color: var(--accent-cyan);
+            letter-spacing: 2px;
+        }
+
+        .pin-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .pin-digit {
+            width: 55px;
+            height: 65px;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 800;
+            font-family: var(--font-mono);
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(0, 229, 255, 0.2);
+            border-radius: 12px;
+            color: var(--accent-cyan);
+            transition: all 0.3s;
+            caret-color: var(--accent-cyan);
+        }
+
+        .pin-digit:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.3);
+            background: rgba(0, 229, 255, 0.05);
+        }
+
+        .pin-digit.filled {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+        }
+
+        .pin-error {
+            color: var(--accent-red);
+            font-size: 0.85rem;
+            text-align: center;
+            min-height: 20px;
+            font-weight: 600;
+        }
+
+        /* ===== SCREEN 4: LOBBY ===== */
+        #screen-lobby {
+            gap: 20px;
+        }
+
+        .lobby-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .lobby-room-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .lobby-room-name {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--accent-cyan);
+        }
+
+        .lobby-room-pin {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            letter-spacing: 3px;
+        }
+
+        .lobby-players {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            overflow-y: auto;
+            flex: 1;
+            align-content: start;
+        }
+
+        .player-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: var(--bg-panel-light);
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            border-radius: 12px;
+            transition: all 0.3s;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .player-card.is-bot {
+            border-color: rgba(138, 43, 226, 0.2);
+            background: rgba(138, 43, 226, 0.05);
+        }
+
+        .player-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .player-avatar.human {
+            background: linear-gradient(135deg, var(--accent-cyan), #007799);
+            color: #0a0c14;
+        }
+
+        .player-avatar.bot {
+            background: linear-gradient(135deg, var(--accent-purple), #5500aa);
+            color: white;
+        }
+
+        .player-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            overflow: hidden;
+        }
+
+        .player-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .player-role {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .lobby-controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ===== SCREEN 5: GAME MODES ===== */
+        #screen-modes {
+            gap: 20px;
+        }
+
+        .modes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            flex: 1;
+            align-content: center;
+        }
+
+        .mode-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding: 30px 20px;
+            background: var(--bg-panel-light);
+            border: 2px solid rgba(0, 229, 255, 0.1);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.05), transparent);
+            transition: left 0.6s;
+        }
+
+        .mode-card:hover::before {
+            left: 100%;
+        }
+
+        .mode-card:hover {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .mode-card.selected {
+            border-color: var(--accent-green);
+            box-shadow: 0 0 50px rgba(0, 255, 136, 0.2);
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .mode-icon {
+            font-size: 3rem;
+            line-height: 1;
+        }
+
+        .mode-name {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--accent-cyan);
+            letter-spacing: 1px;
+        }
+
+        .mode-desc {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* ===== SCREEN 6: GAME ===== */
+        #screen-game {
+            gap: 15px;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+        }
+
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: 800;
+            font-family: var(--font-mono);
+            color: var(--accent-cyan);
+        }
+
+        .stat-value.green {
+            color: var(--accent-green);
+        }
+
+        .stat-value.orange {
+            color: var(--accent-orange);
+        }
+
+        .game-timer-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .game-timer-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-cyan), var(--accent-magenta));
+            border-radius: 3px;
+            transition: width 1s linear;
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+
+        .question-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 25px;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            line-height: 1.7;
+            font-weight: 600;
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            border: 1px solid rgba(0, 229, 255, 0.1);
         }
 
         .answers-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 12px;
         }
 
-        .ans-btn {
-            padding: 22px;
-            font-size: 18px;
+        .answer-btn {
+            padding: 16px 20px;
+            background: var(--bg-panel-light);
+            border: 2px solid rgba(0, 229, 255, 0.15);
             border-radius: 14px;
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            font-weight: 600;
             cursor: pointer;
-            border: none;
-            font-weight: bold;
-            color: white;
-            transition: 0.2s;
+            transition: all 0.3s;
+            text-align: left;
+            line-height: 1.4;
+            position: relative;
+            overflow: hidden;
         }
 
-        .ans-btn:nth-child(1) { background: var(--accent-pink); }
-        .ans-btn:nth-child(2) { background: var(--accent-blue); }
-        .ans-btn:nth-child(3) { background: var(--accent-purple); }
-        .ans-btn:nth-child(4) { background: #e07a5f; }
-
-        .ans-btn:hover {
-            transform: scale(1.03);
-            filter: brightness(1.15);
+        .answer-btn:hover:not(:disabled) {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 229, 255, 0.08);
+            transform: translateX(5px);
         }
 
-        .leaderboard {
-            background: #1a1a38;
-            padding: 15px;
-            border-radius: 14px;
-            margin-top: 20px;
-            max-height: 220px;
+        .answer-btn.correct {
+            border-color: var(--accent-green);
+            background: rgba(0, 255, 136, 0.15);
+            color: var(--accent-green);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.2);
+            animation: correctPulse 0.5s;
+        }
+
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        .answer-btn.wrong {
+            border-color: var(--accent-red);
+            background: rgba(255, 51, 85, 0.15);
+            color: var(--accent-red);
+            animation: wrongShake 0.4s;
+        }
+
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .answer-btn:disabled {
+            cursor: default;
+            opacity: 0.6;
+        }
+
+        .game-feedback {
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 700;
+            min-height: 30px;
+            transition: all 0.3s;
+        }
+
+        .game-feedback.success {
+            color: var(--accent-green);
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+        }
+
+        .game-feedback.error {
+            color: var(--accent-red);
+            text-shadow: 0 0 20px rgba(255, 51, 85, 0.5);
+        }
+
+        /* ===== SURVIVAL MODE SPECIFIC ===== */
+        .survival-lives {
+            display: flex;
+            gap: 5px;
+        }
+
+        .life-icon {
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .life-icon.lost {
+            opacity: 0.2;
+            filter: grayscale(1);
+        }
+
+        /* ===== TREASURE HUNT SPECIFIC ===== */
+        .treasure-map {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .treasure-cell {
+            aspect-ratio: 1;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .treasure-cell:hover:not(.opened) {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 229, 255, 0.08);
+        }
+
+        .treasure-cell.opened {
+            cursor: default;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .treasure-cell.treasure {
+            background: rgba(255, 170, 0, 0.15);
+            border-color: var(--accent-orange);
+            animation: treasureGlow 1s infinite alternate;
+        }
+
+        @keyframes treasureGlow {
+            from { box-shadow: 0 0 10px rgba(255, 170, 0, 0.3); }
+            to { box-shadow: 0 0 25px rgba(255, 170, 0, 0.6); }
+        }
+
+        /* ===== SCREEN 7: RESULTS ===== */
+        #screen-results {
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            text-align: center;
+        }
+
+        .results-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+        }
+
+        .results-stats {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .result-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 20px 30px;
+            background: var(--bg-panel-light);
+            border-radius: 16px;
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            min-width: 120px;
+        }
+
+        .result-stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            font-family: var(--font-mono);
+            color: var(--accent-cyan);
+        }
+
+        .result-stat-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+        }
+
+        .results-leaderboard {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 250px;
             overflow-y: auto;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 18px;
+            background: var(--bg-panel-light);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .leaderboard-item.me {
+            border-color: var(--accent-green);
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .leaderboard-rank {
+            font-size: 1.2rem;
+            font-weight: 800;
+            font-family: var(--font-mono);
+            color: var(--accent-cyan);
+            min-width: 35px;
+        }
+
+        .leaderboard-name {
+            flex: 1;
+            font-weight: 600;
             text-align: left;
         }
 
-        .lb-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 14px;
-            margin: 6px 0;
-            background: #24244a;
-            border-radius: 8px;
-            font-weight: 500;
+        .leaderboard-score {
+            font-weight: 800;
+            font-family: var(--font-mono);
+            color: var(--accent-green);
         }
 
-        .timer-bar {
-            font-size: 22px;
-            color: var(--accent-yellow);
-            font-weight: bold;
-            text-align: center;
+        /* ===== TOAST NOTIFICATIONS ===== */
+        .toast-container {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .toast {
+            padding: 14px 20px;
+            background: rgba(18, 25, 45, 0.95);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            animation: toastIn 0.4s ease, toastOut 0.4s ease 2.6s forwards;
+            max-width: 300px;
+            pointer-events: all;
+            backdrop-filter: blur(10px);
+        }
+
+        .toast.success {
+            border-color: rgba(0, 255, 136, 0.5);
+            color: var(--accent-green);
+        }
+
+        .toast.error {
+            border-color: rgba(255, 51, 85, 0.5);
+            color: var(--accent-red);
+        }
+
+        .toast.info {
+            border-color: rgba(0, 229, 255, 0.5);
+            color: var(--accent-cyan);
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes toastOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(50px); }
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 500;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background: var(--bg-panel);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            transform: scale(0.9);
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--accent-cyan);
             margin-bottom: 15px;
         }
 
-        .pin-display {
-            font-size: 48px;
-            color: var(--accent-yellow);
-            background: #111122;
-            padding: 15px;
-            border-radius: 14px;
-            letter-spacing: 5px;
-            margin: 15px 0;
-            border: 2px solid var(--accent-yellow);
+        .modal-body {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* ===== BOT ACTIVITY LOG ===== */
+        .bot-log {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 50;
+            pointer-events: none;
+            max-width: 300px;
+        }
+
+        .bot-log-item {
+            padding: 6px 12px;
+            background: rgba(138, 43, 226, 0.15);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 8px;
+            font-size: 0.75rem;
+            color: #c9a0ff;
+            animation: botLogIn 0.3s ease, botLogOut 0.3s ease 3.7s forwards;
+            backdrop-filter: blur(5px);
+        }
+
+        @keyframes botLogIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes botLogOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-10px); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            #app {
+                max-height: 100%;
+                border-radius: 0;
+                border: none;
+            }
+
+            .screen {
+                padding: 15px;
+            }
+
+            .welcome-title {
+                font-size: 2.2rem;
+            }
+
+            .organizer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modes-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .answers-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pin-digit {
+                width: 45px;
+                height: 55px;
+                font-size: 1.4rem;
+            }
+
+            .results-stats {
+                gap: 12px;
+            }
+
+            .result-stat {
+                padding: 15px 20px;
+                min-width: 90px;
+            }
+
+            .result-stat-value {
+                font-size: 1.5rem;
+            }
+
+            .game-stats {
+                gap: 12px;
+            }
+
+            .stat-value {
+                font-size: 1rem;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .treasure-map {
+                max-width: 280px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .welcome-title {
+                font-size: 1.8rem;
+            }
+
+            .pin-digit {
+                width: 38px;
+                height: 48px;
+                font-size: 1.2rem;
+            }
+
+            .lobby-players {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== UTILITIES ===== */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-10 {
+            margin-top: 10px;
+        }
+
+        .mt-20 {
+            margin-top: 20px;
+        }
+
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gap-10 {
+            gap: 10px;
+        }
+
+        /* ===== LOADING SPINNER ===== */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0, 229, 255, 0.1);
+            border-top-color: var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== QUESTION CATEGORY BADGE ===== */
+        .category-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .category-badge.math {
+            background: rgba(0, 229, 255, 0.15);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+        }
+
+        .category-badge.ukr {
+            background: rgba(255, 170, 0, 0.15);
+            color: var(--accent-orange);
+            border: 1px solid rgba(255, 170, 0, 0.3);
+        }
+
+        .category-badge.history {
+            background: rgba(255, 0, 170, 0.15);
+            color: var(--accent-magenta);
+            border: 1px solid rgba(255, 0, 170, 0.3);
+        }
+
+        .category-badge.nature {
+            background: rgba(0, 255, 136, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .category-badge.lit {
+            background: rgba(138, 43, 226, 0.15);
+            color: var(--accent-purple);
+            border: 1px solid rgba(138, 43, 226, 0.3);
         }
     </style>
 </head>
 <body>
+    <div id="app">
+        <div class="bg-grid"></div>
+        <div class="toast-container" id="toastContainer"></div>
+        <div class="bot-log" id="botLog"></div>
 
-    <div class="container">
-        <!-- ГОЛОВНЕ МЕНЮ -->
-        <div id="screen-home" class="screen active">
-            <h1>🏕️ Школа-Табір: Мега-Платформа</h1>
-            <p>Обери свою роль, створюй незабутні ігри та змагайся з друзями!</p>
-            <button onclick="showScreen('screen-teacher')">👩‍🏫 Кабінет Вчителя (Створити гру)</button>
-            <button class="btn-sec" onclick="showScreen('screen-student')">🎮 Увійти як Учень / Гравець</button>
-        </div>
-
-        <!-- КАБІНЕТ ВЧИТЕЛЯ -->
-        <div id="screen-teacher" class="screen">
-            <h2>🛠️ Налаштування Табірної Вікторини</h2>
-            
-            <div class="box">
-                <label style="color: var(--accent-yellow); font-weight: bold;">Обери аркадний режим гри:</label>
-                <select id="tGameMode">
-                    <option value="escape">🤖 Втеча від Табірного Робота (Динамічне переслідування)</option>
-                    <option value="treasure">💎 Полювання на скарби (Накопичення діамантів)</option>
-                    <option value="hackers">💻 Хакери проти системи (Зломи та криптовалюта)</option>
-                    <option value="chest">📦 Золота лихоманка (Таємні скрині з сюрпризами)</option>
-                </select>
+        <!-- ===== SCREEN 1: WELCOME ===== -->
+        <div class="screen active" id="screen-welcome">
+            <div class="welcome-title">SunLorem</div>
+            <div class="welcome-subtitle">Школа-Табір • 5 Клас</div>
+            <div class="welcome-desc">
+                Інтерактивна платформа для навчання та розваг. 
+                Обирай роль, приєднуйся до кімнати та змагайся з друзями 
+                у захоплюючих інтелектуальних батлах!
             </div>
-
-            <div class="box">
-                <label style="color: var(--accent-yellow); font-weight: bold;">Додати питання:</label>
-                <input type="text" id="tQ" placeholder="Введи питання (наприклад: Головна фішка нашого табору?)">
-                <input type="text" id="tA0" placeholder="Варіант 1 (Правильна відповідь)">
-                <input type="text" id="tA1" placeholder="Варіант 2">
-                <input type="text" id="tA2" placeholder="Варіант 3 (можна залишити пустим)">
-                <input type="text" id="tA3" placeholder="Варіант 4 (можна залишити пустим)">
-                <button onclick="addTeacherQuestion()" class="btn-sec">+ Додати питання у список</button>
+            <div class="welcome-actions">
+                <button class="btn btn-primary" id="btnRoleOrganizer">
+                    🎓 Я Організатор
+                </button>
+                <button class="btn btn-secondary" id="btnRolePlayer">
+                    🎮 Я Гравець
+                </button>
             </div>
-
-            <div class="box">
-                <label style="color: var(--accent-yellow); font-weight: bold;">🤖 Імена власних ботів (кожне з нового рядка):</label>
-                <textarea id="tBots" placeholder="Кіт_Батон&#10;Хакер_Макс&#10;Привид_Табору&#10;Супер_Бот"></textarea>
-                <button onclick="saveTeacherBots()" class="btn-sec">Зберегти ботів у гру</button>
-            </div>
-
-            <p id="statsCounter" style="color: var(--text-dim);">Додано питань: 0 | Ботів: 0</p>
-            <button onclick="launchGameRoom()">🚀 Створити гру та отримати PIN</button>
-            <button class="btn-sec" onclick="showScreen('screen-home')">Назад у головне меню</button>
-        </div>
-
-        <!-- ЛОБІ ТА ПОСИЛАННЯ -->
-        <div id="screen-lobby" class="screen">
-            <h2>🔑 Кімнату успішно створено!</h2>
-            <p>Дай цей PIN-код учням або відправ посилання для швидкого підключення:</p>
-            <div class="pin-display" id="roomPin">1234</div>
-            <p id="roomLink" style="font-size: 13px; color: var(--accent-blue); word-break: break-all; background: #111122; padding: 10px; border-radius: 8px;"></p>
-            
-            <div class="leaderboard">
-                <h4 style="margin: 0 0 10px 0; color: var(--accent-yellow);">👥 Гравці у кімнаті:</h4>
-                <div id="lobbyList"></div>
-            </div>
-            <button onclick="startActionGame()">Стартуємо змагання!</button>
-        </div>
-
-        <!-- ВХІД ДЛЯ ГРАВЦЯ -->
-        <div id="screen-student" class="screen">
-            <h2>🎮 Вхід у табірну кімнату</h2>
-            <input type="text" id="sPinInput" placeholder="Введи 4-значний PIN-код гри">
-            <input type="text" id="sNameInput" placeholder="Твоє круте ім'я або нікнейм">
-            <button onclick="joinAsPlayer()">Приєднатися до гри</button>
-            <button class="btn-sec" onclick="showScreen('screen-home')">Назад у меню</button>
-        </div>
-
-        <!-- ІГРОВИЙ ЕКРАН -->
-        <div id="screen-game" class="screen">
-            <div class="timer-bar" id="gameTimer">⏳ Час: 15</div>
-            <div class="arcade-visual" id="arcadeVisualStatus">Завантаження ігрового режиму...</div>
-            
-            <h3 id="questionBox" style="font-size: 21px; min-height: 60px; margin-bottom: 20px;">Питання з'явиться тут...</h3>
-            
-            <div class="answers-grid">
-                <button class="ans-btn" onclick="answerSelected(0)" id="b0">Відповідь 1</button>
-                <button class="ans-btn" onclick="answerSelected(1)" id="b1">Відповідь 2</button>
-                <button class="ans-btn" onclick="answerSelected(2)" id="b2">Відповідь 3</button>
-                <button class="ans-btn" onclick="answerSelected(3)" id="b3">Відповідь 4</button>
-            </div>
-
-            <div class="leaderboard">
-                <h4 style="margin: 0 0 10px 0; color: var(--accent-yellow);">🏆 Жива таблиця лідерів:</h4>
-                <div id="liveLeaderboard"></div>
+            <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 10px;">
+                v2.0.1 • SunLorem Team
             </div>
         </div>
 
-        <!-- ЕКРАН ФІНАЛУ -->
-        <div id="screen-win" class="screen">
-            <h1>🎉 Гра завершена! Ура!</h1>
-            <h2 id="winnerText" style="color: var(--accent-yellow); font-size: 26px;">Переможець: Невідомо</h2>
-            <div class="leaderboard" id="finalLeaderboard"></div>
-            <button onclick="location.reload()" style="margin-top: 20px;">Повернутися в меню</button>
+        <!-- ===== SCREEN 2: ORGANIZER PANEL ===== -->
+        <div class="screen" id="screen-organizer">
+            <div class="header">
+                <div class="logo" onclick="App.goToScreen('screen-welcome')">SunLorem</div>
+                <div class="header-info">
+                    <span class="role-badge organizer">Організатор</span>
+                    <button class="btn btn-sm btn-danger" onclick="App.goToScreen('screen-welcome')">Вийти</button>
+                </div>
+            </div>
+            <div class="organizer-grid">
+                <div class="organizer-section">
+                    <div class="card">
+                        <div class="card-title">🔑 Генератор PIN-кодів</div>
+                        <div class="pin-generator">
+                            <div class="pin-display" id="generatedPin">----</div>
+                            <button class="btn btn-sm btn-primary" id="btnGeneratePin">Згенерувати</button>
+                        </div>
+                        <div class="card-desc mt-10">
+                            Створіть унікальний 4-значний PIN для нової кімнати.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">🏠 Кімнати</div>
+                        <div class="room-list" id="roomList">
+                            <div style="color: var(--text-dim); font-size: 0.8rem; text-align: center; padding: 20px;">
+                                Немає активних кімнат
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-success mt-10" id="btnCreateRoom" style="width: 100%;">
+                            ➕ Створити кімнату
+                        </button>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">⚙️ Налаштування гри</div>
+                        <div class="input-group">
+                            <label>Кількість питань</label>
+                            <select class="input-field" id="settingsQuestionCount">
+                                <option value="5">5 питань</option>
+                                <option value="10" selected>10 питань</option>
+                                <option value="15">15 питань</option>
+                                <option value="20">20 питань</option>
+                            </select>
+                        </div>
+                        <div class="input-group mt-10">
+                            <label>Час на відповідь (сек)</label>
+                            <select class="input-field" id="settingsTimePerQuestion">
+                                <option value="10">10 секунд</option>
+                                <option value="15" selected>15 секунд</option>
+                                <option value="20">20 секунд</option>
+                                <option value="30">30 секунд</option>
+                            </select>
+                        </div>
+                        <div class="input-group mt-10">
+                            <label>Складність</label>
+                            <select class="input-field" id="settingsDifficulty">
+                                <option value="easy">Легка</option>
+                                <option value="medium" selected>Середня</option>
+                                <option value="hard">Складна</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="organizer-section">
+                    <div class="card">
+                        <div class="card-title">🤖 Активні боти</div>
+                        <div class="bot-list" id="botList">
+                            <div style="color: var(--text-dim); font-size: 0.8rem; text-align: center; padding: 20px;">
+                                Боти з'являться після створення кімнати
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">📊 Статистика</div>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-dim); font-size: 0.85rem;">Всього кімнат:</span>
+                                <span style="font-weight: 700; color: var(--accent-cyan);" id="statTotalRooms">0</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-dim); font-size: 0.85rem;">Гравців онлайн:</span>
+                                <span style="font-weight: 700; color: var(--accent-green);" id="statPlayersOnline">0</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-dim); font-size: 0.85rem;">Ботів активно:</span>
+                                <span style="font-weight: 700; color: var(--accent-purple);" id="statBotsActive">0</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-dim); font-size: 0.85rem;">Питань у базі:</span>
+                                <span style="font-weight: 700; color: var(--accent-orange);" id="statQuestionsCount">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">📜 Журнал подій</div>
+                        <div id="eventLog" style="max-height: 150px; overflow-y: auto; font-size: 0.75rem; color: var(--text-dim); font-family: var(--font-mono); line-height: 1.6;">
+                            <div>Система готова до роботи...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SCREEN 3: JOIN ROOM ===== -->
+        <div class="screen" id="screen-join">
+            <div class="header">
+                <div class="logo" onclick="App.goToScreen('screen-welcome')">SunLorem</div>
+                <div class="header-info">
+                    <span class="role-badge player">Гравець</span>
+                </div>
+            </div>
+            <div class="join-box">
+                <div class="join-title">🔐 Вхід до кімнати</div>
+                <div class="pin-inputs" id="pinInputs">
+                    <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-index="0">
+                    <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-index="1">
+                    <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-index="2">
+                    <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-index="3">
+                </div>
+                <div class="pin-error" id="pinError"></div>
+                <div class="input-group">
+                    <label>Ваше ім'я</label>
+                    <input type="text" class="input-field" id="playerNameInput" placeholder="Введіть ім'я..." maxlength="20">
+                </div>
+                <button class="btn btn-primary" id="btnJoinRoom" style="width: 100%;">
+                    🚀 Приєднатися
+                </button>
+                <button class="btn btn-secondary" onclick="App.goToScreen('screen-welcome')" style="width: 100%;">
+                    ← Назад
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== SCREEN 4: LOBBY ===== -->
+        <div class="screen" id="screen-lobby">
+            <div class="header">
+                <div class="logo">SunLorem</div>
+                <div class="header-info">
+                    <span class="role-badge player" id="lobbyRoleBadge">Гравець</span>
+                </div>
+            </div>
+            <div class="lobby-header">
+                <div class="lobby-room-info">
+                    <div class="lobby-room-name" id="lobbyRoomName">Кімната #----</div>
+                    <div class="lobby-room-pin" id="lobbyRoomPin">PIN: ----</div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-sm btn-secondary" id="btnLobbyLeave">Вийти</button>
+                </div>
+            </div>
+            <div class="lobby-players" id="lobbyPlayers"></div>
+            <div class="lobby-controls">
+                <button class="btn btn-primary" id="btnLobbyReady" disabled>
+                    ⏳ Очікування...
+                </button>
+                <button class="btn btn-success" id="btnLobbyStart" style="display: none;">
+                    ▶️ Почати гру
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== SCREEN 5: GAME MODES ===== -->
+        <div class="screen" id="screen-modes">
+            <div class="header">
+                <div class="logo">SunLorem</div>
+                <div class="header-info">
+                    <span class="role-badge player" id="modesRoleBadge">Гравець</span>
+                </div>
+            </div>
+            <div style="text-align: center; margin-bottom: 10px;">
+                <div style="font-size: 1.5rem; font-weight: 800; color: var(--accent-cyan); letter-spacing: 2px;">
+                    Обери режим гри
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-dim); margin-top: 5px;">
+                    Кожен режим має свої правила та нагороди
+                </div>
+            </div>
+            <div class="modes-grid">
+                <div class="mode-card" data-mode="arcade">
+                    <div class="mode-icon">⚡</div>
+                    <div class="mode-name">Аркада</div>
+                    <div class="mode-desc">
+                        Швидкісний режим! Відповідай на питання якомога швидше. 
+                        Чим швидше — тим більше балів.
+                    </div>
+                </div>
+                <div class="mode-card" data-mode="survival">
+                    <div class="mode-icon">💀</div>
+                    <div class="mode-name">Виживання</div>
+                    <div class="mode-desc">
+                        У тебе 3 життя. Кожна помилка забирає одне. 
+                        Скільки питань ти зможеш пройти?
+                    </div>
+                </div>
+                <div class="mode-card" data-mode="treasure">
+                    <div class="mode-icon">🏴‍☠️</div>
+                    <div class="mode-name">Полювання на скарби</div>
+                    <div class="mode-desc">
+                        На карті сховані скарби. Відповідай правильно, 
+                        щоб відкривати клітинки та знайти всі скарби!
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: center; margin-top: 20px;">
+                <button class="btn btn-primary" id="btnStartMode" disabled>
+                    🎯 Обрати режим
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== SCREEN 6: GAME ===== -->
+        <div class="screen" id="screen-game">
+            <div class="game-header">
+                <div class="game-stats">
+                    <div class="stat">
+                        <span class="stat-label">Питання</span>
+                        <span class="stat-value" id="gameQuestionNum">1/10</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Бали</span>
+                        <span class="stat-value green" id="gameScore">0</span>
+                    </div>
+                    <div class="stat" id="gameLivesContainer" style="display: none;">
+                        <span class="stat-label">Життя</span>
+                        <div class="survival-lives" id="gameLives">
+                            <span class="life-icon">❤️</span>
+                            <span class="life-icon">❤️</span>
+                            <span class="life-icon">❤️</span>
+                        </div>
+                    </div>
+                    <div class="stat" id="gameTreasureContainer" style="display: none;">
+                        <span class="stat-label">Скарби</span>
+                        <span class="stat-value orange" id="gameTreasures">0/3</span>
+                    </div>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Час</span>
+                    <span class="stat-value orange" id="gameTimer">15</span>
+                </div>
+            </div>
+            <div class="game-timer-bar">
+                <div class="game-timer-fill" id="gameTimerFill" style="width: 100%;"></div>
+            </div>
+            <div class="question-container" id="questionContainer">
+                <div>
+                    <div class="category-badge math" id="questionCategory">Математика</div>
+                    <div class="question-text" id="questionText">Завантаження питання...</div>
+                </div>
+                <div class="answers-grid" id="answersGrid"></div>
+                <div class="game-feedback" id="gameFeedback"></div>
+            </div>
+            <!-- Treasure map (hidden by default) -->
+            <div id="treasureMapContainer" style="display: none; padding: 10px;">
+                <div class="treasure-map" id="treasureMap"></div>
+            </div>
+        </div>
+
+        <!-- ===== SCREEN 7: RESULTS ===== -->
+        <div class="screen" id="screen-results">
+            <div class="header">
+                <div class="logo">SunLorem</div>
+                <div class="header-info">
+                    <span class="role-badge player" id="resultsRoleBadge">Гравець</span>
+                </div>
+            </div>
+            <div class="results-title" id="resultsTitle">Гру завершено!</div>
+            <div class="results-stats">
+                <div class="result-stat">
+                    <div class="result-stat-value" id="resultsScore">0</div>
+                    <div class="result-stat-label">Балів</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="resultsCorrect">0</div>
+                    <div class="result-stat-label">Правильних</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="resultsWrong">0</div>
+                    <div class="result-stat-label">Помилок</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="resultsAccuracy">0%</div>
+                    <div class="result-stat-label">Точність</div>
+                </div>
+            </div>
+            <div class="results-leaderboard" id="resultsLeaderboard"></div>
+            <div style="display: flex; gap: 12px; margin-top: 10px; flex-wrap: wrap; justify-content: center;">
+                <button class="btn btn-primary" id="btnPlayAgain">🔄 Грати ще</button>
+                <button class="btn btn-secondary" id="btnResultsLobby">🏠 У лобі</button>
+                <button class="btn btn-danger" id="btnResultsExit">🚪 Вийти</button>
+            </div>
+        </div>
+
+        <!-- ===== MODAL ===== -->
+        <div class="modal-overlay" id="modalOverlay">
+            <div class="modal">
+                <div class="modal-title" id="modalTitle">Заголовок</div>
+                <div class="modal-body" id="modalBody">Текст повідомлення</div>
+                <div class="modal-actions">
+                    <button class="btn btn-sm btn-secondary" id="modalCancel">Скасувати</button>
+                    <button class="btn btn-sm btn-primary" id="modalConfirm">Підтвердити</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        let room = {
-            pin: "7777",
-            mode: "escape",
-            questions: [],
-            players: []
+        // ============================================================
+        // DATABASE OF QUESTIONS
+        // ============================================================
+        const QUESTIONS_DB = {
+            math: [
+                { q: "Скільки буде 15 × 4?", a: ["45", "60", "55", "70"], c: 1 },
+                { q: "Яке число є простим?", a: ["9", "15", "17", "21"], c: 2 },
+                { q: "Скільки сантиметрів у 2,5 метрах?", a: ["25 см", "250 см", "2500 см", "25000 см"], c: 1 },
+                { q: "Чому дорівнює площа прямокутника зі сторонами 7 см і 4 см?", a: ["22 см²", "28 см²", "11 см²", "14 см²"], c: 1 },
+                { q: "Яке з чисел ділиться на 3 без остачі?", a: ["14", "22", "27", "32"], c: 2 },
+                { q: "Скільки буде 144 ÷ 12?", a: ["10", "11", "12", "14"], c: 2 },
+                { q: "Як називається результат додавання?", a: ["Різниця", "Сума", "Добуток", "Частка"], c: 1 },
+                { q: "Скільки градусів у прямому куті?", a: ["45°", "90°", "180°", "360°"], c: 1 },
+                { q: "Яке число є найбільшим?", a: ["0,5", "0,45", "0,8", "0,08"], c: 2 },
+                { q: "Скільки буде 25% від 200?", a: ["25", "50", "75", "100"], c: 1 },
+                { q: "Периметр квадрата зі стороною 6 см дорівнює:", a: ["12 см", "24 см", "36 см", "6 см"], c: 1 },
+                { q: "Яке число пропущено: 2, 4, 8, 16, ...?", a: ["20", "24", "32", "64"], c: 2 },
+                { q: "Скільки хвилин у 2 годинах?", a: ["100", "120", "90", "150"], c: 1 },
+                { q: "Чому дорівнює 3³?", a: ["9", "27", "6", "12"], c: 1 },
+                { q: "Як називається число, яке ділиться тільки на 1 і на себе?", a: ["Парне", "Просте", "Складене", "Ціле"], c: 1 }
+            ],
+            ukr: [
+                { q: "Яке слово написано правильно?", a: ["п'ять", "пять", "пьять", "п ять"], c: 0 },
+                { q: "Скільки складів у слові 'веселий'?", a: ["2", "3", "4", "1"], c: 1 },
+                { q: "Яка частина мови слово 'швидко'?", a: ["Іменник", "Прикметник", "Прислівник", "Дієслово"], c: 2 },
+                { q: "У якому слові є апостроф?", a: ["б_ю", "м_яч", "п_ять", "л_ютий"], c: 2 },
+                { q: "Як називається головний член речення, що означає дію?", a: ["Підмет", "Присудок", "Додаток", "Означення"], c: 1 },
+                { q: "Яке слово є синонімом до 'гарний'?", a: ["поганий", "красивий", "сумний", "старий"], c: 1 },
+                { q: "Скільки букв в українському алфавіті?", a: ["32", "33", "34", "35"], c: 1 },
+                { q: "Як пишеться слово 'пів_яблука'?", a: ["півяблука", "пів'яблука", "пів-яблука", "пів яблука"], c: 1 },
+                { q: "Який рід у слова 'ніч'?", a: ["Чоловічий", "Жіночий", "Середній", "Множина"], c: 1 },
+                { q: "Яке слово є антонімом до 'холодний'?", a: ["морозний", "гарячий", "свіжий", "зимний"], c: 1 },
+                { q: "У якому відмінку слово 'книга' у реченні 'Я читаю книгу'?", a: ["Називний", "Родовий", "Знахідний", "Давальний"], c: 2 },
+                { q: "Як називається розділ мовознавства, що вивчає звуки?", a: ["Лексика", "Фонетика", "Морфологія", "Синтаксис"], c: 1 },
+                { q: "Яке слово написано з помилкою?", a: ["сонце", "серце", "неньці", "писменно"], c: 3 },
+                { q: "Скільки звуків у слові 'щастя'?", a: ["5", "6", "4", "7"], c: 0 },
+                { q: "Яке зі слів є запозиченим?", a: ["вода", "комп'ютер", "земля", "рука"], c: 1 }
+            ],
+            history: [
+                { q: "У якому році було проголошено незалежність України?", a: ["1989", "1990", "1991", "1992"], c: 2 },
+                { q: "Хто був першим президентом України?", a: ["Л. Кравчук", "Л. Кучма", "В. Ющенко", "П. Порошенко"], c: 0 },
+                { q: "Яке місто є столицею Київської Русі?", a: ["Львів", "Київ", "Харків", "Одеса"], c: 1 },
+                { q: "Хто заснував Київ?", a: ["Кий", "Володимир", "Ярослав", "Олег"], c: 0 },
+                { q: "У якому році відбулося хрещення Київської Русі?", a: ["988", "1054", "1240", "882"], c: 0 },
+                { q: "Хто був князем Київської Русі, який прийняв християнство?", a: ["Святослав", "Володимир Великий", "Ярослав Мудрий", "Олег"], c: 1 },
+                { q: "Яка битва відбулася у 1240 році?", a: ["Битва на Калці", "Оборона Києва від монголів", "Битва під Берестечком", "Полтавська битва"], c: 1 },
+                { q: "Хто був гетьманом України у 1648-1657 роках?", a: ["І. Мазепа", "Б. Хмельницький", "П. Сагайдачний", "І. Виговський"], c: 1 },
+                { q: "У якому році відбулася Переяславська рада?", a: ["1648", "1654", "1657", "1667"], c: 1 },
+                { q: "Яка подія відбулася у 1917-1921 роках?", a: ["Українська революція", "Друга світова війна", "Козацька доба", "Київська Русь"], c: 0 },
+                { q: "Хто написав 'Історію Русів'?", a: ["Т. Шевченко", "Г. Сковорода", "Невідомий автор", "М. Грушевський"], c: 2 },
+                { q: "У якому році було створено УНР?", a: ["1917", "1918", "1919", "1920"], c: 0 },
+                { q: "Хто був першим гетьманом Запорізької Січі?", a: ["Д. Вишневецький", "Б. Хмельницький", "І. Мазепа", "П. Сагайдачний"], c: 0 },
+                { q: "Яка річка була центром Київської Русі?", a: ["Дніпро", "Дністер", "Дунай", "Сіверський Донець"], c: 0 },
+                { q: "Коли відбулася Полтавська битва?", a: ["1709", "1648", "1654", "1775"], c: 0 },
+                { q: "Хто був останнім гетьманом України?", a: ["І. Мазепа", "К. Розумовський", "П. Скоропадський", "Д. Апостол"], c: 1 }
+            ],
+            nature: [
+                { q: "Яка планета найближча до Сонця?", a: ["Венера", "Меркурій", "Земля", "Марс"], c: 1 },
+                { q: "Скільки планет у Сонячній системі?", a: ["7", "8", "9", "10"], c: 1 },
+                { q: "Який газ переважає в атмосфері Землі?", a: ["Кисень", "Вуглекислий газ", "Азот", "Водень"], c: 2 },
+                { q: "Яка тварина є ссавцем?", a: ["Крокодил", "Дельфін", "Акула", "Черепаха"], c: 1 },
+                { q: "Який орган відповідає за перекачування крові?", a: ["Легені", "Серце", "Печінка", "Нирки"], c: 1 },
+                { q: "Скільки кісток у дорослої людини?", a: ["206", "300", "150", "250"], c: 0 },
+                { q: "Яка найбільша планета Сонячної системи?", a: ["Сатурн", "Юпітер", "Нептун", "Уран"], c: 1 },
+                { q: "Що вивчає біологія?", a: ["Зорі", "Живі організми", "Мінерали", "Хімічні реакції"], c: 1 },
+                { q: "Яка речовина має формулу H₂O?", a: ["Сіль", "Вода", "Цукор", "Кисень"], c: 1 },
+                { q: "Який процес перетворює вуглекислий газ на кисень?", a: ["Дихання", "Фотосинтез", "Горіння", "Випаровування"], c: 1 },
+                { q: "Яка найдовша річка України?", a: ["Дніпро", "Дністер", "Південний Буг", "Дунай"], c: 0 },
+                { q: "Яка тварина живе в Антарктиді?", a: ["Білий ведмідь", "Пінгвін", "Тигр", "Слон"], c: 1 },
+                { q: "Скільки відсотків води в організмі людини?", a: ["30%", "50%", "70%", "90%"], c: 2 },
+                { q: "Який метал є рідким при кімнатній температурі?", a: ["Залізо", "Ртуть", "Мідь", "Алюміній"], c: 1 },
+                { q: "Що таке екосистема?", a: ["Окрема тварина", "Спільнота живих організмів та середовище", "Гора", "Річка"], c: 1 }
+            ],
+            lit: [
+                { q: "Хто написав 'Кобзар'?", a: ["І. Франко", "Т. Шевченко", "Л. Українка", "М. Коцюбинський"], c: 1 },
+                { q: "Хто автор казки 'Рукавичка'?", a: ["Народна творчість", "І. Франко", "Т. Шевченко", "О. Пушкін"], c: 0 },
+                { q: "Який жанр твору 'Захар Беркут'?", a: ["Казка", "Повість", "Вірш", "Байка"], c: 1 },
+                { q: "Хто написав 'Лісову пісню'?", a: ["Л. Українка", "Т. Шевченко", "І. Франко", "М. Коцюбинський"], c: 0 },
+                { q: "Що таке байка?", a: ["Короткий повчальний твір", "Великий роман", "Вірш про природу", "Історична повість"], c: 0 },
+                { q: "Хто головний герой твору 'Тарас Бульба'?", a: ["Тарас", "Андрій", "Остап", "Микола"], c: 0 },
+                { q: "Який твір написав І. Франко?", a: ["Захар Беркут", "Кобзар", "Лісова пісня", "Тіні забутих предків"], c: 0 },
+                { q: "Хто написав 'Тіні забутих предків'?", a: ["М. Коцюбинський", "Л. Українка", "Т. Шевченко", "І. Франко"], c: 0 },
+                { q: "Що таке епітет?", a: ["Образне означення", "Повторення", "Порівняння", "Перебільшення"], c: 0 },
+                { q: "Який віршовий розмір у 'Заповіті' Т. Шевченка?", a: ["Ямб", "Хорей", "Дактиль", "Амфібрахій"], c: 0 },
+                { q: "Хто написав казку 'Фарбований Лис'?", a: ["І. Франко", "Т. Шевченко", "Л. Українка", "М. Коцюбинський"], c: 0 },
+                { q: "Що таке метафора?", a: ["Приховане порівняння", "Повторення", "Звуконаслідування", "Рима"], c: 0 },
+                { q: "Який твір є народною казкою?", a: ["Колобок", "Кобзар", "Лісова пісня", "Захар Беркут"], c: 0 },
+                { q: "Хто написав 'Слово о полку Ігоревім'?", a: ["Невідомий автор", "Т. Шевченко", "І. Франко", "Л. Українка"], c: 0 },
+                { q: "Що таке рима?", a: ["Співзвуччя кінців рядків", "Повторення слів", "Означення", "Порівняння"], c: 0 }
+            ]
         };
 
-        let currentQ = 0;
-        let timer = 15;
-        let tInterval;
-        let currentPlayerName = "";
-        let robotDistance = 4; // Спеціальний параметр для режиму робота
+        // ============================================================
+        // BOT NAMES & AVATARS
+        // ============================================================
+        const BOT_NAMES = [
+            "Робо-Макс", "Кібер-Оля", "Андроїд-Петро", "Мега-Мозок", 
+            "Нейро-Іван", "Бот-Софія", "Електро-Микола", "Квант-Даша",
+            "Альфа-Бот", "Бета-Тестер", "Гамма-Промінь", "Дельта-Хантер",
+            "Кібер-Кіт", "Робо-Лис", "Техно-Вовк", "Мега-Сова"
+        ];
 
-        function showScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
+        const BOT_AVATARS = ["🤖", "👾", "🎯", "⚡", "💎", "🔥", "🌟", "🎮", "🧠", "🚀", "🛡️", "⚔️", "🏆", "🎪", "🎭", "🎨"];
 
-        function addTeacherQuestion() {
-            let q = document.getElementById('tQ').value.trim();
-            let a0 = document.getElementById('tA0').value.trim();
-            let a1 = document.getElementById('tA1').value.trim();
-            let a2 = document.getElementById('tA2').value.trim();
-            let a3 = document.getElementById('tA3').value.trim();
-
-            if (!q || !a0 || !a1) {
-                alert('Будь ласка, введи питання та мінімум два варіанти відповіді!');
-                return;
+        // ============================================================
+        // APP STATE
+        // ============================================================
+        const AppState = {
+            role: null, // 'organizer' | 'player'
+            currentRoom: null,
+            playerName: null,
+            currentPin: null,
+            rooms: [],
+            bots: [],
+            game: {
+                mode: null,
+                questions: [],
+                currentQuestionIndex: 0,
+                score: 0,
+                correct: 0,
+                wrong: 0,
+                lives: 3,
+                treasures: 0,
+                totalTreasures: 3,
+                timer: 0,
+                timerInterval: null,
+                answered: false,
+                selectedAnswer: null,
+                questionCount: 10,
+                timePerQuestion: 15,
+                difficulty: 'medium',
+                treasureMap: [],
+                treasureOpened: [],
+                players: []
+            },
+            settings: {
+                questionCount: 10,
+                timePerQuestion: 15,
+                difficulty: 'medium'
             }
+        };
 
-            room.questions.push({
-                q: q,
-                answers: [a0, a1, a2, a3].filter(item => item !== ""),
-                correct: 0 // Перший варіант завжди правильний за замовчуванням
-            });
+        // ============================================================
+        // TOAST SYSTEM
+        // ============================================================
+        const Toast = {
+            show(message, type = 'info', duration = 3000) {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                container.appendChild(toast);
+                
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, duration + 400);
+            },
+            success(msg) { this.show(msg, 'success'); },
+            error(msg) { this.show(msg, 'error'); },
+            info(msg) { this.show(msg, 'info'); }
+        };
 
-            document.getElementById('tQ').value = '';
-            document.getElementById('tA0').value = '';
-            document.getElementById('tA1').value = '';
-            document.getElementById('tA2').value = '';
-            document.getElementById('tA3').value = '';
-            updateCounters();
-        }
-
-        function saveTeacherBots() {
-            let text = document.getElementById('tBots').value.trim();
-            if (!text) return;
-            let names = text.split('\n').map(n => n.trim()).filter(n => n.length > 0);
-            
-            names.forEach(n => {
-                room.players.push({ name: "🤖 " + n, score: 0, isBot: true, smart: 0.65 });
-            });
-            updateCounters();
-            alert('Боти успішно додані до гри!');
-        }
-
-        function updateCounters() {
-            let bCount = room.players.filter(p => p.isBot).length;
-            document.getElementById('statsCounter').innerText = `Додано питань: ${room.questions.length} | Ботів: ${bCount}`;
-        }
-
-        function launchGameRoom() {
-            if (room.questions.length === 0) {
-                alert('Створи хоча б одне питання перед запуском гри!');
-                return;
+        // ============================================================
+        // BOT LOG SYSTEM
+        // ============================================================
+        const BotLog = {
+            show(message) {
+                const container = document.getElementById('botLog');
+                const item = document.createElement('div');
+                item.className = 'bot-log-item';
+                item.textContent = message;
+                container.appendChild(item);
+                
+                setTimeout(() => {
+                    if (item.parentNode) {
+                        item.parentNode.removeChild(item);
+                    }
+                }, 4000);
             }
-            room.mode = document.getElementById('tGameMode').value;
-            room.pin = Math.floor(1000 + Math.random() * 9000).toString();
-            
-            document.getElementById('roomPin').innerText = room.pin;
-            let cleanUrl = window.location.href.split('?')[0];
-            document.getElementById('roomLink').innerText = `Посилання: ${cleanUrl}?pin=${room.pin}`;
+        };
 
-            if (!room.players.some(p => p.name.includes("Вчитель"))) {
-                room.players.unshift({ name: "👩‍🏫 Вчитель (Ти)", score: 0, isBot: false });
+        // ============================================================
+        // MODAL SYSTEM
+        // ============================================================
+        const Modal = {
+            callback: null,
+            show(title, body, onConfirm, onCancel) {
+                document.getElementById('modalTitle').textContent = title;
+                document.getElementById('modalBody').textContent = body;
+                document.getElementById('modalOverlay').classList.add('active');
+                this.callback = onConfirm;
+                
+                document.getElementById('modalConfirm').onclick = () => {
+                    this.hide();
+                    if (onConfirm) onConfirm();
+                };
+                
+                document.getElementById('modalCancel').onclick = () => {
+                    this.hide();
+                    if (onCancel) onCancel();
+                };
+            },
+            hide() {
+                document.getElementById('modalOverlay').classList.remove('active');
+                this.callback = null;
             }
+        };
 
-            renderLobby();
-            showScreen('screen-lobby');
-        }
-
-        function renderLobby() {
-            let html = '';
-            room.players.forEach(p => {
-                html += `<div class="lb-item"><span>${p.name}</span> <b style="color: var(--accent-yellow);">Готовий до бою</b></div>`;
-            });
-            document.getElementById('lobbyList').innerHTML = html;
-        }
-
-        function joinAsPlayer() {
-            let pin = document.getElementById('sPinInput').value.trim();
-            let name = document.getElementById('sNameInput').value.trim();
-
-            if (pin !== room.pin) {
-                alert('Невірний PIN-код кімнати! Перевір цифри.');
-                return;
-            }
-            if (!name) {
-                alert('Введи своє ім\'я!');
-                return;
-            }
-
-            currentPlayerName = name;
-            room.players.push({ name: "🎮 " + name, score: 0, isBot: false });
-            showScreen('screen-game');
-            startQuestionLoop();
-        }
-
-        function startActionGame() {
-            currentPlayerName = "👩‍🏫 Вчитель (Ти)";
-            showScreen('screen-game');
-            startQuestionLoop();
-        }
-
-        function startQuestionLoop() {
-            if (currentQ >= room.questions.length) {
-                endGameProcess();
-                return;
-            }
-
-            timer = 15;
-            document.getElementById('gameTimer').innerText = `⏳ Час: ${timer}`;
-            
-            let qData = room.questions[currentQ];
-            document.getElementById('questionBox').innerText = `Питання ${currentQ + 1}: ${qData.q}`;
-
-            // Оновлення інформації про режим на ігровому полі
-            let vis = document.getElementById('arcadeVisualStatus');
-            if (room.mode === 'escape') {
-                vis.innerHTML = `🤖 <b>Втеча від робота:</b> Дистанція до переслідувача — <b>${robotDistance} кроків</b>. Не помилайся!`;
-            } else if (room.mode === 'treasure') {
-                vis.innerHTML = `💎 <b>Полювання на скарби:</b> Заробляй діаманти за швидкі та правильні відповіді у свою скриню!`;
-            } else if (room.mode === 'hackers') {
-                vis.innerHTML = `💻 <b>Хакерський злом:</b> Захищай свою криптоферму та отримуй токени за правильні відповіді!`;
-            } else {
-                vis.innerHTML = `📦 <b>Золота лихоманка:</b> Відкривай таємні скрині зі скарбами та сюрпризами!`;
-            }
-
-            for (let i = 0; i < 4; i++) {
-                let btn = document.getElementById(`b${i}`);
-                if (qData.answers[i]) {
-                    btn.innerText = qData.answers[i];
-                    btn.style.display = "block";
-                    btn.disabled = false;
-                } else {
-                    btn.style.display = "none";
+        // ============================================================
+        // SCREEN NAVIGATION
+        // ============================================================
+        const App = {
+            goToScreen(screenId) {
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                const target = document.getElementById(screenId);
+                if (target) {
+                    target.classList.add('active');
                 }
-            }
+            },
 
-            updateLiveLeaderboard();
+            init() {
+                this.bindEvents();
+                this.loadQuestionsCount();
+                this.updateStats();
+                EventLogger.log('Система ініціалізована');
+            },
 
-            clearInterval(tInterval);
-            tInterval = setInterval(() => {
-                timer--;
-                document.getElementById('gameTimer').innerText = `⏳ Час: ${timer}`;
-                if (timer <= 0) {
-                    clearInterval(tInterval);
-                    nextQuestionStep();
-                }
-            }, 1000);
+            loadQuestionsCount() {
+                let count = 0;
+                Object.values(QUESTIONS_DB).forEach(arr => count += arr.length);
+                document.getElementById('statQuestionsCount').textContent = count;
+            },
 
-            simulateBotsActions(qData.correct);
-        }
+            updateStats() {
+                document.getElementById('statTotalRooms').textContent = AppState.rooms.length;
+                document.getElementById('statPlayersOnline').textContent = 
+                    AppState.rooms.reduce((sum, r) => sum + r.players.length, 0);
+                document.getElementById('statBotsActive').textContent = AppState.bots.length;
+            },
 
-        function simulateBotsActions(correctIdx) {
-            room.players.forEach(p => {
-                if (p.isBot) {
-                    let delay = Math.random() * 3500 + 1200;
-                    setTimeout(() => {
-                        if (timer > 0) {
-                            let isCorrect = Math.random() < p.smart;
-                            if (isCorrect) {
-                                p.score += 250 + Math.floor(Math.random() * 50);
-                            } else {
-                                p.score = Math.max(0, p.score - 70);
+            bindEvents() {
+                // Welcome screen
+                document.getElementById('btnRoleOrganizer').onclick = () => {
+                    AppState.role = 'organizer';
+                    this.goToScreen('screen-organizer');
+                    Toast.info('Вітаємо в панелі організатора!');
+                };
+
+                document.getElementById('btnRolePlayer').onclick = () => {
+                    AppState.role = 'player';
+                    this.goToScreen('screen-join');
+                    Toast.info('Введіть PIN-код кімнати');
+                };
+
+                // Organizer panel
+                document.getElementById('btnGeneratePin').onclick = () => {
+                    const pin = PinGenerator.generate();
+                    document.getElementById('generatedPin').textContent = pin;
+                    Toast.success(`PIN-код згенеровано: ${pin}`);
+                    EventLogger.log(`Згенеровано PIN: ${pin}`);
+                };
+
+                document.getElementById('btnCreateRoom').onclick = () => {
+                    const pin = document.getElementById('generatedPin').textContent;
+                    if (pin === '----') {
+                        Toast.error('Спочатку згенеруйте PIN-код!');
+                        return;
+                    }
+                    RoomManager.createRoom(pin);
+                };
+
+                // Join screen
+                this.initPinInputs();
+                document.getElementById('btnJoinRoom').onclick = () => {
+                    this.handleJoinRoom();
+                };
+
+                // Lobby
+                document.getElementById('btnLobbyLeave').onclick = () => {
+                    this.leaveRoom();
+                };
+
+                document.getElementById('btnLobbyStart').onclick = () => {
+                    Game.startFromLobby();
+                };
+
+                // Modes
+                document.querySelectorAll('.mode-card').forEach(card => {
+                    card.onclick = () => {
+                        document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+                        card.classList.add('selected');
+                        AppState.game.mode = card.dataset.mode;
+                        document.getElementById('btnStartMode').disabled = false;
+                        document.getElementById('btnStartMode').textContent = 
+                            `🎯 Почати: ${card.querySelector('.mode-name').textContent}`;
+                    };
+                });
+
+                document.getElementById('btnStartMode').onclick = () => {
+                    Game.startGame();
+                };
+
+                // Results
+                document.getElementById('btnPlayAgain').onclick = () => {
+                    Game.startGame();
+                };
+
+                document.getElementById('btnResultsLobby').onclick = () => {
+                    this.goToScreen('screen-lobby');
+                    if (AppState.currentRoom) {
+                        Lobby.render(AppState.currentRoom);
+                    }
+                };
+
+                document.getElementById('btnResultsExit').onclick = () => {
+                    this.leaveRoom();
+                };
+            },
+
+            initPinInputs() {
+                const inputs = document.querySelectorAll('.pin-digit');
+                inputs.forEach((input, index) => {
+                    input.addEventListener('input', (e) => {
+                        const val = e.target.value.replace(/\D/g, '');
+                        e.target.value = val;
+                        if (val) {
+                            e.target.classList.add('filled');
+                            if (index < inputs.length - 1) {
+                                inputs[index + 1].focus();
                             }
-                            updateLiveLeaderboard();
+                        } else {
+                            e.target.classList.remove('filled');
                         }
-                    }, delay);
+                    });
+
+                    input.addEventListener('keydown', (e) => {
+                        if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                            inputs[index - 1].focus();
+                        }
+                    });
+
+                    input.addEventListener('paste', (e) => {
+                        e.preventDefault();
+                        const paste = (e.clipboardData || window.clipboardData).getData('text');
+                        const digits = paste.replace(/\D/g, '').slice(0, 4);
+                        digits.split('').forEach((d, i) => {
+                            if (inputs[i]) {
+                                inputs[i].value = d;
+                                inputs[i].classList.add('filled');
+                            }
+                        });
+                        if (digits.length === 4) {
+                            inputs[3].focus();
+                        }
+                    });
+                });
+            },
+
+            getPinFromInputs() {
+                const inputs = document.querySelectorAll('.pin-digit');
+                return Array.from(inputs).map(i => i.value).join('');
+            },
+
+            handleJoinRoom() {
+                const pin = this.getPinFromInputs();
+                const name = document.getElementById('playerNameInput').value.trim();
+                const errorEl = document.getElementById('pinError');
+
+                if (pin.length !== 4) {
+                    errorEl.textContent = 'Введіть повний 4-значний PIN-код';
+                    return;
                 }
-            });
-        }
 
-        function answerSelected(idx) {
-            clearInterval(tInterval);
-            let qData = room.questions[currentQ];
+                if (!name) {
+                    errorEl.textContent = 'Введіть ваше ім\'я';
+                    return;
+                }
 
-            for (let i = 0; i < 4; i++) {
-                document.getElementById(`b${i}`).disabled = true;
+                const room = AppState.rooms.find(r => r.pin === pin);
+                if (!room) {
+                    errorEl.textContent = 'Кімнату з таким PIN не знайдено';
+                    Toast.error('Кімнату не знайдено!');
+                    return;
+                }
+
+                errorEl.textContent = '';
+                AppState.playerName = name;
+                AppState.currentRoom = room;
+                AppState.currentPin = pin;
+
+                // Add player to room
+                const player = {
+                    id: 'player_' + Date.now(),
+                    name: name,
+                    isBot: false,
+                    score: 0,
+                    avatar: '👤',
+                    ready: true
+                };
+                room.players.push(player);
+
+                Toast.success(`Ви приєдналися до кімнати #${pin}`);
+                EventLogger.log(`Гравець ${name} приєднався до кімнати ${pin}`);
+                this.goToScreen('screen-lobby');
+                Lobby.render(room);
+            },
+
+            leaveRoom() {
+                if (AppState.currentRoom && AppState.playerName) {
+                    AppState.currentRoom.players = AppState.currentRoom.players.filter(
+                        p => p.name !== AppState.playerName
+                    );
+                    EventLogger.log(`Гравець ${AppState.playerName} покинув кімнату`);
+                }
+                AppState.currentRoom = null;
+                AppState.playerName = null;
+                AppState.currentPin = null;
+                this.goToScreen('screen-welcome');
+                Toast.info('Ви вийшли з кімнати');
             }
+        };
 
-            let me = room.players.find(p => p.name.includes(currentPlayerName));
-            if (me) {
-                if (idx === qData.correct) {
-                    let bonus = timer * 18;
-                    me.score += 300 + bonus;
-                    alert('🎉 Блискуче! Правильна відповідь!');
-                    if (room.mode === 'escape') robotDistance++;
+        // ============================================================
+        // PIN GENERATOR
+        // ============================================================
+        const PinGenerator = {
+            generate() {
+                let pin;
+                do {
+                    pin = Math.floor(1000 + Math.random() * 9000).toString();
+                } while (AppState.rooms.some(r => r.pin === pin));
+                return pin;
+            },
+            validate(pin) {
+                return /^\d{4}$/.test(pin);
+            }
+        };
+
+        // ============================================================
+        // ROOM MANAGER
+        // ============================================================
+        const RoomManager = {
+            createRoom(pin) {
+                const room = {
+                    pin: pin,
+                    name: `Кімната #${pin}`,
+                    players: [],
+                    createdAt: Date.now(),
+                    status: 'waiting',
+                    settings: {
+                        questionCount: parseInt(document.getElementById('settingsQuestionCount').value),
+                        timePerQuestion: parseInt(document.getElementById('settingsTimePerQuestion').value),
+                        difficulty: document.getElementById('settingsDifficulty').value
+                    }
+                };
+
+                AppState.rooms.push(room);
+                this.renderRoomList();
+                this.spawnBots(room);
+                App.updateStats();
+                EventLogger.log(`Створено кімнату ${pin}`);
+                Toast.success(`Кімнату ${pin} створено!`);
+
+                // Reset PIN display
+                document.getElementById('generatedPin').textContent = '----';
+            },
+
+            spawnBots(room) {
+                const botCount = Math.floor(Math.random() * 3) + 2; // 2-4 bots
+                for (let i = 0; i < botCount; i++) {
+                    const bot = {
+                        id: 'bot_' + Date.now() + '_' + i,
+                        name: BOT_NAMES[Math.floor(Math.random() * BOT_NAMES.length)],
+                        isBot: true,
+                        score: 0,
+                        avatar: BOT_AVATARS[Math.floor(Math.random() * BOT_AVATARS.length)],
+                        ready: true,
+                        skill: Math.random() * 0.4 + 0.5, // 0.5 - 0.9 accuracy
+                        speed: Math.random() * 3000 + 2000 // 2-5 sec response time
+                    };
+                    room.players.push(bot);
+                    AppState.bots.push(bot);
+                }
+
+                this.renderBotList();
+                App.updateStats();
+                EventLogger.log(`До кімнати ${room.pin} додано ${botCount} ботів`);
+                Toast.info(`До кімнати приєдналися ${botCount} ботів`);
+
+                // Start bot activity simulation
+                this.startBotActivity(room);
+            },
+
+            startBotActivity(room) {
+                const interval = setInterval(() => {
+                    if (!AppState.rooms.includes(room)) {
+                        clearInterval(interval);
+                        return;
+                    }
+
+                    const bots = room.players.filter(p => p.isBot);
+                    if (bots.length === 0) return;
+
+                    const bot = bots[Math.floor(Math.random() * bots.length)];
+                    const messages = [
+                        `${bot.name} готується до гри...`,
+                        `${bot.name} вивчає питання...`,
+                        `${bot.name} налаштовує нейрони...`,
+                        `${bot.name} аналізує стратегію...`,
+                        `${bot.name} чекає на старт...`,
+                        `${bot.name} активує режим "Інтелект"...`,
+                        `${bot.name} перевіряє базу знань...`,
+                        `${bot.name} розминає процесор...`
+                    ];
+                    BotLog.show(messages[Math.floor(Math.random() * messages.length)]);
+                }, 4000);
+            },
+
+            renderRoomList() {
+                const container = document.getElementById('roomList');
+                if (AppState.rooms.length === 0) {
+                    container.innerHTML = `
+                        <div style="color: var(--text-dim); font-size: 0.8rem; text-align: center; padding: 20px;">
+                            Немає активних кімнат
+                        </div>`;
+                    return;
+                }
+
+                container.innerHTML = AppState.rooms.map(room => `
+                    <div class="room-item">
+                        <div>
+                            <div class="room-name">${room.name}</div>
+                            <div class="room-pin">PIN: ${room.pin}</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="room-status ${room.status}">${room.status === 'waiting' ? 'Очікування' : 'Активна'}</span>
+                            <span style="font-size: 0.8rem; color: var(--text-dim);">${room.players.length}👤</span>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            renderBotList() {
+                const container = document.getElementById('botList');
+                if (AppState.bots.length === 0) {
+                    container.innerHTML = `
+                        <div style="color: var(--text-dim); font-size: 0.8rem; text-align: center; padding: 20px;">
+                            Боти з'являться після створення кімнати
+                        </div>`;
+                    return;
+                }
+
+                container.innerHTML = AppState.bots.map(bot => `
+                    <div class="bot-item">
+                        <div class="bot-name">
+                            <span class="bot-dot"></span>
+                            <span>${bot.avatar} ${bot.name}</span>
+                        </div>
+                        <span class="bot-score">${bot.score}</span>
+                    </div>
+                `).join('');
+            }
+        };
+
+        // ============================================================
+        // EVENT LOGGER
+        // ============================================================
+        const EventLogger = {
+            log(message) {
+                const container = document.getElementById('eventLog');
+                const time = new Date().toLocaleTimeString('uk-UA');
+                const entry = document.createElement('div');
+                entry.textContent = `[${time}] ${message}`;
+                container.appendChild(entry);
+                container.scrollTop = container.scrollHeight;
+
+                // Keep only last 50 entries
+                while (container.children.length > 50) {
+                    container.removeChild(container.firstChild);
+                }
+            }
+        };
+
+        // ============================================================
+        // LOBBY
+        // ============================================================
+        const Lobby = {
+            render(room) {
+                document.getElementById('lobbyRoomName').textContent = room.name;
+                document.getElementById('lobbyRoomPin').textContent = `PIN: ${room.pin}`;
+                document.getElementById('lobbyRoleBadge').textContent = 
+                    AppState.role === 'organizer' ? 'Організатор' : 'Гравець';
+
+                this.renderPlayers(room);
+
+                // Show start button for organizer
+                const startBtn = document.getElementById('btnLobbyStart');
+                const readyBtn = document.getElementById('btnLobbyReady');
+                if (AppState.role === 'organizer') {
+                    startBtn.style.display = 'inline-flex';
+                    readyBtn.style.display = 'none';
                 } else {
-                    me.score = Math.max(0, me.score - 120);
-                    alert('❌ Помилка! Робот підійшов ближче...');
-                    if (room.mode === 'escape') robotDistance = Math.max(0, robotDistance - 1);
+                    startBtn.style.display = 'none';
+                    readyBtn.style.display = 'inline-flex';
+                    readyBtn.textContent = '✅ Готовий';
+                    readyBtn.disabled = false;
+                }
+            },
+
+            renderPlayers(room) {
+                const container = document.getElementById('lobbyPlayers');
+                container.innerHTML = room.players.map(player => `
+                    <div class="player-card ${player.isBot ? 'is-bot' : ''}">
+                        <div class="player-avatar ${player.isBot ? 'bot' : 'human'}">
+                            ${player.isBot ? player.avatar : '👤'}
+                        </div>
+                        <div class="player-info">
+                            <div class="player-name">${player.name}</div>
+                            <div class="player-role">${player.isBot ? 'Бот' : 'Гравець'}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        };
+
+        // ============================================================
+        // GAME ENGINE
+        // ============================================================
+        const Game = {
+            startFromLobby() {
+                if (!AppState.currentRoom) return;
+
+                AppState.currentRoom.status = 'active';
+                RoomManager.renderRoomList();
+                App.goToScreen('screen-modes');
+                Toast.info('Оберіть режим гри');
+            },
+
+            startGame() {
+                const mode = AppState.game.mode || 'arcade';
+                const settings = AppState.settings;
+
+                // Get questions from DB
+                const allQuestions = [];
+                Object.values(QUESTIONS_DB).forEach(arr => {
+                    arr.forEach(q => allQuestions.push(q));
+                });
+
+                // Shuffle and select questions
+                const shuffled = this.shuffleArray([...allQuestions]);
+                const count = settings.questionCount;
+                AppState.game.questions = shuffled.slice(0, count);
+                AppState.game.currentQuestionIndex = 0;
+                AppState.game.score = 0;
+                AppState.game.correct = 0;
+                AppState.game.wrong = 0;
+                AppState.game.lives = 3;
+                AppState.game.treasures = 0;
+                AppState.game.answered = false;
+                AppState.game.mode = mode;
+                AppState.game.questionCount = count;
+                AppState.game.timePerQuestion = settings.timePerQuestion;
+
+                // Setup treasure map for treasure mode
+                if (mode === 'treasure') {
+                    AppState.game.totalTreasures = Math.min(3, Math.floor(count / 4) + 1);
+                    AppState.game.treasureMap = this.generateTreasureMap(25, AppState.game.totalTreasures);
+                    AppState.game.treasureOpened = new Array(25).fill(false);
+                    document.getElementById('treasureMapContainer').style.display = 'block';
+                    document.getElementById('gameTreasureContainer').style.display = 'flex';
+                    this.renderTreasureMap();
+                } else {
+                    document.getElementById('treasureMapContainer').style.display = 'none';
+                    document.getElementById('gameTreasureContainer').style.display = 'none';
+                }
+
+                // Setup lives for survival mode
+                if (mode === 'survival') {
+                    document.getElementById('gameLivesContainer').style.display = 'flex';
+                    this.updateLivesDisplay();
+                } else {
+                    document.getElementById('gameLivesContainer').style.display = 'none';
+                }
+
+                App.goToScreen('screen-game');
+                this.loadQuestion();
+
+                EventLogger.log(`Гру розпочато в режимі: ${mode}`);
+                Toast.success(`Гра почалася! Режим: ${this.getModeName(mode)}`);
+            },
+
+            getModeName(mode) {
+                const names = { arcade: 'Аркада', survival: 'Виживання', treasure: 'Полювання на скарби' };
+                return names[mode] || mode;
+            },
+
+            shuffleArray(arr) {
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                return arr;
+            },
+
+            generateTreasureMap(size, treasureCount) {
+                const map = new Array(size).fill(0);
+                let placed = 0;
+                while (placed < treasureCount) {
+                    const idx = Math.floor(Math.random() * size);
+                    if (map[idx] === 0) {
+                        map[idx] = 1;
+                        placed++;
+                    }
+                }
+                return map;
+            },
+
+            renderTreasureMap() {
+                const container = document.getElementById('treasureMap');
+                container.innerHTML = '';
+                AppState.game.treasureMap.forEach((cell, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'treasure-cell';
+                    if (AppState.game.treasureOpened[index]) {
+                        div.classList.add('opened');
+                        if (cell === 1) {
+                            div.classList.add('treasure');
+                            div.textContent = '💎';
+                        } else {
+                            div.textContent = '·';
+                        }
+                    } else {
+                        div.textContent = '?';
+                    }
+                    div.onclick = () => {
+                        if (!AppState.game.treasureOpened[index] && AppState.game.answered) {
+                            // Can only open after answering
+                        }
+                    };
+                    container.appendChild(div);
+                });
+            },
+
+            loadQuestion() {
+                const game = AppState.game;
+                if (game.currentQuestionIndex >= game.questions.length) {
+                    this.endGame();
+                    return;
+                }
+
+                game.answered = false;
+                const question = game.questions[game.currentQuestionIndex];
+
+                // Update UI
+                document.getElementById('gameQuestionNum').textContent = 
+                    `${game.currentQuestionIndex + 1}/${game.questionCount}`;
+                document.getElementById('gameScore').textContent = game.score;
+                document.getElementById('questionText').textContent = question.q;
+                document.getElementById('gameFeedback').textContent = '';
+                document.getElementById('gameFeedback').className = 'game-feedback';
+
+                // Category badge
+                const categories = ['math', 'ukr', 'history', 'nature', 'lit'];
+                const catNames = { math: 'Математика', ukr: 'Українська мова', history: 'Історія', nature: 'Природознавство', lit: 'Зарубіжна література' };
+                // Find which category this question belongs to
+                let cat = 'math';
+                for (const [key, arr] of Object.entries(QUESTIONS_DB)) {
+                    if (arr.includes(question)) {
+                        cat = key;
+                        break;
+                    }
+                }
+                const badge = document.getElementById('questionCategory');
+                badge.textContent = catNames[cat];
+                badge.className = `category-badge ${cat}`;
+
+                // Answers
+                const grid = document.getElementById('answersGrid');
+                grid.innerHTML = '';
+                question.a.forEach((answer, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'answer-btn';
+                    btn.textContent = answer;
+                    btn.onclick = () => this.handleAnswer(index);
+                    grid.appendChild(btn);
+                });
+
+                // Timer
+                this.startTimer();
+            },
+
+            startTimer() {
+                const game = AppState.game;
+                if (game.timerInterval) clearInterval(game.timerInterval);
+
+                game.timer = game.timePerQuestion;
+                document.getElementById('gameTimer').textContent = game.timer;
+                document.getElementById('gameTimerFill').style.width = '100%';
+
+                game.timerInterval = setInterval(() => {
+                    game.timer--;
+                    document.getElementById('gameTimer').textContent = game.timer;
+                    const percent = (game.timer / game.timePerQuestion) * 100;
+                    document.getElementById('gameTimerFill').style.width = percent + '%';
+
+                    if (game.timer <= 0) {
+                        clearInterval(game.timerInterval);
+                        if (!game.answered) {
+                            this.handleAnswer(-1); // timeout
+                        }
+                    }
+                }, 1000);
+            },
+
+            handleAnswer(selectedIndex) {
+                const game = AppState.game;
+                if (game.answered) return;
+                game.answered = true;
+                clearInterval(game.timerInterval);
+
+                const question = game.questions[game.currentQuestionIndex];
+                const correctIndex = question.c;
+                const buttons = document.querySelectorAll('.answer-btn');
+
+                // Disable all buttons
+                buttons.forEach(btn => btn.disabled = true);
+
+                let isCorrect = false;
+                if (selectedIndex === correctIndex) {
+                    isCorrect = true;
+                    buttons[selectedIndex].classList.add('correct');
+                } else {
+                    if (selectedIndex >= 0) {
+                        buttons[selectedIndex].classList.add('wrong');
+                    }
+                    buttons[correctIndex].classList.add('correct');
+                }
+
+                // Calculate score
+                let points = 0;
+                if (isCorrect) {
+                    game.correct++;
+                    if (game.mode === 'arcade') {
+                        // Arcade: more points for faster answers
+                        const timeBonus = Math.floor((game.timer / game.timePerQuestion) * 50);
+                        points = 100 + timeBonus;
+                    } else if (game.mode === 'survival') {
+                        points = 150;
+                    } else if (game.mode === 'treasure') {
+                        points = 120;
+                        // Open a treasure cell
+                        this.openTreasureCell();
+                    }
+                    game.score += points;
+                    document.getElementById('gameFeedback').textContent = 
+                        `✅ Правильно! +${points} балів`;
+                    document.getElementById('gameFeedback').className = 'game-feedback success';
+                } else {
+                    game.wrong++;
+                    if (game.mode === 'survival') {
+                        game.lives--;
+                        this.updateLivesDisplay();
+                        if (game.lives <= 0) {
+                            document.getElementById('gameFeedback').textContent = 
+                                '💀 Ви вичерпали всі життя!';
+                            document.getElementById('gameFeedback').className = 'game-feedback error';
+                            setTimeout(() => this.endGame(), 1500);
+                            return;
+                        }
+                    }
+                    document.getElementById('gameFeedback').textContent = 
+                        `❌ Неправильно! Правильна відповідь: ${question.a[correctIndex]}`;
+                    document.getElementById('gameFeedback').className = 'game-feedback error';
+                }
+
+                document.getElementById('gameScore').textContent = game.score;
+
+                // Next question after delay
+                setTimeout(() => {
+                    game.currentQuestionIndex++;
+                    this.loadQuestion();
+                }, 2000);
+            },
+
+            updateLivesDisplay() {
+                const lives = document.querySelectorAll('#gameLives .life-icon');
+                lives.forEach((icon, index) => {
+                    if (index < AppState.game.lives) {
+                        icon.classList.remove('lost');
+                        icon.textContent = '❤️';
+                    } else {
+                        icon.classList.add('lost');
+                        icon.textContent = '🖤';
+                    }
+                });
+            },
+
+            openTreasureCell() {
+                const game = AppState.game;
+                const closed = game.treasureOpened
+                    .map((opened, idx) => (!opened ? idx : -1))
+                    .filter(idx => idx !== -1);
+
+                if (closed.length === 0) return;
+
+                const randomIdx = closed[Math.floor(Math.random() * closed.length)];
+                game.treasureOpened[randomIdx] = true;
+
+                if (game.treasureMap[randomIdx] === 1) {
+                    game.treasures++;
+                    document.getElementById('gameTreasures').textContent = 
+                        `${game.treasures}/${game.totalTreasures}`;
+                    Toast.success(`💎 Скарб знайдено! (${game.treasures}/${game.totalTreasures})`);
+                    game.score += 200;
+                }
+
+                this.renderTreasureMap();
+            },
+
+            endGame() {
+                clearInterval(AppState.game.timerInterval);
+
+                const game = AppState.game;
+                const total = game.correct + game.wrong;
+                const accuracy = total > 0 ? Math.round((game.correct / total) * 100) : 0;
+
+                // Update results screen
+                document.getElementById('resultsTitle').textContent = 
+                    game.lives <= 0 ? '💀 Гру закінчено!' : '🏁 Гру завершено!';
+                document.getElementById('resultsScore').textContent = game.score;
+                document.getElementById('resultsCorrect').textContent = game.correct;
+                document.getElementById('resultsWrong').textContent = game.wrong;
+                document.getElementById('resultsAccuracy').textContent = accuracy + '%';
+                document.getElementById('resultsRoleBadge').textContent = 
+                    AppState.role === 'organizer' ? 'Організатор' : 'Гравець';
+
+                // Leaderboard
+                this.renderLeaderboard();
+
+                App.goToScreen('screen-results');
+                EventLogger.log(`Гру завершено. Бали: ${game.score}, Точність: ${accuracy}%`);
+                Toast.success(`Гру завершено! Ваш результат: ${game.score} балів`);
+
+                // Update room status
+                if (AppState.currentRoom) {
+                    AppState.currentRoom.status = 'waiting';
+                    RoomManager.renderRoomList();
+                }
+            },
+
+            renderLeaderboard() {
+                const container = document.getElementById('resultsLeaderboard');
+                const players = [];
+
+                if (AppState.currentRoom) {
+                    AppState.currentRoom.players.forEach(p => {
+                        players.push({
+                            name: p.name,
+                            score: p.isBot ? Math.floor(Math.random() * 800) + 200 : AppState.game.score,
+                            isBot: p.isBot,
+                            isMe: p.name === AppState.playerName
+                        });
+                    });
+                } else {
+                    players.push({
+                        name: AppState.playerName || 'Гравець',
+                        score: AppState.game.score,
+                        isBot: false,
+                        isMe: true
+                    });
+                }
+
+                players.sort((a, b) => b.score - a.score);
+
+                container.innerHTML = players.map((p, index) => `
+                    <div class="leaderboard-item ${p.isMe ? 'me' : ''}">
+                        <div class="leaderboard-rank">#${index + 1}</div>
+                        <div class="leaderboard-name">
+                            ${p.isBot ? '🤖' : '👤'} ${p.name}
+                            ${p.isMe ? ' (Ви)' : ''}
+                        </div>
+                        <div class="leaderboard-score">${p.score}</div>
+                    </div>
+                `).join('');
+            }
+        };
+
+        // ============================================================
+        // INITIALIZATION
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            App.init();
+
+            // Add some initial demo rooms for testing
+            setTimeout(() => {
+                RoomManager.createRoom('1234');
+                RoomManager.createRoom('5678');
+                Toast.info('Створено демо-кімнати для тестування');
+            }, 1000);
+        });
+
+        // ============================================================
+        // KEYBOARD SHORTCUTS
+        // ============================================================
+        document.addEventListener('keydown', (e) => {
+            // ESC to go back
+            if (e.key === 'Escape') {
+                const activeScreen = document.querySelector('.screen.active');
+                if (activeScreen && activeScreen.id !== 'screen-welcome') {
+                    if (activeScreen.id === 'screen-game') {
+                        Modal.show('Вийти з гри?', 'Ваш прогрес буде втрачено.', () => {
+                            Game.endGame();
+                        });
+                    } else {
+                        App.goToScreen('screen-welcome');
+                    }
                 }
             }
 
-            nextQuestionStep();
-        }
+            // Number keys for answers in game
+            if (document.getElementById('screen-game').classList.contains('active')) {
+                const num = parseInt(e.key);
+                if (num >= 1 && num <= 4) {
+                    const buttons = document.querySelectorAll('.answer-btn');
+                    if (buttons[num - 1] && !buttons[num - 1].disabled) {
+                        buttons[num - 1].click();
+                    }
+                }
+            }
+        });
 
-        function nextQuestionStep() {
-            currentQ++;
-            startQuestionLoop();
-        }
+        // ============================================================
+        // ADDITIONAL BOT SIMULATION DURING GAME
+        // ============================================================
+        setInterval(() => {
+            if (document.getElementById('screen-game').classList.contains('active')) {
+                if (Math.random() < 0.3 && AppState.currentRoom) {
+                    const bots = AppState.currentRoom.players.filter(p => p.isBot);
+                    if (bots.length > 0) {
+                        const bot = bots[Math.floor(Math.random() * bots.length)];
+                        const gameMessages = [
+                            `${bot.name} відповідає на питання...`,
+                            `${bot.name} обрав варіант...`,
+                            `${bot.name} думає...`,
+                            `${bot.name} активує пам'ять...`,
+                            `${bot.name} аналізує варіанти...`
+                        ];
+                        BotLog.show(gameMessages[Math.floor(Math.random() * gameMessages.length)]);
+                    }
+                }
+            }
+        }, 5000);
 
-        function updateLiveLeaderboard() {
-            room.players.sort((a, b) => b.score - a.score);
-            let html = '';
-            room.players.forEach((p, idx) => {
-                let badge = idx === 0 ? '👑' : `#${idx + 1}`;
-                let currency = room.mode === 'hackers' ? ' токенів' : (room.mode === 'treasure' ? ' діамантів' : ' балів');
-                html += `<div class="lb-item"><span>${badge} ${p.name}</span> <b style="color: var(--accent-yellow);">${p.score}${currency}</b></div>`;
+        // ============================================================
+        // PERIODIC ROOM CLEANUP
+        // ============================================================
+        setInterval(() => {
+            const now = Date.now();
+            const before = AppState.rooms.length;
+            AppState.rooms = AppState.rooms.filter(r => {
+                // Remove rooms older than 30 minutes with no players
+                return !(r.players.length === 0 && (now - r.createdAt) > 30 * 60 * 1000);
             });
-            document.getElementById('liveLeaderboard').innerHTML = html;
-        }
+            if (AppState.rooms.length !== before) {
+                RoomManager.renderRoomList();
+                App.updateStats();
+            }
+        }, 60000);
 
-        function endGameProcess() {
-            showScreen('screen-win');
-            room.players.sort((a, b) => b.score - a.score);
-            document.getElementById('winnerText').innerText = `👑 Головний тріумфатор: ${room.players[0].name} !`;
-
-            let html = '';
-            room.players.forEach((p, idx) => {
-                html += `<div class="lb-item"><span>Місце ${idx + 1}: ${p.name}</span> <b style="color: var(--accent-yellow);">${p.score} очок</b></div>`;
-            });
-            document.getElementById('finalLeaderboard').innerHTML = html;
-        }
+        // ============================================================
+        // EXPORT FOR DEBUGGING
+        // ============================================================
+        window.SunLorem = {
+            state: AppState,
+            db: QUESTIONS_DB,
+            app: App,
+            game: Game,
+            rooms: RoomManager,
+            toast: Toast
+        };
     </script>
 </body>
 </html>
