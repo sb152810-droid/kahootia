@@ -33,7 +33,6 @@ body {
 }
 
 :root {
-    /* Змінні за замовчуванням (Неон) */
     --bg-1: #0a0618;
     --bg-2: #130a2e;
     --bg-3: #1a0f3d;
@@ -437,13 +436,13 @@ body.theme-neon .pin-display {
 }
 
 /* ============================================================
-   АВАТАРИ
+   АВАТАРИ (повністю клікабельні, великі, з чітким виділенням)
    ============================================================ */
 .avatar-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin: 10px 0;
+    gap: 10px;
+    margin: 12px 0;
 }
 
 @media (min-width: 520px) {
@@ -454,34 +453,76 @@ body.theme-neon .pin-display {
 
 .avatar-option {
     aspect-ratio: 1 / 1;
+    min-height: 58px;
     border-radius: 50%;
     background: var(--input-bg);
-    border: 2px solid var(--panel-border);
+    border: 3px solid var(--panel-border);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: clamp(24px, 7vw, 38px);
+    font-size: clamp(26px, 7.5vw, 42px);
     cursor: pointer;
-    transition: var(--transition);
+    transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
     user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    position: relative;
+    padding: 0;
 }
 
 .avatar-option:hover {
-    transform: scale(1.08);
+    transform: scale(1.09);
+    border-color: var(--accent-1);
+}
+
+.avatar-option:active {
+    transform: scale(0.94);
 }
 
 .avatar-option.selected {
     border-color: var(--accent-2);
-    transform: scale(1.1);
+    background: linear-gradient(135deg, rgba(181, 107, 255, 0.55), rgba(255, 95, 240, 0.45));
+    transform: scale(1.14);
+    z-index: 3;
 }
 
 body.theme-neon .avatar-option.selected {
-    box-shadow: 0 0 18px rgba(255, 95, 240, 0.85), 0 0 38px rgba(181, 107, 255, 0.45);
+    box-shadow:
+        0 0 0 4px rgba(255, 95, 240, 0.35),
+        0 0 26px rgba(255, 95, 240, 0.95),
+        0 0 50px rgba(181, 107, 255, 0.6);
 }
 
 body.theme-pastel .avatar-option.selected {
     background: linear-gradient(135deg, #e6d9ff, #d8f0ec);
-    box-shadow: 0 4px 12px rgba(160, 130, 200, 0.35);
+    border-color: #b19cd9;
+    box-shadow:
+        0 0 0 4px rgba(177, 156, 217, 0.3),
+        0 8px 20px rgba(160, 130, 200, 0.5);
+}
+
+.avatar-option.selected::after {
+    content: "✓";
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent-2);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    line-height: 1;
+}
+
+body.theme-pastel .avatar-option.selected::after {
+    background: #b19cd9;
 }
 
 .avatar-big {
@@ -1054,16 +1095,33 @@ body.theme-neon .mode-card.selected {
 .qr-container {
     background: #fff;
     border-radius: var(--radius-sm);
-    padding: 10px;
-    display: inline-block;
+    padding: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     margin: 10px auto;
+    min-width: 180px;
+    min-height: 180px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
-.qr-container canvas {
+.qr-container img {
     display: block;
-    width: 200px !important;
-    height: 200px !important;
+    width: 180px;
+    height: 180px;
     image-rendering: pixelated;
+    border-radius: 4px;
+}
+
+@media (min-width: 520px) {
+    .qr-container img {
+        width: 220px;
+        height: 220px;
+    }
+    .qr-container {
+        min-width: 220px;
+        min-height: 220px;
+    }
 }
 
 .link-box {
@@ -1280,6 +1338,147 @@ body.theme-neon .toast {
     z-index: 998;
     pointer-events: none;
     animation: confetti-fall linear forwards;
+}
+
+/* ============================================================
+   ДРУК ЛИШЕ ГРАМОТИ
+   ============================================================ */
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 15mm;
+    }
+
+    html,
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        height: auto !important;
+        overflow: visible !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Ховаємо абсолютно все */
+    body * {
+        visibility: hidden !important;
+    }
+
+    /* Приховуємо декоративні та службові елементи */
+    #particles,
+    #particles *,
+    #toast,
+    .modal-overlay,
+    .confetti {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* Ховаємо всі екрани, крім results */
+    .screen {
+        display: none !important;
+        position: static !important;
+        overflow: visible !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: #ffffff !important;
+    }
+
+    /* Показуємо лише екран результатів */
+    #screen-results {
+        display: block !important;
+        position: static !important;
+        overflow: visible !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: #ffffff !important;
+        height: auto !important;
+        width: 100% !important;
+        inset: auto !important;
+    }
+
+    /* Ховаємо всіх дітей #screen-results (заголовок, панелі, кнопки, подіум, рейтинг) */
+    #screen-results > * {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* Показуємо лише грамоту */
+    #certificateBox {
+        display: block !important;
+        visibility: visible !important;
+        position: static !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+        padding: 40px 30px !important;
+        background: #ffffff !important;
+        color: #1a1a1a !important;
+        border: 5px double #b8860b !important;
+        border-radius: 6px !important;
+        box-shadow: none !important;
+        text-align: center !important;
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
+        font-family: 'Georgia', 'Times New Roman', serif !important;
+    }
+
+    #certificateBox,
+    #certificateBox * {
+        visibility: visible !important;
+        text-shadow: none !important;
+    }
+
+    #certificateBox h2 {
+        display: block !important;
+        color: #8b6914 !important;
+        font-size: 34pt !important;
+        font-weight: 900 !important;
+        margin: 0 0 24pt 0 !important;
+        letter-spacing: 2pt !important;
+        text-transform: uppercase !important;
+        border-bottom: 2pt solid #b8860b !important;
+        padding-bottom: 12pt !important;
+    }
+
+    #certificateBox p {
+        display: block !important;
+        color: #2b2b2b !important;
+        font-size: 14pt !important;
+        line-height: 1.6 !important;
+        margin: 6pt 0 !important;
+        font-family: 'Georgia', 'Times New Roman', serif !important;
+    }
+
+    #certificateBox .recipient {
+        display: block !important;
+        color: #4b0082 !important;
+        font-size: 30pt !important;
+        font-weight: 900 !important;
+        margin: 22pt 0 !important;
+        padding: 12pt 0 !important;
+        border-top: 1pt dashed #999 !important;
+        border-bottom: 1pt dashed #999 !important;
+        font-style: italic !important;
+        letter-spacing: 1pt !important;
+    }
+
+    #certScore {
+        display: block !important;
+        color: #8b0000 !important;
+        font-size: 20pt !important;
+        font-weight: 900 !important;
+        margin: 18pt 0 !important;
+    }
+
+    #certDate {
+        display: block !important;
+        color: #555 !important;
+        font-size: 12pt !important;
+        margin-top: 28pt !important;
+        font-style: italic !important;
+    }
 }
 </style>
 </head>
@@ -1531,7 +1730,7 @@ body.theme-neon .toast {
 
     <div class="panel">
         <div class="button-grid two-col">
-            <button class="primary" onclick="SunLorem.teacherNext()">⏭️ Наступне питання</button>
+            <button class="primary" onclick="SunLorem.teacherNext()">⏭️ Продовжити (наступне питання)</button>
             <button class="danger" onclick="SunLorem.finishGame()">🏁 Завершити гру</button>
         </div>
     </div>
@@ -1563,7 +1762,10 @@ body.theme-neon .toast {
     </div>
 
     <div class="panel panel-narrow">
-        <div class="panel-title">😀 Обери аватар</div>
+        <div class="panel-title">😀 Обери свій аватар <span id="chosenAvatarLabel" style="color:var(--accent-2);font-size:1.2em;">😀</span></div>
+        <p style="font-size:12px;color:var(--text-dim);margin-bottom:6px;">
+            Торкнись будь-якого аватара — він підсвітиться та збережеться у твоєму профілі.
+        </p>
         <div class="avatar-grid" id="avatarGrid"></div>
     </div>
 
@@ -1650,10 +1852,10 @@ body.theme-neon .toast {
         <p style="font-size:13px;color:var(--text-dim);margin-top:12px;" id="certDate"></p>
     </div>
 
-    <div class="panel">
+    <div class="panel" id="resultsButtonsPanel">
         <div class="button-grid two-col">
-            <button class="primary" onclick="SunLorem.go('screen-welcome')">🔄 Нова гра</button>
-            <button class="ghost" onclick="window.print()">🖨️ Роздрукувати грамоту</button>
+            <button class="primary" onclick="SunLorem.printCertificate()">🖨️ Роздрукувати грамоту</button>
+            <button class="ghost" onclick="SunLorem.go('screen-welcome')">🔄 Нова гра</button>
         </div>
     </div>
 </div>
@@ -1937,29 +2139,67 @@ const SunLorem = (function () {
     }
 
     /* ========================================================
-       АВАТАРИ
+       АВАТАРИ (повністю клікабельні, з чітким виділенням)
        ======================================================== */
     function buildAvatarGrid() {
         const grid = $('avatarGrid');
+        if (!grid) return;
         grid.innerHTML = '';
+
+        // Відновлюємо збережений аватар, якщо є
+        const saved = Storage.get('sunlorem_last_avatar', AVATARS[0]);
+        if (AVATARS.indexOf(saved) >= 0) {
+            State.playerAvatar = saved;
+        } else {
+            State.playerAvatar = AVATARS[0];
+        }
+
         AVATARS.forEach(a => {
             const div = document.createElement('div');
             div.className = 'avatar-option';
             div.textContent = a;
             div.dataset.avatar = a;
-            div.addEventListener('click', () => {
-                qsa('.avatar-option').forEach(x => x.classList.remove('selected'));
+            div.setAttribute('role', 'button');
+            div.setAttribute('tabindex', '0');
+            div.setAttribute('aria-label', 'Аватар ' + a);
+            div.style.cursor = 'pointer';
+
+            const selectHandler = function (e) {
+                if (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                // Знімаємо виділення з усіх
+                qsa('#avatarGrid .avatar-option').forEach(x => x.classList.remove('selected'));
+                // Виділяємо обраний
                 div.classList.add('selected');
+                // Зберігаємо в стані та localStorage
                 State.playerAvatar = a;
+                Storage.set('sunlorem_last_avatar', a);
+                // Оновлюємо підпис
+                const label = $('chosenAvatarLabel');
+                if (label) label.textContent = a;
+            };
+
+            div.addEventListener('click', selectHandler);
+            div.addEventListener('touchstart', function () {
+                // Додаємо швидкий візуальний відгук на дотик
+                div.style.transition = 'transform 0.1s';
+            }, { passive: true });
+            div.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') selectHandler(e);
             });
+
+            if (a === State.playerAvatar) {
+                div.classList.add('selected');
+            }
+
             grid.appendChild(div);
         });
-        // Перший обраний за замовчуванням
-        const first = grid.firstChild;
-        if (first) {
-            first.classList.add('selected');
-            State.playerAvatar = AVATARS[0];
-        }
+
+        // Оновлюємо підпис із поточним аватаром
+        const label = $('chosenAvatarLabel');
+        if (label) label.textContent = State.playerAvatar;
     }
 
     /* ========================================================
@@ -2096,7 +2336,6 @@ const SunLorem = (function () {
             let attempts = 0;
             do {
                 if (poolFirst.length === 0) {
-                    // Дозволяємо повтори, якщо пул вичерпано
                     first = allFirst[Math.floor(Math.random() * allFirst.length)];
                 } else {
                     const idx = Math.floor(Math.random() * poolFirst.length);
@@ -2124,7 +2363,7 @@ const SunLorem = (function () {
                 wrongCount: 0,
                 alive: true,
                 answeredThisRound: false,
-                speed: 0.55 + Math.random() * 0.45 // боти різної "швидкості"
+                speed: 0.55 + Math.random() * 0.45
             });
         }
         return bots;
@@ -2172,7 +2411,7 @@ const SunLorem = (function () {
         const room = {
             pin: pin,
             createdAt: Date.now(),
-            status: 'lobby', // lobby | running | finished
+            status: 'lobby',
             mode: State.mode,
             timePerQuestion: tPerQ,
             questions: State.questions.map(q => ({
@@ -2223,73 +2462,36 @@ const SunLorem = (function () {
         return base + '?pin=' + pin;
     }
 
-    function renderQR(text) {
-        const box = $('qrBox');
-        box.innerHTML = '';
-        // Генеруємо простий QR-код на canvas
-        try {
-            const canvas = renderQRToCanvas(text, 200);
-            box.appendChild(canvas);
-        } catch (e) {
-            box.innerHTML = '<p style="color:#333;font-size:12px;padding:8px;">QR недоступний</p>';
-        }
-    }
-
     /* ========================================================
-       ПРОСТИЙ ГЕНЕРАТОР QR (бінарна матриця)
+       ГЕНЕРАЦІЯ QR-КОДУ ЧЕРЕЗ ПУБЛІЧНИЙ СЕРВІС
+       (використовується <img> з api.qrserver.com)
        ======================================================== */
-    function renderQRToCanvas(text, size) {
-        // Спрощений QR-подібний код (не справжній QR, але виглядає як QR-патерн).
-        // Для реального QR у продакшн використовуйте бібліотеку.
-        // Тут — візуальний псевдо-QR, що дає уявлення про посилання.
-        const modules = 33;
-        const canvas = document.createElement('canvas');
-        canvas.width = size;
-        canvas.height = size;
-        const ctx = canvas.getContext('2d');
-        const cell = size / modules;
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, size, size);
-        ctx.fillStyle = '#000000';
+    function renderQR(link) {
+        const box = $('qrBox');
+        if (!box) return;
+        box.innerHTML = '';
 
-        // Хеш тексту
-        let hash = 0;
-        for (let i = 0; i < text.length; i++) {
-            hash = ((hash << 5) - hash) + text.charCodeAt(i);
-            hash |= 0;
-        }
-        let seed = Math.abs(hash) || 1;
+        const img = document.createElement('img');
+        img.alt = 'QR-код для входу в кімнату';
+        img.width = 180;
+        img.height = 180;
+        img.loading = 'eager';
+        img.referrerPolicy = 'no-referrer';
+        img.style.display = 'block';
+        img.style.borderRadius = '4px';
+        img.style.background = '#fff';
+        // Ключове: використовуємо публічний сервіс qrserver.com
+        img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + encodeURIComponent(link);
 
-        function rand() {
-            seed = (seed * 9301 + 49297) % 233280;
-            return seed / 233280;
-        }
+        img.onerror = function () {
+            // Фолбек, якщо раптом сервіс недоступний
+            box.innerHTML = '<p style="color:#333;font-size:13px;padding:14px;text-align:center;line-height:1.4;">' +
+                'QR-код недоступний.<br>Учні можуть ввести PIN вручну:<br>' +
+                '<b style="font-size:20px;letter-spacing:3px;">' + State.roomPin + '</b>' +
+                '</p>';
+        };
 
-        // Малюємо "шум", уникаючи кутових патернів
-        for (let y = 0; y < modules; y++) {
-            for (let x = 0; x < modules; x++) {
-                const inTopLeft = (x < 8 && y < 8);
-                const inTopRight = (x >= modules - 8 && y < 8);
-                const inBotLeft = (x < 8 && y >= modules - 8);
-                if (inTopLeft || inTopRight || inBotLeft) continue;
-                if (rand() > 0.5) {
-                    ctx.fillRect(x * cell, y * cell, cell, cell);
-                }
-            }
-        }
-        // Малюємо три позиційні маркери
-        function drawMarker(ox, oy) {
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(ox * cell, oy * cell, 7 * cell, 7 * cell);
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect((ox + 1) * cell, (oy + 1) * cell, 5 * cell, 5 * cell);
-            ctx.fillStyle = '#000000';
-            ctx.fillRect((ox + 2) * cell, (oy + 2) * cell, 3 * cell, 3 * cell);
-        }
-        drawMarker(0, 0);
-        drawMarker(modules - 7, 0);
-        drawMarker(0, modules - 7);
-        return canvas;
+        box.appendChild(img);
     }
 
     function copyLink() {
@@ -2357,6 +2559,7 @@ const SunLorem = (function () {
         room.currentQuestion = 0;
         room.questionStartedAt = Date.now();
         room.lastUpdate = Date.now();
+        room._timeExpired = false;
         room.players.forEach(p => { p.answeredThisRound = false; });
         room.feed = [];
         addFeed(room, '🎉 Гру розпочато!');
@@ -2477,10 +2680,8 @@ const SunLorem = (function () {
         if (fillS) fillS.style.width = pct + '%';
         if (textS) textS.textContent = Math.ceil(left);
 
-        // Боти відповідають
         processBotAnswers(room, elapsed, total);
 
-        // Оновлення лічильника та рейтингу
         if (State.role === 'teacher') {
             const answered = room.players.filter(p => p.answeredThisRound).length;
             const el = $('tqAnswered');
@@ -2489,7 +2690,6 @@ const SunLorem = (function () {
             renderFeed('tqFeed', room.feed);
         }
 
-        // Сповіщення про кінець часу
         if (left <= 0 && !room._timeExpired) {
             room._timeExpired = true;
             addFeed(room, '⏰ Час вичерпано!');
@@ -2499,13 +2699,10 @@ const SunLorem = (function () {
     }
 
     function revealResults(room) {
-        // Показуємо правильну відповідь
         const q = room.questions[room.currentQuestion];
         if (!q) return;
-        // Нараховуємо бали тим, хто відповів правильно
         room.players.forEach(p => {
             if (p.answeredThisRound && p.lastAnswerCorrect && !p._scoredThisRound) {
-                // Бали вже нараховано під час відповіді
                 p._scoredThisRound = true;
             }
         });
@@ -2520,12 +2717,10 @@ const SunLorem = (function () {
         const now = Date.now();
         room.players.forEach(p => {
             if (!p.isBot || p.answeredThisRound || !p.alive) return;
-            // Час, коли бот "відповість"
             const speed = p.speed || 0.7;
             const answerTime = (0.25 + (1 - speed) * 0.75) * total;
             if (elapsed >= answerTime) {
                 p.answeredThisRound = true;
-                // Ймовірність правильної відповіді
                 const correctChance = 0.35 + speed * 0.5;
                 const isCorrect = Math.random() < correctChance;
                 p.lastAnswerCorrect = isCorrect;
@@ -2550,7 +2745,7 @@ const SunLorem = (function () {
     }
 
     /* ========================================================
-       ПЕРЕХІД ДО НАСТУПНОГО ПИТАННЯ
+       ПЕРЕХІД ДО НАСТУПНОГО ПИТАННЯ (КНОПКА «ПРОДОВЖИТИ»)
        ======================================================== */
     function teacherNext() {
         const room = State.room;
@@ -2570,6 +2765,7 @@ const SunLorem = (function () {
         addFeed(room, '➡️ Питання ' + (room.currentQuestion + 1));
         saveRoom(room);
         renderTeacherGame();
+        toast('Питання ' + (room.currentQuestion + 1));
     }
 
     /* ========================================================
@@ -2592,7 +2788,6 @@ const SunLorem = (function () {
 
     function renderResults(room) {
         const sorted = room.players.slice().sort((a, b) => b.score - a.score);
-        // Подіум
         const podium = $('podium');
         podium.innerHTML = '';
         const top3 = [sorted[1], sorted[0], sorted[2]];
@@ -2613,7 +2808,6 @@ const SunLorem = (function () {
             podium.appendChild(place);
         }
 
-        // Повний рейтинг
         const finalLb = $('finalLeaderboard');
         finalLb.innerHTML = '';
         sorted.forEach((p, i) => {
@@ -2622,7 +2816,6 @@ const SunLorem = (function () {
             finalLb.appendChild(card);
         });
 
-        // Грамота
         const winner = sorted[0];
         if (winner) {
             $('certName').textContent = winner.name;
@@ -2651,6 +2844,16 @@ const SunLorem = (function () {
     }
 
     /* ========================================================
+       ДРУК ЛИШЕ ГРАМОТИ
+       ======================================================== */
+    function printCertificate() {
+        // Невелика затримка, щоб браузер встиг застосувати стилі
+        setTimeout(() => {
+            window.print();
+        }, 120);
+    }
+
+    /* ========================================================
        ЗАКРИТТЯ КІМНАТИ
        ======================================================== */
     function closeRoom() {
@@ -2666,12 +2869,12 @@ const SunLorem = (function () {
     }
 
     /* ========================================================
-       БОТ-ДВИГУН (для проміжків між питаннями)
+       БОТ-ДВИГУН
        ======================================================== */
     function startBotEngine() {
         stopBotEngine();
         State.botTimer = setInterval(() => {
-            // Не робимо нічого — боти обробляються в tick()
+            // Боти обробляються в tick()
         }, 1000);
     }
 
@@ -2690,7 +2893,6 @@ const SunLorem = (function () {
         State.pollTimer = setInterval(() => {
             const room = loadRoom(State.roomPin);
             if (!room) return;
-            // Перевіряємо, чи не додались нові учні
             const prevLen = State.room ? State.room.players.length : 0;
             State.room = room;
             if (room.players.length !== prevLen && room.status === 'lobby') {
@@ -2731,21 +2933,24 @@ const SunLorem = (function () {
             toast('Ця гра вже завершена');
             return;
         }
-        // Перевіряємо, чи немає гравця з таким ім'ям
+
+        // ВАЖЛИВО: беремо аватар зі State.playerAvatar, який оновлюється при кліку
+        const chosenAvatar = State.playerAvatar || '😀';
+
         const existing = room.players.find(p => !p.isBot && p.name.toLowerCase() === name.toLowerCase());
         if (existing) {
-            // Дозволяємо повторний вхід з тим самим ID
             State.playerId = existing.id;
             State.playerName = existing.name;
-            State.playerAvatar = existing.avatar;
+            State.playerAvatar = chosenAvatar;
+            existing.avatar = chosenAvatar;
         } else {
             State.playerId = 'pl_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
             State.playerName = name;
-            State.playerAvatar = State.playerAvatar || '😀';
+            State.playerAvatar = chosenAvatar;
             room.players.push({
                 id: State.playerId,
                 name: name,
-                avatar: State.playerAvatar,
+                avatar: chosenAvatar,
                 score: 0,
                 isBot: false,
                 correctCount: 0,
@@ -2766,6 +2971,7 @@ const SunLorem = (function () {
             name: State.playerName,
             avatar: State.playerAvatar
         });
+        Storage.set('sunlorem_last_avatar', State.playerAvatar);
 
         $('swAvatar').textContent = State.playerAvatar;
         $('swName').textContent = State.playerName;
@@ -2774,7 +2980,7 @@ const SunLorem = (function () {
         go('screen-student-waiting');
         startStudentPolling();
         renderStudentWaitingPlayers();
-        toast('Ти в кімнаті! Очікуй старту.');
+        toast('Ти в кімнаті! Аватар: ' + State.playerAvatar);
     }
 
     function leaveStudent() {
@@ -2817,7 +3023,6 @@ const SunLorem = (function () {
         if (!State.roomPin) return;
         const room = loadRoom(State.roomPin);
         if (!room) {
-            // Кімнату закрито
             stopStudentPolling();
             openModal('Кімнату закрито', 'Вчитель закрив кімнату. Дякуємо за гру!', () => {
                 go('screen-welcome');
@@ -2872,7 +3077,6 @@ const SunLorem = (function () {
         if (me) $('sqScore').textContent = 'Бали: ' + me.score;
 
         const ansWrap = $('sqAnswers');
-        // Перемалюємо лише якщо змінилось питання
         if (qChanged) {
             ansWrap.innerHTML = '';
             q.answers.forEach((a, i) => {
@@ -2885,7 +3089,6 @@ const SunLorem = (function () {
             });
         }
 
-        // Якщо час вичерпано — показуємо правильну
         const elapsed = (Date.now() - room.questionStartedAt) / 1000;
         if (elapsed >= room.timePerQuestion) {
             qsa('#sqAnswers .answer-btn').forEach((b, i) => {
@@ -2952,11 +3155,9 @@ const SunLorem = (function () {
         if (pin && /^\d{6}$/.test(pin)) {
             const room = loadRoom(pin);
             if (room && room.status !== 'finished') {
-                // Переходимо на екран входу і підставляємо PIN
                 go('screen-student-join');
                 const input = $('studentPin');
                 if (input) input.value = pin;
-                // Спробуємо відновити сесію
                 const session = Storage.get('sunlorem_session');
                 if (session && session.pin === pin) {
                     const existing = room.players.find(p => p.id === session.playerId);
@@ -2991,7 +3192,6 @@ const SunLorem = (function () {
         spawnParticles();
         buildAvatarGrid();
 
-        // Обробники для PIN-інпуту (тільки цифри)
         const pinInput = $('studentPin');
         if (pinInput) {
             pinInput.addEventListener('input', () => {
@@ -2999,7 +3199,6 @@ const SunLorem = (function () {
             });
         }
 
-        // Зміна теми
         document.addEventListener('click', (e) => {
             const btn = e.target.closest('.theme-btn');
             if (btn && btn.dataset.theme) {
@@ -3008,20 +3207,12 @@ const SunLorem = (function () {
             }
         });
 
-        // Автопідстановка PIN з URL
         autoJoinFromUrl();
 
-        // Перемалювання частинок при зміні розміру
-        window.addEventListener('resize', () => {
-            // не робимо нічого важкого
-        });
-
-        // Закриття модалки при кліку поза нею
         $('modalOverlay').addEventListener('click', (e) => {
             if (e.target === $('modalOverlay')) closeModal();
         });
 
-        // Enter у PIN-полі → вхід
         if (pinInput) {
             pinInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
@@ -3055,6 +3246,7 @@ const SunLorem = (function () {
         startGame,
         teacherNext,
         finishGame,
+        printCertificate,
         closeRoom,
         studentJoin,
         leaveStudent,
@@ -3070,7 +3262,6 @@ const SunLorem = (function () {
    ЗАПУСК
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
-    // init вже викликано всередині модуля — тут просто підстраховка
     if (!document.body.classList.contains('theme-neon') &&
         !document.body.classList.contains('theme-pastel')) {
         document.body.classList.add('theme-neon');
