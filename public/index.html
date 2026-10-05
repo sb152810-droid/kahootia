@@ -1137,6 +1137,11 @@ body.theme-neon .toast { box-shadow: 0 0 22px rgba(255, 95, 240, 0.75); }
 /* ============================================================
    SUNLOREM CLIENT
    Socket.io + UI
+   ------------------------------------------------------------
+   УВАГА: підключення виконується ВИКЛЮЧНО через io() без
+   будь-яких явних URL (жодних localhost:3000 тощо).
+   На хмарному хостингу (Render) клієнт автоматично під'єднується
+   до того самого домену, з якого завантажено сторінку.
    ============================================================ */
 "use strict";
 
@@ -1224,7 +1229,7 @@ const App = (function () {
        ======================================================== */
     const State = {
         theme: 'neon',
-        role: null,          // 'teacher' | 'student'
+        role: null,
         pin: null,
         playerId: null,
         playerName: null,
@@ -1232,9 +1237,7 @@ const App = (function () {
         mode: 'arcade',
         timePerQuestion: 20,
         questions: [],
-        // Дані сервера
         room: null,
-        // Локальний трекінг
         lastQuestionIndex: -1,
         lastQuestionStartedAt: 0,
         lastTimeLeft: 20,
@@ -1480,18 +1483,26 @@ const App = (function () {
 
     /* ========================================================
        SOCKET
+       --------------------------------------------------------
+       Підключення ВИКЛЮЧНО через io() без аргументів.
+       Socket.io-клієнт автоматично бере:
+         • той самий origin (protocol + host + port), з якого
+           завантажено сторінку;
+         • шлях за замовчуванням /socket.io;
+         • транспорт — спочатку polling, потім upgrade до websocket.
+       Це критично важливо для розгортання на Render, Heroku,
+       Railway та будь-якому іншому хмарному хостингу.
        ======================================================== */
     function initSocket() {
-        const socket = io({
-            reconnection: true,
-            reconnectionAttempts: 15,
-            reconnectionDelay: 1200
-        });
+        // ⬇️ ЄДИНИЙ ПРАВИЛЬНИЙ ВАРІАНТ — БЕЗ URL!
+        const socket = io();
         State.socket = socket;
 
         socket.on('connect', () => {
             State.connected = true;
             showConn(true, '🟢 Онлайн');
+            console.log('[socket] connected, id =', socket.id);
+
             // Спроба відновити сесію
             const sess = Storage.get('sunlorem_session');
             if (sess && sess.pin && sess.role) {
@@ -1504,35 +1515,55 @@ const App = (function () {
                             updateTeacherLobbyUI();
                             go('screen-teacher-lobby');
                             toast('Відновлено кімнату ' + sess.pin);
+                        } else {
+                            Storage.remove('sunlorem_session');
                         }
                     });
-                } else if (sess.role === 'student' && sess.playerId) {
+                } else if (sess.role === 'student' && sess.playerId && sess.name) {
                     socket.emit('joinRoom', {
                         pin: sess.pin,
                         name: sess.name,
-                        avatar: sess.avatar
+                        avatar: sess.avatar || '😀'
                     }, res => {
                         if (res && res.ok) {
                             State.role = 'student';
                             State.pin = sess.pin;
                             State.playerId = res.playerId;
                             State.playerName = sess.name;
-                            State.playerAvatar = sess.avatar;
+                            State.playerAvatar = sess.avatar || '😀';
                             State.room = res.state;
                             onStudentState(res.state);
+                        } else {
+                            Storage.remove('sunlorem_session');
                         }
                     });
                 }
             }
         });
 
-        socket.on('disconnect', () => {
+        socket.on('disconnect', (reason) => {
             State.connected = false;
             showConn(false, '🔴 Офлайн');
+            console.log('[socket] disconnected:', reason);
         });
 
-        socket.on('connect_error', () => {
+        socket.on('connect_error', (err) => {
+            State.connected = false;
             showConn(false, '🔴 Помилка з\'єднання');
+            console.warn('[socket] connect_error:', err && err.message);
+        });
+
+        socket.on('reconnect_attempt', (attempt) => {
+            showConn(false, '🟡 Реконект... (' + attempt + ')');
+        });
+
+        socket.on('reconnect', () => {
+            State.connected = true;
+            showConn(true, '🟢 Відновлено');
+        });
+
+        socket.on('reconnect_failed', () => {
+            showConn(false, '🔴 Не вдалося під\'єднатися');
         });
 
         socket.on('state', (state) => {
@@ -1546,8 +1577,7 @@ const App = (function () {
         });
 
         socket.on('timeExpired', (data) => {
-            if (data.questionIndex === (State.room ? State.room.currentQuestion : -1)) {
-                // Показуємо правильну відповідь
+            if (data && data.questionIndex === (State.room ? State.room.currentQuestion : -1)) {
                 revealCorrectAnswer();
             }
         });
@@ -1584,8 +1614,8 @@ const App = (function () {
        СТВОРЕННЯ КІМНАТИ (ВЧИТЕЛЬ)
        ======================================================== */
     function createRoom() {
-        if (!State.connected) {
-            toast('Немає з\'єднання з сервером');
+        if (!State.socket || !State.connected) {
+            toast('Немає з\'єднання з сервером. Спробуй ще раз.');
             return;
         }
         if (State.questions.length === 0) {
@@ -1603,7 +1633,7 @@ const App = (function () {
             botCount: botCount
         }, (res) => {
             if (!res || !res.ok) {
-                openModal('Помилка', res && res.error || 'Не вдалося створити кімнату');
+                openModal('Помилка', (res && res.error) || 'Не вдалося створити кімнату');
                 return;
             }
             State.role = 'teacher';
@@ -1627,6 +1657,7 @@ const App = (function () {
     }
 
     function buildJoinLink(pin) {
+        // Формуємо посилання на поточний origin — жодних хардкодів!
         const base = window.location.origin + window.location.pathname;
         return base + '?pin=' + pin;
     }
@@ -1708,10 +1739,13 @@ const App = (function () {
        СТАРТ ГРИ
        ======================================================== */
     function startGame() {
-        if (!State.socket) return;
+        if (!State.socket || !State.connected) {
+            toast('Немає з\'єднання');
+            return;
+        }
         State.socket.emit('startGame', (res) => {
             if (!res || !res.ok) {
-                toast(res && res.error || 'Помилка старту');
+                toast((res && res.error) || 'Помилка старту');
                 return;
             }
             go('screen-teacher-game');
@@ -1720,27 +1754,34 @@ const App = (function () {
     }
 
     function nextQuestion() {
-        if (!State.socket) return;
+        if (!State.socket || !State.connected) {
+            toast('Немає з\'єднання');
+            return;
+        }
         State.socket.emit('nextQuestion', (res) => {
             if (!res || !res.ok) {
-                toast(res && res.error || 'Помилка');
+                toast((res && res.error) || 'Помилка');
             }
         });
     }
 
     function finishGame() {
-        if (!State.socket) return;
+        if (!State.socket || !State.connected) return;
         State.socket.emit('finishGame', (res) => {
             if (!res || !res.ok) {
-                toast(res && res.error || 'Помилка');
+                toast((res && res.error) || 'Помилка');
             }
         });
     }
 
     function closeRoom() {
-        if (!State.socket) return;
+        if (!State.socket || !State.connected) {
+            Storage.remove('sunlorem_session');
+            go('screen-welcome');
+            return;
+        }
         if (!confirm('Закрити кімнату? Учні будуть від\'єднані.')) return;
-        State.socket.emit('closeRoom', (res) => {
+        State.socket.emit('closeRoom', () => {
             Storage.remove('sunlorem_session');
             State.role = null;
             State.pin = null;
@@ -1803,7 +1844,6 @@ const App = (function () {
         renderCombinedLeaderboard(state, 'tqLeaderboard');
         renderFeed(state, 'tqFeed');
 
-        // Кнопка "Продовжити"
         const btnNext = $('btnNext');
         if (btnNext) {
             if (state.currentQuestion >= state.questions.length - 1) {
@@ -1892,7 +1932,6 @@ const App = (function () {
         const q = state.questions[state.currentQuestion];
         if (!q) return;
 
-        // Виявлення зміни питання
         const qChanged = (state.currentQuestion !== State.lastQuestionIndex) ||
                          (state.questionStartedAt !== State.lastQuestionStartedAt);
 
@@ -1923,7 +1962,6 @@ const App = (function () {
             });
         }
 
-        // Якщо учень вже відповів або час вичерпано — підсвітити
         const elapsed = (Date.now() - State.currentQuestionLocalStart) / 1000;
         if (State.answeredCurrent || elapsed >= state.timePerQuestion) {
             qsa('#sqAnswers .answer-btn').forEach((b, i) => {
@@ -1982,7 +2020,6 @@ const App = (function () {
     }
 
     function revealCorrectAnswer() {
-        // Показуємо правильну відповідь в учнівському інтерфейсі
         if (!State.room) return;
         const q = State.room.questions[State.room.currentQuestion];
         if (!q) return;
@@ -1996,8 +2033,8 @@ const App = (function () {
        УЧЕНЬ: ВХІД
        ======================================================== */
     function studentJoin() {
-        if (!State.connected) {
-            toast('Немає з\'єднання з сервером');
+        if (!State.socket || !State.connected) {
+            toast('Немає з\'єднання з сервером. Зачекай або онови сторінку.');
             return;
         }
         const pin = ($('studentPin').value || '').trim();
@@ -2016,7 +2053,7 @@ const App = (function () {
             avatar: State.playerAvatar
         }, (res) => {
             if (!res || !res.ok) {
-                toast(res && res.error || 'Помилка входу');
+                toast((res && res.error) || 'Помилка входу');
                 return;
             }
             State.role = 'student';
@@ -2143,14 +2180,11 @@ const App = (function () {
        ІНІЦІАЛІЗАЦІЯ
        ======================================================== */
     function init() {
-        // Тема
         const saved = Storage.get('sunlorem_theme', 'neon');
         setTheme(saved);
         spawnParticles();
-
         buildAvatarGrid();
 
-        // PIN — тільки цифри
         const pinInput = $('studentPin');
         if (pinInput) {
             pinInput.addEventListener('input', () => {
@@ -2171,7 +2205,6 @@ const App = (function () {
             });
         }
 
-        // Перемикачі теми
         document.addEventListener('click', e => {
             const btn = e.target.closest('.theme-btn');
             if (btn && btn.dataset.theme) {
@@ -2179,15 +2212,11 @@ const App = (function () {
             }
         });
 
-        // Модалка
         $('modalOverlay').addEventListener('click', e => {
             if (e.target === $('modalOverlay')) closeModal();
         });
 
-        // Автовхід з URL
         autoJoinFromUrl();
-
-        // Socket
         initSocket();
     }
 
@@ -2224,18 +2253,42 @@ const App = (function () {
    СТАРТ
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
-    App.State.role = null;
-    // Невелика затримка, щоб DOM повністю завантажився
-    setTimeout(() => {
-        if (typeof App.init === 'function') {
-            // init виконується в момент створення модуля, тут підстраховка
-        }
-        if (!document.body.classList.contains('theme-neon') &&
-            !document.body.classList.contains('theme-pastel')) {
-            document.body.classList.add('theme-neon');
-        }
-    }, 0);
+    if (!document.body.classList.contains('theme-neon') &&
+        !document.body.classList.contains('theme-pastel')) {
+        document.body.classList.add('theme-neon');
+    }
+    // Ініціалізація після повного завантаження DOM
+    try {
+        App.State.role = null;
+        // Публічний init викликається неявно — див. нижче
+    } catch (e) { /* ignore */ }
+    // Виклик init виконується через IIFE нижче
+    if (typeof App.init === 'function') {
+        App.init();
+    }
 });
+</script>
+
+<!-- ============================================================
+     ОКРЕМИЙ ВИКЛИК ІНІЦІАЛІЗАЦІЇ
+     (бо публічний API не експортує init прямо)
+     ============================================================ -->
+<script>
+(function bootstrap() {
+    function tryInit() {
+        if (typeof App === 'undefined') {
+            setTimeout(tryInit, 40);
+            return;
+        }
+        // Публічний API не містить init — викликаємо через внутрішній socket
+        // Просто чекаємо, доки DOM буде готовий, і запускаємо App-логіку
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            // Викликаємо App.init якщо доступний, інакше — покладаємось
+            // на io() всередині самого модуля
+        }
+    }
+    tryInit();
+})();
 </script>
 </body>
 </html>
