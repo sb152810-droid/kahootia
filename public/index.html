@@ -8,12 +8,7 @@
 /* ============================================================
    ГЛОБАЛЬНІ СТИЛІ
    ============================================================ */
-*, *::before, *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    -webkit-tap-highlight-color: transparent;
-}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html { height: 100%; width: 100%; overflow: hidden; }
 body {
     height: 100%; width: 100%;
@@ -65,6 +60,126 @@ body.theme-pastel {
         linear-gradient(160deg, var(--bg-1), var(--bg-2) 55%, var(--bg-3));
     color: var(--text-main);
 }
+body.theme-space {
+    --bg-1: #000010; --bg-2: #0a0a2a; --bg-3: #1a0a3a;
+    --panel-bg: rgba(15, 10, 45, 0.75);
+    --panel-border: rgba(120, 90, 255, 0.45);
+    --panel-shadow: 0 8px 32px rgba(80, 40, 200, 0.5), 0 0 80px rgba(150, 80, 255, 0.2) inset;
+    --text-main: #e0d8ff; --text-dim: #9a8fdc;
+    --accent-1: #7d5fff; --accent-2: #ff5fff; --accent-3: #5fcfff;
+    --accent-4: #ffd75f; --accent-5: #5fffbf;
+    --button-bg: linear-gradient(135deg, rgba(125, 95, 255, 0.4), rgba(95, 207, 255, 0.25));
+    --button-border: rgba(125, 95, 255, 0.8);
+    --button-shadow: 0 0 22px rgba(125, 95, 255, 0.7), 0 0 48px rgba(95, 207, 255, 0.3);
+    --input-bg: rgba(15, 10, 40, 0.9);
+    --input-border: rgba(120, 90, 255, 0.55);
+    --glow-text: 0 0 10px rgba(200, 150, 255, 1), 0 0 30px rgba(125, 95, 255, 0.7);
+    background:
+        radial-gradient(circle at 15% 15%, rgba(125, 95, 255, 0.35), transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(95, 207, 255, 0.25), transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(255, 95, 255, 0.15), transparent 55%),
+        linear-gradient(160deg, var(--bg-1), var(--bg-2) 55%, var(--bg-3));
+    color: var(--text-main);
+}
+body.theme-cyber {
+    --bg-1: #0a0000; --bg-2: #1a0505; --bg-3: #2a0a0a;
+    --panel-bg: rgba(35, 5, 10, 0.72);
+    --panel-border: rgba(255, 60, 100, 0.55);
+    --panel-shadow: 0 8px 32px rgba(255, 40, 100, 0.5), 0 0 80px rgba(255, 200, 40, 0.15) inset;
+    --text-main: #ffe8f0; --text-dim: #d88a9a;
+    --accent-1: #ff2a5f; --accent-2: #ffcc00; --accent-3: #ff5ff0;
+    --accent-4: #ffd75f; --accent-5: #5fff9b;
+    --button-bg: linear-gradient(135deg, rgba(255, 42, 95, 0.45), rgba(255, 204, 0, 0.3));
+    --button-border: rgba(255, 42, 95, 0.85);
+    --button-shadow: 0 0 22px rgba(255, 42, 95, 0.8), 0 0 48px rgba(255, 204, 0, 0.3);
+    --input-bg: rgba(35, 5, 10, 0.9);
+    --input-border: rgba(255, 60, 100, 0.55);
+    --glow-text: 0 0 10px rgba(255, 200, 40, 1), 0 0 30px rgba(255, 42, 95, 0.8);
+    background:
+        radial-gradient(circle at 15% 15%, rgba(255, 42, 95, 0.35), transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(255, 204, 0, 0.25), transparent 45%),
+        linear-gradient(160deg, var(--bg-1), var(--bg-2) 55%, var(--bg-3));
+    color: var(--text-main);
+}
+body.theme-forest {
+    --bg-1: #0a1a0f; --bg-2: #0f2a18; --bg-3: #1a3a20;
+    --panel-bg: rgba(15, 35, 20, 0.72);
+    --panel-border: rgba(120, 200, 130, 0.4);
+    --panel-shadow: 0 8px 32px rgba(40, 120, 60, 0.5), 0 0 80px rgba(100, 200, 120, 0.15) inset;
+    --text-main: #e8ffe8; --text-dim: #9ad0a0;
+    --accent-1: #4fd070; --accent-2: #d0ff5f; --accent-3: #5fffd0;
+    --accent-4: #ffd75f; --accent-5: #8fff5f;
+    --button-bg: linear-gradient(135deg, rgba(79, 208, 112, 0.4), rgba(95, 255, 208, 0.25));
+    --button-border: rgba(79, 208, 112, 0.8);
+    --button-shadow: 0 0 22px rgba(79, 208, 112, 0.7), 0 0 48px rgba(95, 255, 208, 0.3);
+    --input-bg: rgba(15, 35, 20, 0.9);
+    --input-border: rgba(120, 200, 130, 0.5);
+    --glow-text: 0 0 10px rgba(208, 255, 95, 1), 0 0 30px rgba(79, 208, 112, 0.7);
+    background:
+        radial-gradient(circle at 15% 15%, rgba(79, 208, 112, 0.3), transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(208, 255, 95, 0.2), transparent 45%),
+        linear-gradient(160deg, var(--bg-1), var(--bg-2) 55%, var(--bg-3));
+    color: var(--text-main);
+}
+body.theme-sunset {
+    --bg-1: #2a0a10; --bg-2: #3a1015; --bg-3: #4a1a20;
+    --panel-bg: rgba(50, 15, 20, 0.7);
+    --panel-border: rgba(255, 150, 80, 0.5);
+    --panel-shadow: 0 8px 32px rgba(255, 100, 60, 0.5), 0 0 80px rgba(255, 200, 100, 0.15) inset;
+    --text-main: #fff0e0; --text-dim: #d8a088;
+    --accent-1: #ff8040; --accent-2: #ffcc5f; --accent-3: #ff5f8f;
+    --accent-4: #ffd75f; --accent-5: #8fff5f;
+    --button-bg: linear-gradient(135deg, rgba(255, 128, 64, 0.45), rgba(255, 204, 95, 0.3));
+    --button-border: rgba(255, 128, 64, 0.85);
+    --button-shadow: 0 0 22px rgba(255, 128, 64, 0.8), 0 0 48px rgba(255, 204, 95, 0.3);
+    --input-bg: rgba(50, 15, 20, 0.9);
+    --input-border: rgba(255, 150, 80, 0.5);
+    --glow-text: 0 0 10px rgba(255, 204, 95, 1), 0 0 30px rgba(255, 128, 64, 0.8);
+    background:
+        radial-gradient(circle at 15% 85%, rgba(255, 128, 64, 0.35), transparent 45%),
+        radial-gradient(circle at 85% 15%, rgba(255, 204, 95, 0.25), transparent 45%),
+        linear-gradient(160deg, var(--bg-1), var(--bg-2) 55%, var(--bg-3));
+    color: var(--text-main);
+}
+body.theme-ocean {
+    --bg-1: #001018; --bg-2: #001f30; --bg-3: #002a45;
+    --panel-bg: rgba(0, 30, 50, 0.72);
+    --panel-border: rgba(80, 200, 255, 0.45);
+    --panel-shadow: 0 8px 32px rgba(0, 120, 200, 0.5), 0 0 80px rgba(80, 200, 255, 0.15) inset;
+    --text-main: #e0f8ff; --text-dim: #80c0d8;
+    --accent-1: #4fc8ff; --accent-2: #5f9fff; --accent-3: #5fffe0;
+    --accent-4: #ffd75f; --accent-5: #8fffdf;
+    --button-bg: linear-gradient(135deg, rgba(79, 200, 255, 0.4), rgba(95, 255, 224, 0.25));
+    --button-border: rgba(79, 200, 255, 0.8);
+    --button-shadow: 0 0 22px rgba(79, 200, 255, 0.7), 0 0 48px rgba(95, 255, 224, 0.3);
+    --input-bg: rgba(0, 30, 50, 0.9);
+    --input-border: rgba(80, 200, 255, 0.5);
+    --glow-text: 0 0 10px rgba(95, 255, 224, 1), 0 0 30px rgba(79, 200, 255, 0.8);
+    background:
+        radial-gradient(circle at 20% 20%, rgba(79, 200, 255, 0.3), transparent 42%),
+        radial-gradient(circle at 80% 80%, rgba(95, 255, 224, 0.22), transparent 45%),
+        linear-gradient(160deg, var(--bg-1), var(--bg-2) 55%, var(--bg-3));
+    color: var(--text-main);
+}
+body.theme-candy {
+    --bg-1: #fff0f5; --bg-2: #ffe0f0; --bg-3: #ffd0e8;
+    --panel-bg: #ffffff;
+    --panel-border: #ffb0d8;
+    --panel-shadow: 0 6px 22px rgba(255, 150, 200, 0.25);
+    --text-main: #5a2a4a; --text-dim: #a06a8a;
+    --accent-1: #ff9fd0; --accent-2: #ff6fa8; --accent-3: #b0a0ff;
+    --accent-4: #ffd75f; --accent-5: #a8dfb5;
+    --button-bg: linear-gradient(135deg, #ffd0e8, #e0d0ff);
+    --button-border: #ffb0d8;
+    --button-shadow: 0 4px 12px rgba(255, 150, 200, 0.35);
+    --input-bg: #fff8fc; --input-border: #ffc0dc;
+    --glow-text: none;
+    background:
+        radial-gradient(circle at 15% 10%, #ffe0f0, transparent 40%),
+        radial-gradient(circle at 88% 85%, #e0d8ff, transparent 42%),
+        linear-gradient(160deg, var(--bg-1), var(--bg-2) 55%, var(--bg-3));
+    color: var(--text-main);
+}
 #app { position: fixed; inset: 0; overflow: hidden; }
 .screen {
     position: absolute; inset: 0; display: none; flex-direction: column;
@@ -78,13 +193,10 @@ body.theme-pastel {
 .screen.active { display: flex; }
 .screen::-webkit-scrollbar { width: 8px; }
 .screen::-webkit-scrollbar-thumb { background: var(--accent-1); border-radius: 8px; opacity: 0.6; }
-@keyframes screenFade {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+@keyframes screenFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 h1, h2, h3, h4 { font-weight: 800; letter-spacing: 0.5px; line-height: 1.2; color: var(--text-main); }
 h1 { font-size: clamp(26px, 6.5vw, 46px); text-align: center; margin-bottom: 10px; }
-body.theme-neon h1, body.theme-neon h2.title-glow, body.theme-neon .glow { text-shadow: var(--glow-text); }
+body.theme-neon h1, body.theme-space h1, body.theme-cyber h1, body.theme-forest h1, body.theme-sunset h1, body.theme-ocean h1 { text-shadow: var(--glow-text); }
 h2 { font-size: clamp(20px, 4.6vw, 30px); margin-bottom: 8px; }
 h3 { font-size: clamp(17px, 3.8vw, 23px); margin-bottom: 6px; }
 p { font-size: clamp(14px, 3.2vw, 17px); line-height: 1.55; color: var(--text-main); }
@@ -96,13 +208,8 @@ p { font-size: clamp(14px, 3.2vw, 17px); line-height: 1.55; color: var(--text-ma
     backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
     transition: var(--transition);
 }
-body.theme-pastel .panel { backdrop-filter: none; -webkit-backdrop-filter: none; }
-.panel-title {
-    font-size: clamp(16px, 3.6vw, 20px); font-weight: 800;
-    margin-bottom: 10px; color: var(--accent-1);
-    display: flex; align-items: center; gap: 8px;
-}
-body.theme-neon .panel-title { text-shadow: 0 0 10px rgba(181, 107, 255, 0.75); }
+body.theme-pastel .panel, body.theme-candy .panel { backdrop-filter: none; -webkit-backdrop-filter: none; }
+.panel-title { font-size: clamp(16px, 3.6vw, 20px); font-weight: 800; margin-bottom: 10px; color: var(--accent-1); display: flex; align-items: center; gap: 8px; }
 .panel-narrow { max-width: 560px; width: 100%; margin-left: auto; margin-right: auto; }
 button {
     font-family: inherit; font-size: clamp(15px, 3.4vw, 18px);
@@ -115,37 +222,23 @@ button {
     gap: 8px; min-height: 52px; width: 100%;
     position: relative; overflow: hidden;
 }
-body.theme-neon button { text-shadow: 0 0 6px rgba(255, 255, 255, 0.35); }
 button:hover { transform: translateY(-2px) scale(1.01); }
 button:active { transform: translateY(0) scale(0.98); }
 button:disabled { opacity: 0.42; cursor: not-allowed; transform: none; filter: grayscale(0.4); }
-button.primary {
-    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-    border-color: var(--accent-2); color: #fff;
-}
-body.theme-neon button.primary { box-shadow: 0 0 22px rgba(255, 95, 240, 0.65), 0 0 46px rgba(181, 107, 255, 0.35); }
-button.success {
-    background: linear-gradient(135deg, var(--accent-5), var(--accent-3));
-    border-color: var(--accent-5); color: #10261a;
-}
-body.theme-neon button.success { box-shadow: 0 0 22px rgba(95, 255, 155, 0.55); }
-button.danger {
-    background: linear-gradient(135deg, #ff6b8b, #ff3d6e);
-    border-color: #ff3d6e; color: #fff;
-}
-body.theme-neon button.danger { box-shadow: 0 0 22px rgba(255, 61, 110, 0.6); }
+button.primary { background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); border-color: var(--accent-2); color: #fff; }
+button.success { background: linear-gradient(135deg, var(--accent-5), var(--accent-3)); border-color: var(--accent-5); color: #10261a; }
+button.danger { background: linear-gradient(135deg, #ff6b8b, #ff3d6e); border-color: #ff3d6e; color: #fff; }
 button.ghost { background: transparent; border-color: var(--panel-border); box-shadow: none; }
-button.small {
-    padding: 9px 13px; font-size: clamp(13px, 2.9vw, 15px);
-    min-height: 42px; width: auto;
+button.small { padding: 9px 13px; font-size: clamp(13px, 2.9vw, 15px); min-height: 42px; width: auto; }
+button.gold {
+    background: linear-gradient(135deg, #ffd75f, #ffaa00);
+    border-color: #ffd75f; color: #3a2400;
+    box-shadow: 0 0 18px rgba(255, 215, 95, 0.7);
 }
 .button-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
 .button-row button { flex: 1 1 160px; }
 .button-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
-@media (min-width: 620px) {
-    .button-grid.two-col { grid-template-columns: 1fr 1fr; }
-    .button-grid.three-col { grid-template-columns: repeat(3, 1fr); }
-}
+@media (min-width: 620px) { .button-grid.two-col { grid-template-columns: 1fr 1fr; } .button-grid.three-col { grid-template-columns: repeat(3, 1fr); } }
 input[type="text"], input[type="number"], textarea, select {
     width: 100%; font-family: inherit;
     font-size: clamp(15px, 3.4vw, 17px);
@@ -156,20 +249,8 @@ input[type="text"], input[type="number"], textarea, select {
     margin-bottom: 10px;
     -webkit-appearance: none; appearance: none;
 }
-body.theme-neon input:focus, body.theme-neon textarea:focus {
-    box-shadow: 0 0 16px rgba(181, 107, 255, 0.6);
-    border-color: var(--accent-2);
-}
-body.theme-pastel input:focus, body.theme-pastel textarea:focus {
-    border-color: var(--accent-1);
-    box-shadow: 0 0 0 3px rgba(177, 156, 217, 0.25);
-}
-label {
-    display: block; font-size: clamp(13px, 3vw, 15px);
-    font-weight: 700; color: var(--text-dim);
-    margin-bottom: 6px; margin-top: 4px;
-}
-textarea { min-height: 80px; resize: vertical; }
+input:focus, textarea:focus { border-color: var(--accent-2); }
+label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; color: var(--text-dim); margin-bottom: 6px; margin-top: 4px; }
 .pin-display {
     text-align: center;
     font-size: clamp(38px, 12vw, 76px);
@@ -177,22 +258,17 @@ textarea { min-height: 80px; resize: vertical; }
     letter-spacing: clamp(6px, 3.2vw, 18px);
     color: var(--accent-2); padding: 12px 4px; margin: 8px 0;
 }
-body.theme-neon .pin-display {
-    text-shadow: 0 0 14px rgba(255, 95, 240, 0.95), 0 0 34px rgba(181, 107, 255, 0.65);
-}
-.pin-input {
-    text-align: center;
-    font-size: clamp(28px, 8vw, 46px) !important;
-    font-weight: 900; letter-spacing: 10px;
-    padding: 16px !important;
-}
+body.theme-neon .pin-display, body.theme-space .pin-display, body.theme-cyber .pin-display { text-shadow: 0 0 14px rgba(255, 95, 240, 0.95); }
+.pin-input { text-align: center; font-size: clamp(28px, 8vw, 46px) !important; font-weight: 900; letter-spacing: 10px; padding: 16px !important; }
+
+/* ============================================================
+   АВАТАРИ
+   ============================================================ */
 .avatar-grid {
     display: grid; grid-template-columns: repeat(4, 1fr);
     gap: 10px; margin: 12px 0;
 }
-@media (min-width: 520px) {
-    .avatar-grid { grid-template-columns: repeat(6, 1fr); }
-}
+@media (min-width: 520px) { .avatar-grid { grid-template-columns: repeat(6, 1fr); } }
 .avatar-option {
     aspect-ratio: 1 / 1; min-height: 58px;
     border-radius: 50%; background: var(--input-bg);
@@ -212,10 +288,15 @@ body.theme-neon .pin-display {
     background: linear-gradient(135deg, rgba(181, 107, 255, 0.55), rgba(255, 95, 240, 0.45));
     transform: scale(1.14); z-index: 3;
 }
-body.theme-neon .avatar-option.selected {
-    box-shadow: 0 0 0 4px rgba(255, 95, 240, 0.35), 0 0 26px rgba(255, 95, 240, 0.95), 0 0 50px rgba(181, 107, 255, 0.6);
+body.theme-space .avatar-option.selected,
+body.theme-cyber .avatar-option.selected,
+body.theme-forest .avatar-option.selected,
+body.theme-sunset .avatar-option.selected,
+body.theme-ocean .avatar-option.selected {
+    box-shadow: 0 0 0 4px rgba(255, 95, 240, 0.4), 0 0 26px rgba(255, 95, 240, 0.95), 0 0 50px rgba(181, 107, 255, 0.6);
 }
-body.theme-pastel .avatar-option.selected {
+body.theme-pastel .avatar-option.selected,
+body.theme-candy .avatar-option.selected {
     background: linear-gradient(135deg, #e6d9ff, #d8f0ec);
     border-color: #b19cd9;
     box-shadow: 0 0 0 4px rgba(177, 156, 217, 0.3), 0 8px 20px rgba(160, 130, 200, 0.5);
@@ -230,213 +311,264 @@ body.theme-pastel .avatar-option.selected {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
     line-height: 1;
 }
-body.theme-pastel .avatar-option.selected::after { background: #b19cd9; }
-.avatar-big {
-    font-size: clamp(60px, 18vw, 120px);
-    text-align: center; margin: 10px 0; display: block;
+.avatar-big { font-size: clamp(60px, 18vw, 120px); text-align: center; margin: 10px 0; display: block; position: relative; }
+
+/* ============================================================
+   ГАРДЕРОБ / МАГАЗИН
+   ============================================================ */
+.shop-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.shop-tab {
+    flex: 1 1 auto; padding: 10px 14px;
+    font-size: clamp(13px, 3vw, 15px); font-weight: 800;
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--panel-border);
+    background: var(--input-bg); color: var(--text-main);
+    cursor: pointer; transition: var(--transition);
+    min-width: 100px; text-align: center;
 }
-body.theme-neon .avatar-big { filter: drop-shadow(0 0 22px rgba(255, 95, 240, 0.75)); }
-.player-list {
-    display: grid; grid-template-columns: 1fr;
-    gap: 8px; margin-top: 10px;
+.shop-tab.active {
+    border-color: var(--accent-2);
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+    color: #fff;
 }
+.shop-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+@media (min-width: 520px) { .shop-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 780px) { .shop-grid { grid-template-columns: repeat(4, 1fr); } }
+.shop-card {
+    background: var(--input-bg);
+    border: 2px solid var(--panel-border);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    text-align: center;
+    position: relative;
+    transition: var(--transition);
+    cursor: pointer;
+    overflow: hidden;
+}
+.shop-card:hover { transform: translateY(-3px); border-color: var(--accent-1); }
+.shop-card.locked { opacity: 0.75; }
+.shop-card.locked::after {
+    content: "🔒";
+    position: absolute;
+    top: 6px; right: 6px;
+    font-size: 20px;
+    filter: drop-shadow(0 0 6px rgba(0,0,0,0.5));
+}
+.shop-card.owned::before {
+    content: "✓";
+    position: absolute;
+    top: 6px; left: 6px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--accent-5);
+    color: #10261a;
+    font-size: 14px; font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+}
+.shop-card.equipped {
+    border-color: var(--accent-4);
+    box-shadow: 0 0 18px rgba(255, 215, 95, 0.65);
+}
+.shop-card .preview {
+    font-size: clamp(36px, 9vw, 52px);
+    margin: 6px 0;
+    display: block;
+    line-height: 1;
+}
+.shop-card .preview-wrap { position: relative; display: inline-block; }
+.shop-card .preview-accessory {
+    position: absolute; top: -6px; right: -10px;
+    font-size: 22px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+}
+.shop-card .name {
+    font-size: clamp(12px, 2.9vw, 14px);
+    font-weight: 800;
+    margin-bottom: 3px;
+    color: var(--text-main);
+}
+.shop-card .price {
+    font-size: clamp(11px, 2.7vw, 13px);
+    font-weight: 800;
+    color: var(--accent-4);
+}
+.shop-card .price.owned { color: var(--accent-5); }
+.shop-card .price.cant { color: #ff6b8b; }
+.shop-card .buy-hint {
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--text-dim);
+}
+.shop-avatar-preview {
+    text-align: center;
+    padding: 16px;
+    background: var(--input-bg);
+    border: 2px dashed var(--panel-border);
+    border-radius: var(--radius);
+    margin: 10px 0;
+}
+.shop-avatar-preview .big-avatar {
+    font-size: clamp(72px, 20vw, 130px);
+    position: relative;
+    display: inline-block;
+    line-height: 1;
+}
+.shop-avatar-preview .big-accessory {
+    position: absolute;
+    font-size: clamp(36px, 10vw, 60px);
+    top: -12px; right: -24px;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+    animation: floatAccessory 3s ease-in-out infinite;
+}
+@keyframes floatAccessory {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-6px) rotate(5deg); }
+}
+.shop-avatar-preview .big-effect {
+    position: absolute;
+    font-size: clamp(28px, 8vw, 44px);
+    bottom: -6px; left: -14px;
+    filter: drop-shadow(0 0 12px currentColor);
+    animation: pulseEffect 2s ease-in-out infinite;
+}
+@keyframes pulseEffect {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.2); opacity: 1; }
+}
+.balance-bar {
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, rgba(255, 215, 95, 0.22), rgba(255, 170, 0, 0.12));
+    border: 1.5px solid var(--accent-4);
+    border-radius: 30px;
+    margin-bottom: 14px;
+    font-size: clamp(14px, 3.4vw, 18px);
+    font-weight: 900;
+    color: var(--accent-4);
+}
+
+/* ============================================================
+   ІГРОВИЙ ІНТЕРФЕЙС
+   ============================================================ */
+.player-list { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 10px; }
 @media (min-width: 520px) { .player-list { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 900px) { .player-list { grid-template-columns: 1fr 1fr 1fr; } }
 .player-card {
     display: flex; align-items: center; gap: 10px;
     background: var(--input-bg); border: 1.5px solid var(--panel-border);
     border-radius: var(--radius-sm); padding: 10px 12px;
-    transition: var(--transition); animation: slideIn 0.35s ease;
+    transition: var(--transition);
+    animation: slideIn 0.35s ease;
+    position: relative;
 }
-@keyframes slideIn {
-    from { opacity: 0; transform: translateX(-12px); }
-    to { opacity: 1; transform: translateX(0); }
-}
-.player-card .avatar { font-size: 30px; flex-shrink: 0; }
-.player-card .name {
-    flex: 1; font-weight: 700;
-    font-size: clamp(14px, 3.2vw, 16px);
-    overflow: hidden; text-overflow: ellipsis;
-    white-space: nowrap;
-}
-.player-card .score {
-    font-weight: 900; color: var(--accent-4);
-    font-size: clamp(14px, 3.2vw, 17px); flex-shrink: 0;
-}
+@keyframes slideIn { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
+.player-card .avatar-wrap { position: relative; display: inline-block; flex-shrink: 0; }
+.player-card .avatar { font-size: 30px; display: block; line-height: 1; }
+.player-card .acc-head { position: absolute; top: -8px; right: -6px; font-size: 16px; }
+.player-card .acc-eyes { position: absolute; top: 2px; right: -2px; font-size: 13px; opacity: 0.9; }
+.player-card .acc-effect { position: absolute; bottom: -4px; left: -8px; font-size: 14px; }
+.player-card .name { flex: 1; font-weight: 700; font-size: clamp(14px, 3.2vw, 16px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.player-card .score { font-weight: 900; color: var(--accent-4); font-size: clamp(14px, 3.2vw, 17px); flex-shrink: 0; }
+.player-card .coins { font-weight: 800; color: #ffcc55; font-size: clamp(11px, 2.7vw, 13px); margin-left: 4px; }
 .player-card.leader { border-color: var(--accent-4); }
-body.theme-neon .player-card.leader { box-shadow: 0 0 16px rgba(255, 215, 95, 0.55); }
-.player-card.bot .name::after {
-    content: " 🤖"; opacity: 0.7; font-size: 0.85em;
-}
+.player-card.bot .name::after { content: " 🤖"; opacity: 0.7; font-size: 0.85em; }
 .player-card.self { border-color: var(--accent-5); }
-body.theme-neon .player-card.self { box-shadow: 0 0 14px rgba(95, 255, 155, 0.5); }
 .player-card.dead { opacity: 0.45; filter: grayscale(0.6); }
+.player-card .power-badge {
+    position: absolute; top: 4px; right: 6px;
+    font-size: 14px;
+    animation: pulseEffect 1.2s ease-in-out infinite;
+}
 .question-text {
     font-size: clamp(18px, 4.4vw, 26px);
     font-weight: 800; text-align: center;
     padding: 16px 10px; margin-bottom: 8px;
     color: var(--text-main); line-height: 1.35;
 }
-body.theme-neon .question-text { text-shadow: 0 0 12px rgba(95, 240, 255, 0.55); }
 .answers-grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 10px;
     margin-top: 10px;
 }
-@media (min-width: 700px) {
-    .answers-grid { grid-template-columns: 1fr 1fr; }
-}
+@media (min-width: 700px) { .answers-grid { grid-template-columns: 1fr 1fr; } }
 .answer-btn {
-    min-height: 64px;
-    font-size: clamp(16px, 3.8vw, 19px);
-    font-weight: 800; text-align: left;
-    justify-content: flex-start;
-    padding: 15px 18px;
-    background: var(--input-bg);
-    border: 2px solid var(--panel-border);
-    color: var(--text-main);
-    box-shadow: none;
-    border-radius: var(--radius);
-    transition: var(--transition);
+    min-height: 64px; font-size: clamp(16px, 3.8vw, 19px);
+    font-weight: 800; text-align: left; justify-content: flex-start;
+    padding: 15px 18px; background: var(--input-bg);
+    border: 2px solid var(--panel-border); color: var(--text-main);
+    box-shadow: none; border-radius: var(--radius); transition: var(--transition);
 }
-.answer-btn:hover:not(:disabled) {
-    border-color: var(--accent-2);
-    transform: translateY(-2px);
-}
-body.theme-neon .answer-btn:hover:not(:disabled) {
-    box-shadow: 0 0 18px rgba(255, 95, 240, 0.6);
-}
+.answer-btn:hover:not(:disabled) { border-color: var(--accent-2); transform: translateY(-2px); }
 .answer-btn .key {
     display: inline-flex; align-items: center; justify-content: center;
     min-width: 34px; height: 34px; border-radius: 50%;
     background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-    color: #fff; font-weight: 900;
-    margin-right: 12px; flex-shrink: 0;
+    color: #fff; font-weight: 900; margin-right: 12px; flex-shrink: 0;
 }
-body.theme-neon .answer-btn .key { box-shadow: 0 0 12px rgba(255, 95, 240, 0.75); }
-.answer-btn.correct {
-    border-color: var(--accent-5);
-    background: linear-gradient(135deg, rgba(95, 255, 155, 0.28), rgba(95, 240, 255, 0.16));
-}
-body.theme-neon .answer-btn.correct { box-shadow: 0 0 22px rgba(95, 255, 155, 0.75); }
-.answer-btn.wrong {
-    border-color: #ff3d6e;
-    background: linear-gradient(135deg, rgba(255, 61, 110, 0.28), rgba(255, 107, 139, 0.16));
-}
+.answer-btn.correct { border-color: var(--accent-5); background: linear-gradient(135deg, rgba(95, 255, 155, 0.28), rgba(95, 240, 255, 0.16)); }
+.answer-btn.wrong { border-color: #ff3d6e; background: linear-gradient(135deg, rgba(255, 61, 110, 0.28), rgba(255, 107, 139, 0.16)); }
+.answer-btn.hint-hidden { opacity: 0.25; text-decoration: line-through; }
 .timer-wrap { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
-.timer-bar {
-    flex: 1; height: 22px; background: var(--input-bg);
-    border: 1.5px solid var(--panel-border);
-    border-radius: 14px; overflow: hidden;
-    position: relative;
-}
-.timer-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent-3), var(--accent-1), var(--accent-2));
-    transition: width 0.35s linear;
-    border-radius: 14px 0 0 14px;
-}
-body.theme-neon .timer-fill { box-shadow: 0 0 16px rgba(255, 95, 240, 0.8); }
-.timer-text {
-    font-weight: 900;
-    font-size: clamp(18px, 4.6vw, 26px);
-    color: var(--accent-4);
-    min-width: 56px; text-align: right;
-}
-body.theme-neon .timer-text { text-shadow: 0 0 10px rgba(255, 215, 95, 0.85); }
-.theme-switcher { display: flex; gap: 10px; margin: 10px 0; }
+.timer-bar { flex: 1; height: 22px; background: var(--input-bg); border: 1.5px solid var(--panel-border); border-radius: 14px; overflow: hidden; position: relative; }
+.timer-fill { height: 100%; background: linear-gradient(90deg, var(--accent-3), var(--accent-1), var(--accent-2)); transition: width 0.35s linear; border-radius: 14px 0 0 14px; }
+.timer-text { font-weight: 900; font-size: clamp(18px, 4.6vw, 26px); color: var(--accent-4); min-width: 56px; text-align: right; }
+.theme-switcher { display: flex; gap: 10px; margin: 10px 0; flex-wrap: wrap; }
 .theme-btn {
-    flex: 1; padding: 12px;
-    font-size: clamp(14px, 3.2vw, 16px);
-    font-weight: 800;
+    flex: 1 1 100px; padding: 12px;
+    font-size: clamp(14px, 3.2vw, 16px); font-weight: 800;
     border-radius: var(--radius-sm);
     border: 2px solid var(--panel-border);
     background: var(--input-bg); color: var(--text-main);
     cursor: pointer; transition: var(--transition);
     display: flex; align-items: center; justify-content: center;
-    gap: 8px; min-height: 54px; box-shadow: none;
+    gap: 6px; min-height: 54px; box-shadow: none;
 }
-.theme-btn.active {
-    border-color: var(--accent-2);
-    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-    color: #fff;
-}
-body.theme-neon .theme-btn.active { box-shadow: 0 0 20px rgba(255, 95, 240, 0.75); }
+.theme-btn.active { border-color: var(--accent-2); background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: #fff; }
 .badge {
     display: inline-flex; align-items: center; gap: 6px;
-    padding: 5px 12px;
-    font-size: clamp(12px, 2.8vw, 14px);
+    padding: 5px 12px; font-size: clamp(12px, 2.8vw, 14px);
     font-weight: 800; border-radius: 20px;
-    background: var(--input-bg);
-    border: 1.5px solid var(--panel-border);
+    background: var(--input-bg); border: 1.5px solid var(--panel-border);
     color: var(--text-main);
 }
 .badge.live { color: var(--accent-5); border-color: var(--accent-5); }
-body.theme-neon .badge.live { box-shadow: 0 0 12px rgba(95, 255, 155, 0.65); }
 .badge.waiting { color: var(--accent-4); border-color: var(--accent-4); }
 .badge.error { color: #ff6b8b; border-color: #ff3d6e; }
-.badge.online { color: var(--accent-3); border-color: var(--accent-3); }
-.status-row {
-    display: flex; flex-wrap: wrap; gap: 8px;
-    align-items: center; justify-content: center;
-    margin-bottom: 12px;
-}
-.particles {
-    position: fixed; inset: 0; pointer-events: none;
-    z-index: 0; overflow: hidden;
-}
-.particle {
-    position: absolute; border-radius: 50%;
-    opacity: 0.55; animation: floatUp linear infinite;
-}
+.badge.gold { color: var(--accent-4); border-color: var(--accent-4); }
+.status-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; margin-bottom: 12px; }
+.particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.particle { position: absolute; border-radius: 50%; opacity: 0.55; animation: floatUp linear infinite; }
 @keyframes floatUp {
     from { transform: translateY(110vh) translateX(0) scale(0.6); opacity: 0; }
     20% { opacity: 0.75; }
     to { transform: translateY(-15vh) translateX(40px) scale(1.1); opacity: 0; }
 }
-body.theme-pastel .particles { display: none; }
+body.theme-pastel .particles, body.theme-candy .particles { display: none; }
 .waiting-card { text-align: center; padding: 22px 16px; }
 .waiting-card .pulse {
     display: inline-block; width: 16px; height: 16px;
     border-radius: 50%; background: var(--accent-5);
-    margin-right: 8px;
-    animation: pulseDot 1.4s ease-in-out infinite;
+    margin-right: 8px; animation: pulseDot 1.4s ease-in-out infinite;
 }
-@keyframes pulseDot {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.5); opacity: 0.6; }
-}
-.waiting-text {
-    font-size: clamp(15px, 3.4vw, 18px);
-    color: var(--text-dim); margin-top: 8px;
-}
-.podium {
-    display: flex; align-items: flex-end;
-    justify-content: center; gap: 8px;
-    margin: 20px 0; min-height: 200px;
-}
-.podium-place {
-    display: flex; flex-direction: column;
-    align-items: center; gap: 6px;
-    flex: 1; max-width: 130px;
-}
+@keyframes pulseDot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.6; } }
+.waiting-text { font-size: clamp(15px, 3.4vw, 18px); color: var(--text-dim); margin-top: 8px; }
+.podium { display: flex; align-items: flex-end; justify-content: center; gap: 8px; margin: 20px 0; min-height: 200px; }
+.podium-place { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; max-width: 130px; }
 .podium-place .avatar { font-size: clamp(34px, 9vw, 56px); }
-.podium-place .name {
-    font-weight: 800;
-    font-size: clamp(12px, 2.9vw, 15px);
-    text-align: center;
-    overflow: hidden; text-overflow: ellipsis;
-    white-space: nowrap; width: 100%;
-}
+.podium-place .name { font-weight: 800; font-size: clamp(12px, 2.9vw, 15px); text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; }
 .podium-place .pedestal {
     width: 100%; border-radius: 10px 10px 0 0;
     background: linear-gradient(180deg, var(--accent-4), var(--accent-1));
     display: flex; align-items: center; justify-content: center;
-    font-weight: 900; font-size: clamp(20px, 5vw, 32px);
-    color: #fff;
+    font-weight: 900; font-size: clamp(20px, 5vw, 32px); color: #fff;
 }
-body.theme-neon .podium-place .pedestal { box-shadow: 0 0 22px rgba(181, 107, 255, 0.7); }
 .podium-place.p1 .pedestal { height: 130px; }
 .podium-place.p2 .pedestal { height: 95px; }
 .podium-place.p3 .pedestal { height: 70px; }
@@ -448,14 +580,8 @@ body.theme-neon .podium-place .pedestal { box-shadow: 0 0 22px rgba(181, 107, 25
     text-align: center; margin: 14px 0;
     box-shadow: var(--panel-shadow);
 }
-body.theme-neon .certificate { box-shadow: 0 0 40px rgba(255, 215, 95, 0.45); }
 .certificate h2 { color: var(--accent-4); margin-bottom: 10px; }
-.certificate .recipient {
-    font-size: clamp(22px, 5vw, 32px);
-    font-weight: 900; color: var(--accent-2);
-    margin: 12px 0;
-}
-body.theme-neon .certificate .recipient { text-shadow: 0 0 14px rgba(255, 95, 240, 0.85); }
+.certificate .recipient { font-size: clamp(22px, 5vw, 32px); font-weight: 900; color: var(--accent-2); margin: 12px 0; }
 .question-item {
     background: var(--input-bg);
     border: 1.5px solid var(--panel-border);
@@ -463,60 +589,26 @@ body.theme-neon .certificate .recipient { text-shadow: 0 0 14px rgba(255, 95, 24
     padding: 12px; margin-bottom: 10px;
     transition: var(--transition);
 }
-.question-item .q-header {
-    display: flex; justify-content: space-between;
-    align-items: center; gap: 8px;
-    margin-bottom: 8px; flex-wrap: wrap;
-}
-.question-item .q-index {
-    font-weight: 900; color: var(--accent-2);
-    font-size: clamp(15px, 3.4vw, 18px);
-}
-.answer-input-row {
-    display: flex; align-items: center;
-    gap: 8px; margin-bottom: 6px;
-}
-.answer-input-row input[type="radio"] {
-    width: 22px; height: 22px;
-    flex-shrink: 0; accent-color: var(--accent-2);
-}
+.question-item .q-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.question-item .q-index { font-weight: 900; color: var(--accent-2); font-size: clamp(15px, 3.4vw, 18px); }
+.answer-input-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.answer-input-row input[type="radio"] { width: 22px; height: 22px; flex-shrink: 0; accent-color: var(--accent-2); }
 .answer-input-row input[type="text"] { margin-bottom: 0; flex: 1; }
-.template-grid, .mode-grid {
-    display: grid; grid-template-columns: 1fr;
-    gap: 10px; margin-top: 10px;
-}
-@media (min-width: 620px) {
-    .template-grid, .mode-grid { grid-template-columns: 1fr 1fr; }
-}
+.template-grid, .mode-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
+@media (min-width: 620px) { .template-grid, .mode-grid { grid-template-columns: 1fr 1fr; } }
 .template-card, .mode-card {
-    background: var(--input-bg);
-    border: 2px solid var(--panel-border);
-    border-radius: var(--radius-sm);
-    padding: 14px; cursor: pointer;
+    background: var(--input-bg); border: 2px solid var(--panel-border);
+    border-radius: var(--radius-sm); padding: 14px; cursor: pointer;
     transition: var(--transition);
-    display: flex; align-items: center;
-    gap: 12px; min-height: 70px;
-    text-align: left; width: 100%;
+    display: flex; align-items: center; gap: 12px;
+    min-height: 70px; text-align: left; width: 100%;
 }
 .template-card:hover, .mode-card:hover { transform: translateY(-3px); }
-.template-card.selected, .mode-card.selected {
-    border-color: var(--accent-2);
-    background: linear-gradient(135deg, rgba(181, 107, 255, 0.22), rgba(255, 95, 240, 0.14));
-}
-body.theme-neon .template-card.selected, body.theme-neon .mode-card.selected {
-    box-shadow: 0 0 20px rgba(255, 95, 240, 0.65);
-}
-.template-card .icon, .mode-card .icon {
-    font-size: clamp(28px, 7vw, 40px); flex-shrink: 0;
-}
+.template-card.selected, .mode-card.selected { border-color: var(--accent-2); background: linear-gradient(135deg, rgba(181, 107, 255, 0.22), rgba(255, 95, 240, 0.14)); }
+.template-card .icon, .mode-card .icon { font-size: clamp(28px, 7vw, 40px); flex-shrink: 0; }
 .template-card .info, .mode-card .info { flex: 1; min-width: 0; }
-.template-card .info h4, .mode-card .info h4 {
-    font-size: clamp(14px, 3.2vw, 17px); margin-bottom: 3px;
-}
-.template-card .info p, .mode-card .info p {
-    font-size: clamp(12px, 2.8vw, 14px);
-    color: var(--text-dim); line-height: 1.3;
-}
+.template-card .info h4, .mode-card .info h4 { font-size: clamp(14px, 3.2vw, 17px); margin-bottom: 3px; }
+.template-card .info p, .mode-card .info p { font-size: clamp(12px, 2.8vw, 14px); color: var(--text-dim); line-height: 1.3; }
 .qr-container {
     background: #fff; border-radius: var(--radius-sm);
     padding: 12px; display: inline-flex;
@@ -524,10 +616,7 @@ body.theme-neon .template-card.selected, body.theme-neon .mode-card.selected {
     margin: 10px auto; min-width: 180px; min-height: 180px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
-.qr-container img {
-    display: block; width: 180px; height: 180px;
-    image-rendering: pixelated; border-radius: 4px;
-}
+.qr-container img { display: block; width: 180px; height: 180px; image-rendering: pixelated; border-radius: 4px; }
 @media (min-width: 520px) {
     .qr-container img { width: 220px; height: 220px; }
     .qr-container { min-width: 220px; min-height: 220px; }
@@ -551,10 +640,7 @@ body.theme-neon .template-card.selected, body.theme-neon .mode-card.selected {
     box-shadow: var(--panel-shadow);
     animation: modalIn 0.3s ease;
 }
-@keyframes modalIn {
-    from { opacity: 0; transform: scale(0.92); }
-    to { opacity: 1; transform: scale(1); }
-}
+@keyframes modalIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
 .toast {
     position: fixed; bottom: 20px; left: 50%;
     transform: translateX(-50%) translateY(140px);
@@ -570,19 +656,11 @@ body.theme-neon .template-card.selected, body.theme-neon .mode-card.selected {
     max-width: 90vw; text-align: center;
     backdrop-filter: blur(12px);
 }
-body.theme-neon .toast { box-shadow: 0 0 22px rgba(255, 95, 240, 0.75); }
 .toast.show { transform: translateX(-50%) translateY(0); }
 .spacer { height: 20px; }
 .center { text-align: center; }
-.mt { margin-top: 14px; }
-.mb { margin-bottom: 14px; }
 .hidden { display: none !important; }
-.progress-info {
-    display: flex; justify-content: space-between;
-    font-size: clamp(13px, 3vw, 15px);
-    color: var(--text-dim); font-weight: 700;
-    margin-bottom: 6px;
-}
+.progress-info { display: flex; justify-content: space-between; font-size: clamp(13px, 3vw, 15px); color: var(--text-dim); font-weight: 700; margin-bottom: 6px; }
 .event-feed {
     max-height: 180px; overflow-y: auto;
     font-size: clamp(12px, 2.8vw, 14px);
@@ -590,11 +668,7 @@ body.theme-neon .toast { box-shadow: 0 0 22px rgba(255, 95, 240, 0.75); }
     border-radius: var(--radius-sm); padding: 10px;
     border: 1px solid var(--panel-border);
 }
-.event-feed .event-line {
-    padding: 3px 0;
-    border-bottom: 1px dashed var(--panel-border);
-    animation: slideIn 0.3s ease;
-}
+.event-feed .event-line { padding: 3px 0; border-bottom: 1px dashed var(--panel-border); animation: slideIn 0.3s ease; }
 .event-feed .event-line:last-child { border-bottom: none; }
 .connection-status {
     position: fixed; top: 6px; right: 6px;
@@ -606,24 +680,10 @@ body.theme-neon .toast { box-shadow: 0 0 22px rgba(255, 95, 240, 0.75); }
 .connection-status.show { display: block; }
 .connection-status.ok { background: rgba(95, 255, 155, 0.9); color: #10261a; }
 .connection-status.err { background: rgba(255, 61, 110, 0.9); color: #fff; }
-.connection-status.warn { background: rgba(255, 215, 95, 0.9); color: #3a2a00; }
-@media (min-width: 900px) {
-    .screen { padding: 26px 40px; padding-bottom: 100px; }
-    .panel { padding: 22px; margin-bottom: 18px; }
-}
-@media (max-width: 380px) {
-    button { min-height: 48px; padding: 12px 14px; }
-    .panel { padding: 12px; }
-}
-@keyframes confetti-fall {
-    0% { transform: translateY(-10vh) rotate(0); opacity: 1; }
-    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-}
-.confetti {
-    position: fixed; width: 10px; height: 14px;
-    top: 0; z-index: 998; pointer-events: none;
-    animation: confetti-fall linear forwards;
-}
+@media (min-width: 900px) { .screen { padding: 26px 40px; padding-bottom: 100px; } .panel { padding: 22px; margin-bottom: 18px; } }
+@media (max-width: 380px) { button { min-height: 48px; padding: 12px 14px; } .panel { padding: 12px; } }
+@keyframes confetti-fall { 0% { transform: translateY(-10vh) rotate(0); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+.confetti { position: fixed; width: 10px; height: 14px; top: 0; z-index: 998; pointer-events: none; animation: confetti-fall linear forwards; }
 
 /* ============================================================
    ДРУК ЛИШЕ ГРАМОТИ
@@ -631,110 +691,60 @@ body.theme-neon .toast { box-shadow: 0 0 22px rgba(255, 95, 240, 0.75); }
 @media print {
     @page { size: A4 portrait; margin: 15mm; }
     html, body {
-        background: #ffffff !important;
-        color: #000000 !important;
-        height: auto !important;
-        overflow: visible !important;
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
+        background: #ffffff !important; color: #000000 !important;
+        height: auto !important; overflow: visible !important;
+        width: 100% !important; margin: 0 !important; padding: 0 !important;
     }
     body * { visibility: hidden !important; }
-    #particles, #particles *, #toast, .modal-overlay,
-    .confetti, .connection-status {
-        display: none !important;
-        visibility: hidden !important;
+    #particles, #particles *, #toast, .modal-overlay, .confetti, .connection-status {
+        display: none !important; visibility: hidden !important;
     }
     .screen {
-        display: none !important;
-        position: static !important;
-        overflow: visible !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        background: #ffffff !important;
+        display: none !important; position: static !important;
+        overflow: visible !important; padding: 0 !important;
+        margin: 0 !important; background: #ffffff !important;
     }
     #screen-results {
-        display: block !important;
-        position: static !important;
-        overflow: visible !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        background: #ffffff !important;
-        height: auto !important;
-        width: 100% !important;
-        inset: auto !important;
+        display: block !important; position: static !important;
+        overflow: visible !important; padding: 0 !important;
+        margin: 0 !important; background: #ffffff !important;
+        height: auto !important; width: 100% !important; inset: auto !important;
     }
-    #screen-results > * {
-        display: none !important;
-        visibility: hidden !important;
-    }
+    #screen-results > * { display: none !important; visibility: hidden !important; }
     #certificateBox {
-        display: block !important;
-        visibility: visible !important;
-        position: static !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        margin: 0 auto !important;
-        padding: 40px 30px !important;
-        background: #ffffff !important;
-        color: #1a1a1a !important;
-        border: 5px double #b8860b !important;
-        border-radius: 6px !important;
-        box-shadow: none !important;
-        text-align: center !important;
-        page-break-inside: avoid !important;
+        display: block !important; visibility: visible !important;
+        position: static !important; width: 100% !important;
+        max-width: 100% !important; margin: 0 auto !important;
+        padding: 40px 30px !important; background: #ffffff !important;
+        color: #1a1a1a !important; border: 5px double #b8860b !important;
+        border-radius: 6px !important; box-shadow: none !important;
+        text-align: center !important; page-break-inside: avoid !important;
         page-break-after: avoid !important;
         font-family: 'Georgia', 'Times New Roman', serif !important;
     }
-    #certificateBox, #certificateBox * {
-        visibility: visible !important;
-        text-shadow: none !important;
-    }
+    #certificateBox, #certificateBox * { visibility: visible !important; text-shadow: none !important; }
     #certificateBox h2 {
-        display: block !important;
-        color: #8b6914 !important;
-        font-size: 34pt !important;
-        font-weight: 900 !important;
-        margin: 0 0 24pt 0 !important;
-        letter-spacing: 2pt !important;
+        display: block !important; color: #8b6914 !important;
+        font-size: 34pt !important; font-weight: 900 !important;
+        margin: 0 0 24pt 0 !important; letter-spacing: 2pt !important;
         text-transform: uppercase !important;
-        border-bottom: 2pt solid #b8860b !important;
-        padding-bottom: 12pt !important;
+        border-bottom: 2pt solid #b8860b !important; padding-bottom: 12pt !important;
     }
     #certificateBox p {
-        display: block !important;
-        color: #2b2b2b !important;
-        font-size: 14pt !important;
-        line-height: 1.6 !important;
+        display: block !important; color: #2b2b2b !important;
+        font-size: 14pt !important; line-height: 1.6 !important;
         margin: 6pt 0 !important;
         font-family: 'Georgia', 'Times New Roman', serif !important;
     }
     #certificateBox .recipient {
-        display: block !important;
-        color: #4b0082 !important;
-        font-size: 30pt !important;
-        font-weight: 900 !important;
-        margin: 22pt 0 !important;
-        padding: 12pt 0 !important;
-        border-top: 1pt dashed #999 !important;
-        border-bottom: 1pt dashed #999 !important;
-        font-style: italic !important;
-        letter-spacing: 1pt !important;
+        display: block !important; color: #4b0082 !important;
+        font-size: 30pt !important; font-weight: 900 !important;
+        margin: 22pt 0 !important; padding: 12pt 0 !important;
+        border-top: 1pt dashed #999 !important; border-bottom: 1pt dashed #999 !important;
+        font-style: italic !important; letter-spacing: 1pt !important;
     }
-    #certScore {
-        display: block !important;
-        color: #8b0000 !important;
-        font-size: 20pt !important;
-        font-weight: 900 !important;
-        margin: 18pt 0 !important;
-    }
-    #certDate {
-        display: block !important;
-        color: #555 !important;
-        font-size: 12pt !important;
-        margin-top: 28pt !important;
-        font-style: italic !important;
-    }
+    #certScore { display: block !important; color: #8b0000 !important; font-size: 20pt !important; font-weight: 900 !important; margin: 18pt 0 !important; }
+    #certDate { display: block !important; color: #555 !important; font-size: 12pt !important; margin-top: 28pt !important; font-style: italic !important; }
 }
 </style>
 </head>
@@ -749,49 +759,81 @@ body.theme-neon .toast { box-shadow: 0 0 22px rgba(255, 95, 240, 0.75); }
          ============================================================ -->
     <div id="screen-welcome" class="screen active">
         <h1 class="glow">🌟 SunLorem 🌟</h1>
-        <p class="subtitle">Школа-Табір для 5 класу • Реальний час</p>
+        <p class="subtitle">Школа-Табір для 5 класу • Реальний час • Гейміфікація</p>
 
         <div class="panel panel-narrow">
-            <div class="panel-title">🎨 Обери свій стиль</div>
-            <div class="theme-switcher">
-                <button class="theme-btn active" data-theme="neon" onclick="App.setTheme('neon')">🌌 Неон</button>
-                <button class="theme-btn" data-theme="pastel" onclick="App.setTheme('pastel')">🍑 Пастель</button>
+            <div class="balance-bar">
+                <span>🪙 Твої СанКоїни:</span>
+                <span id="welcomeCoins">0</span>
             </div>
-            <p style="font-size:13px;color:var(--text-dim);text-align:center;">
-                Стиль зберігається на цьому пристрої.
-            </p>
         </div>
 
         <div class="panel panel-narrow">
-            <div class="panel-title">👋 Хто ти?</div>
             <div class="button-grid two-col">
                 <button class="primary" onclick="App.go('screen-teacher-setup')">👩‍🏫 Я Вчитель</button>
                 <button class="success" onclick="App.go('screen-student-join')">🎒 Я Учень</button>
             </div>
+            <div class="button-row">
+                <button class="gold" onclick="App.go('screen-shop')">🛒 Гардероб / Магазин</button>
+            </div>
         </div>
 
         <div class="panel panel-narrow">
-            <div class="panel-title">🌐 Хмарна синхронізація</div>
-            <p style="font-size:13px;line-height:1.6;color:var(--text-dim);">
-                Усі гравці підключаються до одного сервера через <b>Socket.io</b>.
-                Учні з телефонів, планшетів та комп'ютерів бачать гру в реальному часі —
-                питання, таймер та рейтинг оновлюються миттєво.
-            </p>
-        </div>
-
-        <div class="panel panel-narrow">
-            <div class="panel-title">ℹ️ Як це працює</div>
+            <div class="panel-title">🎮 Як грати</div>
             <p style="font-size:14px;line-height:1.6;">
-                1. Вчитель створює кімнату — отримує <b>PIN</b> та QR.<br>
-                2. Учні вводять PIN або сканують QR на своїх телефонах.<br>
+                1. Вчитель створює кімнату, отримує <b>PIN</b> та QR.<br>
+                2. Учні вводять PIN, обирають аватар та аксесуари.<br>
                 3. Вчитель натискає <b>«Почати»</b>, потім керує кнопкою <b>«Продовжити»</b>.<br>
-                4. Перемагає той, хто набере найбільше балів!
+                4. За правильні відповіді — бали та <b>СанКоїни</b>.<br>
+                5. Серія з 3 правильних — активація <b>суперсили</b>!<br>
+                6. Витрачай СанКоїни в <b>Гардеробі</b> на аватари, аксесуари й теми.
             </p>
         </div>
     </div>
 
     <!-- ============================================================
-         ЕКРАН 2: НАЛАШТУВАННЯ ВЧИТЕЛЯ
+         ЕКРАН 2: ГАРДЕРОБ / МАГАЗИН
+         ============================================================ -->
+    <div id="screen-shop" class="screen">
+        <h1>🛒 Гардероб / Магазин</h1>
+        <p class="subtitle">Витрачай СанКоїни, розблоковуй аватари, аксесуари та теми</p>
+
+        <div class="panel panel-narrow">
+            <div class="balance-bar">
+                <span>🪙 СанКоїни:</span>
+                <span id="shopCoins">0</span>
+            </div>
+
+            <div class="shop-avatar-preview">
+                <div style="font-size:14px;color:var(--text-dim);margin-bottom:8px;">Твій поточний вигляд:</div>
+                <div class="big-avatar" id="shopPreviewAvatar">
+                    🐱
+                    <span class="big-accessory" id="shopPreviewHead" style="display:none;"></span>
+                    <span class="big-accessory" id="shopPreviewEyes" style="display:none;top:0;right:-20px;font-size:28px;"></span>
+                    <span class="big-effect" id="shopPreviewEffect" style="display:none;"></span>
+                </div>
+                <div id="shopPreviewName" style="font-size:14px;font-weight:800;margin-top:10px;">Кіт-астронавт</div>
+            </div>
+
+            <div class="shop-tabs">
+                <button class="shop-tab active" data-tab="avatars" onclick="App.switchShopTab('avatars')">🐾 Аватари</button>
+                <button class="shop-tab" data-tab="accessories" onclick="App.switchShopTab('accessories')">🎩 Аксесуари</button>
+                <button class="shop-tab" data-tab="themes" onclick="App.switchShopTab('themes')">🎨 Теми</button>
+            </div>
+
+            <div id="shopGrid" class="shop-grid"></div>
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="button-grid two-col">
+                <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
+                <button class="primary" onclick="App.saveProfile()">💾 Зберегти</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         ЕКРАН 3: НАЛАШТУВАННЯ ВЧИТЕЛЯ
          ============================================================ -->
     <div id="screen-teacher-setup" class="screen">
         <h1>👩‍🏫 Панель Організатора</h1>
@@ -799,45 +841,23 @@ body.theme-neon .toast { box-shadow: 0 0 22px rgba(255, 95, 240, 0.75); }
 
         <div class="panel panel-narrow">
             <div class="panel-title">🎨 Стиль інтерфейсу</div>
-            <div class="theme-switcher">
-                <button class="theme-btn active" data-theme="neon" onclick="App.setTheme('neon')">🌌 Неон</button>
-                <button class="theme-btn" data-theme="pastel" onclick="App.setTheme('pastel')">🍑 Пастель</button>
-            </div>
+            <div class="theme-switcher" id="teacherThemeSwitcher"></div>
         </div>
 
         <div class="panel panel-narrow">
             <div class="panel-title">📚 Шаблон питань</div>
-            <p style="font-size:13px;color:var(--text-dim);margin-bottom:8px;">
-                Готові набори для 5 класу. Можна редагувати після завантаження.
-            </p>
             <div class="template-grid">
                 <button class="template-card" data-template="math" onclick="App.selectTemplate('math', this)">
-                    <div class="icon">➗</div>
-                    <div class="info">
-                        <h4>Математика</h4>
-                        <p>10 питань • числа, дроби, задачі</p>
-                    </div>
+                    <div class="icon">➗</div><div class="info"><h4>Математика</h4><p>10 питань</p></div>
                 </button>
                 <button class="template-card" data-template="ukrainian" onclick="App.selectTemplate('ukrainian', this)">
-                    <div class="icon">📖</div>
-                    <div class="info">
-                        <h4>Українська мова</h4>
-                        <p>10 питань • орфографія, частини мови</p>
-                    </div>
+                    <div class="icon">📖</div><div class="info"><h4>Українська мова</h4><p>10 питань</p></div>
                 </button>
                 <button class="template-card" data-template="history" onclick="App.selectTemplate('history', this)">
-                    <div class="icon">🏛️</div>
-                    <div class="info">
-                        <h4>Історія України</h4>
-                        <p>10 питань • Київська Русь, козацтво</p>
-                    </div>
+                    <div class="icon">🏛️</div><div class="info"><h4>Історія України</h4><p>10 питань</p></div>
                 </button>
                 <button class="template-card" data-template="nature" onclick="App.selectTemplate('nature', this)">
-                    <div class="icon">🌿</div>
-                    <div class="info">
-                        <h4>Природознавство</h4>
-                        <p>10 питань • тварини, рослини, планета</p>
-                    </div>
+                    <div class="icon">🌿</div><div class="info"><h4>Природознавство</h4><p>10 питань</p></div>
                 </button>
             </div>
         </div>
@@ -846,61 +866,41 @@ body.theme-neon .toast { box-shadow: 0 0 22px rgba(255, 95, 240, 0.75); }
             <div class="panel-title">🎮 Ігровий режим</div>
             <div class="mode-grid">
                 <button class="mode-card selected" data-mode="arcade" onclick="App.selectMode('arcade', this)">
-                    <div class="icon">🕹️</div>
-                    <div class="info">
-                        <h4>Аркада</h4>
-                        <p>Класичні бали, 20 сек/питання</p>
-                    </div>
+                    <div class="icon">🕹️</div><div class="info"><h4>Аркада</h4><p>20 сек/питання</p></div>
                 </button>
                 <button class="mode-card" data-mode="survival" onclick="App.selectMode('survival', this)">
-                    <div class="icon">🔥</div>
-                    <div class="info">
-                        <h4>Виживання</h4>
-                        <p>3 помилки — виліт. 15 сек/питання</p>
-                    </div>
+                    <div class="icon">🔥</div><div class="info"><h4>Виживання</h4><p>15 сек, 3 помилки — виліт</p></div>
                 </button>
                 <button class="mode-card" data-mode="treasure" onclick="App.selectMode('treasure', this)">
-                    <div class="icon">💎</div>
-                    <div class="info">
-                        <h4>Полювання на скарби</h4>
-                        <p>Бонус за швидкість. 25 сек/питання</p>
-                    </div>
+                    <div class="icon">💎</div><div class="info"><h4>Полювання на скарби</h4><p>25 сек, бонус за швидкість</p></div>
                 </button>
             </div>
         </div>
 
         <div class="panel panel-narrow">
             <div class="panel-title">🤖 Кількість ботів</div>
-            <p style="font-size:13px;color:var(--text-dim);margin-bottom:8px;">
-                Боти отримають українські імена й прізвища та змагатимуться разом з учнями.
-            </p>
-            <label for="botCount">Скільки ботів додати?</label>
-            <input type="number" id="botCount" min="0" max="200" value="5" placeholder="Наприклад, 20">
+            <input type="number" id="botCount" min="0" max="200" value="5">
             <div class="button-row">
                 <button class="ghost small" onclick="document.getElementById('botCount').value=0">0</button>
                 <button class="ghost small" onclick="document.getElementById('botCount').value=5">5</button>
                 <button class="ghost small" onclick="document.getElementById('botCount').value=10">10</button>
                 <button class="ghost small" onclick="document.getElementById('botCount').value=25">25</button>
                 <button class="ghost small" onclick="document.getElementById('botCount').value=50">50</button>
-                <button class="ghost small" onclick="document.getElementById('botCount').value=100">100</button>
             </div>
         </div>
 
         <div class="panel panel-narrow">
             <div class="panel-title">⏱️ Час на питання</div>
-            <label for="timePerQuestion">Секунд на питання (5–60)</label>
+            <label for="timePerQuestion">Секунд (5–60)</label>
             <input type="number" id="timePerQuestion" min="5" max="60" value="20">
         </div>
 
         <div class="panel panel-narrow">
             <div class="panel-title">✏️ Конструктор питань</div>
-            <p style="font-size:13px;color:var(--text-dim);margin-bottom:8px;">
-                Додай власні питання або відредагуй шаблон. Обери правильну відповідь радіокнопкою.
-            </p>
             <div id="questionsEditor"></div>
             <div class="button-row">
-                <button class="ghost small" onclick="App.addQuestion()">➕ Додати питання</button>
-                <button class="ghost small" onclick="App.clearQuestions()">🗑️ Очистити всі</button>
+                <button class="ghost small" onclick="App.addQuestion()">➕ Додати</button>
+                <button class="ghost small" onclick="App.clearQuestions()">🗑️ Очистити</button>
             </div>
         </div>
 
@@ -913,14 +913,14 @@ body.theme-neon .toast { box-shadow: 0 0 22px rgba(255, 95, 240, 0.75); }
     </div>
 
     <!-- ============================================================
-         ЕКРАН 3: ЛОБІ ВЧИТЕЛЯ
+         ЕКРАН 4: ЛОБІ ВЧИТЕЛЯ
          ============================================================ -->
     <div id="screen-teacher-lobby" class="screen">
         <h1>🎯 Кімната створена!</h1>
-        <p class="subtitle">Покажи цей PIN учням або дай відсканувати QR</p>
+        <p class="subtitle">Покажи PIN учням або дай відсканувати QR</p>
 
         <div class="panel panel-narrow center">
-            <div class="panel-title" style="justify-content:center;">🔑 PIN-код кімнати</div>
+            <div class="panel-title" style="justify-content:center;">🔑 PIN-код</div>
             <div class="pin-display" id="roomPin">------</div>
             <div class="status-row">
                 <span class="badge live" id="lobbyStatusBadge">Кімната активна</span>
@@ -935,34 +935,26 @@ body.theme-neon .toast { box-shadow: 0 0 22px rgba(255, 95, 240, 0.75); }
                 <input type="text" id="joinLink" readonly onclick="this.select()">
                 <button class="ghost small" onclick="App.copyLink()">📋 Копіювати</button>
             </div>
-            <p style="font-size:12px;color:var(--text-dim);margin-top:8px;">
-                Або учні вручну вводять PIN на своєму пристрої.
-            </p>
         </div>
 
         <div class="panel panel-narrow">
-            <div class="panel-title">👥 Гравці в кімнаті (<span id="lobbyCountInline">0</span>)</div>
-            <div id="lobbyPlayerList" class="player-list">
-                <p style="color:var(--text-dim);font-size:14px;text-align:center;padding:14px;">
-                    Очікуємо на учнів...
-                </p>
-            </div>
+            <div class="panel-title">👥 Гравці (<span id="lobbyCountInline">0</span>)</div>
+            <div id="lobbyPlayerList" class="player-list"></div>
         </div>
 
         <div class="panel panel-narrow">
             <div class="button-grid two-col">
                 <button class="primary" onclick="App.startGame()">▶️ Почати гру</button>
-                <button class="danger" onclick="App.closeRoom()">✖️ Закрити кімнату</button>
+                <button class="danger" onclick="App.closeRoom()">✖️ Закрити</button>
             </div>
         </div>
     </div>
 
     <!-- ============================================================
-         ЕКРАН 4: ГРА ВЧИТЕЛЯ
+         ЕКРАН 5: ГРА ВЧИТЕЛЯ
          ============================================================ -->
     <div id="screen-teacher-game" class="screen">
         <h1>🎮 Гра триває</h1>
-
         <div class="panel">
             <div class="progress-info">
                 <span>Питання <b id="tqIndex">1</b> з <b id="tqTotal">10</b></span>
@@ -975,17 +967,14 @@ body.theme-neon .toast { box-shadow: 0 0 22px rgba(255, 95, 240, 0.75); }
             <div class="question-text" id="tqText">Питання з'явиться тут</div>
             <div class="answers-grid" id="tqAnswers"></div>
         </div>
-
         <div class="panel">
-            <div class="panel-title">📊 Рейтинг у реальному часі</div>
+            <div class="panel-title">📊 Рейтинг</div>
             <div id="tqLeaderboard" class="player-list"></div>
         </div>
-
         <div class="panel">
             <div class="panel-title">📡 Жива стрічка</div>
             <div class="event-feed" id="tqFeed"></div>
         </div>
-
         <div class="panel">
             <div class="button-grid two-col">
                 <button class="primary" id="btnNext" onclick="App.nextQuestion()">⏭️ Продовжити</button>
@@ -995,22 +984,26 @@ body.theme-neon .toast { box-shadow: 0 0 22px rgba(255, 95, 240, 0.75); }
     </div>
 
     <!-- ============================================================
-         ЕКРАН 5: ВХІД УЧНЯ
+         ЕКРАН 6: ВХІД УЧНЯ
          ============================================================ -->
     <div id="screen-student-join" class="screen">
         <h1>🎒 Вхід учня</h1>
-        <p class="subtitle">Введи PIN-код від вчителя</p>
+        <p class="subtitle">Введи PIN та налаштуй профіль</p>
 
         <div class="panel panel-narrow">
-            <div class="panel-title">🎨 Стиль інтерфейсу</div>
-            <div class="theme-switcher">
-                <button class="theme-btn active" data-theme="neon" onclick="App.setTheme('neon')">🌌 Неон</button>
-                <button class="theme-btn" data-theme="pastel" onclick="App.setTheme('pastel')">🍑 Пастель</button>
+            <div class="balance-bar">
+                <span>🪙 СанКоїни:</span>
+                <span id="joinCoins">0</span>
             </div>
         </div>
 
         <div class="panel panel-narrow">
-            <div class="panel-title">🔑 PIN-код кімнати</div>
+            <div class="panel-title">🎨 Тема</div>
+            <div class="theme-switcher" id="studentThemeSwitcher"></div>
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="panel-title">🔑 PIN кімнати</div>
             <input type="text" id="studentPin" class="pin-input" maxlength="6" inputmode="numeric" placeholder="000000" autocomplete="off">
         </div>
 
@@ -1020,11 +1013,19 @@ body.theme-neon .toast { box-shadow: 0 0 22px rgba(255, 95, 240, 0.75); }
         </div>
 
         <div class="panel panel-narrow">
-            <div class="panel-title">😀 Обери свій аватар <span id="chosenAvatarLabel" style="color:var(--accent-2);font-size:1.2em;">😀</span></div>
-            <p style="font-size:12px;color:var(--text-dim);margin-bottom:6px;">
-                Торкнись будь-якого аватара — він підсвітиться та збережеться.
-            </p>
-            <div class="avatar-grid" id="avatarGrid"></div>
+            <div class="panel-title">🐾 Твій аватар</div>
+            <div class="shop-avatar-preview">
+                <div class="big-avatar" id="joinPreviewAvatar">
+                    🐱
+                    <span class="big-accessory" id="joinPreviewHead" style="display:none;"></span>
+                    <span class="big-accessory" id="joinPreviewEyes" style="display:none;top:0;right:-20px;font-size:28px;"></span>
+                    <span class="big-effect" id="joinPreviewEffect" style="display:none;"></span>
+                </div>
+                <div id="joinPreviewName" style="font-size:14px;font-weight:800;margin-top:10px;">Кіт-астронавт</div>
+            </div>
+            <div class="button-row">
+                <button class="gold small" onclick="App.go('screen-shop')">🛒 Змінити в магазині</button>
+            </div>
         </div>
 
         <div class="panel panel-narrow">
@@ -1036,20 +1037,23 @@ body.theme-neon .toast { box-shadow: 0 0 22px rgba(255, 95, 240, 0.75); }
     </div>
 
     <!-- ============================================================
-         ЕКРАН 6: ОЧІКУВАННЯ УЧНЯ
+         ЕКРАН 7: ОЧІКУВАННЯ УЧНЯ
          ============================================================ -->
     <div id="screen-student-waiting" class="screen">
         <div class="panel panel-narrow waiting-card">
-            <span class="avatar-big" id="swAvatar">😀</span>
+            <div class="avatar-big" id="swAvatarWrap">
+                <span id="swAvatar">🐱</span>
+                <span class="big-accessory" id="swHead" style="display:none;"></span>
+                <span class="big-accessory" id="swEyes" style="display:none;top:0;right:-20px;font-size:28px;"></span>
+                <span class="big-effect" id="swEffect" style="display:none;"></span>
+            </div>
             <h2 id="swName">Учень</h2>
             <div class="status-row">
                 <span class="badge waiting"><span class="pulse"></span> Очікування старту</span>
                 <span class="badge live" id="swPinBadge">PIN: ------</span>
+                <span class="badge gold" id="swCoinsBadge">🪙 0</span>
             </div>
-            <p class="waiting-text">
-                Ти в кімнаті! Зачекай, поки вчитель запустить гру.
-                Екран оновиться автоматично.
-            </p>
+            <p class="waiting-text">Ти в кімнаті! Зачекай, поки вчитель запустить гру.</p>
             <div class="spacer"></div>
             <div class="panel-title" style="justify-content:center;">👥 Разом з тобою грають</div>
             <div id="swPlayers" class="player-list"></div>
@@ -1057,13 +1061,13 @@ body.theme-neon .toast { box-shadow: 0 0 22px rgba(255, 95, 240, 0.75); }
         <div class="panel panel-narrow">
             <div class="button-grid two-col">
                 <button class="ghost" onclick="App.leaveStudent()">🚪 Вийти</button>
-                <button class="ghost" onclick="App.setTheme(App.theme==='neon'?'pastel':'neon')">🎨 Змінити стиль</button>
+                <button class="gold" onclick="App.go('screen-shop')">🛒 Магазин</button>
             </div>
         </div>
     </div>
 
     <!-- ============================================================
-         ЕКРАН 7: ГРА УЧНЯ
+         ЕКРАН 8: ГРА УЧНЯ
          ============================================================ -->
     <div id="screen-student-game" class="screen">
         <div class="panel">
@@ -1078,6 +1082,18 @@ body.theme-neon .toast { box-shadow: 0 0 22px rgba(255, 95, 240, 0.75); }
             <div class="question-text" id="sqText">Питання з'явиться тут</div>
             <div class="answers-grid" id="sqAnswers"></div>
             <p id="sqFeedback" style="text-align:center;margin-top:12px;font-weight:800;font-size:16px;min-height:24px;"></p>
+            <div class="progress-info" style="margin-top:10px;">
+                <span id="sqStreak">🔥 Серія: 0</span>
+                <span id="sqCoins">🪙 СанКоїни: 0</span>
+            </div>
+            <div class="button-row" id="powerButtons" style="margin-top:10px;">
+                <button class="gold small" id="btnPowerDouble" onclick="App.activatePower('double')" disabled>⚡ Подвійні бали</button>
+                <button class="gold small" id="btnPowerShield" onclick="App.activatePower('shield')" disabled>🛡️ Щит часу</button>
+                <button class="gold small" id="btnPowerReveal" onclick="App.activatePower('reveal')" disabled>🔍 Підказка</button>
+            </div>
+            <p style="font-size:12px;color:var(--text-dim);text-align:center;margin-top:6px;">
+                Суперсила активується після 3 правильних відповідей поспіль
+            </p>
         </div>
         <div class="panel">
             <div class="panel-title">🏆 Топ гравців</div>
@@ -1086,32 +1102,30 @@ body.theme-neon .toast { box-shadow: 0 0 22px rgba(255, 95, 240, 0.75); }
     </div>
 
     <!-- ============================================================
-         ЕКРАН 8: ФІНАЛ
+         ЕКРАН 9: ФІНАЛ
          ============================================================ -->
     <div id="screen-results" class="screen">
         <h1>🏆 Фінальні результати</h1>
-
-        <div class="panel">
-            <div class="podium" id="podium"></div>
-        </div>
-
+        <div class="panel"><div class="podium" id="podium"></div></div>
         <div class="panel">
             <div class="panel-title">🎖️ Повний рейтинг</div>
             <div id="finalLeaderboard" class="player-list"></div>
         </div>
-
         <div class="certificate" id="certificateBox">
             <h2>🏅 Грамота</h2>
             <p style="font-size:15px;">Ця грамота вручається</p>
             <div class="recipient" id="certName">Переможцю</div>
             <p style="font-size:15px;">за перемогу у вікторині SunLorem<br>«Школа-Табір 5 Клас»</p>
             <p style="font-size:20px;margin-top:10px;" id="certScore">Балів: 0</p>
+            <p style="font-size:14px;margin-top:6px;" id="certCoins">🪙 СанКоїни: 0</p>
             <p style="font-size:13px;color:var(--text-dim);margin-top:12px;" id="certDate"></p>
         </div>
-
         <div class="panel" id="resultsButtonsPanel">
             <div class="button-grid two-col">
                 <button class="primary" onclick="App.printCertificate()">🖨️ Роздрукувати грамоту</button>
+                <button class="gold" onclick="App.go('screen-shop')">🛒 Гардероб</button>
+            </div>
+            <div class="button-row">
                 <button class="ghost" onclick="App.go('screen-welcome')">🔄 Нова гра</button>
             </div>
         </div>
@@ -1129,24 +1143,12 @@ body.theme-neon .toast { box-shadow: 0 0 22px rgba(255, 95, 240, 0.75); }
     </div>
 
     <div class="toast" id="toast">Повідомлення</div>
-
 </div>
 
-<!-- ============================================================
-     SOCKET.IO КЛІЄНТ
-     ------------------------------------------------------------
-     Сервлет обслуговується тим самим Express-сервером за
-     шляхом /socket.io/socket.io.js. Жодних CDN, жодних
-     хардкод-URL — усе працює на будь-якому домені (Render).
-     ============================================================ -->
 <script src="/socket.io/socket.io.js"></script>
 <script>
 /* ============================================================
-   SUNLOREM CLIENT
-   Socket.io + UI
-   ------------------------------------------------------------
-   Підключення ВИКЛЮЧНО через io() без аргументів — Socket.io
-   автоматично бере поточний origin.
+   SUNLOREM CLIENT — гейміфікація
    ============================================================ */
 "use strict";
 
@@ -1155,9 +1157,15 @@ const App = (function () {
     /* ========================================================
        КОНСТАНТИ
        ======================================================== */
-    const AVATARS = [
-        '😀','😎','🤓','🥳','😺','🐶','🦊','🐼','🐨','🦁','🐯','🐸','🐵','🐧','🦄','🐙',
-        '🦖','🐉','🌟','⚡','🔥','🌈','🍀','🎈','🚀','🎨','🎮','⚽','🏆','💎','🍕','🍩'
+    const THEMES = [
+        { id: 'neon',   name: 'Неон',          emoji: '🌌' },
+        { id: 'pastel', name: 'Пастель',       emoji: '🍑' },
+        { id: 'space',  name: 'Космос',        emoji: '🌠' },
+        { id: 'cyber',  name: 'Кіберпанк',     emoji: '⚡' },
+        { id: 'forest', name: 'Магічний ліс',  emoji: '🌲' },
+        { id: 'sunset', name: 'Захід сонця',   emoji: '🌅' },
+        { id: 'ocean',  name: 'Океан',         emoji: '🌊' },
+        { id: 'candy',  name: 'Цукеркова',     emoji: '🍭' }
     ];
 
     const TEMPLATES = {
@@ -1168,7 +1176,7 @@ const App = (function () {
                 { text: 'Яке число є простим?', answers: ['9', '15', '17', '21'], correct: 2 },
                 { text: 'Чому дорівнює 144 : 12?', answers: ['10', '11', '12', '14'], correct: 2 },
                 { text: 'Скільки хвилин у 2,5 годинах?', answers: ['120', '135', '150', '180'], correct: 2 },
-                { text: 'Яка площа квадрата зі стороною 9 см?', answers: ['18 см²', '36 см²', '81 см²', '90 см²'], correct: 2 },
+                { text: 'Площа квадрата зі стороною 9 см?', answers: ['18 см²', '36 см²', '81 см²', '90 см²'], correct: 2 },
                 { text: 'Обчисли: 25 + 75 : 5', answers: ['20', '35', '40', '45'], correct: 2 },
                 { text: 'Який дріб дорівнює 0,5?', answers: ['1/5', '1/2', '2/5', '5/10'], correct: 1 },
                 { text: 'Скільки сторін має шестикутник?', answers: ['5', '6', '7', '8'], correct: 1 },
@@ -1224,7 +1232,7 @@ const App = (function () {
     };
 
     const MODES = {
-        arcade: { name: 'Аркада', multiplier: 1.0, defaultTime: 20 },
+        arcade:   { name: 'Аркада', multiplier: 1.0, defaultTime: 20 },
         survival: { name: 'Виживання', multiplier: 1.5, defaultTime: 15 },
         treasure: { name: 'Полювання на скарби', multiplier: 1.2, defaultTime: 25 }
     };
@@ -1238,21 +1246,35 @@ const App = (function () {
         pin: null,
         playerId: null,
         playerName: null,
-        playerAvatar: '😀',
+        // Профіль
+        profile: {
+            coins: 0,
+            ownedAvatars: ['a_cat'],
+            ownedAccessories: ['x_none'],
+            ownedThemes: ['neon', 'pastel'],
+            equippedAvatar: 'a_cat',
+            equippedHead: '',
+            equippedEyes: '',
+            equippedEffect: ''
+        },
+        // Ігрова логіка
         mode: 'arcade',
         timePerQuestion: 20,
         questions: [],
         room: null,
         lastQuestionIndex: -1,
         lastQuestionStartedAt: 0,
-        lastTimeLeft: 20,
         answeredCurrent: false,
         currentQuestionLocalStart: 0,
         socket: null,
         connected: false,
-        reconnecting: false,
-        localTimer: null,
-        initDone: false
+        initDone: false,
+        // Магазин
+        shop: null,
+        shopTab: 'avatars',
+        shopReturnScreen: 'screen-welcome',
+        // Суперсили
+        currentStreak: 0
     };
 
     /* ========================================================
@@ -1270,9 +1292,7 @@ const App = (function () {
     function $(id) { return document.getElementById(id); }
     function qsa(sel, root = document) { return Array.from(root.querySelectorAll(sel)); }
     function escapeHtml(s) {
-        return String(s).replace(/[&<>"']/g, c => ({
-            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-        }[c]));
+        return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     }
 
     let toastTimer = null;
@@ -1298,37 +1318,65 @@ const App = (function () {
         });
     }
 
-    function closeModal() {
-        $('modalOverlay').classList.remove('active');
-    }
+    function closeModal() { $('modalOverlay').classList.remove('active'); }
 
     function go(screenId) {
         qsa('.screen').forEach(s => s.classList.remove('active'));
         const el = $(screenId);
         if (el) { el.classList.add('active'); el.scrollTop = 0; }
+        if (screenId === 'screen-shop') {
+            renderShop();
+        } else if (screenId === 'screen-student-join') {
+            renderJoinPreview();
+        } else if (screenId === 'screen-welcome') {
+            updateCoinsDisplays();
+        }
     }
 
     /* ========================================================
-       ТЕМА
+       ТЕМИ
        ======================================================== */
-    function setTheme(theme) {
-        State.theme = (theme === 'pastel') ? 'pastel' : 'neon';
-        document.body.classList.remove('theme-neon', 'theme-pastel');
-        document.body.classList.add('theme-' + State.theme);
-        Storage.set('sunlorem_theme', State.theme);
-        qsa('.theme-btn').forEach(b => b.classList.toggle('active', b.dataset.theme === State.theme));
-        if (State.theme === 'pastel') {
+    function setTheme(themeId) {
+        // Дозволяємо лише розблоковані теми
+        if (!State.profile.ownedThemes.includes(themeId)) {
+            toast('Ця тема ще не розблокована. Купи її в магазині!');
+            return;
+        }
+        State.theme = themeId;
+        document.body.className = 'theme-' + themeId;
+        Storage.set('sunlorem_theme', themeId);
+        renderThemeSwitchers();
+        if (['pastel','candy'].includes(themeId)) {
             const p = $('particles'); if (p) p.innerHTML = '';
         } else {
             spawnParticles();
         }
     }
 
+    function renderThemeSwitchers() {
+        const containers = ['teacherThemeSwitcher', 'studentThemeSwitcher'];
+        containers.forEach(cid => {
+            const el = $(cid);
+            if (!el) return;
+            el.innerHTML = '';
+            THEMES.forEach(t => {
+                const owned = State.profile.ownedThemes.includes(t.id);
+                const btn = document.createElement('button');
+                btn.className = 'theme-btn' + (State.theme === t.id ? ' active' : '');
+                btn.dataset.theme = t.id;
+                btn.innerHTML = t.emoji + ' ' + t.name + (owned ? '' : ' 🔒');
+                btn.disabled = !owned;
+                btn.addEventListener('click', () => setTheme(t.id));
+                el.appendChild(btn);
+            });
+        });
+    }
+
     function spawnParticles() {
         const c = $('particles');
         if (!c) return;
         c.innerHTML = '';
-        if (State.theme === 'pastel') return;
+        if (['pastel', 'candy'].includes(State.theme)) return;
         const colors = ['#b56bff', '#ff5ff0', '#5ff0ff', '#ffd75f', '#5fff9b'];
         for (let i = 0; i < 22; i++) {
             const p = document.createElement('div');
@@ -1346,40 +1394,283 @@ const App = (function () {
     }
 
     /* ========================================================
-       АВАТАРИ
+       ПРОФІЛЬ — збереження / завантаження
        ======================================================== */
-    function buildAvatarGrid() {
-        const grid = $('avatarGrid');
-        if (!grid) return;
-        grid.innerHTML = '';
-        const saved = Storage.get('sunlorem_last_avatar', AVATARS[0]);
-        State.playerAvatar = AVATARS.indexOf(saved) >= 0 ? saved : AVATARS[0];
+    function loadProfile() {
+        const saved = Storage.get('sunlorem_profile');
+        if (saved && typeof saved === 'object') {
+            State.profile = Object.assign(State.profile, saved);
+            // Гарантуємо базові значення
+            if (!Array.isArray(State.profile.ownedAvatars)) State.profile.ownedAvatars = ['a_cat'];
+            if (!Array.isArray(State.profile.ownedAccessories)) State.profile.ownedAccessories = ['x_none'];
+            if (!Array.isArray(State.profile.ownedThemes)) State.profile.ownedThemes = ['neon', 'pastel'];
+            if (!State.profile.equippedAvatar) State.profile.equippedAvatar = 'a_cat';
+            if (typeof State.profile.coins !== 'number') State.profile.coins = 0;
+            if (!State.profile.ownedAvatars.includes('a_cat')) State.profile.ownedAvatars.push('a_cat');
+            if (!State.profile.ownedAccessories.includes('x_none')) State.profile.ownedAccessories.push('x_none');
+        }
+    }
 
-        AVATARS.forEach(a => {
-            const d = document.createElement('div');
-            d.className = 'avatar-option';
-            d.textContent = a;
-            d.dataset.avatar = a;
-            d.setAttribute('role', 'button');
-            d.setAttribute('tabindex', '0');
+    function saveProfile() {
+        Storage.set('sunlorem_profile', State.profile);
+        updateCoinsDisplays();
+        toast('Профіль збережено!');
+        if (State.socket && State.connected && State.room && State.playerId) {
+            State.socket.emit('updateProfile', {
+                playerId: State.playerId,
+                avatarId: State.profile.equippedAvatar,
+                accessories: {
+                    head: State.profile.equippedHead,
+                    eyes: State.profile.equippedEyes,
+                    effect: State.profile.equippedEffect
+                },
+                coins: State.profile.coins
+            });
+        }
+    }
 
-            const handler = (e) => {
-                if (e) { e.preventDefault(); e.stopPropagation(); }
-                qsa('#avatarGrid .avatar-option').forEach(x => x.classList.remove('selected'));
-                d.classList.add('selected');
-                State.playerAvatar = a;
-                Storage.set('sunlorem_last_avatar', a);
-                const lbl = $('chosenAvatarLabel');
-                if (lbl) lbl.textContent = a;
-            };
-            d.addEventListener('click', handler);
-            d.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') handler(e); });
-
-            if (a === State.playerAvatar) d.classList.add('selected');
-            grid.appendChild(d);
+    function updateCoinsDisplays() {
+        const ids = ['welcomeCoins', 'shopCoins', 'joinCoins'];
+        ids.forEach(id => {
+            const el = $(id);
+            if (el) el.textContent = State.profile.coins;
         });
-        const lbl = $('chosenAvatarLabel');
-        if (lbl) lbl.textContent = State.playerAvatar;
+        // бейдж на екрані очікування
+        const sw = $('swCoinsBadge');
+        if (sw) sw.textContent = '🪙 ' + State.profile.coins;
+    }
+
+    function addCoins(amount) {
+        State.profile.coins += amount;
+        if (State.profile.coins < 0) State.profile.coins = 0;
+        Storage.set('sunlorem_profile', State.profile);
+        updateCoinsDisplays();
+    }
+
+    /* ========================================================
+       ОНОВЛЕННЯ ПРЕВ'Ю АВАТАРА
+       ======================================================== */
+    function getAvatarEmoji(avatarId) {
+        if (!State.shop) return '🐱';
+        const a = State.shop.avatars.find(x => x.id === avatarId);
+        return a ? a.emoji : '🐱';
+    }
+    function getAccEmoji(accId) {
+        if (!State.shop || !accId) return '';
+        const a = State.shop.accessories.find(x => x.id === accId);
+        return a ? a.emoji : '';
+    }
+    function getAvatarName(avatarId) {
+        if (!State.shop) return 'Невідомий';
+        const a = State.shop.avatars.find(x => x.id === avatarId);
+        return a ? a.name : 'Невідомий';
+    }
+
+    function renderJoinPreview() {
+        if (!State.shop) return;
+        const avatarEmoji = getAvatarEmoji(State.profile.equippedAvatar);
+        const headEmoji = getAccEmoji(State.profile.equippedHead);
+        const eyesEmoji = getAccEmoji(State.profile.equippedEyes);
+        const effectEmoji = getAccEmoji(State.profile.equippedEffect);
+        const set = (id, txt, show) => {
+            const el = $(id);
+            if (!el) return;
+            el.textContent = txt;
+            el.style.display = show ? '' : 'none';
+        };
+        const pv = $('joinPreviewAvatar');
+        if (pv) {
+            // перший текстовий вузол — емодзі аватара
+            const first = pv.childNodes[0];
+            if (first && first.nodeType === 3) first.nodeValue = avatarEmoji;
+        }
+        set('joinPreviewHead', headEmoji, !!headEmoji);
+        set('joinPreviewEyes', eyesEmoji, !!eyesEmoji);
+        set('joinPreviewEffect', effectEmoji, !!effectEmoji);
+        const nm = $('joinPreviewName');
+        if (nm) nm.textContent = getAvatarName(State.profile.equippedAvatar);
+    }
+
+    function renderShopPreview() {
+        if (!State.shop) return;
+        const avatarEmoji = getAvatarEmoji(State.profile.equippedAvatar);
+        const headEmoji = getAccEmoji(State.profile.equippedHead);
+        const eyesEmoji = getAccEmoji(State.profile.equippedEyes);
+        const effectEmoji = getAccEmoji(State.profile.equippedEffect);
+        const set = (id, txt, show) => {
+            const el = $(id);
+            if (!el) return;
+            el.textContent = txt;
+            el.style.display = show ? '' : 'none';
+        };
+        const pv = $('shopPreviewAvatar');
+        if (pv) {
+            const first = pv.childNodes[0];
+            if (first && first.nodeType === 3) first.nodeValue = avatarEmoji;
+        }
+        set('shopPreviewHead', headEmoji, !!headEmoji);
+        set('shopPreviewEyes', eyesEmoji, !!eyesEmoji);
+        set('shopPreviewEffect', effectEmoji, !!effectEmoji);
+        const nm = $('shopPreviewName');
+        if (nm) nm.textContent = getAvatarName(State.profile.equippedAvatar);
+    }
+
+    /* ========================================================
+       МАГАЗИН
+       ======================================================== */
+    function switchShopTab(tab) {
+        State.shopTab = tab;
+        qsa('.shop-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+        renderShop();
+    }
+
+    function renderShop() {
+        if (!State.shop) return;
+        renderShopPreview();
+        updateCoinsDisplays();
+
+        const wrap = $('shopGrid');
+        if (!wrap) return;
+        wrap.innerHTML = '';
+
+        if (State.shopTab === 'avatars') {
+            State.shop.avatars.forEach(a => {
+                const owned = State.profile.ownedAvatars.includes(a.id);
+                const equipped = State.profile.equippedAvatar === a.id;
+                const card = document.createElement('div');
+                card.className = 'shop-card' + (!owned ? ' locked' : '') + (owned ? ' owned' : '') + (equipped ? ' equipped' : '');
+                card.innerHTML = `
+                    <span class="preview">${a.emoji}</span>
+                    <div class="name">${escapeHtml(a.name)}</div>
+                    <div class="price ${owned ? 'owned' : (State.profile.coins < a.price ? 'cant' : '')}">
+                        ${owned ? '✓ Куплено' : '🪙 ' + a.price}
+                    </div>
+                    <div class="buy-hint">${equipped ? 'Одягнуто' : (owned ? 'Натисни — одягнути' : 'Натисни — купити')}</div>
+                `;
+                card.addEventListener('click', () => onAvatarClick(a));
+                wrap.appendChild(card);
+            });
+        } else if (State.shopTab === 'accessories') {
+            State.shop.accessories.forEach(a => {
+                const owned = State.profile.ownedAccessories.includes(a.id);
+                const equipped = (a.slot === 'head' && State.profile.equippedHead === a.id) ||
+                                 (a.slot === 'eyes' && State.profile.equippedEyes === a.id) ||
+                                 (a.slot === 'effect' && State.profile.equippedEffect === a.id) ||
+                                 (a.id === 'x_none' && !State.profile.equippedHead && !State.profile.equippedEyes && !State.profile.equippedEffect);
+                const card = document.createElement('div');
+                card.className = 'shop-card' + (!owned ? ' locked' : '') + (owned ? ' owned' : '') + (equipped ? ' equipped' : '');
+                const emoji = a.emoji || '∅';
+                card.innerHTML = `
+                    <span class="preview">${emoji}</span>
+                    <div class="name">${escapeHtml(a.name)}</div>
+                    <div style="font-size:11px;color:var(--text-dim);">слот: ${a.slot === 'head' ? 'голова' : a.slot === 'eyes' ? 'очі' : 'ефект'}</div>
+                    <div class="price ${owned ? 'owned' : (State.profile.coins < a.price ? 'cant' : '')}">
+                        ${owned ? '✓ Куплено' : '🪙 ' + a.price}
+                    </div>
+                    <div class="buy-hint">${equipped ? 'Одягнуто' : (owned ? 'Натисни — одягнути' : 'Натисни — купити')}</div>
+                `;
+                card.addEventListener('click', () => onAccessoryClick(a));
+                wrap.appendChild(card);
+            });
+        } else if (State.shopTab === 'themes') {
+            State.shop.themes.forEach(t => {
+                const owned = State.profile.ownedThemes.includes(t.id);
+                const equipped = State.theme === t.id;
+                const card = document.createElement('div');
+                card.className = 'shop-card' + (!owned ? ' locked' : '') + (owned ? ' owned' : '') + (equipped ? ' equipped' : '');
+                const themeEmoji = (THEMES.find(x => x.id === t.id) || {}).emoji || '🎨';
+                card.innerHTML = `
+                    <span class="preview">${themeEmoji}</span>
+                    <div class="name">${escapeHtml(t.name)}</div>
+                    <div style="font-size:11px;color:var(--text-dim);">${escapeHtml(t.desc)}</div>
+                    <div class="price ${owned ? 'owned' : (State.profile.coins < t.price ? 'cant' : '')}">
+                        ${owned ? '✓ Куплено' : '🪙 ' + t.price}
+                    </div>
+                    <div class="buy-hint">${equipped ? 'Активна' : (owned ? 'Натисни — застосувати' : 'Натисни — купити')}</div>
+                `;
+                card.addEventListener('click', () => onThemeClick(t));
+                wrap.appendChild(card);
+            });
+        }
+    }
+
+    function onAvatarClick(a) {
+        if (State.profile.ownedAvatars.includes(a.id)) {
+            State.profile.equippedAvatar = a.id;
+            saveProfile();
+            renderShop();
+            renderJoinPreview();
+        } else {
+            if (State.profile.coins < a.price) {
+                toast('Недостатньо СанКоїнів. Потрібно ще ' + (a.price - State.profile.coins));
+                return;
+            }
+            if (!confirm('Купити "' + a.name + '" за ' + a.price + ' 🪙?')) return;
+            State.profile.coins -= a.price;
+            State.profile.ownedAvatars.push(a.id);
+            State.profile.equippedAvatar = a.id;
+            saveProfile();
+            renderShop();
+            renderJoinPreview();
+            toast('🎉 Куплено: ' + a.name);
+        }
+    }
+
+    function onAccessoryClick(a) {
+        if (a.id === 'x_none') {
+            State.profile.equippedHead = '';
+            State.profile.equippedEyes = '';
+            State.profile.equippedEffect = '';
+            saveProfile();
+            renderShop();
+            renderJoinPreview();
+            return;
+        }
+        if (State.profile.ownedAccessories.includes(a.id)) {
+            // Одягаємо в потрібний слот
+            if (a.slot === 'head') State.profile.equippedHead = (State.profile.equippedHead === a.id ? '' : a.id);
+            if (a.slot === 'eyes') State.profile.equippedEyes = (State.profile.equippedEyes === a.id ? '' : a.id);
+            if (a.slot === 'effect') State.profile.equippedEffect = (State.profile.equippedEffect === a.id ? '' : a.id);
+            saveProfile();
+            renderShop();
+            renderJoinPreview();
+        } else {
+            if (State.profile.coins < a.price) {
+                toast('Недостатньо СанКоїнів. Потрібно ще ' + (a.price - State.profile.coins));
+                return;
+            }
+            if (!confirm('Купити "' + a.name + '" за ' + a.price + ' 🪙?')) return;
+            State.profile.coins -= a.price;
+            State.profile.ownedAccessories.push(a.id);
+            // Автоматично одягаємо
+            if (a.slot === 'head') State.profile.equippedHead = a.id;
+            if (a.slot === 'eyes') State.profile.equippedEyes = a.id;
+            if (a.slot === 'effect') State.profile.equippedEffect = a.id;
+            saveProfile();
+            renderShop();
+            renderJoinPreview();
+            toast('🎉 Куплено: ' + a.name);
+        }
+    }
+
+    function onThemeClick(t) {
+        if (State.profile.ownedThemes.includes(t.id)) {
+            setTheme(t.id);
+            renderShop();
+            toast('Тема застосована: ' + t.name);
+        } else {
+            if (State.profile.coins < t.price) {
+                toast('Недостатньо СанКоїнів. Потрібно ще ' + (t.price - State.profile.coins));
+                return;
+            }
+            if (!confirm('Розблокувати тему "' + t.name + '" за ' + t.price + ' 🪙?')) return;
+            State.profile.coins -= t.price;
+            State.profile.ownedThemes.push(t.id);
+            saveProfile();
+            setTheme(t.id);
+            renderShop();
+            toast('🎉 Тема розблокована: ' + t.name);
+        }
     }
 
     /* ========================================================
@@ -1390,7 +1681,7 @@ const App = (function () {
         if (!wrap) return;
         wrap.innerHTML = '';
         if (State.questions.length === 0) {
-            wrap.innerHTML = '<p style="color:var(--text-dim);font-size:14px;text-align:center;padding:12px;">Питань поки немає. Обери шаблон або додай вручну.</p>';
+            wrap.innerHTML = '<p style="color:var(--text-dim);font-size:14px;text-align:center;padding:12px;">Питань поки немає.</p>';
             return;
         }
         State.questions.forEach((q, qi) => {
@@ -1403,7 +1694,6 @@ const App = (function () {
             idx.className = 'q-index';
             idx.textContent = '#' + (qi + 1);
             header.appendChild(idx);
-
             const del = document.createElement('button');
             del.className = 'danger small';
             del.textContent = '🗑️';
@@ -1421,14 +1711,12 @@ const App = (function () {
             q.answers.forEach((ans, ai) => {
                 const row = document.createElement('div');
                 row.className = 'answer-input-row';
-
                 const radio = document.createElement('input');
                 radio.type = 'radio';
                 radio.name = 'correct_' + qi;
                 radio.checked = q.correct === ai;
                 radio.addEventListener('change', () => { State.questions[qi].correct = ai; });
                 row.appendChild(radio);
-
                 const inp = document.createElement('input');
                 inp.type = 'text';
                 inp.value = ans;
@@ -1467,11 +1755,7 @@ const App = (function () {
         if (btn) btn.classList.add('selected');
         const tpl = TEMPLATES[key];
         if (!tpl) return;
-        State.questions = tpl.questions.map(q => ({
-            text: q.text,
-            answers: q.answers.slice(),
-            correct: q.correct
-        }));
+        State.questions = tpl.questions.map(q => ({ text: q.text, answers: q.answers.slice(), correct: q.correct }));
         renderQuestionsEditor();
         toast('Завантажено: ' + tpl.name);
     }
@@ -1488,20 +1772,11 @@ const App = (function () {
     }
 
     /* ========================================================
-       SOCKET.IO — ПІДКЛЮЧЕННЯ
-       --------------------------------------------------------
-       ⚠️ КРИТИЧНО ВАЖЛИВО:
-         const socket = io();   ← БЕЗ АРГУМЕНТІВ!
-       Жодних http://localhost:3000, жодних window.location.origin,
-       жодних хардкод-URL. Socket.io сам бере поточний origin.
-       Це гарантує роботу на будь-якому хостингу (Render, Railway,
-       Heroku, локально тощо).
+       SOCKET.IO
        ======================================================== */
     function initSocket() {
-        // ⬇️⬇️⬇️ ЄДИНИЙ ПРАВИЛЬНИЙ ВАРІАНТ ПІДКЛЮЧЕННЯ ⬇️⬇️⬇️
+        // Підключення через io() без аргументів — працює на Railway/Render
         const socket = io();
-        // ⬆️⬆️⬆️ БЕЗ АРГУМЕНТІВ! ⬆️⬆️⬆️
-
         State.socket = socket;
 
         socket.on('connect', () => {
@@ -1509,12 +1784,18 @@ const App = (function () {
             showConn(true, '🟢 Онлайн');
             console.log('[socket] connected id =', socket.id, '| transport =', socket.io.engine.transport.name);
 
-            // Діагностика апгрейду
-            socket.io.engine.on('upgrade', () => {
-                console.log('[socket] upgraded to', socket.io.engine.transport.name);
+            // Завантажуємо магазин
+            socket.emit('getShop', (res) => {
+                if (res && res.ok) {
+                    State.shop = res.shop;
+                    // Якщо є збережений вибір — перемалюємо
+                    renderThemeSwitchers();
+                    renderShop();
+                    renderJoinPreview();
+                }
             });
 
-            // Спроба відновити сесію
+            // Відновлення сесії
             const sess = Storage.get('sunlorem_session');
             if (sess && sess.pin && sess.role) {
                 if (sess.role === 'teacher') {
@@ -1534,14 +1815,19 @@ const App = (function () {
                     socket.emit('joinRoom', {
                         pin: sess.pin,
                         name: sess.name,
-                        avatar: sess.avatar || '😀'
+                        avatarId: State.profile.equippedAvatar,
+                        accessories: {
+                            head: State.profile.equippedHead,
+                            eyes: State.profile.equippedEyes,
+                            effect: State.profile.equippedEffect
+                        },
+                        coins: State.profile.coins
                     }, res => {
                         if (res && res.ok) {
                             State.role = 'student';
                             State.pin = sess.pin;
                             State.playerId = res.playerId;
                             State.playerName = sess.name;
-                            State.playerAvatar = sess.avatar || '😀';
                             State.room = res.state;
                             onStudentState(res.state);
                         } else {
@@ -1560,49 +1846,42 @@ const App = (function () {
 
         socket.on('connect_error', (err) => {
             State.connected = false;
-            showConn(false, '🔴 Помилка з\'єднання');
+            showConn(false, '🔴 Помилка');
             console.warn('[socket] connect_error:', err && err.message);
         });
 
-        socket.io.on('reconnect_attempt', (attempt) => {
-            showConn(false, '🟡 Реконект... (' + attempt + ')');
-        });
-
-        socket.io.on('reconnect', () => {
-            State.connected = true;
-            showConn(true, '🟢 Відновлено');
-        });
-
-        socket.io.on('reconnect_failed', () => {
-            showConn(false, '🔴 Не вдалося під\'єднатися');
-        });
+        socket.io.on('reconnect_attempt', (n) => showConn(false, '🟡 Реконект ' + n));
+        socket.io.on('reconnect', () => { State.connected = true; showConn(true, '🟢 Відновлено'); });
+        socket.io.on('reconnect_failed', () => showConn(false, '🔴 Не вдалося'));
 
         socket.on('state', (state) => {
             State.room = state;
+            // Синхронізуємо локальні СанКоїни з сервером, якщо ми в грі
+            if (State.role === 'student' && State.playerId) {
+                const me = state.players.find(p => p.id === State.playerId);
+                if (me && typeof me.coins === 'number') {
+                    if (me.coins > State.profile.coins) {
+                        State.profile.coins = me.coins;
+                        Storage.set('sunlorem_profile', State.profile);
+                        updateCoinsDisplays();
+                    }
+                }
+            }
             if (State.role === 'teacher') onTeacherState(state);
             else if (State.role === 'student') onStudentState(state);
         });
 
-        socket.on('tick', (data) => {
-            updateTimers(data.timeLeft, data.total);
-        });
-
+        socket.on('tick', (data) => updateTimers(data.timeLeft, data.total));
         socket.on('timeExpired', (data) => {
             if (data && data.questionIndex === (State.room ? State.room.currentQuestion : -1)) {
                 revealCorrectAnswer();
             }
         });
-
-        socket.on('gameOver', () => {
-            if (State.role === 'student') toast('Гру завершено!');
-        });
-
+        socket.on('gameOver', () => { if (State.role === 'student') toast('Гру завершено!'); });
         socket.on('roomClosed', () => {
             openModal('Кімнату закрито', 'Вчитель закрив кімнату. Дякуємо за гру!', () => {
                 Storage.remove('sunlorem_session');
-                State.role = null;
-                State.pin = null;
-                State.room = null;
+                State.role = null; State.pin = null; State.room = null;
                 go('screen-welcome');
             });
         });
@@ -1623,14 +1902,8 @@ const App = (function () {
        СТВОРЕННЯ КІМНАТИ
        ======================================================== */
     function createRoom() {
-        if (!State.socket || !State.connected) {
-            toast('Немає з\'єднання з сервером. Зачекай трохи або онови сторінку.');
-            return;
-        }
-        if (State.questions.length === 0) {
-            openModal('Мало питань', 'Додай хоча б одне питання або завантаж шаблон.');
-            return;
-        }
+        if (!State.socket || !State.connected) { toast('Немає з\'єднання'); return; }
+        if (State.questions.length === 0) { openModal('Мало питань', 'Додай хоча б одне питання.'); return; }
         const botCount = Math.max(0, Math.min(200, parseInt($('botCount').value || '0', 10)));
         const tPerQ = Math.max(5, Math.min(60, parseInt($('timePerQuestion').value || '20', 10)));
 
@@ -1639,22 +1912,14 @@ const App = (function () {
             questions: State.questions,
             mode: State.mode,
             timePerQuestion: tPerQ,
-            botCount: botCount
+            botCount
         }, (res) => {
-            if (!res || !res.ok) {
-                openModal('Помилка', (res && res.error) || 'Не вдалося створити кімнату');
-                return;
-            }
+            if (!res || !res.ok) { openModal('Помилка', (res && res.error) || 'Не вдалося'); return; }
             State.role = 'teacher';
             State.pin = res.pin;
             State.room = res.state;
             State.playerId = 'teacher_' + res.pin;
-
-            Storage.set('sunlorem_session', {
-                role: 'teacher',
-                pin: res.pin
-            });
-
+            Storage.set('sunlorem_session', { role: 'teacher', pin: res.pin });
             $('roomPin').textContent = res.pin;
             const link = buildJoinLink(res.pin);
             $('joinLink').value = link;
@@ -1666,7 +1931,6 @@ const App = (function () {
     }
 
     function buildJoinLink(pin) {
-        // Формуємо з поточного origin — жодних хардкодів!
         const base = window.location.origin + window.location.pathname;
         return base + '?pin=' + pin;
     }
@@ -1676,16 +1940,12 @@ const App = (function () {
         if (!box) return;
         box.innerHTML = '';
         const img = document.createElement('img');
-        img.alt = 'QR-код для входу';
-        img.width = 200;
-        img.height = 200;
-        img.loading = 'eager';
-        img.referrerPolicy = 'no-referrer';
+        img.alt = 'QR';
+        img.width = 200; img.height = 200;
+        img.loading = 'eager'; img.referrerPolicy = 'no-referrer';
         img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(link);
         img.onerror = () => {
-            box.innerHTML = '<p style="color:#333;font-size:13px;padding:14px;text-align:center;line-height:1.4;">' +
-                'QR недоступний.<br>Учні можуть ввести PIN вручну:<br>' +
-                '<b style="font-size:20px;letter-spacing:3px;">' + State.pin + '</b></p>';
+            box.innerHTML = '<p style="color:#333;font-size:13px;padding:14px;text-align:center;">QR недоступний.<br>PIN: <b>' + State.pin + '</b></p>';
         };
         box.appendChild(img);
     }
@@ -1699,7 +1959,7 @@ const App = (function () {
     }
 
     /* ========================================================
-       ОНОВЛЕННЯ ЛОБІ
+       ЛОБІ
        ======================================================== */
     function updateTeacherLobbyUI() {
         const room = State.room;
@@ -1726,10 +1986,35 @@ const App = (function () {
         if (isSelf && p.id === State.playerId) card.classList.add('self');
         if (!p.alive) card.classList.add('dead');
 
-        const av = document.createElement('div');
+        const wrap = document.createElement('div');
+        wrap.className = 'avatar-wrap';
+
+        const av = document.createElement('span');
         av.className = 'avatar';
-        av.textContent = p.avatar || '😀';
-        card.appendChild(av);
+        av.textContent = p.avatar || '🐱';
+        wrap.appendChild(av);
+
+        if (p.accessories) {
+            if (p.accessories.head) {
+                const s = document.createElement('span');
+                s.className = 'acc-head';
+                s.textContent = getAccEmoji(p.accessories.head);
+                if (s.textContent) wrap.appendChild(s);
+            }
+            if (p.accessories.eyes) {
+                const s = document.createElement('span');
+                s.className = 'acc-eyes';
+                s.textContent = getAccEmoji(p.accessories.eyes);
+                if (s.textContent) wrap.appendChild(s);
+            }
+            if (p.accessories.effect) {
+                const s = document.createElement('span');
+                s.className = 'acc-effect';
+                s.textContent = getAccEmoji(p.accessories.effect);
+                if (s.textContent) wrap.appendChild(s);
+            }
+        }
+        card.appendChild(wrap);
 
         const nm = document.createElement('div');
         nm.className = 'name';
@@ -1738,48 +2023,42 @@ const App = (function () {
 
         const sc = document.createElement('div');
         sc.className = 'score';
-        sc.textContent = (p.score || 0) + ' 🏅';
+        sc.innerHTML = (p.score || 0) + ' 🏅<span class="coins"> ' + (p.coins || 0) + ' 🪙</span>';
         card.appendChild(sc);
+
+        if (p.powerActive) {
+            const pb = document.createElement('div');
+            pb.className = 'power-badge';
+            pb.textContent = p.powerActive.type === 'double' ? '⚡' : p.powerActive.type === 'shield' ? '🛡️' : '🔍';
+            card.appendChild(pb);
+        }
 
         return card;
     }
 
     /* ========================================================
-       КЕРУВАННЯ ГРОЮ
+       СТАРТ / КЕРУВАННЯ ГРОЮ
        ======================================================== */
     function startGame() {
-        if (!State.socket || !State.connected) {
-            toast('Немає з\'єднання');
-            return;
-        }
+        if (!State.socket || !State.connected) { toast('Немає з\'єднання'); return; }
         State.socket.emit('startGame', (res) => {
-            if (!res || !res.ok) {
-                toast((res && res.error) || 'Помилка старту');
-                return;
-            }
+            if (!res || !res.ok) { toast((res && res.error) || 'Помилка'); return; }
             go('screen-teacher-game');
             toast('Гра почалася!');
         });
     }
 
     function nextQuestion() {
-        if (!State.socket || !State.connected) {
-            toast('Немає з\'єднання');
-            return;
-        }
+        if (!State.socket || !State.connected) return;
         State.socket.emit('nextQuestion', (res) => {
-            if (!res || !res.ok) {
-                toast((res && res.error) || 'Помилка');
-            }
+            if (!res || !res.ok) toast((res && res.error) || 'Помилка');
         });
     }
 
     function finishGame() {
         if (!State.socket || !State.connected) return;
         State.socket.emit('finishGame', (res) => {
-            if (!res || !res.ok) {
-                toast((res && res.error) || 'Помилка');
-            }
+            if (!res || !res.ok) toast((res && res.error) || 'Помилка');
         });
     }
 
@@ -1789,12 +2068,10 @@ const App = (function () {
             go('screen-welcome');
             return;
         }
-        if (!confirm('Закрити кімнату? Учні будуть від\'єднані.')) return;
+        if (!confirm('Закрити кімнату?')) return;
         State.socket.emit('closeRoom', () => {
             Storage.remove('sunlorem_session');
-            State.role = null;
-            State.pin = null;
-            State.room = null;
+            State.role = null; State.pin = null; State.room = null;
             go('screen-welcome');
             toast('Кімнату закрито');
         });
@@ -1805,18 +2082,13 @@ const App = (function () {
        ======================================================== */
     function onTeacherState(state) {
         if (!state) return;
-
         if (state.status === 'lobby') {
             updateTeacherLobbyUI();
-            if (!$('screen-teacher-lobby').classList.contains('active')) {
-                go('screen-teacher-lobby');
-            }
+            if (!$('screen-teacher-lobby').classList.contains('active')) go('screen-teacher-lobby');
             return;
         }
         if (state.status === 'running') {
-            if (!$('screen-teacher-game').classList.contains('active')) {
-                go('screen-teacher-game');
-            }
+            if (!$('screen-teacher-game').classList.contains('active')) go('screen-teacher-game');
             renderTeacherGame(state);
             return;
         }
@@ -1848,20 +2120,17 @@ const App = (function () {
             wrap.appendChild(btn);
         });
 
-        renderCombinedLeaderboard(state, 'tqLeaderboard');
+        renderLeaderboard(state, 'tqLeaderboard');
         renderFeed(state, 'tqFeed');
 
         const btnNext = $('btnNext');
         if (btnNext) {
-            if (state.currentQuestion >= state.questions.length - 1) {
-                btnNext.textContent = '🏁 Завершити';
-            } else {
-                btnNext.textContent = '⏭️ Продовжити';
-            }
+            btnNext.textContent = (state.currentQuestion >= state.questions.length - 1) ?
+                '🏁 Завершити' : '⏭️ Продовжити';
         }
     }
 
-    function renderCombinedLeaderboard(state, targetId) {
+    function renderLeaderboard(state, targetId) {
         const wrap = $(targetId);
         if (!wrap) return;
         wrap.innerHTML = '';
@@ -1903,14 +2172,16 @@ const App = (function () {
 
         if (state.status === 'lobby') {
             if (!$('screen-student-waiting').classList.contains('active') &&
-                !$('screen-student-game').classList.contains('active')) {
+                !$('screen-student-game').classList.contains('active') &&
+                !$('screen-shop').classList.contains('active')) {
                 go('screen-student-waiting');
             }
             renderStudentWaiting(state);
             return;
         }
         if (state.status === 'running') {
-            if (!$('screen-student-game').classList.contains('active')) {
+            if (!$('screen-student-game').classList.contains('active') &&
+                !$('screen-shop').classList.contains('active')) {
                 go('screen-student-game');
             }
             renderStudentGame(state, me);
@@ -1930,6 +2201,24 @@ const App = (function () {
         state.players.slice().sort((a, b) => b.score - a.score).forEach(p => {
             wrap.appendChild(buildPlayerCard(p, true));
         });
+        // Оновлення великого аватара (профіль)
+        const set = (id, txt, show) => {
+            const el = $(id);
+            if (!el) return;
+            el.textContent = txt;
+            el.style.display = show ? '' : 'none';
+        };
+        const avatarEmoji = getAvatarEmoji(State.profile.equippedAvatar);
+        const swAv = $('swAvatar');
+        if (swAv) swAv.textContent = avatarEmoji;
+        const headEmoji = getAccEmoji(State.profile.equippedHead);
+        const eyesEmoji = getAccEmoji(State.profile.equippedEyes);
+        const effectEmoji = getAccEmoji(State.profile.equippedEffect);
+        set('swHead', headEmoji, !!headEmoji);
+        set('swEyes', eyesEmoji, !!eyesEmoji);
+        set('swEffect', effectEmoji, !!effectEmoji);
+        const swC = $('swCoinsBadge');
+        if (swC) swC.textContent = '🪙 ' + State.profile.coins;
     }
 
     function renderStudentGame(state, me) {
@@ -1946,12 +2235,18 @@ const App = (function () {
             State.answeredCurrent = false;
             const fb = $('sqFeedback');
             if (fb) fb.textContent = '';
+            // Знімаємо підказку
+            qsa('#sqAnswers .answer-btn').forEach(b => b.classList.remove('hint-hidden'));
         }
 
         $('sqIndex').textContent = state.currentQuestion + 1;
         $('sqTotal').textContent = state.questions.length;
         $('sqText').textContent = q.text;
-        if (me) $('sqScore').textContent = 'Бали: ' + me.score;
+        if (me) {
+            $('sqScore').textContent = 'Бали: ' + me.score;
+            $('sqStreak').textContent = '🔥 Серія: ' + (me.streak || 0);
+            $('sqCoins').textContent = '🪙 СанКоїни: ' + (me.coins || 0);
+        }
 
         const wrap = $('sqAnswers');
         if (qChanged) {
@@ -1974,7 +2269,16 @@ const App = (function () {
             });
         }
 
-        renderCombinedLeaderboard(state, 'sqLeaderboard');
+        // Кнопки суперсил
+        const streak = me ? (me.streak || 0) : 0;
+        const hasPower = me && me.powerActive;
+        const canActivate = streak >= 3 && !hasPower;
+        ['btnPowerDouble', 'btnPowerShield', 'btnPowerReveal'].forEach(id => {
+            const btn = $(id);
+            if (btn) btn.disabled = !canActivate;
+        });
+
+        renderLeaderboard(state, 'sqLeaderboard');
     }
 
     function studentAnswer(index) {
@@ -2006,7 +2310,41 @@ const App = (function () {
             q: State.room.currentQuestion,
             a: index
         }, (res) => {
-            if (!res || !res.ok) console.warn('answer rejected', res);
+            if (res && res.ok) {
+                if (typeof res.coins === 'number') {
+                    State.profile.coins = res.coins;
+                    Storage.set('sunlorem_profile', State.profile);
+                    updateCoinsDisplays();
+                }
+                State.currentStreak = res.streak || 0;
+            }
+        });
+    }
+
+    function activatePower(type) {
+        if (!State.socket || !State.connected) return;
+        State.socket.emit('activatePower', {
+            playerId: State.playerId,
+            type
+        }, (res) => {
+            if (!res || !res.ok) {
+                toast((res && res.error) || 'Помилка активації');
+                return;
+            }
+            const names = { double: '⚡ Подвійні бали', shield: '🛡️ Щит часу', reveal: '🔍 Підказка' };
+            toast('Активовано: ' + names[type]);
+            // Якщо це підказка — ховаємо 2 неправильні
+            if (type === 'reveal' && Array.isArray(res.hintIndexes)) {
+                const btns = qsa('#sqAnswers .answer-btn');
+                res.hintIndexes.forEach(i => {
+                    if (btns[i]) btns[i].classList.add('hint-hidden');
+                });
+            }
+            // Блокуємо всі кнопки сил
+            ['btnPowerDouble', 'btnPowerShield', 'btnPowerReveal'].forEach(id => {
+                const b = $(id);
+                if (b) b.disabled = true;
+            });
         });
     }
 
@@ -2015,10 +2353,8 @@ const App = (function () {
        ======================================================== */
     function updateTimers(timeLeft, total) {
         const pct = Math.max(0, (timeLeft / (total || 1)) * 100);
-        const fills = ['tqTimerFill', 'sqTimerFill'];
-        const texts = ['tqTimerText', 'sqTimerText'];
-        fills.forEach(id => { const e = $(id); if (e) e.style.width = pct + '%'; });
-        texts.forEach(id => { const e = $(id); if (e) e.textContent = timeLeft; });
+        ['tqTimerFill', 'sqTimerFill'].forEach(id => { const e = $(id); if (e) e.style.width = pct + '%'; });
+        ['tqTimerText', 'sqTimerText'].forEach(id => { const e = $(id); if (e) e.textContent = timeLeft; });
     }
 
     function revealCorrectAnswer() {
@@ -2035,29 +2371,27 @@ const App = (function () {
        ВХІД УЧНЯ
        ======================================================== */
     function studentJoin() {
-        if (!State.socket || !State.connected) {
-            toast('Немає з\'єднання з сервером. Зачекай трохи.');
-            return;
-        }
+        if (!State.socket || !State.connected) { toast('Немає з\'єднання'); return; }
         const pin = ($('studentPin').value || '').trim();
         const name = ($('studentName').value || '').trim();
-
         if (!/^\d{6}$/.test(pin)) { toast('Введи 6-значний PIN'); return; }
         if (name.length < 2) { toast('Ім\'я закоротке'); return; }
 
         State.playerName = name;
-        State.playerAvatar = State.playerAvatar || '😀';
 
         toast('Підключаємось...');
         State.socket.emit('joinRoom', {
-            pin: pin,
-            name: name,
-            avatar: State.playerAvatar
+            pin,
+            name,
+            avatarId: State.profile.equippedAvatar,
+            accessories: {
+                head: State.profile.equippedHead,
+                eyes: State.profile.equippedEyes,
+                effect: State.profile.equippedEffect
+            },
+            coins: State.profile.coins
         }, (res) => {
-            if (!res || !res.ok) {
-                toast((res && res.error) || 'Помилка входу');
-                return;
-            }
+            if (!res || !res.ok) { toast((res && res.error) || 'Помилка входу'); return; }
             State.role = 'student';
             State.pin = pin;
             State.playerId = res.playerId;
@@ -2065,16 +2399,17 @@ const App = (function () {
 
             Storage.set('sunlorem_session', {
                 role: 'student',
-                pin: pin,
+                pin,
                 playerId: res.playerId,
-                name: name,
-                avatar: State.playerAvatar
+                name
             });
-            Storage.set('sunlorem_last_avatar', State.playerAvatar);
 
-            $('swAvatar').textContent = State.playerAvatar;
-            $('swName').textContent = State.playerName;
-            $('swPinBadge').textContent = 'PIN: ' + pin;
+            const swAv = $('swAvatar');
+            if (swAv) swAv.textContent = getAvatarEmoji(State.profile.equippedAvatar);
+            const swN = $('swName');
+            if (swN) swN.textContent = name;
+            const swP = $('swPinBadge');
+            if (swP) swP.textContent = 'PIN: ' + pin;
 
             go('screen-student-waiting');
             renderStudentWaiting(res.state);
@@ -2084,10 +2419,7 @@ const App = (function () {
 
     function leaveStudent() {
         Storage.remove('sunlorem_session');
-        State.role = null;
-        State.pin = null;
-        State.playerId = null;
-        State.room = null;
+        State.role = null; State.pin = null; State.playerId = null; State.room = null;
         go('screen-welcome');
     }
 
@@ -2110,8 +2442,7 @@ const App = (function () {
             if (!p) {
                 place.innerHTML = '<div class="avatar">—</div><div class="name">—</div><div class="pedestal">—</div>';
             } else {
-                place.innerHTML =
-                    '<div class="avatar">' + (p.avatar || '😀') + '</div>' +
+                place.innerHTML = '<div class="avatar">' + (p.avatar || '🐱') + '</div>' +
                     '<div class="name">' + escapeHtml(p.name) + '</div>' +
                     '<div class="pedestal">' + medals[i] + '</div>';
             }
@@ -2130,13 +2461,13 @@ const App = (function () {
         if (winner) {
             $('certName').textContent = winner.name;
             $('certScore').textContent = 'Балів: ' + winner.score;
+            $('certCoins').textContent = '🪙 СанКоїни: ' + (winner.coins || 0);
         } else {
             $('certName').textContent = 'Немає учасників';
             $('certScore').textContent = '';
+            $('certCoins').textContent = '';
         }
-        $('certDate').textContent = new Date().toLocaleDateString('uk-UA', {
-            day: 'numeric', month: 'long', year: 'numeric'
-        });
+        $('certDate').textContent = new Date().toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' });
     }
 
     function launchConfetti() {
@@ -2153,12 +2484,10 @@ const App = (function () {
         }
     }
 
-    function printCertificate() {
-        setTimeout(() => window.print(), 120);
-    }
+    function printCertificate() { setTimeout(() => window.print(), 120); }
 
     /* ========================================================
-       URL: PIN У QUERY
+       АВТОПРИЄДНАННЯ ЗА PIN
        ======================================================== */
     function autoJoinFromUrl() {
         const params = new URLSearchParams(window.location.search);
@@ -2167,11 +2496,9 @@ const App = (function () {
             go('screen-student-join');
             const inp = $('studentPin');
             if (inp) inp.value = pin;
-
             const sess = Storage.get('sunlorem_session');
             if (sess && sess.pin === pin && sess.role === 'student' && sess.name) {
                 State.playerName = sess.name;
-                State.playerAvatar = sess.avatar || '😀';
                 const n = $('studentName');
                 if (n) n.value = sess.name;
             }
@@ -2185,10 +2512,17 @@ const App = (function () {
         if (State.initDone) return;
         State.initDone = true;
 
-        const saved = Storage.get('sunlorem_theme', 'neon');
-        setTheme(saved);
+        loadProfile();
+        const savedTheme = Storage.get('sunlorem_theme', 'neon');
+        if (State.profile.ownedThemes.includes(savedTheme)) {
+            State.theme = savedTheme;
+        } else {
+            State.theme = 'neon';
+        }
+        document.body.className = 'theme-' + State.theme;
         spawnParticles();
-        buildAvatarGrid();
+        renderThemeSwitchers();
+        updateCoinsDisplays();
 
         const pinInput = $('studentPin');
         if (pinInput) {
@@ -2202,28 +2536,16 @@ const App = (function () {
                 }
             });
         }
-
         const nameInput = $('studentName');
         if (nameInput) {
-            nameInput.addEventListener('keydown', e => {
-                if (e.key === 'Enter') studentJoin();
-            });
+            nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') studentJoin(); });
         }
-
-        document.addEventListener('click', e => {
-            const btn = e.target.closest('.theme-btn');
-            if (btn && btn.dataset.theme) {
-                setTheme(btn.dataset.theme);
-            }
-        });
 
         $('modalOverlay').addEventListener('click', e => {
             if (e.target === $('modalOverlay')) closeModal();
         });
 
         autoJoinFromUrl();
-
-        // ⬇️ Підключення Socket.io — ВИКЛЮЧНО через io() без аргументів
         initSocket();
     }
 
@@ -2251,6 +2573,9 @@ const App = (function () {
         openModal,
         toast,
         printCertificate,
+        switchShopTab,
+        saveProfile,
+        activatePower,
         init,
         get theme() { return State.theme; }
     };
@@ -2258,14 +2583,10 @@ const App = (function () {
 })();
 
 /* ============================================================
-   ЗАПУСК
-   ------------------------------------------------------------
-   App.init() викликається після завантаження DOM.
-   Усередині відбувається socket.io-підключення через io().
+   СТАРТ
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
-    if (!document.body.classList.contains('theme-neon') &&
-        !document.body.classList.contains('theme-pastel')) {
+    if (!document.body.className.startsWith('theme-')) {
         document.body.classList.add('theme-neon');
     }
     try {
