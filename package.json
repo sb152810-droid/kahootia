@@ -1,20 +1,13 @@
 {
   "name": "sunlorem-camp-5",
   "version": "1.0.0",
-  "description": "SunLorem: Школа-Табір 5 Клас — інтерактивна вікторина з реальночасовою синхронізацією через Socket.io",
+  "description": "SunLorem: Школа-Табір 5 Клас — інтерактивна вікторина з реальночасовою синхронізацією та гейміфікацією",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"
   },
-  "keywords": [
-    "quiz",
-    "socket.io",
-    "express",
-    "school",
-    "ukrainian",
-    "camp"
-  ],
+  "keywords": ["quiz", "socket.io", "express", "school", "ukrainian", "camp", "gamification"],
   "author": "SunLorem",
   "license": "MIT",
   "dependencies": {
