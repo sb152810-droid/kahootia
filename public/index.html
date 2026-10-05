@@ -278,7 +278,6 @@ body.theme-neon .player-card.self { box-shadow: 0 0 14px rgba(95, 255, 155, 0.5)
     color: var(--text-main); line-height: 1.35;
 }
 body.theme-neon .question-text { text-shadow: 0 0 12px rgba(95, 240, 255, 0.55); }
-/* 1 колонка на мобільному, 2 на ПК */
 .answers-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -607,6 +606,7 @@ body.theme-neon .toast { box-shadow: 0 0 22px rgba(255, 95, 240, 0.75); }
 .connection-status.show { display: block; }
 .connection-status.ok { background: rgba(95, 255, 155, 0.9); color: #10261a; }
 .connection-status.err { background: rgba(255, 61, 110, 0.9); color: #fff; }
+.connection-status.warn { background: rgba(255, 215, 95, 0.9); color: #3a2a00; }
 @media (min-width: 900px) {
     .screen { padding: 26px 40px; padding-bottom: 100px; }
     .panel { padding: 22px; margin-bottom: 18px; }
@@ -1132,16 +1132,21 @@ body.theme-neon .toast { box-shadow: 0 0 22px rgba(255, 95, 240, 0.75); }
 
 </div>
 
+<!-- ============================================================
+     SOCKET.IO КЛІЄНТ
+     ------------------------------------------------------------
+     Сервлет обслуговується тим самим Express-сервером за
+     шляхом /socket.io/socket.io.js. Жодних CDN, жодних
+     хардкод-URL — усе працює на будь-якому домені (Render).
+     ============================================================ -->
 <script src="/socket.io/socket.io.js"></script>
 <script>
 /* ============================================================
    SUNLOREM CLIENT
    Socket.io + UI
    ------------------------------------------------------------
-   УВАГА: підключення виконується ВИКЛЮЧНО через io() без
-   будь-яких явних URL (жодних localhost:3000 тощо).
-   На хмарному хостингу (Render) клієнт автоматично під'єднується
-   до того самого домену, з якого завантажено сторінку.
+   Підключення ВИКЛЮЧНО через io() без аргументів — Socket.io
+   автоматично бере поточний origin.
    ============================================================ */
 "use strict";
 
@@ -1246,7 +1251,8 @@ const App = (function () {
         socket: null,
         connected: false,
         reconnecting: false,
-        localTimer: null
+        localTimer: null,
+        initDone: false
     };
 
     /* ========================================================
@@ -1482,26 +1488,31 @@ const App = (function () {
     }
 
     /* ========================================================
-       SOCKET
+       SOCKET.IO — ПІДКЛЮЧЕННЯ
        --------------------------------------------------------
-       Підключення ВИКЛЮЧНО через io() без аргументів.
-       Socket.io-клієнт автоматично бере:
-         • той самий origin (protocol + host + port), з якого
-           завантажено сторінку;
-         • шлях за замовчуванням /socket.io;
-         • транспорт — спочатку polling, потім upgrade до websocket.
-       Це критично важливо для розгортання на Render, Heroku,
-       Railway та будь-якому іншому хмарному хостингу.
+       ⚠️ КРИТИЧНО ВАЖЛИВО:
+         const socket = io();   ← БЕЗ АРГУМЕНТІВ!
+       Жодних http://localhost:3000, жодних window.location.origin,
+       жодних хардкод-URL. Socket.io сам бере поточний origin.
+       Це гарантує роботу на будь-якому хостингу (Render, Railway,
+       Heroku, локально тощо).
        ======================================================== */
     function initSocket() {
-        // ⬇️ ЄДИНИЙ ПРАВИЛЬНИЙ ВАРІАНТ — БЕЗ URL!
+        // ⬇️⬇️⬇️ ЄДИНИЙ ПРАВИЛЬНИЙ ВАРІАНТ ПІДКЛЮЧЕННЯ ⬇️⬇️⬇️
         const socket = io();
+        // ⬆️⬆️⬆️ БЕЗ АРГУМЕНТІВ! ⬆️⬆️⬆️
+
         State.socket = socket;
 
         socket.on('connect', () => {
             State.connected = true;
             showConn(true, '🟢 Онлайн');
-            console.log('[socket] connected, id =', socket.id);
+            console.log('[socket] connected id =', socket.id, '| transport =', socket.io.engine.transport.name);
+
+            // Діагностика апгрейду
+            socket.io.engine.on('upgrade', () => {
+                console.log('[socket] upgraded to', socket.io.engine.transport.name);
+            });
 
             // Спроба відновити сесію
             const sess = Storage.get('sunlorem_session');
@@ -1553,16 +1564,16 @@ const App = (function () {
             console.warn('[socket] connect_error:', err && err.message);
         });
 
-        socket.on('reconnect_attempt', (attempt) => {
+        socket.io.on('reconnect_attempt', (attempt) => {
             showConn(false, '🟡 Реконект... (' + attempt + ')');
         });
 
-        socket.on('reconnect', () => {
+        socket.io.on('reconnect', () => {
             State.connected = true;
             showConn(true, '🟢 Відновлено');
         });
 
-        socket.on('reconnect_failed', () => {
+        socket.io.on('reconnect_failed', () => {
             showConn(false, '🔴 Не вдалося під\'єднатися');
         });
 
@@ -1583,9 +1594,7 @@ const App = (function () {
         });
 
         socket.on('gameOver', () => {
-            if (State.role === 'student') {
-                toast('Гру завершено!');
-            }
+            if (State.role === 'student') toast('Гру завершено!');
         });
 
         socket.on('roomClosed', () => {
@@ -1611,11 +1620,11 @@ const App = (function () {
     }
 
     /* ========================================================
-       СТВОРЕННЯ КІМНАТИ (ВЧИТЕЛЬ)
+       СТВОРЕННЯ КІМНАТИ
        ======================================================== */
     function createRoom() {
         if (!State.socket || !State.connected) {
-            toast('Немає з\'єднання з сервером. Спробуй ще раз.');
+            toast('Немає з\'єднання з сервером. Зачекай трохи або онови сторінку.');
             return;
         }
         if (State.questions.length === 0) {
@@ -1657,7 +1666,7 @@ const App = (function () {
     }
 
     function buildJoinLink(pin) {
-        // Формуємо посилання на поточний origin — жодних хардкодів!
+        // Формуємо з поточного origin — жодних хардкодів!
         const base = window.location.origin + window.location.pathname;
         return base + '?pin=' + pin;
     }
@@ -1690,7 +1699,7 @@ const App = (function () {
     }
 
     /* ========================================================
-       ОНОВЛЕННЯ UI ЛОБІ (ВЧИТЕЛЬ)
+       ОНОВЛЕННЯ ЛОБІ
        ======================================================== */
     function updateTeacherLobbyUI() {
         const room = State.room;
@@ -1736,7 +1745,7 @@ const App = (function () {
     }
 
     /* ========================================================
-       СТАРТ ГРИ
+       КЕРУВАННЯ ГРОЮ
        ======================================================== */
     function startGame() {
         if (!State.socket || !State.connected) {
@@ -1792,7 +1801,7 @@ const App = (function () {
     }
 
     /* ========================================================
-       ОНОВЛЕННЯ UI ВЧИТЕЛЯ ПІД ЧАС ГРИ
+       РЕНДЕР ВЧИТЕЛЯ
        ======================================================== */
     function onTeacherState(state) {
         if (!state) return;
@@ -1804,7 +1813,6 @@ const App = (function () {
             }
             return;
         }
-
         if (state.status === 'running') {
             if (!$('screen-teacher-game').classList.contains('active')) {
                 go('screen-teacher-game');
@@ -1812,7 +1820,6 @@ const App = (function () {
             renderTeacherGame(state);
             return;
         }
-
         if (state.status === 'finished') {
             renderResults(state);
             go('screen-results');
@@ -1888,11 +1895,10 @@ const App = (function () {
     }
 
     /* ========================================================
-       ОНОВЛЕННЯ UI УЧНЯ
+       РЕНДЕР УЧНЯ
        ======================================================== */
     function onStudentState(state) {
         if (!state) return;
-
         const me = state.players.find(p => p.id === State.playerId);
 
         if (state.status === 'lobby') {
@@ -1903,7 +1909,6 @@ const App = (function () {
             renderStudentWaiting(state);
             return;
         }
-
         if (state.status === 'running') {
             if (!$('screen-student-game').classList.contains('active')) {
                 go('screen-student-game');
@@ -1911,7 +1916,6 @@ const App = (function () {
             renderStudentGame(state, me);
             return;
         }
-
         if (state.status === 'finished') {
             renderResults(state);
             go('screen-results');
@@ -2002,9 +2006,7 @@ const App = (function () {
             q: State.room.currentQuestion,
             a: index
         }, (res) => {
-            if (!res || !res.ok) {
-                console.warn('answer rejected', res);
-            }
+            if (!res || !res.ok) console.warn('answer rejected', res);
         });
     }
 
@@ -2030,11 +2032,11 @@ const App = (function () {
     }
 
     /* ========================================================
-       УЧЕНЬ: ВХІД
+       ВХІД УЧНЯ
        ======================================================== */
     function studentJoin() {
         if (!State.socket || !State.connected) {
-            toast('Немає з\'єднання з сервером. Зачекай або онови сторінку.');
+            toast('Немає з\'єднання з сервером. Зачекай трохи.');
             return;
         }
         const pin = ($('studentPin').value || '').trim();
@@ -2180,6 +2182,9 @@ const App = (function () {
        ІНІЦІАЛІЗАЦІЯ
        ======================================================== */
     function init() {
+        if (State.initDone) return;
+        State.initDone = true;
+
         const saved = Storage.get('sunlorem_theme', 'neon');
         setTheme(saved);
         spawnParticles();
@@ -2217,6 +2222,8 @@ const App = (function () {
         });
 
         autoJoinFromUrl();
+
+        // ⬇️ Підключення Socket.io — ВИКЛЮЧНО через io() без аргументів
         initSocket();
     }
 
@@ -2244,51 +2251,29 @@ const App = (function () {
         openModal,
         toast,
         printCertificate,
+        init,
         get theme() { return State.theme; }
     };
 
 })();
 
 /* ============================================================
-   СТАРТ
+   ЗАПУСК
+   ------------------------------------------------------------
+   App.init() викликається після завантаження DOM.
+   Усередині відбувається socket.io-підключення через io().
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
     if (!document.body.classList.contains('theme-neon') &&
         !document.body.classList.contains('theme-pastel')) {
         document.body.classList.add('theme-neon');
     }
-    // Ініціалізація після повного завантаження DOM
     try {
-        App.State.role = null;
-        // Публічний init викликається неявно — див. нижче
-    } catch (e) { /* ignore */ }
-    // Виклик init виконується через IIFE нижче
-    if (typeof App.init === 'function') {
         App.init();
+    } catch (err) {
+        console.error('[bootstrap] init error:', err);
     }
 });
-</script>
-
-<!-- ============================================================
-     ОКРЕМИЙ ВИКЛИК ІНІЦІАЛІЗАЦІЇ
-     (бо публічний API не експортує init прямо)
-     ============================================================ -->
-<script>
-(function bootstrap() {
-    function tryInit() {
-        if (typeof App === 'undefined') {
-            setTimeout(tryInit, 40);
-            return;
-        }
-        // Публічний API не містить init — викликаємо через внутрішній socket
-        // Просто чекаємо, доки DOM буде готовий, і запускаємо App-логіку
-        if (document.readyState === 'complete' || document.readyState === 'interactive') {
-            // Викликаємо App.init якщо доступний, інакше — покладаємось
-            // на io() всередині самого модуля
-        }
-    }
-    tryInit();
-})();
 </script>
 </body>
 </html>
