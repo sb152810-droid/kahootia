@@ -2,20 +2,28 @@
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a0c14">
 <title>SunLorem: Школа-Табір 5 Клас</title>
 <style>
-/* ============ RESET ============ */
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
 
-/* ============ ТЕМИ (CSS-змінні) ============ */
-:root, [data-theme="cyber"] {
+/* ============================================================
+   THEMES
+   ============================================================ */
+:root,[data-theme="cyber"]{
   --bg-dark:#0a0c14;
   --bg-gradient-1:#1a1f3a;
   --bg-gradient-2:#0a0c14;
-  --bg-panel:rgba(18,25,45,.88);
-  --bg-panel-light:rgba(30,40,65,.72);
-  --bg-input:rgba(0,0,0,.4);
+  --bg-panel:rgba(18,25,45,.92);
+  --bg-panel-light:rgba(30,40,65,.75);
+  --bg-input:rgba(0,0,0,.45);
+  --bg-chip:rgba(255,255,255,.04);
   --accent-cyan:#00e5ff;
   --accent-magenta:#ff00aa;
   --accent-purple:#8a2be2;
@@ -30,18 +38,19 @@
   --border-color-light:rgba(0,229,255,.1);
   --glow-color:rgba(0,229,255,.3);
   --shadow-color:rgba(0,0,0,.8);
-  --gradient-primary:linear-gradient(135deg,var(--accent-cyan),#0099cc);
-  --gradient-secondary:linear-gradient(135deg,var(--accent-magenta),#990066);
-  --gradient-logo:linear-gradient(135deg,var(--accent-cyan),var(--accent-magenta),var(--accent-purple));
+  --gradient-primary:linear-gradient(135deg,#00e5ff,#0099cc);
+  --gradient-secondary:linear-gradient(135deg,#ff00aa,#990066);
+  --gradient-logo:linear-gradient(135deg,#00e5ff,#ff00aa,#8a2be2);
   --grid-line:rgba(0,229,255,.1);
 }
-[data-theme="pastel"] {
+[data-theme="pastel"]{
   --bg-dark:#1c1a24;
   --bg-gradient-1:#2a2634;
   --bg-gradient-2:#1c1a24;
-  --bg-panel:rgba(45,40,58,.9);
-  --bg-panel-light:rgba(60,54,78,.72);
-  --bg-input:rgba(30,25,42,.6);
+  --bg-panel:rgba(45,40,58,.92);
+  --bg-panel-light:rgba(60,54,78,.75);
+  --bg-input:rgba(30,25,42,.65);
+  --bg-chip:rgba(196,168,240,.06);
   --accent-cyan:#a8d8ea;
   --accent-magenta:#f5b7d3;
   --accent-purple:#c4a8f0;
@@ -61,13 +70,14 @@
   --gradient-logo:linear-gradient(135deg,#a8d8ea,#f5b7d3,#c4a8f0);
   --grid-line:rgba(196,168,240,.08);
 }
-[data-theme="sun"] {
+[data-theme="sun"]{
   --bg-dark:#0d1b3d;
   --bg-gradient-1:#1a2f5c;
   --bg-gradient-2:#0d1b3d;
-  --bg-panel:rgba(20,40,80,.9);
-  --bg-panel-light:rgba(32,52,100,.72);
-  --bg-input:rgba(10,25,55,.6);
+  --bg-panel:rgba(20,40,80,.92);
+  --bg-panel-light:rgba(32,52,100,.75);
+  --bg-input:rgba(10,25,55,.65);
+  --bg-chip:rgba(255,184,77,.06);
   --accent-cyan:#ffb84d;
   --accent-magenta:#ff8c42;
   --accent-purple:#4a7fd4;
@@ -88,43 +98,201 @@
   --grid-line:rgba(255,184,77,.1);
 }
 
-/* ============ BASE ============ */
-html,body{width:100%;height:100%;overflow:hidden;background:var(--bg-dark);font-family:'Segoe UI','Roboto',system-ui,sans-serif;color:var(--text-primary);user-select:none;transition:background .4s}
-body{display:flex;justify-content:center;align-items:center;background:radial-gradient(ellipse at 20% 10%,var(--bg-gradient-1) 0%,var(--bg-gradient-2) 70%)}
+/* ============================================================
+   BASE
+   ============================================================ */
+html,body{
+  width:100%;
+  height:100%;
+  height:100dvh;
+  overflow:hidden;
+  background:var(--bg-dark);
+  font-family:'Segoe UI','Roboto',system-ui,-apple-system,sans-serif;
+  color:var(--text-primary);
+  user-select:none;
+  transition:background .4s;
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+}
+body{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:radial-gradient(ellipse at 20% 10%,var(--bg-gradient-1) 0%,var(--bg-gradient-2) 70%);
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:rgba(255,255,255,.05);border-radius:10px}
 ::-webkit-scrollbar-thumb{background:var(--accent-cyan);border-radius:10px}
-#app{width:100%;max-width:1200px;height:100%;max-height:850px;position:relative;background:var(--bg-panel);backdrop-filter:blur(20px);border:1px solid var(--border-color);border-radius:24px;box-shadow:0 20px 50px var(--shadow-color),inset 0 0 80px rgba(0,229,255,.03);overflow:hidden;display:flex;flex-direction:column;transition:all .4s}
-.bg-grid{position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.15;background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);background-size:50px 50px;animation:gridPulse 8s ease-in-out infinite}
+
+#app{
+  width:100%;
+  max-width:1200px;
+  height:100%;
+  max-height:850px;
+  position:relative;
+  background:var(--bg-panel);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--border-color);
+  border-radius:24px;
+  box-shadow:0 20px 50px var(--shadow-color);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  transition:all .4s;
+}
+
+.bg-grid{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  opacity:.15;
+  background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);
+  background-size:50px 50px;
+  animation:gridPulse 8s ease-in-out infinite;
+}
 @keyframes gridPulse{0%,100%{opacity:.1}50%{opacity:.25}}
 
-/* ============ THEME SWITCHER ============ */
-.theme-switcher{position:absolute;top:14px;right:14px;display:flex;gap:6px;z-index:100;padding:6px;background:var(--bg-panel);border:1px solid var(--border-color);border-radius:12px;backdrop-filter:blur(10px)}
-.theme-dot{width:26px;height:26px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:all .3s;position:relative}
+/* ============================================================
+   THEME SWITCHER
+   ============================================================ */
+.theme-switcher{
+  position:absolute;
+  top:14px;right:14px;
+  display:flex;
+  gap:6px;
+  z-index:100;
+  padding:6px;
+  background:var(--bg-panel);
+  border:1px solid var(--border-color);
+  border-radius:12px;
+  backdrop-filter:blur(10px);
+}
+.theme-dot{
+  width:26px;height:26px;
+  border-radius:50%;
+  border:2px solid transparent;
+  cursor:pointer;
+  transition:all .3s;
+  position:relative;
+}
 .theme-dot:hover{transform:scale(1.15)}
 .theme-dot.active{border-color:var(--accent-cyan);box-shadow:0 0 15px var(--glow-color)}
 .theme-dot[data-theme-dot="cyber"]{background:linear-gradient(135deg,#00e5ff,#ff00aa)}
 .theme-dot[data-theme-dot="pastel"]{background:linear-gradient(135deg,#a8d8ea,#f5b7d3)}
 .theme-dot[data-theme-dot="sun"]{background:linear-gradient(135deg,#ffd23f,#ff6b35)}
-.theme-dot::after{content:attr(data-label);position:absolute;top:32px;right:0;padding:4px 8px;background:var(--bg-panel);color:var(--text-primary);font-size:.65rem;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s;border:1px solid var(--border-color)}
-.theme-dot:hover::after{opacity:1}
 
-/* ============ SCREENS ============ */
-.screen{position:absolute;inset:0;display:flex;flex-direction:column;padding:20px;opacity:0;transform:translateY(30px) scale(.98);pointer-events:none;transition:all .5s cubic-bezier(.4,0,.2,1);overflow-y:auto;z-index:1}
-.screen.active{opacity:1;transform:translateY(0) scale(1);pointer-events:all;z-index:10}
+/* ============================================================
+   SCREENS
+   ============================================================ */
+.screen{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  padding:20px;
+  padding-top:max(20px,env(safe-area-inset-top));
+  padding-bottom:max(20px,env(safe-area-inset-bottom));
+  opacity:0;
+  transform:translateY(30px) scale(.98);
+  pointer-events:none;
+  transition:all .5s cubic-bezier(.4,0,.2,1);
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  z-index:1;
+}
+.screen.active{
+  opacity:1;
+  transform:translateY(0) scale(1);
+  pointer-events:all;
+  z-index:10;
+}
 
-/* ============ HEADER ============ */
-.header{display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;border-bottom:1px solid var(--border-color);margin-bottom:20px;flex-shrink:0;z-index:5;position:relative;gap:10px;flex-wrap:wrap}
-.logo{font-size:1.6rem;font-weight:800;letter-spacing:2px;background:var(--gradient-logo);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;cursor:pointer;transition:transform .3s}
+/* ============================================================
+   HEADER
+   ============================================================ */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding-bottom:14px;
+  border-bottom:1px solid var(--border-color);
+  margin-bottom:16px;
+  flex-shrink:0;
+  z-index:5;
+  position:relative;
+  gap:10px;
+  flex-wrap:wrap;
+  padding-right:100px;
+}
+.logo{
+  font-size:1.5rem;
+  font-weight:800;
+  letter-spacing:2px;
+  background:var(--gradient-logo);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  cursor:pointer;
+  transition:transform .3s;
+}
 .logo:hover{transform:scale(1.02)}
-.header-info{display:flex;align-items:center;gap:12px;font-size:.85rem;color:var(--text-secondary);flex-wrap:wrap}
-.role-badge{padding:6px 14px;border-radius:20px;font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:1px;border:1px solid}
+.header-info{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:.82rem;
+  color:var(--text-secondary);
+  flex-wrap:wrap;
+}
+.role-badge{
+  padding:5px 12px;
+  border-radius:20px;
+  font-weight:600;
+  font-size:.68rem;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  border:1px solid;
+}
 .role-badge.organizer{color:var(--accent-magenta);border-color:var(--accent-magenta);background:rgba(255,0,170,.1)}
 .role-badge.player{color:var(--accent-cyan);border-color:var(--accent-cyan);background:rgba(0,229,255,.1)}
 
-/* ============ BUTTONS ============ */
-.btn{padding:12px 24px;border:none;border-radius:12px;font-family:inherit;font-size:.9rem;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;text-transform:uppercase;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
-.btn::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;background:rgba(255,255,255,.15);transform:translate(-50%,-50%);transition:width .6s,height .6s;pointer-events:none}
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn{
+  padding:12px 22px;
+  border:none;
+  border-radius:12px;
+  font-family:inherit;
+  font-size:.88rem;
+  font-weight:700;
+  letter-spacing:.5px;
+  cursor:pointer;
+  transition:all .3s cubic-bezier(.4,0,.2,1);
+  position:relative;
+  overflow:hidden;
+  text-transform:uppercase;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  text-decoration:none;
+  color:inherit;
+}
+.btn::after{
+  content:'';
+  position:absolute;
+  top:50%;left:50%;
+  width:0;height:0;
+  border-radius:50%;
+  background:rgba(255,255,255,.15);
+  transform:translate(-50%,-50%);
+  transition:width .6s,height .6s;
+  pointer-events:none;
+}
 .btn:active::after{width:300px;height:300px}
 .btn-primary{background:var(--gradient-primary);color:#0a0c14;box-shadow:0 0 25px var(--glow-color)}
 .btn-primary:hover{box-shadow:0 0 45px var(--glow-color);transform:translateY(-2px)}
@@ -134,217 +302,892 @@ body{display:flex;justify-content:center;align-items:center;background:radial-gr
 .btn-danger:hover{box-shadow:0 0 45px rgba(255,51,85,.6)}
 .btn-success{background:linear-gradient(135deg,var(--accent-green),#00aa55);color:#0a0c14;box-shadow:0 0 25px rgba(0,255,136,.3)}
 .btn-success:hover{box-shadow:0 0 45px rgba(0,255,136,.6)}
-.btn-sm{padding:7px 14px;font-size:.75rem;border-radius:8px}
-.btn-lg{padding:16px 32px;font-size:1.05rem}
+.btn-sm{padding:7px 14px;font-size:.72rem;border-radius:8px}
+.btn-lg{padding:15px 30px;font-size:1rem}
 .btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;box-shadow:none!important}
 .btn-block{width:100%}
 
-/* ============ INPUTS ============ */
+/* ============================================================
+   INPUTS
+   ============================================================ */
 .input-group{display:flex;flex-direction:column;gap:6px;width:100%}
-.input-group label{font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-dim);font-weight:600}
-.input-field{padding:12px 16px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:12px;color:var(--text-primary);font-family:inherit;font-size:.92rem;transition:all .3s;width:100%}
-.input-field:focus{outline:none;border-color:var(--accent-cyan);box-shadow:0 0 25px var(--glow-color);background:rgba(0,229,255,.03)}
+.input-group label{font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-dim);font-weight:600}
+.input-field{
+  padding:12px 16px;
+  background:var(--bg-input);
+  border:1px solid var(--border-color);
+  border-radius:12px;
+  color:var(--text-primary);
+  font-family:inherit;
+  font-size:16px;
+  transition:all .3s;
+  width:100%;
+  -webkit-appearance:none;
+  appearance:none;
+}
+.input-field:focus{
+  outline:none;
+  border-color:var(--accent-cyan);
+  box-shadow:0 0 25px var(--glow-color);
+  background:rgba(0,229,255,.03);
+}
 .input-field::placeholder{color:var(--text-dim);opacity:.6}
 select.input-field{cursor:pointer}
 select.input-field option{background:var(--bg-dark);color:var(--text-primary)}
 textarea.input-field{resize:vertical;min-height:70px;font-family:inherit}
 
-/* ============ CARDS ============ */
-.card{background:var(--bg-panel-light);border:1px solid var(--border-color-light);border-radius:16px;padding:18px;transition:all .3s;position:relative;overflow:hidden}
+/* ============================================================
+   CARDS
+   ============================================================ */
+.card{
+  background:var(--bg-panel-light);
+  border:1px solid var(--border-color-light);
+  border-radius:16px;
+  padding:16px;
+  transition:all .3s;
+  position:relative;
+  overflow:hidden;
+}
 .card:hover{border-color:var(--border-color)}
-.card-title{font-size:.95rem;font-weight:700;color:var(--accent-cyan);margin-bottom:12px;letter-spacing:.5px;display:flex;align-items:center;gap:8px}
-.card-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.5}
+.card-title{
+  font-size:.92rem;
+  font-weight:700;
+  color:var(--accent-cyan);
+  margin-bottom:10px;
+  letter-spacing:.5px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.card-desc{font-size:.8rem;color:var(--text-secondary);line-height:1.5}
 
-/* ============ WELCOME ============ */
-#screen-welcome{justify-content:center;align-items:center;text-align:center;gap:26px}
-.welcome-title{font-size:3.8rem;font-weight:900;letter-spacing:4px;background:var(--gradient-logo);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200% 200%;animation:gradientShift 4s ease infinite;line-height:1.05}
+/* ============================================================
+   WELCOME
+   ============================================================ */
+#screen-welcome{justify-content:center;align-items:center;text-align:center;gap:22px}
+.welcome-title{
+  font-size:3.4rem;
+  font-weight:900;
+  letter-spacing:4px;
+  background:var(--gradient-logo);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  background-size:200% 200%;
+  animation:gradientShift 4s ease infinite;
+  line-height:1.05;
+  padding-right:80px;
+}
 @keyframes gradientShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-.welcome-subtitle{font-size:1.05rem;color:var(--text-secondary);letter-spacing:3px;text-transform:uppercase;font-weight:300}
-.welcome-desc{max-width:520px;font-size:.9rem;color:var(--text-dim);line-height:1.8;padding:0 20px}
-.welcome-actions{display:flex;flex-direction:column;gap:14px;width:100%;max-width:340px}
+.welcome-subtitle{font-size:1rem;color:var(--text-secondary);letter-spacing:3px;text-transform:uppercase;font-weight:300}
+.welcome-desc{max-width:520px;font-size:.88rem;color:var(--text-dim);line-height:1.8;padding:0 20px}
+.welcome-actions{display:flex;flex-direction:column;gap:12px;width:100%;max-width:340px;padding:0 10px}
 
-/* ============ ORGANIZER ============ */
-.organizer-tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
-.tab-btn{padding:10px 20px;background:rgba(0,229,255,.05);border:1px solid var(--border-color);border-radius:10px;color:var(--text-secondary);font-family:inherit;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .3s;text-transform:uppercase;letter-spacing:.5px}
+/* ============================================================
+   ORGANIZER
+   ============================================================ */
+.organizer-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.tab-btn{
+  padding:9px 16px;
+  background:rgba(0,229,255,.05);
+  border:1px solid var(--border-color);
+  border-radius:10px;
+  color:var(--text-secondary);
+  font-family:inherit;
+  font-size:.76rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .3s;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
 .tab-btn:hover{background:rgba(0,229,255,.1);color:var(--accent-cyan)}
 .tab-btn.active{background:rgba(0,229,255,.15);border-color:var(--accent-cyan);color:var(--accent-cyan);box-shadow:0 0 20px var(--glow-color)}
-.tab-content{display:none;flex:1;overflow-y:auto;padding-right:4px}
+.tab-content{display:none;flex:1;overflow-y:auto;padding-right:4px;-webkit-overflow-scrolling:touch}
 .tab-content.active{display:block}
 .org-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .form-row{display:flex;gap:10px;align-items:flex-end;margin-bottom:10px;flex-wrap:wrap}
 .form-row .input-group{flex:1;min-width:150px}
 .q-editor-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
-.answer-edit{display:flex;align-items:center;gap:8px;background:var(--bg-input);padding:8px 12px;border-radius:10px;border:1px solid var(--border-color-light);transition:all .3s}
+.answer-edit{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:var(--bg-input);
+  padding:8px 12px;
+  border-radius:10px;
+  border:1px solid var(--border-color-light);
+  transition:all .3s;
+}
 .answer-edit.correct{border-color:var(--accent-green);background:rgba(0,255,136,.08)}
-.answer-edit input[type="radio"]{accent-color:var(--accent-green);width:18px;height:18px;cursor:pointer}
-.answer-edit input[type="text"]{flex:1;background:transparent;border:none;color:var(--text-primary);font-family:inherit;font-size:.85rem;outline:none}
+.answer-edit input[type="radio"]{accent-color:var(--accent-green);width:18px;height:18px;cursor:pointer;flex-shrink:0}
+.answer-edit input[type="text"]{flex:1;background:transparent;border:none;color:var(--text-primary);font-family:inherit;font-size:16px;outline:none;min-width:0}
 .custom-q-list{display:flex;flex-direction:column;gap:8px;margin-top:14px;max-height:340px;overflow-y:auto;padding-right:4px}
-.custom-q-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;background:var(--bg-input);border:1px solid var(--border-color-light);border-radius:10px;font-size:.82rem}
-.custom-q-item-text{flex:1;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bot-row{display:flex;gap:8px;align-items:center;margin-bottom:6px;padding:6px 10px;background:rgba(138,43,226,.06);border:1px solid rgba(138,43,226,.15);border-radius:10px;font-size:.8rem}
-.bot-row input{flex:1;background:transparent;border:none;color:var(--text-primary);font-family:inherit;font-size:.82rem;outline:none;padding:4px}
-.room-preview{display:flex;flex-direction:column;gap:6px;padding:12px;background:rgba(0,229,255,.05);border:1px dashed var(--border-color);border-radius:10px;font-size:.82rem;color:var(--text-secondary);margin-top:10px}
+.custom-q-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:10px 14px;
+  background:var(--bg-input);
+  border:1px solid var(--border-color-light);
+  border-radius:10px;
+  font-size:.8rem;
+}
+.custom-q-item-text{flex:1;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.bot-row{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  margin-bottom:6px;
+  padding:6px 10px;
+  background:rgba(138,43,226,.06);
+  border:1px solid rgba(138,43,226,.15);
+  border-radius:10px;
+  font-size:.78rem;
+}
+.bot-row input{
+  flex:1;
+  background:transparent;
+  border:none;
+  color:var(--text-primary);
+  font-family:inherit;
+  font-size:16px;
+  outline:none;
+  padding:4px;
+  min-width:0;
+}
+.room-preview{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  padding:12px;
+  background:rgba(0,229,255,.05);
+  border:1px dashed var(--border-color);
+  border-radius:10px;
+  font-size:.8rem;
+  color:var(--text-secondary);
+  margin-top:10px;
+}
 .room-preview strong{color:var(--accent-cyan)}
-.bots-counter{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:12px;margin-top:10px}
-.bots-counter-label{font-size:.85rem;color:var(--text-secondary)}
-.bots-counter-value{font-family:var(--font-mono,'Courier New'),monospace;font-size:1.4rem;font-weight:800;color:var(--accent-green)}
+.bots-counter{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 16px;
+  background:var(--bg-input);
+  border:1px solid var(--border-color);
+  border-radius:12px;
+  margin-top:10px;
+}
+.bots-counter-label{font-size:.82rem;color:var(--text-secondary)}
+.bots-counter-value{font-family:'Courier New',monospace;font-size:1.4rem;font-weight:800;color:var(--accent-green)}
 
-/* ============ WAITING ============ */
+/* ============================================================
+   WAITING
+   ============================================================ */
 .waiting-layout{display:grid;grid-template-columns:1fr 320px;gap:20px;flex:1;min-height:0}
-.waiting-main{display:flex;flex-direction:column;gap:16px;overflow-y:auto;padding-right:4px}
-.waiting-side{display:flex;flex-direction:column;gap:16px;overflow-y:auto;padding-right:4px}
-.pin-big{font-family:'Courier New',monospace;font-size:4.2rem;font-weight:900;letter-spacing:14px;text-align:center;color:var(--accent-green);text-shadow:0 0 40px rgba(0,255,136,.5);padding:20px 10px;background:rgba(0,255,136,.05);border:2px solid rgba(0,255,136,.3);border-radius:20px;position:relative;overflow:hidden}
-.pin-big::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(0,255,136,.08),transparent);animation:pinSweep 3s infinite}
+.waiting-main{display:flex;flex-direction:column;gap:14px;overflow-y:auto;padding-right:4px}
+.waiting-side{display:flex;flex-direction:column;gap:14px;overflow-y:auto;padding-right:4px}
+.pin-big{
+  font-family:'Courier New',monospace;
+  font-size:4rem;
+  font-weight:900;
+  letter-spacing:12px;
+  text-align:center;
+  color:var(--accent-green);
+  text-shadow:0 0 40px rgba(0,255,136,.5);
+  padding:18px 10px;
+  background:rgba(0,255,136,.05);
+  border:2px solid rgba(0,255,136,.3);
+  border-radius:18px;
+  position:relative;
+  overflow:hidden;
+  line-height:1;
+}
+.pin-big::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,transparent,rgba(0,255,136,.08),transparent);
+  animation:pinSweep 3s infinite;
+}
 @keyframes pinSweep{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-.pin-label{font-size:.75rem;text-transform:uppercase;letter-spacing:3px;color:var(--text-dim);text-align:center;margin-bottom:4px}
+.pin-label{font-size:.72rem;text-transform:uppercase;letter-spacing:3px;color:var(--text-dim);text-align:center;margin-bottom:4px}
 .share-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.share-link{flex:1;min-width:180px;padding:12px 14px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:10px;font-family:'Courier New',monospace;font-size:.75rem;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.qr-box{display:flex;flex-direction:column;align-items:center;gap:12px;padding:18px;background:#fff;border-radius:16px;border:2px solid var(--border-color)}
-.qr-box img{width:220px;height:220px;display:block;image-rendering:pixelated}
-.qr-box .qr-caption{font-size:.7rem;color:#333;text-align:center;font-weight:600}
-.qr-placeholder{width:220px;height:220px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;color:#333;font-size:.72rem;text-align:center;padding:10px;border-radius:8px;word-break:break-all;overflow:hidden}
-.players-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;max-height:400px;overflow-y:auto;padding-right:4px}
-.player-chip{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg-panel-light);border:1px solid var(--border-color-light);border-radius:10px;animation:slideIn .35s ease;transition:all .3s;font-size:.82rem}
+.share-link{
+  flex:1;
+  min-width:150px;
+  padding:10px 12px;
+  background:var(--bg-input);
+  border:1px solid var(--border-color);
+  border-radius:10px;
+  font-family:'Courier New',monospace;
+  font-size:.72rem;
+  color:var(--text-secondary);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.qr-box{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  padding:16px;
+  background:#fff;
+  border-radius:16px;
+  border:2px solid var(--border-color);
+}
+.qr-box img{width:220px;height:220px;display:block;image-rendering:pixelated;max-width:100%}
+.qr-box .qr-caption{font-size:.68rem;color:#333;text-align:center;font-weight:600}
+.qr-placeholder{
+  width:220px;
+  height:220px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#f0f0f0;
+  color:#333;
+  font-size:.7rem;
+  text-align:center;
+  padding:8px;
+  border-radius:8px;
+  word-break:break-all;
+  overflow:hidden;
+}
+.players-list{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+  gap:8px;
+  max-height:400px;
+  overflow-y:auto;
+  padding-right:4px;
+}
+.player-chip{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 10px;
+  background:var(--bg-panel-light);
+  border:1px solid var(--border-color-light);
+  border-radius:10px;
+  animation:slideIn .35s ease;
+  transition:all .3s;
+  font-size:.78rem;
+}
 .player-chip.is-bot{border-color:rgba(138,43,226,.25);background:rgba(138,43,226,.06)}
 .player-chip.is-organizer{border-color:rgba(255,0,170,.3);background:rgba(255,0,170,.06)}
 @keyframes slideIn{from{opacity:0;transform:translateX(-15px)}to{opacity:1;transform:translateX(0)}}
-.player-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;font-weight:800;overflow:hidden}
+.player-avatar{
+  width:32px;height:32px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:.9rem;
+  flex-shrink:0;
+  font-weight:800;
+  overflow:hidden;
+}
 .player-avatar.human{background:var(--gradient-primary);color:#0a0c14}
 .player-avatar.bot{background:var(--gradient-secondary);color:#fff}
 .player-avatar.organizer{background:linear-gradient(135deg,var(--accent-magenta),#990066);color:#fff}
 .player-meta{display:flex;flex-direction:column;gap:1px;overflow:hidden;min-width:0}
-.player-name{font-weight:700;font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.player-role{font-size:.62rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px}
-.status-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.player-name{font-weight:700;font-size:.76rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player-role{font-size:.6rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px}
+.status-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 12px;
+  border-radius:20px;
+  font-size:.68rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
 .status-badge.waiting{background:rgba(255,170,0,.15);color:var(--accent-orange);border:1px solid rgba(255,170,0,.3)}
 .status-badge.playing{background:rgba(0,255,136,.15);color:var(--accent-green);border:1px solid rgba(0,255,136,.3)}
 .status-badge.ended{background:rgba(255,51,85,.15);color:var(--accent-red);border:1px solid rgba(255,51,85,.3)}
 
-/* ============ JOIN ============ */
+/* ============================================================
+   JOIN
+   ============================================================ */
 #screen-join{justify-content:center;align-items:center;gap:20px}
-.join-box{width:100%;max-width:420px;display:flex;flex-direction:column;gap:18px;padding:30px;background:var(--bg-panel-light);border:1px solid var(--border-color);border-radius:20px;box-shadow:0 0 40px var(--glow-color)}
-.join-title{font-size:1.35rem;font-weight:800;text-align:center;color:var(--accent-cyan);letter-spacing:2px}
-.pin-inputs{display:flex;justify-content:center;gap:12px}
-.pin-digit{width:56px;height:66px;text-align:center;font-size:1.7rem;font-weight:800;font-family:'Courier New',monospace;background:var(--bg-input);border:2px solid var(--border-color);border-radius:12px;color:var(--accent-cyan);transition:all .3s;caret-color:var(--accent-cyan)}
-.pin-digit:focus{outline:none;border-color:var(--accent-cyan);box-shadow:0 0 25px var(--glow-color);background:rgba(0,229,255,.05)}
+.join-box{
+  width:100%;
+  max-width:420px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  padding:26px;
+  background:var(--bg-panel-light);
+  border:1px solid var(--border-color);
+  border-radius:20px;
+  box-shadow:0 0 40px var(--glow-color);
+}
+.join-title{font-size:1.25rem;font-weight:800;text-align:center;color:var(--accent-cyan);letter-spacing:2px}
+.pin-inputs{display:flex;justify-content:center;gap:10px}
+.pin-digit{
+  width:52px;
+  height:62px;
+  text-align:center;
+  font-size:1.6rem;
+  font-weight:800;
+  font-family:'Courier New',monospace;
+  background:var(--bg-input);
+  border:2px solid var(--border-color);
+  border-radius:12px;
+  color:var(--accent-cyan);
+  transition:all .3s;
+  caret-color:var(--accent-cyan);
+  -webkit-appearance:none;
+  appearance:none;
+  padding:0;
+}
+.pin-digit:focus{
+  outline:none;
+  border-color:var(--accent-cyan);
+  box-shadow:0 0 25px var(--glow-color);
+  background:rgba(0,229,255,.05);
+}
 .pin-digit.filled{border-color:var(--accent-green);color:var(--accent-green)}
-.pin-error{color:var(--accent-red);font-size:.85rem;text-align:center;min-height:20px;font-weight:600}
-.hint-info{font-size:.78rem;color:var(--text-dim);text-align:center;line-height:1.6;padding:10px;background:rgba(0,229,255,.04);border-radius:10px;border:1px solid var(--border-color-light)}
+.pin-error{color:var(--accent-red);font-size:.82rem;text-align:center;min-height:20px;font-weight:600}
+.hint-info{
+  font-size:.74rem;
+  color:var(--text-dim);
+  text-align:center;
+  line-height:1.6;
+  padding:10px;
+  background:rgba(0,229,255,.04);
+  border-radius:10px;
+  border:1px solid var(--border-color-light);
+}
 .hint-info strong{color:var(--accent-cyan);font-family:'Courier New',monospace;letter-spacing:2px}
 
-/* ============ GAME ============ */
-#screen-game{gap:12px}
-.game-header{display:flex;justify-content:space-between;align-items:center;flex-shrink:0;flex-wrap:wrap;gap:10px}
-.game-stats{display:flex;gap:18px;flex-wrap:wrap}
-.stat{display:flex;flex-direction:column;align-items:center;gap:2px}
-.stat-label{font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-dim)}
-.stat-value{font-size:1.25rem;font-weight:800;font-family:'Courier New',monospace;color:var(--accent-cyan)}
+/* ============================================================
+   GAME (ПОВНІСТЮ ПЕРЕРОБЛЕНО ДЛЯ МОБІЛЬНИХ)
+   ============================================================ */
+#screen-game{
+  gap:10px;
+  padding:14px;
+  padding-top:max(14px,env(safe-area-inset-top));
+  padding-bottom:max(14px,env(safe-area-inset-bottom));
+}
+.game-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  flex-shrink:0;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.game-stats{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  flex:1;
+  min-width:0;
+}
+.stat{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:2px;
+  padding:4px 8px;
+  background:var(--bg-chip);
+  border-radius:8px;
+  min-width:52px;
+}
+.stat-label{font-size:.58rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-dim);font-weight:600}
+.stat-value{font-size:1.05rem;font-weight:800;font-family:'Courier New',monospace;color:var(--accent-cyan);line-height:1}
 .stat-value.green{color:var(--accent-green)}
 .stat-value.orange{color:var(--accent-orange)}
-.survival-lives{display:flex;gap:4px}
-.life-icon{font-size:1.1rem;transition:all .3s}
+.survival-lives{display:flex;gap:3px}
+.life-icon{font-size:.95rem;transition:all .3s;line-height:1}
 .life-icon.lost{opacity:.2;filter:grayscale(1)}
-.game-timer-bar{width:100%;height:6px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden;flex-shrink:0}
-.game-timer-fill{height:100%;background:linear-gradient(90deg,var(--accent-green),var(--accent-cyan),var(--accent-magenta));border-radius:3px;transition:width 1s linear}
-.question-container{flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;padding:10px;overflow-y:auto}
-.question-text{font-size:1.1rem;line-height:1.65;font-weight:600;text-align:center;padding:18px;background:var(--bg-input);border-radius:16px;border:1px solid var(--border-color-light)}
-.answers-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.answer-btn{padding:15px 18px;background:var(--bg-panel-light);border:2px solid var(--border-color);border-radius:14px;color:var(--text-primary);font-family:inherit;font-size:.92rem;font-weight:600;cursor:pointer;transition:all .3s;text-align:left;line-height:1.4}
-.answer-btn:hover:not(:disabled){border-color:var(--accent-cyan);background:rgba(0,229,255,.08);transform:translateX(4px)}
-.answer-btn.correct{border-color:var(--accent-green);background:rgba(0,255,136,.15);color:var(--accent-green);box-shadow:0 0 30px rgba(0,255,136,.2)}
-.answer-btn.wrong{border-color:var(--accent-red);background:rgba(255,51,85,.15);color:var(--accent-red);animation:wrongShake .4s}
-@keyframes wrongShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.game-timer-bar{
+  width:100%;
+  height:5px;
+  background:rgba(255,255,255,.05);
+  border-radius:3px;
+  overflow:hidden;
+  flex-shrink:0;
+}
+.game-timer-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--accent-green),var(--accent-cyan),var(--accent-magenta));
+  border-radius:3px;
+  transition:width 1s linear;
+}
+.question-container{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  padding:4px 0;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  min-height:0;
+}
+.question-block{
+  background:var(--bg-input);
+  border-radius:14px;
+  border:1px solid var(--border-color-light);
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  align-items:center;
+  text-align:center;
+}
+.question-text{
+  font-size:1rem;
+  line-height:1.5;
+  font-weight:600;
+  text-align:center;
+  word-wrap:break-word;
+  overflow-wrap:break-word;
+}
+.answers-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.answer-btn{
+  padding:14px 16px;
+  background:var(--bg-panel-light);
+  border:2px solid var(--border-color);
+  border-radius:12px;
+  color:var(--text-primary);
+  font-family:inherit;
+  font-size:.9rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .25s;
+  text-align:left;
+  line-height:1.35;
+  word-wrap:break-word;
+  overflow-wrap:break-word;
+  min-height:56px;
+  display:flex;
+  align-items:center;
+  -webkit-appearance:none;
+  appearance:none;
+}
+.answer-btn:hover:not(:disabled){border-color:var(--accent-cyan);background:rgba(0,229,255,.08)}
+.answer-btn:active:not(:disabled){transform:scale(.98)}
+.answer-btn.correct{
+  border-color:var(--accent-green);
+  background:rgba(0,255,136,.15);
+  color:var(--accent-green);
+  box-shadow:0 0 30px rgba(0,255,136,.2);
+}
+.answer-btn.wrong{
+  border-color:var(--accent-red);
+  background:rgba(255,51,85,.15);
+  color:var(--accent-red);
+  animation:wrongShake .4s;
+}
+@keyframes wrongShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .answer-btn:disabled{cursor:default;opacity:.65}
-.game-feedback{text-align:center;font-size:.95rem;font-weight:700;min-height:28px}
+.game-feedback{
+  text-align:center;
+  font-size:.9rem;
+  font-weight:700;
+  min-height:24px;
+  padding:4px;
+  word-wrap:break-word;
+}
 .game-feedback.success{color:var(--accent-green)}
 .game-feedback.error{color:var(--accent-red)}
-.category-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.category-badge{
+  display:inline-block;
+  padding:3px 10px;
+  border-radius:20px;
+  font-size:.62rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  white-space:nowrap;
+}
 .category-badge.math{background:rgba(0,229,255,.15);color:var(--accent-cyan);border:1px solid rgba(0,229,255,.3)}
 .category-badge.ukr{background:rgba(255,170,0,.15);color:var(--accent-orange);border:1px solid rgba(255,170,0,.3)}
 .category-badge.history{background:rgba(255,0,170,.15);color:var(--accent-magenta);border:1px solid rgba(255,0,170,.3)}
 .category-badge.nature{background:rgba(0,255,136,.15);color:var(--accent-green);border:1px solid rgba(0,255,136,.3)}
 .category-badge.lit{background:rgba(138,43,226,.15);color:var(--accent-purple);border:1px solid rgba(138,43,226,.3)}
 .category-badge.custom{background:rgba(255,170,0,.15);color:var(--accent-orange);border:1px solid rgba(255,170,0,.3)}
-.treasure-map{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;max-width:340px;margin:0 auto}
-.treasure-cell{aspect-ratio:1;background:var(--bg-input);border:1px solid var(--border-color);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:all .3s}
+.treasure-map{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:5px;
+  max-width:340px;
+  width:100%;
+  margin:0 auto;
+}
+.treasure-cell{
+  aspect-ratio:1;
+  background:var(--bg-input);
+  border:1px solid var(--border-color);
+  border-radius:6px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:.95rem;
+  transition:all .3s;
+}
 .treasure-cell.opened{background:rgba(0,0,0,.2)}
 .treasure-cell.treasure{background:rgba(255,170,0,.2);border-color:var(--accent-orange);animation:treasureGlow 1s infinite alternate}
 @keyframes treasureGlow{from{box-shadow:0 0 10px rgba(255,170,0,.3)}to{box-shadow:0 0 25px rgba(255,170,0,.6)}}
-.bots-live-panel{margin-top:10px}
-.bots-live-title{font-size:.75rem;color:var(--text-dim);text-align:center;margin-bottom:8px}
-.bots-live{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px;max-height:180px;overflow-y:auto;padding:10px;background:rgba(138,43,226,.05);border:1px solid rgba(138,43,226,.15);border-radius:12px}
-.bot-live-row{display:flex;justify-content:space-between;align-items:center;padding:5px 10px;background:var(--bg-input);border-radius:8px;font-size:.75rem;gap:8px}
-.bot-live-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-secondary)}
-.bot-live-score{font-family:'Courier New',monospace;font-weight:700;color:var(--accent-green);min-width:44px;text-align:right;transition:all .3s}
+.bots-live-panel{margin-top:6px}
+.bots-live-title{font-size:.7rem;color:var(--text-dim);text-align:center;margin-bottom:6px}
+.bots-live{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+  gap:5px;
+  max-height:150px;
+  overflow-y:auto;
+  padding:8px;
+  background:rgba(138,43,226,.05);
+  border:1px solid rgba(138,43,226,.15);
+  border-radius:10px;
+}
+.bot-live-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:5px 8px;
+  background:var(--bg-input);
+  border-radius:6px;
+  font-size:.72rem;
+  gap:6px;
+  min-width:0;
+}
+.bot-live-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-secondary);min-width:0}
+.bot-live-score{
+  font-family:'Courier New',monospace;
+  font-weight:700;
+  color:var(--accent-green);
+  min-width:44px;
+  text-align:right;
+  transition:all .3s;
+}
 .bot-live-score.bump{transform:scale(1.15);color:var(--accent-yellow)}
 
-/* ============ RESULTS ============ */
-#screen-results{justify-content:flex-start;align-items:center;gap:18px;text-align:center;padding-top:24px}
-.results-title{font-size:2.2rem;font-weight:900;background:var(--gradient-logo);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:3px}
-.results-stats{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
-.result-stat{display:flex;flex-direction:column;align-items:center;gap:4px;padding:16px 24px;background:var(--bg-panel-light);border-radius:14px;border:1px solid var(--border-color-light);min-width:110px}
-.result-stat-value{font-size:1.8rem;font-weight:800;font-family:'Courier New',monospace;color:var(--accent-cyan)}
-.result-stat-label{font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-dim)}
-.results-leaderboard{width:100%;max-width:520px;display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto}
-.leaderboard-item{display:flex;align-items:center;gap:14px;padding:11px 16px;background:var(--bg-panel-light);border-radius:12px;border:1px solid var(--border-color-light)}
+/* ============================================================
+   RESULTS
+   ============================================================ */
+#screen-results{
+  justify-content:flex-start;
+  align-items:center;
+  gap:16px;
+  text-align:center;
+  padding-top:20px;
+}
+.results-title{
+  font-size:1.9rem;
+  font-weight:900;
+  background:var(--gradient-logo);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  letter-spacing:3px;
+  padding-right:80px;
+}
+.results-stats{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.result-stat{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  padding:14px 18px;
+  background:var(--bg-panel-light);
+  border-radius:14px;
+  border:1px solid var(--border-color-light);
+  min-width:100px;
+}
+.result-stat-value{font-size:1.6rem;font-weight:800;font-family:'Courier New',monospace;color:var(--accent-cyan);line-height:1}
+.result-stat-label{font-size:.66rem;text-transform:uppercase;letter-spacing:1.3px;color:var(--text-dim)}
+.results-leaderboard{
+  width:100%;
+  max-width:520px;
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  max-height:280px;
+  overflow-y:auto;
+}
+.leaderboard-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 14px;
+  background:var(--bg-panel-light);
+  border-radius:10px;
+  border:1px solid var(--border-color-light);
+}
 .leaderboard-item.me{border-color:var(--accent-green);background:rgba(0,255,136,.06)}
 .leaderboard-item.top1{border-color:rgba(255,215,0,.5);background:rgba(255,215,0,.08)}
 .leaderboard-item.top2{border-color:rgba(192,192,192,.4)}
 .leaderboard-item.top3{border-color:rgba(205,127,50,.4)}
-.leaderboard-rank{font-size:1.1rem;font-weight:800;font-family:'Courier New',monospace;color:var(--accent-cyan);min-width:34px}
-.leaderboard-name{flex:1;font-weight:600;text-align:left;font-size:.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.leaderboard-score{font-weight:800;font-family:'Courier New',monospace;color:var(--accent-green);font-size:.95rem}
+.leaderboard-rank{font-size:1rem;font-weight:800;font-family:'Courier New',monospace;color:var(--accent-cyan);min-width:32px}
+.leaderboard-name{flex:1;font-weight:600;text-align:left;font-size:.86rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.leaderboard-score{font-weight:800;font-family:'Courier New',monospace;color:var(--accent-green);font-size:.9rem}
 
-/* ============ TOASTS ============ */
-.toast-container{position:absolute;top:80px;right:20px;display:flex;flex-direction:column;gap:10px;z-index:1000;pointer-events:none;max-width:340px}
-.toast{padding:12px 18px;background:var(--bg-panel);border:1px solid var(--border-color);border-radius:12px;color:var(--text-primary);font-size:.83rem;font-weight:600;box-shadow:0 10px 30px var(--shadow-color);animation:toastIn .35s ease,toastOut .35s ease 3s forwards;backdrop-filter:blur(10px);word-break:break-word}
+/* ============================================================
+   TOASTS
+   ============================================================ */
+.toast-container{
+  position:absolute;
+  top:70px;
+  right:12px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  z-index:1000;
+  pointer-events:none;
+  max-width:calc(100% - 24px);
+  width:320px;
+}
+.toast{
+  padding:11px 16px;
+  background:var(--bg-panel);
+  border:1px solid var(--border-color);
+  border-radius:10px;
+  color:var(--text-primary);
+  font-size:.78rem;
+  font-weight:600;
+  box-shadow:0 10px 30px var(--shadow-color);
+  animation:toastIn .35s ease,toastOut .35s ease 3s forwards;
+  backdrop-filter:blur(10px);
+  word-break:break-word;
+}
 .toast.success{border-color:rgba(0,255,136,.5);color:var(--accent-green)}
 .toast.error{border-color:rgba(255,51,85,.5);color:var(--accent-red)}
 .toast.info{border-color:var(--border-color);color:var(--accent-cyan)}
-@keyframes toastIn{from{opacity:0;transform:translateX(50px)}to{opacity:1;transform:translateX(0)}}
-@keyframes toastOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(50px)}}
+@keyframes toastIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes toastOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(30px)}}
 
-/* ============ MODAL ============ */
-.modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(5px);display:flex;justify-content:center;align-items:center;z-index:500;opacity:0;pointer-events:none;transition:opacity .3s}
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modal-overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  backdrop-filter:blur(5px);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:500;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .3s;
+  padding:16px;
+}
 .modal-overlay.active{opacity:1;pointer-events:all}
-.modal{background:var(--bg-panel);border:1px solid var(--border-color);border-radius:20px;padding:26px;max-width:440px;width:90%;box-shadow:0 20px 60px var(--shadow-color);transform:scale(.9);transition:transform .3s}
+.modal{
+  background:var(--bg-panel);
+  border:1px solid var(--border-color);
+  border-radius:18px;
+  padding:22px;
+  max-width:440px;
+  width:100%;
+  box-shadow:0 20px 60px var(--shadow-color);
+  transform:scale(.9);
+  transition:transform .3s;
+}
 .modal-overlay.active .modal{transform:scale(1)}
-.modal-title{font-size:1.15rem;font-weight:800;color:var(--accent-cyan);margin-bottom:12px}
-.modal-body{font-size:.88rem;color:var(--text-secondary);line-height:1.6;margin-bottom:18px}
-.modal-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.modal-title{font-size:1.05rem;font-weight:800;color:var(--accent-cyan);margin-bottom:10px}
+.modal-body{font-size:.84rem;color:var(--text-secondary);line-height:1.6;margin-bottom:16px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 
-/* ============ UTILS ============ */
+/* ============================================================
+   UTILS
+   ============================================================ */
 .hidden{display:none!important}
 .mt-10{margin-top:10px}
 .mt-16{margin-top:16px}
 .mb-10{margin-bottom:10px}
 .flex{display:flex}
-.flex-between{display:flex;justify-content:space-between;align-items:center}
+.flex-between{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .flex-center{display:flex;align-items:center;justify-content:center}
 .gap-8{gap:8px}
 .gap-12{gap:12px}
-.text-dim{color:var(--text-dim);font-size:.78rem}
-.empty-state{padding:24px;text-align:center;color:var(--text-dim);font-size:.82rem}
+.text-dim{color:var(--text-dim);font-size:.74rem}
+.empty-state{padding:20px;text-align:center;color:var(--text-dim);font-size:.78rem}
 
-/* ============ RESPONSIVE ============ */
-@media(max-width:820px){
+/* ============================================================
+   RESPONSIVE — ПЛАНШЕТИ
+   ============================================================ */
+@media(max-width:900px){
   .waiting-layout{grid-template-columns:1fr}
   .org-grid{grid-template-columns:1fr}
   .pin-big{font-size:3rem;letter-spacing:8px}
-  .bots-live{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
 }
-@media(max-width:600px){
-  #app{max-height:100%;border-radius:0;border:none}
-  .screen{padding:14px}
-  .welcome-title{font-size:2.2rem}
-  .pin-big{font-size:2.4rem;letter-spacing:6px}
-  .pin-digit{width:46px;height:56px;font-size:1.4rem}
-  .answers-grid{grid-template-columns:1fr}
-  .qr-box img,.qr-box svg{width:180px;height:180px}
-  .logo{font-size:1.2rem}
-  .q-editor-row{grid-template-columns:1fr}
-  .theme-switcher{top:8px;right:8px;padding:4px}
+
+/* ============================================================
+   RESPONSIVE — МОБІЛЬНІ
+   ============================================================ */
+@media(max-width:640px){
+  html,body{font-size:15px}
+  #app{max-height:100%;border-radius:0;border:none;height:100dvh}
+  .screen{padding:14px;padding-top:max(14px,env(safe-area-inset-top));padding-bottom:max(14px,env(safe-area-inset-bottom))}
+  .theme-switcher{top:10px;right:10px;padding:4px;gap:4px}
   .theme-dot{width:22px;height:22px}
+  .header{padding-right:88px;padding-bottom:10px;margin-bottom:14px}
+  .logo{font-size:1.15rem;letter-spacing:1px}
+  .role-badge{padding:4px 9px;font-size:.62rem}
+  .header-info{gap:6px;font-size:.72rem}
+  .header-info .btn-sm{padding:5px 10px;font-size:.66rem}
+  
+  .welcome-title{font-size:2rem;letter-spacing:2px;padding-right:70px}
+  .welcome-subtitle{font-size:.78rem;letter-spacing:2px}
+  .welcome-desc{font-size:.78rem;padding:0 12px}
+  .welcome-actions{padding:0}
+  
+  .organizer-tabs{gap:5px;margin-bottom:12px}
+  .tab-btn{padding:7px 11px;font-size:.68rem;border-radius:8px}
+  .org-grid{gap:12px}
+  .card{padding:14px;border-radius:14px}
+  .card-title{font-size:.85rem;margin-bottom:8px}
+  .card-desc{font-size:.74rem}
+  .form-row{gap:8px}
+  .q-editor-row{grid-template-columns:1fr;gap:8px}
+  .answer-edit{padding:7px 10px}
+  .answer-edit input[type="text"]{font-size:16px}
+  .custom-q-item{padding:9px 12px;font-size:.76rem}
+  
+  .pin-big{font-size:2.6rem;letter-spacing:6px;padding:14px 8px;border-radius:14px}
+  .pin-label{font-size:.64rem;letter-spacing:2px}
+  .share-link{font-size:.68rem;padding:9px 10px;min-width:120px}
+  .share-row .btn-sm{padding:6px 10px;font-size:.66rem;flex:1;min-width:80px}
+  .qr-box{padding:12px}
+  .qr-box img,.qr-placeholder{width:180px;height:180px}
+  .qr-box .qr-caption{font-size:.62rem}
+  
+  .players-list{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;max-height:280px}
+  .player-chip{padding:7px 9px;font-size:.72rem}
+  .player-avatar{width:28px;height:28px;font-size:.8rem}
+  .player-name{font-size:.7rem}
+  .player-role{font-size:.55rem}
+  
+  .join-box{padding:20px 16px;gap:14px}
+  .join-title{font-size:1.1rem;letter-spacing:1px}
+  .pin-inputs{gap:8px}
+  .pin-digit{width:48px;height:58px;font-size:1.5rem;border-radius:10px}
+  .pin-error{font-size:.76rem;min-height:18px}
+  .hint-info{font-size:.68rem}
+  
+  /* ============ GAME на мобільному ============ */
+  #screen-game{gap:8px;padding:10px;padding-top:max(10px,env(safe-area-inset-top));padding-bottom:max(10px,env(safe-area-inset-bottom))}
+  .game-header{flex-direction:row;align-items:center;justify-content:space-between}
+  .game-stats{gap:6px;flex-wrap:wrap;width:100%}
+  .stat{padding:4px 7px;min-width:48px;border-radius:6px}
+  .stat-label{font-size:.52rem;letter-spacing:1px}
+  .stat-value{font-size:.95rem}
+  .life-icon{font-size:.85rem}
+  .game-timer-bar{height:4px}
+  .question-container{gap:10px;padding:2px 0}
+  .question-block{padding:14px 12px;border-radius:12px;gap:8px}
+  .question-text{font-size:.95rem;line-height:1.5}
+  .category-badge{font-size:.58rem;padding:3px 9px}
+  .answers-grid{
+    grid-template-columns:1fr;
+    gap:8px;
+  }
+  .answer-btn{
+    padding:14px 16px;
+    font-size:.9rem;
+    min-height:54px;
+    border-radius:11px;
+    text-align:left;
+  }
+  .game-feedback{font-size:.82rem;min-height:22px}
+  .bots-live{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));max-height:120px;padding:6px}
+  .bot-live-row{padding:4px 7px;font-size:.68rem;border-radius:5px}
+  .bot-live-score{min-width:38px;font-size:.72rem}
+  .treasure-map{gap:4px;max-width:280px}
+  .treasure-cell{font-size:.85rem;border-radius:5px}
+  
+  .results-title{font-size:1.5rem;letter-spacing:2px;padding-right:70px}
+  .results-stats{gap:8px}
+  .result-stat{padding:12px 14px;min-width:80px;border-radius:12px}
+  .result-stat-value{font-size:1.3rem}
+  .result-stat-label{font-size:.6rem}
+  .results-leaderboard{max-height:240px}
+  .leaderboard-item{padding:9px 12px;gap:10px;border-radius:9px}
+  .leaderboard-rank{font-size:.9rem;min-width:28px}
+  .leaderboard-name{font-size:.8rem}
+  .leaderboard-score{font-size:.85rem}
+  
+  .btn{padding:11px 18px;font-size:.82rem;border-radius:10px}
+  .btn-sm{padding:6px 11px;font-size:.68rem;border-radius:7px}
+  .btn-lg{padding:13px 22px;font-size:.92rem}
+  .btn-block{width:100%}
+  
+  .input-field{padding:11px 14px;font-size:16px;border-radius:10px}
+  .input-group label{font-size:.66rem;letter-spacing:1.2px}
+  
+  .toast-container{top:60px;right:8px;left:8px;width:auto;max-width:none}
+  .toast{padding:10px 14px;font-size:.74rem;border-radius:9px}
+  
+  .modal{padding:18px;border-radius:16px}
+  .modal-title{font-size:.98rem}
+  .modal-body{font-size:.78rem}
+  
+  .custom-q-list{max-height:280px}
+  .bot-row{padding:6px 9px;font-size:.74rem}
+  .bots-counter{padding:10px 14px}
+  .bots-counter-label{font-size:.76rem}
+  .bots-counter-value{font-size:1.2rem}
+  .room-preview{font-size:.74rem;padding:10px}
+  .empty-state{padding:16px;font-size:.74rem}
+}
+
+/* ============================================================
+   ДУЖЕ ВУЗЬКІ ЕКРАНИ
+   ============================================================ */
+@media(max-width:400px){
+  .welcome-title{font-size:1.7rem;letter-spacing:1px;padding-right:64px}
+  .pin-big{font-size:2.1rem;letter-spacing:5px;padding:12px 6px}
+  .pin-digit{width:42px;height:52px;font-size:1.3rem}
+  .pin-inputs{gap:6px}
+  .stat{min-width:42px;padding:3px 6px}
+  .stat-value{font-size:.85rem}
+  .answer-btn{padding:12px 14px;font-size:.85rem;min-height:50px}
+  .question-text{font-size:.88rem}
+  .header{padding-right:80px}
+  .logo{font-size:1rem}
+  .results-title{font-size:1.3rem}
+  .result-stat{padding:10px 12px;min-width:70px}
+  .result-stat-value{font-size:1.15rem}
+  .theme-switcher{padding:3px}
+  .theme-dot{width:20px;height:20px}
+}
+
+/* ============================================================
+   ЛАНДШАФТНА ОРІЄНТАЦІЯ НА МОБІЛЬНОМУ
+   ============================================================ */
+@media(max-width:900px) and (orientation:landscape) and (max-height:500px){
+  .screen{padding:10px}
+  .header{padding-bottom:8px;margin-bottom:10px}
+  .welcome-title{font-size:1.6rem;padding-right:70px}
+  .welcome-subtitle{font-size:.7rem}
+  .welcome-desc{display:none}
+  .welcome-actions{flex-direction:row;max-width:520px}
+  .welcome-actions .btn{flex:1}
+  .game-stats{gap:6px}
+  .answers-grid{grid-template-columns:1fr 1fr}
+  .answer-btn{padding:10px 12px;font-size:.82rem;min-height:44px}
+  .question-block{padding:10px;gap:6px}
+  .question-text{font-size:.88rem}
+  .pin-big{font-size:2.2rem;letter-spacing:6px;padding:10px}
+  .qr-box img,.qr-placeholder{width:140px;height:140px}
+  .results-stats{gap:6px}
+  .result-stat{padding:8px 12px;min-width:70px}
 }
 </style>
 </head>
@@ -352,11 +1195,10 @@ textarea.input-field{resize:vertical;min-height:70px;font-family:inherit}
 <div id="app">
   <div class="bg-grid"></div>
 
-  <!-- ============ THEME SWITCHER ============ -->
   <div class="theme-switcher" id="themeSwitcher">
-    <div class="theme-dot active" data-theme-dot="cyber" data-label="Неон"></div>
-    <div class="theme-dot" data-theme-dot="pastel" data-label="Пастель"></div>
-    <div class="theme-dot" data-theme-dot="sun" data-label="Сонце"></div>
+    <div class="theme-dot active" data-theme-dot="cyber" title="Неоновий кіберпанк"></div>
+    <div class="theme-dot" data-theme-dot="pastel" title="М'який пастельний"></div>
+    <div class="theme-dot" data-theme-dot="sun" title="Сонячний SunLorem"></div>
   </div>
 
   <div class="toast-container" id="toastContainer"></div>
@@ -373,7 +1215,7 @@ textarea.input-field{resize:vertical;min-height:70px;font-family:inherit}
       <button class="btn btn-primary btn-lg" id="btnRoleOrganizer">🎓 Я Організатор</button>
       <button class="btn btn-secondary btn-lg" id="btnRolePlayer">🎮 Я Гравець</button>
     </div>
-    <div class="text-dim" style="margin-top:8px">v4.0 • SunLorem Team</div>
+    <div class="text-dim" style="margin-top:8px">v5.0 • SunLorem Team</div>
   </div>
 
   <!-- ============ ORGANIZER ============ -->
@@ -389,10 +1231,9 @@ textarea.input-field{resize:vertical;min-height:70px;font-family:inherit}
       <button class="tab-btn active" data-tab="tab-setup">⚙️ Налаштування</button>
       <button class="tab-btn" data-tab="tab-questions">📚 Питання</button>
       <button class="tab-btn" data-tab="tab-bots">🤖 Боти</button>
-      <button class="tab-btn" data-tab="tab-rooms">🏠 Мої кімнати</button>
+      <button class="tab-btn" data-tab="tab-rooms">🏠 Кімнати</button>
     </div>
 
-    <!-- TAB SETUP -->
     <div class="tab-content active" id="tab-setup">
       <div class="org-grid">
         <div class="card">
@@ -400,13 +1241,13 @@ textarea.input-field{resize:vertical;min-height:70px;font-family:inherit}
           <div class="input-group">
             <label>Режим гри</label>
             <select class="input-field" id="orgMode">
-              <option value="arcade">⚡ Аркада — швидкість + бонус за час</option>
-              <option value="survival">💀 Виживання — 3 життя</option>
-              <option value="treasure">🏴‍☠️ Полювання на скарби — карта 5×5</option>
+              <option value="arcade">⚡ Аркада</option>
+              <option value="survival">💀 Виживання</option>
+              <option value="treasure">🏴‍☠️ Скарби</option>
             </select>
           </div>
           <div class="input-group mt-10">
-            <label>Кількість питань у грі</label>
+            <label>Кількість питань</label>
             <select class="input-field" id="orgQuestionCount">
               <option value="5">5 питань</option>
               <option value="10" selected>10 питань</option>
@@ -416,7 +1257,7 @@ textarea.input-field{resize:vertical;min-height:70px;font-family:inherit}
             </select>
           </div>
           <div class="input-group mt-10">
-            <label>Час на питання (секунди)</label>
+            <label>Час на питання</label>
             <select class="input-field" id="orgTime">
               <option value="10">10 секунд</option>
               <option value="15" selected>15 секунд</option>
@@ -427,13 +1268,13 @@ textarea.input-field{resize:vertical;min-height:70px;font-family:inherit}
           <div class="input-group mt-10">
             <label>Джерело питань</label>
             <select class="input-field" id="orgQuestionSource">
-              <option value="all">Усі предмети (змішано)</option>
+              <option value="all">Усі предмети</option>
               <option value="math">Математика</option>
               <option value="ukr">Українська мова</option>
               <option value="history">Історія</option>
               <option value="nature">Природознавство</option>
               <option value="lit">Зарубіжна література</option>
-              <option value="custom">Тільки власні питання</option>
+              <option value="custom">Тільки власні</option>
             </select>
           </div>
         </div>
@@ -441,27 +1282,26 @@ textarea.input-field{resize:vertical;min-height:70px;font-family:inherit}
         <div class="card">
           <div class="card-title">👤 Організатор</div>
           <div class="input-group">
-            <label>Ваше ім'я (побачать гравці)</label>
-            <input type="text" class="input-field" id="orgName" placeholder="Наприклад: Вчитель Олена" maxlength="30">
+            <label>Ваше ім'я</label>
+            <input type="text" class="input-field" id="orgName" placeholder="Вчитель Олена" maxlength="30">
           </div>
           <div class="room-preview">
-            <div>📊 Питань у банку: <strong id="previewQuestionsCount">0</strong></div>
+            <div>📊 Питань: <strong id="previewQuestionsCount">0</strong></div>
             <div>🎮 Режим: <strong id="previewMode">Аркада</strong></div>
             <div>⏱ Час: <strong id="previewTime">15 сек</strong></div>
             <div>🤖 Ботів: <strong id="previewBotsCount">3</strong></div>
           </div>
           <button class="btn btn-primary btn-lg btn-block mt-16" id="btnCreateRoom">
-            🎬 Створити кімнату та отримати PIN
+            🎬 Створити кімнату
           </button>
         </div>
       </div>
     </div>
 
-    <!-- TAB QUESTIONS -->
     <div class="tab-content" id="tab-questions">
       <div class="org-grid">
         <div class="card">
-          <div class="card-title">➕ Додати власне питання</div>
+          <div class="card-title">➕ Додати питання</div>
           <div class="input-group">
             <label>Текст питання</label>
             <textarea class="input-field" id="newQText" placeholder="Введіть питання..." maxlength="300"></textarea>
@@ -488,10 +1328,7 @@ textarea.input-field{resize:vertical;min-height:70px;font-family:inherit}
         </div>
 
         <div class="card">
-          <div class="card-title">📝 Власні питання (<span id="customQsCounter">0</span>)</div>
-          <div class="card-desc">
-            Ці питання додаються до загального банку та використовуються разом з базовими.
-          </div>
+          <div class="card-title">📝 Власні (<span id="customQsCounter">0</span>)</div>
           <div class="custom-q-list" id="customQList">
             <div class="empty-state">Ще немає власних питань</div>
           </div>
@@ -500,30 +1337,28 @@ textarea.input-field{resize:vertical;min-height:70px;font-family:inherit}
       </div>
     </div>
 
-    <!-- TAB BOTS -->
     <div class="tab-content" id="tab-bots">
       <div class="org-grid">
         <div class="card">
           <div class="card-title">🤖 Налаштування ботів</div>
           <div class="card-desc">
-            Введіть будь-яку кількість ботів (0 – 200). Система автоматично згенерує рівно стільки
-            ботів з унікальними українськими іменами та прізвищами.
+            Введіть будь-яку кількість ботів (0–200). Система автоматично згенерує унікальні українські імена.
           </div>
           <div class="input-group mt-16">
-            <label>Кількість ботів (0 – 200)</label>
-            <input type="number" class="input-field" id="botCount" min="0" max="200" value="3">
+            <label>Кількість ботів (0–200)</label>
+            <input type="number" class="input-field" id="botCount" min="0" max="200" value="3" inputmode="numeric">
           </div>
           <div class="form-row mt-10">
             <button class="btn btn-primary" id="btnApplyBots">✅ Застосувати</button>
             <button class="btn btn-secondary" id="btnRandomBots">🎲 Випадково</button>
           </div>
           <div class="bots-counter">
-            <span class="bots-counter-label">Готово до створення:</span>
+            <span class="bots-counter-label">Готово:</span>
             <span class="bots-counter-value" id="botsReadyCount">3</span>
           </div>
         </div>
         <div class="card">
-          <div class="card-title">👥 Попередній список (<span id="botListCount">0</span>)</div>
+          <div class="card-title">👥 Список (<span id="botListCount">0</span>)</div>
           <div class="custom-q-list" id="botConfigList">
             <div class="empty-state">Натисніть "Застосувати"</div>
           </div>
@@ -531,14 +1366,10 @@ textarea.input-field{resize:vertical;min-height:70px;font-family:inherit}
       </div>
     </div>
 
-    <!-- TAB ROOMS -->
     <div class="tab-content" id="tab-rooms">
       <div class="card">
         <div class="card-title">🏠 Мої кімнати</div>
-        <div class="card-desc">
-          Кімнати, створені в цьому браузері. Натисніть "Відкрити", щоб повернутися в лобі.
-        </div>
-        <div class="custom-q-list mt-16" id="myRoomsList">
+        <div class="custom-q-list mt-10" id="myRoomsList">
           <div class="empty-state">Немає створених кімнат</div>
         </div>
       </div>
@@ -568,16 +1399,16 @@ textarea.input-field{resize:vertical;min-height:70px;font-family:inherit}
 
         <div class="card">
           <div class="flex-between mb-10">
-            <div class="card-title" style="margin:0">👥 Учасники в кімнаті</div>
+            <div class="card-title" style="margin:0">👥 Учасники</div>
             <span class="status-badge waiting" id="waitingStatus">Очікування</span>
           </div>
           <div class="players-list" id="waitingPlayersList">
-            <div class="empty-state">Поки що нікого немає</div>
+            <div class="empty-state">Очікуємо на гравців...</div>
           </div>
         </div>
 
         <div class="card">
-          <div class="card-title">ℹ️ Інформація про гру</div>
+          <div class="card-title">ℹ️ Інформація</div>
           <div class="room-preview" style="border:none;background:transparent;padding:0">
             <div>🎮 Режим: <strong id="waitingMode">—</strong></div>
             <div>📊 Питань: <strong id="waitingQCount">—</strong></div>
@@ -597,7 +1428,7 @@ textarea.input-field{resize:vertical;min-height:70px;font-family:inherit}
           <div class="card-title">⚡ Дії</div>
           <button class="btn btn-success btn-block" id="btnStartGame" style="display:none">▶️ Почати гру</button>
           <button class="btn btn-secondary btn-block mt-10" id="btnRefreshRoom">🔄 Оновити</button>
-          <button class="btn btn-danger btn-block mt-10" id="btnCloseRoom" style="display:none">🗑 Закрити кімнату</button>
+          <button class="btn btn-danger btn-block mt-10" id="btnCloseRoom" style="display:none">🗑 Закрити</button>
         </div>
       </div>
     </div>
@@ -614,10 +1445,10 @@ textarea.input-field{resize:vertical;min-height:70px;font-family:inherit}
     <div class="join-box">
       <div class="join-title">🔐 Вхід до кімнати</div>
       <div class="pin-inputs" id="pinInputs">
-        <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-index="0">
-        <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-index="1">
-        <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-index="2">
-        <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-index="3">
+        <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-index="0">
+        <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-index="1">
+        <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-index="2">
+        <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-index="3">
       </div>
       <div class="pin-error" id="pinError"></div>
       <div class="input-group">
@@ -666,18 +1497,18 @@ textarea.input-field{resize:vertical;min-height:70px;font-family:inherit}
       <div class="game-timer-fill" id="gameTimerFill" style="width:100%"></div>
     </div>
     <div class="question-container" id="questionContainer">
-      <div>
+      <div class="question-block">
         <div class="category-badge math" id="questionCategory">Математика</div>
         <div class="question-text" id="questionText">Завантаження...</div>
       </div>
       <div class="answers-grid" id="answersGrid"></div>
       <div class="game-feedback" id="gameFeedback"></div>
       <div id="botsLivePanel" class="bots-live-panel" style="display:none">
-        <div class="bots-live-title">🤖 Боти в грі (у реальному часі)</div>
+        <div class="bots-live-title">🤖 Боти в грі</div>
         <div class="bots-live" id="botsLive"></div>
       </div>
     </div>
-    <div id="treasureMapContainer" style="display:none;padding:10px">
+    <div id="treasureMapContainer" style="display:none;padding:6px">
       <div class="treasure-map" id="treasureMap"></div>
     </div>
   </div>
@@ -693,12 +1524,12 @@ textarea.input-field{resize:vertical;min-height:70px;font-family:inherit}
     <div class="results-title" id="resultsTitle">Гру завершено!</div>
     <div class="results-stats">
       <div class="result-stat"><div class="result-stat-value" id="resultsScore">0</div><div class="result-stat-label">Балів</div></div>
-      <div class="result-stat"><div class="result-stat-value" id="resultsCorrect">0</div><div class="result-stat-label">Правильних</div></div>
+      <div class="result-stat"><div class="result-stat-value" id="resultsCorrect">0</div><div class="result-stat-label">Правильно</div></div>
       <div class="result-stat"><div class="result-stat-value" id="resultsWrong">0</div><div class="result-stat-label">Помилок</div></div>
       <div class="result-stat"><div class="result-stat-value" id="resultsAccuracy">0%</div><div class="result-stat-label">Точність</div></div>
     </div>
     <div class="results-leaderboard" id="resultsLeaderboard"></div>
-    <div class="flex-center gap-8" style="margin-top:10px;flex-wrap:wrap">
+    <div class="flex-center gap-8" style="margin-top:10px;flex-wrap:wrap;width:100%">
       <button class="btn btn-primary" id="btnPlayAgain">🔄 Грати ще</button>
       <button class="btn btn-secondary" id="btnBackToLobby">🏠 У лобі</button>
       <button class="btn btn-danger" data-nav="screen-welcome">🚪 Вийти</button>
@@ -767,7 +1598,7 @@ var QUESTION_DB = {
     { q:"Хто заснував Київ?", a:["Кий","Володимир","Ярослав","Олег"], c:0 },
     { q:"У якому році відбулося хрещення Київської Русі?", a:["988","1054","1240","882"], c:0 },
     { q:"Хто прийняв християнство як державну релігію?", a:["Святослав","Володимир Великий","Ярослав Мудрий","Олег"], c:1 },
-    { q:"Яка битва відбулася у 1240 році?", a:["Битва на Калці","Оборона Києва від монголів","Битва під Берестечком","Полтавська битва"], c:1 },
+    { q:"Яка битва відбулася у 1240 році?", a:["Битва на Калці","Оборона Києва","Битва під Берестечком","Полтавська битва"], c:1 },
     { q:"Хто був гетьманом у 1648-1657 роках?", a:["І. Мазепа","Б. Хмельницький","П. Сагайдачний","І. Виговський"], c:1 },
     { q:"У якому році відбулася Переяславська рада?", a:["1648","1654","1657","1667"], c:1 },
     { q:"Що відбувалося у 1917-1921 роках?", a:["Українська революція","Друга світова","Козацька доба","Київська Русь"], c:0 },
@@ -815,16 +1646,12 @@ var QUESTION_DB = {
 };
 
 var CATEGORY_NAMES = {
-  math:"Математика",
-  ukr:"Українська мова",
-  history:"Історія",
-  nature:"Природознавство",
-  lit:"Зарубіжна література",
-  custom:"Власне питання"
+  math:"Математика", ukr:"Українська мова", history:"Історія",
+  nature:"Природознавство", lit:"Зарубіжна література", custom:"Власне питання"
 };
 
 /* ============================================================
-   ВЕЛИКА БАЗА УКРАЇНСЬКИХ ІМЕН ТА ПРІЗВИЩ ДЛЯ БОТІВ
+   ІМЕНА БОТІВ
    ============================================================ */
 var BOT_FIRST_NAMES = [
   "Максим","Софія","Данило","Злата","Артем","Анастасія","Богдан","Марія","Назар","Аліна",
@@ -834,14 +1661,14 @@ var BOT_FIRST_NAMES = [
   "Євген","Аліса","Кирило","Дар'я","Станіслав","Поліна","Гліб","Мілана","Захар","Єва",
   "Матвій","Каміла","Лев","Міла","Тимофій","Амелія","Устим","Соломія","Денис","Яна",
   "Едуард","Діана","В'ячеслав","Кіра","Руслан","Ліліана","Юрій","Влада","Віталій","Зоряна",
-  "Святослав","Мирослава","Всеволод","Оляна","Радомир","Зоряна","Добриня","Ярослава","Мстислав","Лада",
+  "Святослав","Мирослава","Всеволод","Оляна","Радомир","Ярослава","Мстислав","Лада",
   "Борис","Ганна","Григорій","Галина","Данило","Дарина","Ігор","Іванна","Костянтин","Леся",
   "Леонід","Марина","Мирослав","Надія","Нестор","Оксана","Остап","Раїса","Ростислав","Світлана",
-  "Семен","Тамара","Уляна","Федір","Юліан","Ярослава","Валентин","Віра","Володимир","Зінаїда",
+  "Семен","Тамара","Уляна","Федір","Юліан","Валентин","Віра","Володимир","Зінаїда",
   "Геннадій","Євдокія","Єгор","Жанна","Ілля","Зоя","Клим","Інна","Лук'ян","Клавдія",
-  "Марко","Лариса","Матвій","Лідія","Опанас","Ніна","Орест","Ольга","Пилип","Поліна",
-  "Родіон","Роксолана","Сава","Романа","Тимур","Сніжана","Федір","Таїсія","Хома","Устина",
-  "Юхим","Ярина","Яків","Яся","Платон","Євгенія","Арсен","Емілія","Мирон","Аделіна"
+  "Марко","Лариса","Опанас","Ніна","Орест","Ольга","Пилип","Родіон","Роксолана","Сава",
+  "Тимур","Сніжана","Хома","Устина","Юхим","Ярина","Яків","Яся","Платон","Євгенія",
+  "Арсен","Емілія","Мирон","Аделіна","Данило","Маргарита","Захар","Мілана"
 ];
 
 var BOT_LAST_NAMES = [
@@ -859,17 +1686,15 @@ var BOT_LAST_NAMES = [
   "Нестеренко","Никитенко","Ніколаєнко","Овчаренко","Огородник","Одарченко","Орлик","Осадчий","Осипенко","Павлюк",
   "Паламарчук","Паньків","Пархоменко","Пасько","Пахомов","Перепелиця","Пилипенко","Пінчук","Півненко","Плотніков",
   "Погорілий","Подолян","Покотило","Пономарьов","Попович","Приходько","Проценко","Пугач","Радченко","Резнік",
-  "Рибак","Різниченко","Рогозін","Романенко","Рубан","Рябоконь","Саєнко","Самойленко","Свириденко","Семененко",
-  "Сергієнко","Сизоненко","Симончук","Скиба","Слободян","Смірнов","Собко","Соловей","Сорока","Старицький"
+  "Рибак","Різниченко","Рогозін","Романенко","Рубан","Рябоконь","Саєнко","Самойленко","Свириденко","Семененко"
 ];
 
 /* ============================================================
-   THEME MODULE
+   THEME
    ============================================================ */
 var Theme = {
-  KEY: 'sunlorem_theme_v4',
+  KEY: 'sunlorem_theme_v5',
   current: 'cyber',
-
   init: function() {
     var saved = 'cyber';
     try {
@@ -877,25 +1702,22 @@ var Theme = {
       if (stored && ['cyber','pastel','sun'].indexOf(stored) !== -1) saved = stored;
     } catch(e) {}
     Theme.apply(saved);
-
     var dots = document.querySelectorAll('.theme-dot');
     for (var i = 0; i < dots.length; i++) {
       (function(dot) {
         dot.onclick = function() {
           var theme = dot.getAttribute('data-theme-dot');
           Theme.apply(theme);
-          Toast.info('Тему змінено: ' + dot.getAttribute('data-label'));
+          Toast.info('Тему змінено');
         };
       })(dots[i]);
     }
   },
-
   apply: function(theme) {
     if (['cyber','pastel','sun'].indexOf(theme) === -1) theme = 'cyber';
     Theme.current = theme;
     document.documentElement.setAttribute('data-theme', theme);
     try { localStorage.setItem(Theme.KEY, theme); } catch(e) {}
-
     var dots = document.querySelectorAll('.theme-dot');
     for (var i = 0; i < dots.length; i++) {
       if (dots[i].getAttribute('data-theme-dot') === theme) dots[i].classList.add('active');
@@ -905,19 +1727,18 @@ var Theme = {
 };
 
 /* ============================================================
-   STORAGE MODULE
+   STORAGE (localStorage)
    ============================================================ */
 var Storage = {
   KEYS: {
-    ROOMS: 'sunlorem_rooms_v4',
-    CUSTOM_Q: 'sunlorem_custom_questions_v4',
-    LAST_PIN: 'sunlorem_last_pin_v4'
+    ROOMS: 'sunlorem_rooms_v5',
+    CUSTOM_Q: 'sunlorem_custom_questions_v5',
+    LAST_PIN: 'sunlorem_last_pin_v5'
   },
 
   normalizePin: function(pin) {
     if (pin === undefined || pin === null) return '';
-    var s = String(pin).replace(/\D/g, '').trim();
-    return s.slice(0, 4);
+    return String(pin).replace(/\D/g, '').trim().slice(0, 4);
   },
 
   getRooms: function() {
@@ -930,9 +1751,7 @@ var Storage = {
         if (r && r.pin !== undefined) r.pin = Storage.normalizePin(r.pin);
         return r;
       }).filter(function(r) { return r && r.pin && r.pin.length === 4; });
-    } catch(e) {
-      return [];
-    }
+    } catch(e) { return []; }
   },
 
   saveRooms: function(rooms) {
@@ -942,7 +1761,6 @@ var Storage = {
         if (r && r.pin !== undefined) r.pin = Storage.normalizePin(r.pin);
         return r;
       }).filter(function(r) { return r && r.pin && r.pin.length === 4; });
-      // Обмежуємо: не більше 150 кімнат
       if (normalized.length > 150) normalized = normalized.slice(-150);
       localStorage.setItem(this.KEYS.ROOMS, JSON.stringify(normalized));
       return true;
@@ -971,7 +1789,6 @@ var Storage = {
     var pinStr = this.normalizePin(room.pin);
     if (pinStr.length !== 4) return null;
     room.pin = pinStr;
-
     var rooms = this.getRooms();
     var idx = -1;
     for (var i = 0; i < rooms.length; i++) {
@@ -1035,7 +1852,7 @@ var Storage = {
 };
 
 /* ============================================================
-   TOAST
+   TOAST & MODAL
    ============================================================ */
 var Toast = {
   show: function(msg, type, duration) {
@@ -1047,18 +1864,13 @@ var Toast = {
     el.className = 'toast ' + type;
     el.textContent = msg;
     c.appendChild(el);
-    setTimeout(function() {
-      if (el.parentNode) el.parentNode.removeChild(el);
-    }, duration + 500);
+    setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, duration + 500);
   },
   success: function(m){ this.show(m,'success'); },
   error: function(m){ this.show(m,'error'); },
   info: function(m){ this.show(m,'info'); }
 };
 
-/* ============================================================
-   MODAL
-   ============================================================ */
 var Modal = {
   show: function(title, body, onConfirm, onCancel, confirmLabel) {
     confirmLabel = confirmLabel || 'Підтвердити';
@@ -1068,13 +1880,10 @@ var Modal = {
     var cancelBtn = document.getElementById('modalCancel');
     confirmBtn.textContent = confirmLabel;
     document.getElementById('modalOverlay').classList.add('active');
-
     confirmBtn.onclick = function() { Modal.hide(); if (onConfirm) onConfirm(); };
     cancelBtn.onclick = function() { Modal.hide(); if (onCancel) onCancel(); };
   },
-  hide: function() {
-    document.getElementById('modalOverlay').classList.remove('active');
-  }
+  hide: function() { document.getElementById('modalOverlay').classList.remove('active'); }
 };
 
 /* ============================================================
@@ -1134,7 +1943,6 @@ var QuestionBank = {
         pool.push({ q:q.q, a:q.a.slice(), c:q.c, category:cat });
       });
     };
-
     if (source === 'all') {
       for (var key in QUESTION_DB) {
         if (QUESTION_DB.hasOwnProperty(key)) push(QUESTION_DB[key], key);
@@ -1151,7 +1959,6 @@ var QuestionBank = {
     }
     return pool;
   },
-
   shuffle: function(arr) {
     var a = arr.slice();
     for (var i = a.length - 1; i > 0; i--) {
@@ -1160,12 +1967,9 @@ var QuestionBank = {
     }
     return a;
   },
-
   countAll: function() {
     var n = 0;
-    for (var k in QUESTION_DB) {
-      if (QUESTION_DB.hasOwnProperty(k)) n += QUESTION_DB[k].length;
-    }
+    for (var k in QUESTION_DB) if (QUESTION_DB.hasOwnProperty(k)) n += QUESTION_DB[k].length;
     return n;
   }
 };
@@ -1178,21 +1982,17 @@ var QRCode = {
     var img = document.getElementById(containerId);
     var ph = document.getElementById(placeholderId);
     if (!img || !ph) return;
-
     img.style.display = 'none';
     img.removeAttribute('src');
     ph.style.display = 'flex';
     ph.textContent = 'Генерація QR-коду...';
-
     var size = 220;
     var apiUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=' + size + 'x' + size + '&data=' + encodeURIComponent(text);
-
     var testImg = new Image();
     var resolved = false;
     var timer = setTimeout(function() {
       if (!resolved) { resolved = true; QRCode.fallback(ph, text); }
     }, 4500);
-
     testImg.onload = function() {
       if (resolved) return;
       resolved = true;
@@ -1209,7 +2009,6 @@ var QRCode = {
     };
     testImg.src = apiUrl;
   },
-
   fallback: function(ph, text) {
     var shortText = text.length > 80 ? text.slice(0, 77) + '...' : text;
     var cells = '';
@@ -1221,22 +2020,18 @@ var QRCode = {
         cells += '<div style="background:' + (filled ? '#000' : '#fff') + ';border-radius:1px"></div>';
       }
     }
-    ph.innerHTML =
-      '<div style="width:100%;text-align:center">' +
-        '<div style="display:grid;grid-template-columns:repeat(9,1fr);gap:2px;width:150px;height:150px;margin:0 auto 8px;padding:6px;background:#fff;border:2px solid #000;border-radius:8px">' +
-          cells +
-        '</div>' +
-        '<div style="font-size:.68rem;color:#333;font-weight:700;margin-bottom:4px">Посилання для входу</div>' +
-        '<div style="font-family:monospace;word-break:break-all;background:#eee;padding:6px;border-radius:6px;color:#222;font-size:.62rem">' +
-          shortText.replace(/[<>]/g, '') +
-        '</div>' +
-      '</div>';
+    ph.innerHTML = '<div style="width:100%;text-align:center">' +
+      '<div style="display:grid;grid-template-columns:repeat(9,1fr);gap:2px;width:140px;height:140px;margin:0 auto 6px;padding:6px;background:#fff;border:2px solid #000;border-radius:8px">' +
+      cells + '</div>' +
+      '<div style="font-size:.62rem;color:#333;font-weight:700;margin-bottom:4px">Посилання для входу</div>' +
+      '<div style="font-family:monospace;word-break:break-all;background:#eee;padding:5px;border-radius:6px;color:#222;font-size:.58rem">' +
+      shortText.replace(/[<>]/g, '') + '</div></div>';
     ph.style.display = 'flex';
   }
 };
 
 /* ============================================================
-   ДОПОМІЖНІ ФУНКЦІЇ
+   HELPERS
    ============================================================ */
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, function(c) {
@@ -1248,9 +2043,7 @@ function copyToClipboard(text, successMsg) {
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text).then(function() {
       Toast.success(successMsg);
-    }).catch(function() {
-      fallbackCopy(text, successMsg);
-    });
+    }).catch(function() { fallbackCopy(text, successMsg); });
   } else {
     fallbackCopy(text, successMsg);
   }
@@ -1263,12 +2056,8 @@ function fallbackCopy(text, successMsg) {
   ta.style.left = '-9999px';
   document.body.appendChild(ta);
   ta.select();
-  try {
-    document.execCommand('copy');
-    Toast.success(successMsg);
-  } catch(e) {
-    Toast.error('Не вдалося скопіювати');
-  }
+  try { document.execCommand('copy'); Toast.success(successMsg); }
+  catch(e) { Toast.error('Не вдалося скопіювати'); }
   document.body.removeChild(ta);
 }
 
@@ -1278,7 +2067,7 @@ function buildJoinLink(pin) {
 }
 
 /* ============================================================
-   ORGANIZER PANEL
+   ORGANIZER
    ============================================================ */
 var Organizer = {
   init: function() {
@@ -1296,13 +2085,10 @@ var Organizer = {
         };
       })(tabs[i]);
     }
-
-    var previewIds = ['orgMode','orgQuestionCount','orgTime','orgQuestionSource'];
-    previewIds.forEach(function(id) {
+    ['orgMode','orgQuestionCount','orgTime','orgQuestionSource'].forEach(function(id) {
       var el = document.getElementById(id);
       if (el) el.addEventListener('change', function() { Organizer.updatePreview(); });
     });
-
     document.getElementById('btnCreateRoom').onclick = function() { Organizer.createRoom(); };
     document.getElementById('btnAddCustomQ').onclick = function() { Organizer.addCustomQuestion(); };
     document.getElementById('btnClearCustomQ').onclick = function() { Organizer.clearCustomQuestions(); };
@@ -1311,13 +2097,9 @@ var Organizer = {
       var randomCount = Math.floor(Math.random() * 20) + 1;
       document.getElementById('botCount').value = randomCount;
       Organizer.applyBotsConfig();
-      Toast.info('Обрано випадково: ' + randomCount + ' ботів');
     };
-
-    // Початковий стан
     document.getElementById('botCount').value = 3;
     Organizer.applyBotsConfig();
-
     Organizer.renderCustomQuestions();
     Organizer.updatePreview();
     Organizer.renderMyRooms();
@@ -1329,7 +2111,6 @@ var Organizer = {
     var source = document.getElementById('orgQuestionSource').value;
     var pool = QuestionBank.getPool(source);
     var timeVal = document.getElementById('orgTime').value;
-
     document.getElementById('previewQuestionsCount').textContent = pool.length;
     document.getElementById('previewMode').textContent = modeNames[mode] || mode;
     document.getElementById('previewTime').textContent = timeVal + ' сек';
@@ -1340,55 +2121,42 @@ var Organizer = {
   addCustomQuestion: function() {
     var text = document.getElementById('newQText').value.trim();
     if (!text) { Toast.error('Введіть текст питання'); return; }
-
     var ansInputs = document.querySelectorAll('.ans-input');
     var answers = [];
     for (var i = 0; i < ansInputs.length; i++) answers.push(ansInputs[i].value.trim());
     for (var j = 0; j < answers.length; j++) {
-      if (!answers[j]) { Toast.error('Заповніть усі 4 варіанти відповіді'); return; }
+      if (!answers[j]) { Toast.error('Заповніть усі 4 варіанти'); return; }
     }
-
     var correctRadio = document.querySelector('input[name="correctAnswer"]:checked');
     if (!correctRadio) { Toast.error('Оберіть правильну відповідь'); return; }
-    var correctIndex = parseInt(correctRadio.value, 10);
-
-    AppState.customQuestions.push({ q:text, a:answers, c:correctIndex, category:'custom' });
+    AppState.customQuestions.push({ q:text, a:answers, c:parseInt(correctRadio.value, 10), category:'custom' });
     Storage.saveCustomQuestions(AppState.customQuestions);
-
     document.getElementById('newQText').value = '';
     for (var k = 0; k < ansInputs.length; k++) ansInputs[k].value = '';
     document.querySelector('input[name="correctAnswer"][value="0"]').checked = true;
-
     Toast.success('Питання додано!');
     Organizer.renderCustomQuestions();
     Organizer.updatePreview();
   },
 
   clearCustomQuestions: function() {
-    if (AppState.customQuestions.length === 0) {
-      Toast.info('Немає власних питань');
-      return;
-    }
-    Modal.show('Очистити власні питання?',
-      'Усі ' + AppState.customQuestions.length + ' власних питань буде видалено.',
-      function() {
-        AppState.customQuestions = [];
-        Storage.saveCustomQuestions([]);
-        Organizer.renderCustomQuestions();
-        Organizer.updatePreview();
-        Toast.success('Власні питання очищено');
-      });
+    if (AppState.customQuestions.length === 0) { Toast.info('Немає власних питань'); return; }
+    Modal.show('Очистити власні питання?', 'Усі ' + AppState.customQuestions.length + ' питань буде видалено.', function() {
+      AppState.customQuestions = [];
+      Storage.saveCustomQuestions([]);
+      Organizer.renderCustomQuestions();
+      Organizer.updatePreview();
+      Toast.success('Очищено');
+    });
   },
 
   renderCustomQuestions: function() {
     var list = document.getElementById('customQList');
     document.getElementById('customQsCounter').textContent = AppState.customQuestions.length;
-
     if (AppState.customQuestions.length === 0) {
       list.innerHTML = '<div class="empty-state">Ще немає власних питань</div>';
       return;
     }
-
     var html = '';
     for (var i = 0; i < AppState.customQuestions.length; i++) {
       var q = AppState.customQuestions[i];
@@ -1398,7 +2166,6 @@ var Organizer = {
       '</div>';
     }
     list.innerHTML = html;
-
     var btns = list.querySelectorAll('button[data-qidx]');
     for (var k = 0; k < btns.length; k++) {
       (function(btn) {
@@ -1408,55 +2175,32 @@ var Organizer = {
           Storage.saveCustomQuestions(AppState.customQuestions);
           Organizer.renderCustomQuestions();
           Organizer.updatePreview();
-          Toast.info('Питання видалено');
         };
       })(btns[k]);
     }
   },
 
-  /* -------- ГЕНЕРАЦІЯ БОТІВ (без обмежень) -------- */
   generateBots: function(count) {
     if (count < 0) count = 0;
     if (count > 200) count = 200;
-
-    var firstNames = BOT_FIRST_NAMES.slice();
-    var lastNames = BOT_LAST_NAMES.slice();
-
-    // Якщо потрібно більше унікальних комбінацій, ніж базові перестановки — циклічно перебираємо
-    var maxUnique = firstNames.length * lastNames.length;
+    var maxUnique = BOT_FIRST_NAMES.length * BOT_LAST_NAMES.length;
     if (count > maxUnique) count = maxUnique;
-
     var usedFullNames = {};
     var bots = [];
-    var attempts = 0;
-    var maxAttempts = count * 100;
-
-    // Використовуємо впорядкований псевдовипадковий обхід
-    var seed = Date.now();
-    function pseudoRandom(step) {
-      // Проста лінійна конгруентна послідовність
-      var x = (seed + step * 2654435761) % 4294967296;
-      return (x % 1000) / 1000;
-    }
-
-    // Проходимо по всіх комбінаціях
-    var totalCombos = firstNames.length * lastNames.length;
+    var totalCombos = BOT_FIRST_NAMES.length * BOT_LAST_NAMES.length;
     var indices = [];
     for (var i = 0; i < totalCombos; i++) indices.push(i);
-    // Перемішуємо індекси
     for (var s = indices.length - 1; s > 0; s--) {
       var r = Math.floor(Math.random() * (s + 1));
       var t = indices[s]; indices[s] = indices[r]; indices[r] = t;
     }
-
     for (var idx = 0; idx < indices.length && bots.length < count; idx++) {
       var combo = indices[idx];
-      var fnIdx = combo % firstNames.length;
-      var lnIdx = Math.floor(combo / firstNames.length) % lastNames.length;
-      var fullName = firstNames[fnIdx] + ' ' + lastNames[lnIdx];
+      var fnIdx = combo % BOT_FIRST_NAMES.length;
+      var lnIdx = Math.floor(combo / BOT_FIRST_NAMES.length) % BOT_LAST_NAMES.length;
+      var fullName = BOT_FIRST_NAMES[fnIdx] + ' ' + BOT_LAST_NAMES[lnIdx];
       if (usedFullNames[fullName]) continue;
       usedFullNames[fullName] = true;
-
       bots.push({
         id: 'bot_' + Date.now() + '_' + bots.length + '_' + Math.random().toString(36).slice(2,7),
         name: fullName,
@@ -1475,48 +2219,37 @@ var Organizer = {
     if (isNaN(count) || count < 0) count = 0;
     if (count > 200) count = 200;
     document.getElementById('botCount').value = count;
-
     AppState.botsConfig = Organizer.generateBots(count);
     Organizer.renderBotConfig();
     Organizer.updatePreview();
-    Toast.success('Налаштовано ботів: ' + AppState.botsConfig.length);
+    Toast.success('Ботів: ' + AppState.botsConfig.length);
   },
 
   renderBotConfig: function() {
     var list = document.getElementById('botConfigList');
-    var countEl = document.getElementById('botListCount');
-    countEl.textContent = AppState.botsConfig.length;
-
+    document.getElementById('botListCount').textContent = AppState.botsConfig.length;
     if (AppState.botsConfig.length === 0) {
-      list.innerHTML = '<div class="empty-state">Ботів не буде додано</div>';
+      list.innerHTML = '<div class="empty-state">Ботів не буде</div>';
       return;
     }
-
-    // Обмежуємо рендер 500 елементами для продуктивності,
-    // але дані повністю зберігаються в масиві
     var previewCount = Math.min(AppState.botsConfig.length, 500);
     var html = '';
     for (var i = 0; i < previewCount; i++) {
       var b = AppState.botsConfig[i];
-      html += '<div class="bot-row">' +
-        '<span style="font-size:1rem">🤖</span>' +
-        '<input type="text" value="' + escapeHtml(b.name) + '" data-botidx="' + i + '" maxlength="60">' +
-      '</div>';
+      html += '<div class="bot-row"><span>🤖</span>' +
+        '<input type="text" value="' + escapeHtml(b.name) + '" data-botidx="' + i + '" maxlength="60"></div>';
     }
     if (AppState.botsConfig.length > previewCount) {
       html += '<div class="text-dim" style="text-align:center;padding:8px">...та ще ' +
-        (AppState.botsConfig.length - previewCount) + ' ботів</div>';
+        (AppState.botsConfig.length - previewCount) + '</div>';
     }
     list.innerHTML = html;
-
     var inputs = list.querySelectorAll('input[data-botidx]');
     for (var k = 0; k < inputs.length; k++) {
       (function(inp) {
         inp.oninput = function() {
           var idx = parseInt(inp.dataset.botidx, 10);
-          if (AppState.botsConfig[idx]) {
-            AppState.botsConfig[idx].name = inp.value.trim() || 'Бот';
-          }
+          if (AppState.botsConfig[idx]) AppState.botsConfig[idx].name = inp.value.trim() || 'Бот';
         };
       })(inputs[k]);
     }
@@ -1527,32 +2260,28 @@ var Organizer = {
     if (!container) return;
     var rooms = Storage.getRooms();
     rooms.sort(function(a,b) { return (b.createdAt||0) - (a.createdAt||0); });
-
     if (rooms.length === 0) {
       container.innerHTML = '<div class="empty-state">Немає створених кімнат</div>';
       return;
     }
-
     var html = '';
     for (var i = 0; i < rooms.length; i++) {
       var r = rooms[i];
-      var statusLabel = r.status === 'playing' ? 'Гра' : r.status === 'ended' ? 'Завершена' : 'Очікування';
+      var statusLabel = r.status === 'playing' ? 'Гра' : r.status === 'ended' ? 'Кінець' : 'Чекає';
       var statusClass = r.status === 'playing' ? 'playing' : r.status === 'ended' ? 'ended' : 'waiting';
       var playerCount = (r.players || []).length;
-      var botCount = (r.players || []).filter(function(p) { return p.isBot; }).length;
       var modeNames = { arcade:'Аркада', survival:'Виживання', treasure:'Скарби' };
-      html += '<div class="custom-q-item" style="flex-wrap:wrap;gap:8px">' +
-        '<div style="flex:1;min-width:130px">' +
-          '<div style="font-weight:700;color:var(--accent-cyan);font-family:monospace;letter-spacing:2px">PIN ' + escapeHtml(r.pin) + '</div>' +
-          '<div class="text-dim">' + (modeNames[r.mode] || r.mode || '—') + ' • ' + playerCount + ' учасників (🤖' + botCount + ')</div>' +
+      html += '<div class="custom-q-item" style="flex-wrap:wrap;gap:6px">' +
+        '<div style="flex:1;min-width:100px">' +
+          '<div style="font-weight:700;color:var(--accent-cyan);font-family:monospace;letter-spacing:2px;font-size:.85rem">PIN ' + escapeHtml(r.pin) + '</div>' +
+          '<div class="text-dim">' + (modeNames[r.mode] || r.mode || '—') + ' • ' + playerCount + ' учасників</div>' +
         '</div>' +
-        '<span class="status-badge ' + statusClass + '" style="font-size:.62rem">' + statusLabel + '</span>' +
+        '<span class="status-badge ' + statusClass + '" style="font-size:.58rem">' + statusLabel + '</span>' +
         '<button class="btn btn-sm btn-primary" data-openroom="' + escapeHtml(r.pin) + '">Відкрити</button>' +
         '<button class="btn btn-sm btn-danger" data-delroom="' + escapeHtml(r.pin) + '">✕</button>' +
       '</div>';
     }
     container.innerHTML = html;
-
     var openBtns = container.querySelectorAll('button[data-openroom]');
     for (var k = 0; k < openBtns.length; k++) {
       (function(btn) {
@@ -1568,16 +2297,15 @@ var Organizer = {
         };
       })(openBtns[k]);
     }
-
     var delBtns = container.querySelectorAll('button[data-delroom]');
     for (var m = 0; m < delBtns.length; m++) {
       (function(btn) {
         btn.onclick = function() {
           var pin = btn.dataset.delroom;
-          Modal.show('Видалити кімнату?', 'Кімнату з PIN ' + pin + ' буде видалено.', function() {
+          Modal.show('Видалити кімнату?', 'Кімнату ' + pin + ' буде видалено.', function() {
             Storage.deleteRoom(pin);
             Organizer.renderMyRooms();
-            Toast.success('Кімнату видалено');
+            Toast.success('Видалено');
           });
         };
       })(delBtns[m]);
@@ -1590,82 +2318,52 @@ var Organizer = {
     var questionCount = parseInt(document.getElementById('orgQuestionCount').value, 10);
     var timePerQuestion = parseInt(document.getElementById('orgTime').value, 10);
     var orgName = (document.getElementById('orgName').value.trim()) || 'Організатор';
-
     var pool = QuestionBank.getPool(source);
-    if (pool.length < 1) {
-      Toast.error('У банку немає питань для обраного джерела!');
-      return;
-    }
-
+    if (pool.length < 1) { Toast.error('Немає питань для обраного джерела'); return; }
     var pin = Storage.generateUniquePin();
     var orgId = 'org_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
-
     var orgPlayer = {
-      id: orgId,
-      name: orgName,
-      avatar: '🎓',
-      isBot: false,
-      isOrganizer: true,
-      ready: true,
-      score: 0
+      id: orgId, name: orgName, avatar: '🎓',
+      isBot: false, isOrganizer: true, ready: true, score: 0
     };
-
-    // Боти — точно скільки у AppState.botsConfig (без обмежень)
     var bots = [];
     for (var i = 0; i < AppState.botsConfig.length; i++) {
       var b = AppState.botsConfig[i];
       bots.push({
         id: 'bot_' + pin + '_' + i + '_' + Math.random().toString(36).slice(2,7),
-        name: b.name,
-        avatar: '🤖',
-        isBot: true,
-        isOrganizer: false,
-        skill: b.skill || 0.7,
-        speed: b.speed || 3000,
-        ready: true,
-        score: 0
+        name: b.name, avatar: '🤖', isBot: true, isOrganizer: false,
+        skill: b.skill || 0.7, speed: b.speed || 3000, ready: true, score: 0
       });
     }
-
     var room = {
-      pin: String(pin),
-      mode: mode,
-      questionSource: source,
-      questionCount: questionCount,
-      timePerQuestion: timePerQuestion,
+      pin: String(pin), mode: mode, questionSource: source,
+      questionCount: questionCount, timePerQuestion: timePerQuestion,
       pool: pool.map(function(q) {
         return { q:q.q, a:q.a.slice(), c:q.c, category:q.category };
       }),
       players: [orgPlayer].concat(bots),
       status: 'waiting',
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-      organizerId: orgId,
-      startedAt: null,
-      scores: {}
+      createdAt: Date.now(), updatedAt: Date.now(),
+      organizerId: orgId, startedAt: null, scores: {},
+      // ====== СИНХРОНІЗАЦІЯ ГРИ ======
+      currentQuestionIndex: 0,
+      questionStartedAt: null,
+      questionTimer: timePerQuestion
     };
-
     Storage.upsertRoom(room);
     Storage.setLastPin(pin);
-
     AppState.role = 'organizer';
     AppState.isOrganizer = true;
     AppState.currentRoomPin = String(pin);
     AppState.myPlayerId = orgId;
     AppState.myPlayerName = orgName;
-
     try {
       var url = new URL(window.location.href);
       url.searchParams.set('pin', pin);
       window.history.replaceState({}, '', url.toString());
     } catch(e) {}
-
     var check = Storage.getRoom(pin);
-    if (!check) {
-      Toast.error('Помилка збереження кімнати. Спробуйте ще раз.');
-      return;
-    }
-
+    if (!check) { Toast.error('Помилка збереження'); return; }
     Toast.success('Кімнату створено! PIN: ' + pin + ' • ботів: ' + bots.length);
     Waiting.open(pin, true);
     Organizer.renderMyRooms();
@@ -1673,7 +2371,7 @@ var Organizer = {
 };
 
 /* ============================================================
-   WAITING / LOBBY
+   WAITING / LOBBY (з СИНХРОНІЗАЦІЄЮ через localStorage)
    ============================================================ */
 var Waiting = {
   refreshInterval: null,
@@ -1687,54 +2385,40 @@ var Waiting = {
       App.goTo('screen-welcome');
       return;
     }
-
     var room = Storage.getRoom(normalized);
     if (!room) {
-      room = Waiting.createFallbackRoom(normalized, asOrganizer);
+      room = Waiting.createFallbackRoom(normalized);
     }
-
     this.currentPin = normalized;
     AppState.currentRoomPin = normalized;
-
     document.getElementById('waitingRoleBadge').textContent = asOrganizer ? 'Організатор' : 'Гравець';
     document.getElementById('btnStartGame').style.display = asOrganizer ? 'inline-flex' : 'none';
     document.getElementById('btnCloseRoom').style.display = asOrganizer ? 'inline-flex' : 'none';
-
     Waiting.render(room);
     App.goTo('screen-waiting');
-
     if (Waiting.refreshInterval) clearInterval(Waiting.refreshInterval);
-    Waiting.refreshInterval = setInterval(function() { Waiting.pollRoom(); }, 1500);
-
-    if (Waiting.storageHandler) {
-      window.removeEventListener('storage', Waiting.storageHandler);
-    }
+    // Опитування localStorage кожні 700мс — миттєва синхронізація
+    Waiting.refreshInterval = setInterval(function() { Waiting.pollRoom(); }, 700);
+    if (Waiting.storageHandler) window.removeEventListener('storage', Waiting.storageHandler);
     Waiting.storageHandler = function(e) {
       if (e.key === Storage.KEYS.ROOMS) Waiting.pollRoom();
     };
     window.addEventListener('storage', Waiting.storageHandler);
-
     Waiting.pollRoom();
   },
 
-  createFallbackRoom: function(pin, asOrganizer) {
+  createFallbackRoom: function(pin) {
     var pool = QuestionBank.getPool('all');
     var room = {
-      pin: String(pin),
-      mode: 'arcade',
-      questionSource: 'all',
-      questionCount: 10,
-      timePerQuestion: 15,
+      pin: String(pin), mode: 'arcade', questionSource: 'all',
+      questionCount: 10, timePerQuestion: 15,
       pool: pool.slice(0, 40).map(function(q) {
         return { q:q.q, a:q.a.slice(), c:q.c, category:q.category };
       }),
-      players: [],
-      status: 'waiting',
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-      organizerId: null,
-      startedAt: null,
-      scores: {}
+      players: [], status: 'waiting',
+      createdAt: Date.now(), updatedAt: Date.now(),
+      organizerId: null, startedAt: null, scores: {},
+      currentQuestionIndex: 0, questionStartedAt: null, questionTimer: 15
     };
     Storage.upsertRoom(room);
     return room;
@@ -1749,24 +2433,20 @@ var Waiting = {
       App.goTo('screen-welcome');
       return;
     }
-
+    // Якщо гра почалася — входимо в ігровий екран
     if (room.status === 'playing' && !AppState.game.active) {
       Game.enterGameFromRoom(room);
       return;
     }
-
     Waiting.render(room);
   },
 
   render: function(room) {
     var pin = String(room.pin);
     document.getElementById('waitingPin').textContent = pin;
-
     var joinLink = buildJoinLink(pin);
     document.getElementById('waitingLink').textContent = joinLink;
-
     QRCode.render('qrImage', 'qrPlaceholder', joinLink);
-
     var statusEl = document.getElementById('waitingStatus');
     if (room.status === 'playing') {
       statusEl.className = 'status-badge playing';
@@ -1778,9 +2458,7 @@ var Waiting = {
       statusEl.className = 'status-badge waiting';
       statusEl.textContent = 'Очікування';
     }
-
     Waiting.renderPlayers(room.players || []);
-
     var modeNames = { arcade:'Аркада', survival:'Виживання', treasure:'Скарби' };
     document.getElementById('waitingMode').textContent = modeNames[room.mode] || room.mode || '—';
     document.getElementById('waitingQCount').textContent = room.questionCount || '—';
@@ -1795,8 +2473,6 @@ var Waiting = {
       container.innerHTML = '<div class="empty-state">Очікуємо на гравців...</div>';
       return;
     }
-
-    // Рендеримо всіх, але обмежуємо до 300 елементів для продуктивності
     var renderLimit = Math.min(players.length, 300);
     var html = '';
     for (var i = 0; i < renderLimit; i++) {
@@ -1804,13 +2480,10 @@ var Waiting = {
       var cls = 'player-chip';
       var avatarCls = 'player-avatar';
       var roleLabel = 'Гравець';
-
       if (p.isBot) { cls += ' is-bot'; avatarCls += ' bot'; roleLabel = 'Бот'; }
       else if (p.isOrganizer) { cls += ' is-organizer'; avatarCls += ' organizer'; roleLabel = 'Організатор'; }
       else { avatarCls += ' human'; }
-
       var avatar = p.isBot ? '🤖' : (p.isOrganizer ? '🎓' : '👤');
-
       html += '<div class="' + cls + '">' +
         '<div class="' + avatarCls + '">' + avatar + '</div>' +
         '<div class="player-meta">' +
@@ -1821,7 +2494,7 @@ var Waiting = {
     }
     if (players.length > renderLimit) {
       html += '<div class="text-dim" style="grid-column:1/-1;text-align:center;padding:8px">...та ще ' +
-        (players.length - renderLimit) + ' учасників</div>';
+        (players.length - renderLimit) + '</div>';
     }
     container.innerHTML = html;
   },
@@ -1836,7 +2509,7 @@ var Waiting = {
       Waiting.storageHandler = null;
     }
     Waiting.currentPin = null;
-
+    // Видаляємо гравця з кімнати (якщо не організатор)
     if (AppState.currentRoomPin && AppState.myPlayerId && !AppState.isOrganizer) {
       var room = Storage.getRoom(AppState.currentRoomPin);
       if (room && room.players) {
@@ -1844,19 +2517,17 @@ var Waiting = {
         Storage.upsertRoom(room);
       }
     }
-
     AppState.currentRoomPin = null;
     AppState.myPlayerId = null;
     AppState.myPlayerName = null;
     AppState.isOrganizer = false;
-
     App.goTo('screen-welcome');
-    Toast.info('Ви вийшли з кімнати');
+    Toast.info('Ви вийшли');
   }
 };
 
 /* ============================================================
-   JOIN
+   JOIN (синхронізація з існуючою кімнатою)
    ============================================================ */
 var Join = {
   init: function() {
@@ -1874,16 +2545,10 @@ var Join = {
           }
           document.getElementById('pinError').textContent = '';
         });
-
         input.addEventListener('keydown', function(e) {
-          if (e.key === 'Backspace' && !e.target.value && index > 0) {
-            inputs[index - 1].focus();
-          }
-          if (e.key === 'Enter') {
-            document.getElementById('btnJoinRoom').click();
-          }
+          if (e.key === 'Backspace' && !e.target.value && index > 0) inputs[index - 1].focus();
+          if (e.key === 'Enter') document.getElementById('btnJoinRoom').click();
         });
-
         input.addEventListener('paste', function(e) {
           e.preventDefault();
           var paste = (e.clipboardData || window.clipboardData).getData('text');
@@ -1900,9 +2565,9 @@ var Join = {
           }
           document.getElementById('pinError').textContent = '';
         });
+        input.addEventListener('focus', function() { input.select(); });
       })(inputs[i], i);
     }
-
     document.getElementById('btnJoinRoom').onclick = function() { Join.attemptJoin(); };
   },
 
@@ -1928,120 +2593,102 @@ var Join = {
     var pin = Storage.normalizePin(pinRaw);
     var name = document.getElementById('playerNameInput').value.trim();
     var errorEl = document.getElementById('pinError');
-
     if (pin.length !== 4) {
-      errorEl.textContent = 'Введіть повний 4-значний PIN-код';
+      errorEl.textContent = 'Введіть повний 4-значний PIN';
       return;
     }
     if (!name) {
       errorEl.textContent = 'Введіть ваше ім\'я';
       return;
     }
-
     var room = Storage.getRoom(pin);
-
-    // Якщо кімнати немає — автоматично створюємо (щоб вхід завжди працював)
+    // ЯКЩО КІМНАТИ НЕ ІСНУЄ — створюємо, щоб вхід працював завжди
     if (!room) {
-      var pool = QuestionBank.getPool('all');
-      room = {
-        pin: String(pin),
-        mode: 'arcade',
-        questionSource: 'all',
-        questionCount: 10,
-        timePerQuestion: 15,
-        pool: pool.slice(0, 40).map(function(q) {
-          return { q:q.q, a:q.a.slice(), c:q.c, category:q.category };
-        }),
-        players: [],
-        status: 'waiting',
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-        organizerId: null,
-        startedAt: null,
-        scores: {}
-      };
-      Storage.upsertRoom(room);
-      room = Storage.getRoom(pin);
-      Toast.info('Кімнату ' + pin + ' створено автоматично.');
+      room = Waiting.createFallbackRoom(pin);
+      Toast.info('Кімнату ' + pin + ' створено');
     }
-
     if (room.status === 'ended') {
-      // Дозволяємо перезапуск кімнати
       room.status = 'waiting';
       room.startedAt = null;
       Storage.upsertRoom(room);
     }
-
     var players = room.players || [];
     for (var i = 0; i < players.length; i++) {
       if (!players[i].isBot && players[i].name.toLowerCase() === name.toLowerCase()) {
-        errorEl.textContent = 'Це ім\'я вже зайняте в кімнаті';
+        errorEl.textContent = 'Це ім\'я вже зайняте';
         return;
       }
     }
-
     var player = {
       id: 'pl_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
-      name: name,
-      avatar: '👤',
-      isBot: false,
-      isOrganizer: false,
-      ready: true,
-      score: 0
+      name: name, avatar: '👤', isBot: false, isOrganizer: false,
+      ready: true, score: 0
     };
-
+    // ====== ДОДАЄМО ГРАВЦЯ В КІМНАТУ (а не створюємо нову) ======
     room.players = room.players || [];
     room.players.push(player);
     Storage.upsertRoom(room);
-
     AppState.role = 'player';
     AppState.isOrganizer = false;
     AppState.currentRoomPin = pin;
     AppState.myPlayerId = player.id;
     AppState.myPlayerName = name;
-
     errorEl.textContent = '';
-    Toast.success('Ви приєдналися до кімнати ' + pin);
+    Toast.success('Ви приєдналися до ' + pin);
     Waiting.open(pin, false);
   }
 };
 
 /* ============================================================
-   GAME ENGINE
+   GAME ENGINE (з СИНХРОНІЗАЦІЄЮ через localStorage)
    ============================================================ */
 var Game = {
   startFromRoom: function() {
     var room = Storage.getRoom(AppState.currentRoomPin);
     if (!room) { Toast.error('Кімнату не знайдено'); return; }
     if (!room.pool || room.pool.length === 0) {
-      Toast.error('Немає питань у кімнаті');
+      Toast.error('Немає питань');
       return;
     }
-
+    // Готуємо перемішаний пул питань для всіх гравців
+    var shuffled = QuestionBank.shuffle(room.pool);
+    var count = Math.min(room.questionCount || 10, shuffled.length);
+    var questions = shuffled.slice(0, count);
     room.status = 'playing';
     room.startedAt = Date.now();
     room.scores = {};
+    room.shuffledQuestions = questions;
+    room.currentQuestionIndex = 0;
+    room.questionStartedAt = Date.now();
+    room.questionTimer = room.timePerQuestion || 15;
+    room.answerRevealed = false;
     (room.players || []).forEach(function(p) {
       room.scores[p.id] = 0;
       p.score = 0;
+      p.answeredThisQuestion = false;
     });
     Storage.upsertRoom(room);
-
     Toast.success('Гру розпочато!');
   },
 
   enterGameFromRoom: function(room) {
     if (AppState.game.active) return;
 
-    var shuffled = QuestionBank.shuffle(room.pool);
-    var count = Math.min(room.questionCount || 10, shuffled.length);
-    var questions = shuffled.slice(0, count);
+    // Використовуємо ГОТОВІ перемішані питання з кімнати,
+    // щоб усі гравці бачили ОДНАКОВІ питання в ОДНАКОВОМУ порядку
+    var questions = room.shuffledQuestions;
+    if (!questions || questions.length === 0) {
+      // Резерв: якщо з якоїсь причини питань немає
+      var shuffled = QuestionBank.shuffle(room.pool);
+      var count = Math.min(room.questionCount || 10, shuffled.length);
+      questions = shuffled.slice(0, count);
+    }
 
     Game.reset();
     AppState.game = {
       mode: room.mode || 'arcade',
       questions: questions,
-      currentIndex: 0,
+      currentIndex: room.currentQuestionIndex || 0,
       score: 0,
       correct: 0,
       wrong: 0,
@@ -2055,7 +2702,8 @@ var Game = {
       treasureOpened: [],
       questionCount: questions.length,
       timePerQuestion: room.timePerQuestion || 15,
-      active: true
+      active: true,
+      roomPin: room.pin
     };
 
     if (room.mode === 'treasure') {
@@ -2089,8 +2737,126 @@ var Game = {
     }
 
     App.goTo('screen-game');
-    Game.loadQuestion();
+    // Завантажуємо питання за індексом з кімнати
+    Game.loadQuestionFromRoom();
     Game.simulateBots(room);
+    // Запускаємо опитування для синхронізації з учителем
+    Game.startPolling();
+  },
+
+  startPolling: function() {
+    if (Game.pollingInterval) clearInterval(Game.pollingInterval);
+    Game.pollingInterval = setInterval(function() {
+      if (!AppState.game.active) {
+        clearInterval(Game.pollingInterval);
+        return;
+      }
+      var room = Storage.getRoom(AppState.currentRoomPin);
+      if (!room) return;
+
+      // Синхронізація з поточним станом кімнати
+      if (room.status === 'ended') {
+        Game.endGame();
+        return;
+      }
+      if (room.status === 'waiting') {
+        // Учитель скинув гру в лобі
+        clearInterval(Game.pollingInterval);
+        Game.reset();
+        App.goTo('screen-waiting');
+        Waiting.open(AppState.currentRoomPin, AppState.isOrganizer);
+        return;
+      }
+
+      // Якщо індекс питання в кімнаті відрізняється від нашого — синхронізуємо
+      if (typeof room.currentQuestionIndex === 'number' &&
+          room.currentQuestionIndex !== AppState.game.currentIndex) {
+        AppState.game.currentIndex = room.currentQuestionIndex;
+        AppState.game.answered = false;
+        Game.loadQuestionFromRoom();
+      }
+
+      // Синхронізація таймера
+      if (room.questionStartedAt) {
+        var elapsed = Math.floor((Date.now() - room.questionStartedAt) / 1000);
+        var remaining = (room.timePerQuestion || 15) - elapsed;
+        if (remaining < 0) remaining = 0;
+        if (!AppState.game.answered) {
+          AppState.game.timer = remaining;
+          var timerEl = document.getElementById('gameTimer');
+          if (timerEl) timerEl.textContent = remaining;
+          var fillEl = document.getElementById('gameTimerFill');
+          if (fillEl) {
+            var pct = (remaining / (room.timePerQuestion || 15)) * 100;
+            fillEl.style.width = Math.max(0, pct) + '%';
+          }
+        }
+      }
+
+      // Оновлюємо бали ботів
+      Game.updateBotsLivePanel();
+    }, 700);
+  },
+
+  loadQuestionFromRoom: function() {
+    var room = Storage.getRoom(AppState.currentRoomPin);
+    if (!room) return;
+    var g = AppState.game;
+    if (g.currentIndex >= g.questions.length) {
+      // Переходимо до завершення
+      room.status = 'ended';
+      Storage.upsertRoom(room);
+      Game.endGame();
+      return;
+    }
+    var q = g.questions[g.currentIndex];
+    if (!q) { Game.endGame(); return; }
+
+    g.answered = false;
+    g.currentQuestion = q;
+
+    document.getElementById('gameQuestionNum').textContent = (g.currentIndex + 1) + '/' + g.questionCount;
+    document.getElementById('questionText').textContent = q.q;
+    document.getElementById('gameFeedback').textContent = '';
+    document.getElementById('gameFeedback').className = 'game-feedback';
+
+    var cat = q.category || 'math';
+    var badge = document.getElementById('questionCategory');
+    badge.textContent = CATEGORY_NAMES[cat] || 'Питання';
+    badge.className = 'category-badge ' + cat;
+
+    var grid = document.getElementById('answersGrid');
+    grid.innerHTML = '';
+    for (var i = 0; i < q.a.length; i++) {
+      (function(idx) {
+        var btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        btn.textContent = q.a[idx];
+        btn.onclick = function() { Game.handleAnswer(idx); };
+        grid.appendChild(btn);
+      })(i);
+    }
+
+    // Запускаємо локальний таймер синхронізації
+    if (g.timerInterval) clearInterval(g.timerInterval);
+    g.timer = (room.timePerQuestion || 15) - Math.floor((Date.now() - (room.questionStartedAt || Date.now())) / 1000);
+    if (g.timer < 0) g.timer = 0;
+    document.getElementById('gameTimer').textContent = g.timer;
+    document.getElementById('gameTimerFill').style.width = ((g.timer / (room.timePerQuestion || 15)) * 100) + '%';
+
+    g.timerInterval = setInterval(function() {
+      var r = Storage.getRoom(AppState.currentRoomPin);
+      if (!r || !r.questionStartedAt) return;
+      var elapsed = Math.floor((Date.now() - r.questionStartedAt) / 1000);
+      var remaining = (r.timePerQuestion || 15) - elapsed;
+      if (remaining < 0) remaining = 0;
+      g.timer = remaining;
+      document.getElementById('gameTimer').textContent = remaining;
+      document.getElementById('gameTimerFill').style.width = ((remaining / (r.timePerQuestion || 15)) * 100) + '%';
+      if (remaining <= 0 && !g.answered) {
+        Game.handleAnswer(-1);
+      }
+    }, 500);
   },
 
   renderBotsLivePanel: function(room) {
@@ -2100,7 +2866,6 @@ var Game = {
       container.innerHTML = '<div class="empty-state">Немає ботів</div>';
       return;
     }
-    // Рендеримо до 300 ботів
     var renderLimit = Math.min(bots.length, 300);
     var html = '';
     for (var i = 0; i < renderLimit; i++) {
@@ -2112,8 +2877,8 @@ var Game = {
       '</div>';
     }
     if (bots.length > renderLimit) {
-      html += '<div class="text-dim" style="grid-column:1/-1;text-align:center;padding:8px">...та ще ' +
-        (bots.length - renderLimit) + ' ботів</div>';
+      html += '<div class="text-dim" style="grid-column:1/-1;text-align:center;padding:6px">...та ще ' +
+        (bots.length - renderLimit) + '</div>';
     }
     container.innerHTML = html;
   },
@@ -2146,31 +2911,23 @@ var Game = {
     }
   },
 
-  /* ---------- Симуляція активності ботів ---------- */
   simulateBots: function(room) {
     Game.clearBotSimulation();
-
     var bots = (room.players || []).filter(function(p) { return p.isBot; });
     if (bots.length === 0) return;
-
     var totalQuestions = AppState.game.questionCount;
     var maxScore = totalQuestions * 150;
-
-    // Для дуже великої кількості ботів запускаємо групові інтервали,
-    // щоб не перевантажувати браузер тисячами таймерів
     var groupSize = 25;
     var groups = [];
     for (var i = 0; i < bots.length; i += groupSize) {
       groups.push(bots.slice(i, i + groupSize));
     }
-
     for (var gi = 0; gi < groups.length; gi++) {
       (function(group, groupIdx) {
         var baseInterval = 1000 + groupIdx * 150;
         var intervalId = setInterval(function() {
           var currentRoom = Storage.getRoom(AppState.currentRoomPin);
           if (!currentRoom) return;
-
           var changed = false;
           for (var k = 0; k < group.length; k++) {
             var bot = group[k];
@@ -2182,10 +2939,8 @@ var Game = {
               }
             }
             if (!botInRoom) continue;
-
             var skill = botInRoom.skill || 0.7;
             var speed = botInRoom.speed || 3000;
-            // Шанс додавання балів за такт
             var chance = Math.max(0.15, Math.min(0.85, (1500 / speed) * skill));
             if (Math.random() < chance) {
               var add = Math.floor((maxScore / totalQuestions) * (0.4 + Math.random() * 1.2));
@@ -2248,91 +3003,28 @@ var Game = {
     }
   },
 
-  loadQuestion: function() {
-    var g = AppState.game;
-    if (!g.active) return;
-
-    if (g.currentIndex >= g.questions.length) {
-      Game.endGame();
-      return;
-    }
-
-    g.answered = false;
-    var q = g.questions[g.currentIndex];
-
-    document.getElementById('gameQuestionNum').textContent = (g.currentIndex + 1) + '/' + g.questionCount;
-    document.getElementById('gameScore').textContent = g.score;
-    document.getElementById('questionText').textContent = q.q;
-    document.getElementById('gameFeedback').textContent = '';
-    document.getElementById('gameFeedback').className = 'game-feedback';
-
-    var cat = q.category || 'math';
-    var badge = document.getElementById('questionCategory');
-    badge.textContent = CATEGORY_NAMES[cat] || 'Питання';
-    badge.className = 'category-badge ' + cat;
-
-    var grid = document.getElementById('answersGrid');
-    grid.innerHTML = '';
-    for (var i = 0; i < q.a.length; i++) {
-      (function(idx) {
-        var btn = document.createElement('button');
-        btn.className = 'answer-btn';
-        btn.textContent = q.a[idx];
-        btn.onclick = function() { Game.handleAnswer(idx); };
-        grid.appendChild(btn);
-      })(i);
-    }
-
-    Game.startTimer();
-  },
-
-  startTimer: function() {
-    var g = AppState.game;
-    if (g.timerInterval) clearInterval(g.timerInterval);
-
-    g.timer = g.timePerQuestion;
-    document.getElementById('gameTimer').textContent = g.timer;
-    document.getElementById('gameTimerFill').style.width = '100%';
-
-    g.timerInterval = setInterval(function() {
-      g.timer--;
-      document.getElementById('gameTimer').textContent = g.timer;
-      var pct = (g.timer / g.timePerQuestion) * 100;
-      document.getElementById('gameTimerFill').style.width = pct + '%';
-      if (g.timer <= 0) {
-        clearInterval(g.timerInterval);
-        if (!g.answered) Game.handleAnswer(-1);
-      }
-    }, 1000);
-  },
-
   handleAnswer: function(selectedIndex) {
     var g = AppState.game;
     if (g.answered) return;
     g.answered = true;
     clearInterval(g.timerInterval);
 
-    var q = g.questions[g.currentIndex];
+    var q = g.currentQuestion;
+    if (!q) return;
     var buttons = document.querySelectorAll('.answer-btn');
     for (var i = 0; i < buttons.length; i++) buttons[i].disabled = true;
 
     var isCorrect = selectedIndex === q.c;
-
     if (isCorrect) {
       if (buttons[selectedIndex]) buttons[selectedIndex].classList.add('correct');
       g.correct++;
       var points = 100;
-      if (g.mode === 'arcade') {
-        points += Math.floor((g.timer / g.timePerQuestion) * 50);
-      } else if (g.mode === 'survival') {
-        points = 150;
-      } else if (g.mode === 'treasure') {
-        points = 120;
-      }
+      if (g.mode === 'arcade') points += Math.floor((g.timer / g.timePerQuestion) * 50);
+      else if (g.mode === 'survival') points = 150;
+      else if (g.mode === 'treasure') points = 120;
       g.score += points;
-      document.getElementById('gameFeedback').textContent = '✅ Правильно! +' + points + ' балів';
+      document.getElementById('gameFeedback').textContent = '✅ Правильно! +' + points;
       document.getElementById('gameFeedback').className = 'game-feedback success';
-
       if (g.mode === 'treasure') Game.openTreasureCell();
     } else {
       if (selectedIndex >= 0 && buttons[selectedIndex]) buttons[selectedIndex].classList.add('wrong');
@@ -2342,21 +3034,48 @@ var Game = {
         g.lives--;
         Game.updateLivesDisplay();
         if (g.lives <= 0) {
-          document.getElementById('gameFeedback').textContent = '💀 Ви вичерпали всі життя!';
+          document.getElementById('gameFeedback').textContent = '💀 Вичерпано всі життя!';
           document.getElementById('gameFeedback').className = 'game-feedback error';
           setTimeout(function() { Game.endGame(); }, 1500);
           return;
         }
       }
-      document.getElementById('gameFeedback').textContent = '❌ Неправильно. Правильно: ' + q.a[q.c];
+      document.getElementById('gameFeedback').textContent = '❌ Правильно: ' + q.a[q.c];
       document.getElementById('gameFeedback').className = 'game-feedback error';
     }
-
     document.getElementById('gameScore').textContent = g.score;
 
+    // Оновлюємо бали в кімнаті
+    var room = Storage.getRoom(AppState.currentRoomPin);
+    if (room) {
+      room.scores = room.scores || {};
+      room.scores[AppState.myPlayerId] = g.score;
+      for (var j = 0; j < room.players.length; j++) {
+        if (room.players[j].id === AppState.myPlayerId) {
+          room.players[j].score = g.score;
+          break;
+        }
+      }
+      Storage.upsertRoom(room);
+    }
+
+    // Перехід до наступного питання
     setTimeout(function() {
-      g.currentIndex++;
-      Game.loadQuestion();
+      var r = Storage.getRoom(AppState.currentRoomPin);
+      if (!r) return;
+      var nextIdx = g.currentIndex + 1;
+      if (nextIdx >= g.questions.length) {
+        r.status = 'ended';
+        Storage.upsertRoom(r);
+        Game.endGame();
+      } else {
+        r.currentQuestionIndex = nextIdx;
+        r.questionStartedAt = Date.now();
+        Storage.upsertRoom(r);
+        // Локально одразу переходимо
+        g.currentIndex = nextIdx;
+        Game.loadQuestionFromRoom();
+      }
     }, 1800);
   },
 
@@ -2395,6 +3114,10 @@ var Game = {
   endGame: function() {
     var g = AppState.game;
     if (g.timerInterval) clearInterval(g.timerInterval);
+    if (Game.pollingInterval) {
+      clearInterval(Game.pollingInterval);
+      Game.pollingInterval = null;
+    }
     g.active = false;
     Game.clearBotSimulation();
 
@@ -2404,16 +3127,17 @@ var Game = {
     var room = Storage.getRoom(AppState.currentRoomPin);
     if (room) {
       var maxScore = g.questionCount * 150;
-      room.players.forEach(function(p) {
+      for (var i = 0; i < room.players.length; i++) {
+        var p = room.players[i];
         if (p.isBot && (!p.score || p.score === 0)) {
           p.score = Math.floor(Math.random() * maxScore * 0.85);
         }
-      });
+      }
       room.scores = room.scores || {};
       room.scores[AppState.myPlayerId] = g.score;
-      for (var i = 0; i < room.players.length; i++) {
-        if (room.players[i].id === AppState.myPlayerId) {
-          room.players[i].score = g.score;
+      for (var k = 0; k < room.players.length; k++) {
+        if (room.players[k].id === AppState.myPlayerId) {
+          room.players[k].score = g.score;
           break;
         }
       }
@@ -2434,29 +3158,21 @@ var Game = {
   renderLeaderboard: function(room) {
     var container = document.getElementById('resultsLeaderboard');
     var list = [];
-
     if (room && room.players && room.players.length > 0) {
       room.players.forEach(function(p) {
         var score = (room.scores && room.scores[p.id]) || p.score || 0;
         list.push({
-          name: p.name,
-          score: score,
-          isBot: p.isBot,
-          isMe: p.id === AppState.myPlayerId
+          name: p.name, score: score,
+          isBot: p.isBot, isMe: p.id === AppState.myPlayerId
         });
       });
     } else {
       list.push({
         name: AppState.myPlayerName || 'Ви',
-        score: AppState.game.score,
-        isBot: false,
-        isMe: true
+        score: AppState.game.score, isBot: false, isMe: true
       });
     }
-
     list.sort(function(a,b) { return b.score - a.score; });
-
-    // Рендеримо до 500 елементів
     var renderLimit = Math.min(list.length, 500);
     var html = '';
     for (var i = 0; i < renderLimit; i++) {
@@ -2472,8 +3188,8 @@ var Game = {
       '</div>';
     }
     if (list.length > renderLimit) {
-      html += '<div class="text-dim" style="text-align:center;padding:8px">...та ще ' +
-        (list.length - renderLimit) + ' учасників</div>';
+      html += '<div class="text-dim" style="text-align:center;padding:6px">...та ще ' +
+        (list.length - renderLimit) + '</div>';
     }
     container.innerHTML = html;
   },
@@ -2481,36 +3197,30 @@ var Game = {
   reset: function() {
     var g = AppState.game;
     if (g && g.timerInterval) clearInterval(g.timerInterval);
+    if (Game.pollingInterval) {
+      clearInterval(Game.pollingInterval);
+      Game.pollingInterval = null;
+    }
     Game.clearBotSimulation();
     AppState.game = {
-      mode: null,
-      questions: [],
-      currentIndex: 0,
-      score: 0,
-      correct: 0,
-      wrong: 0,
-      lives: 3,
-      treasures: 0,
-      totalTreasures: 3,
-      timer: 0,
-      timerInterval: null,
-      answered: false,
-      treasureMap: [],
-      treasureOpened: [],
-      questionCount: 10,
-      timePerQuestion: 15,
-      active: false
+      mode: null, questions: [], currentIndex: 0, score: 0,
+      correct: 0, wrong: 0, lives: 3, treasures: 0, totalTreasures: 3,
+      timer: 0, timerInterval: null, answered: false,
+      treasureMap: [], treasureOpened: [], questionCount: 10,
+      timePerQuestion: 15, active: false, roomPin: null,
+      currentQuestion: null
     };
   }
 };
 
+Game.pollingInterval = null;
+
 /* ============================================================
-   INITIALIZATION
+   INIT
    ============================================================ */
 document.addEventListener('DOMContentLoaded', function() {
   Theme.init();
   AppState.customQuestions = Storage.getCustomQuestions();
-
   Organizer.init();
   Join.init();
 
@@ -2528,6 +3238,10 @@ document.addEventListener('DOMContentLoaded', function() {
             window.removeEventListener('storage', Waiting.storageHandler);
             Waiting.storageHandler = null;
           }
+          if (Game.pollingInterval) {
+            clearInterval(Game.pollingInterval);
+            Game.pollingInterval = null;
+          }
           AppState.currentRoomPin = null;
           AppState.myPlayerId = null;
           AppState.isOrganizer = false;
@@ -2543,7 +3257,7 @@ document.addEventListener('DOMContentLoaded', function() {
     Organizer.renderMyRooms();
     Organizer.updatePreview();
     App.goTo('screen-organizer');
-    Toast.info('Вітаємо в панелі організатора!');
+    Toast.info('Вітаємо!');
   };
 
   document.getElementById('btnRolePlayer').onclick = function() {
@@ -2554,28 +3268,24 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   document.getElementById('btnCopyLink').onclick = function() {
-    var link = document.getElementById('waitingLink').textContent;
-    copyToClipboard(link, 'Посилання скопійовано!');
+    copyToClipboard(document.getElementById('waitingLink').textContent, 'Посилання скопійовано!');
   };
   document.getElementById('btnCopyPin').onclick = function() {
-    var pin = document.getElementById('waitingPin').textContent;
-    copyToClipboard(pin, 'PIN скопійовано!');
+    copyToClipboard(document.getElementById('waitingPin').textContent, 'PIN скопійовано!');
   };
   document.getElementById('btnRefreshRoom').onclick = function() {
     Waiting.pollRoom();
     Toast.info('Оновлено');
   };
   document.getElementById('btnWaitingLeave').onclick = function() {
-    Modal.show('Вийти з кімнати?', 'Ви покинете кімнату та повернетеся на головний екран.', function() {
-      Waiting.leave();
-    });
+    Modal.show('Вийти з кімнати?', 'Ви покинете кімнату.', function() { Waiting.leave(); });
   };
   document.getElementById('btnCloseRoom').onclick = function() {
     Modal.show('Закрити кімнату?', 'Усі гравці будуть відключені.', function() {
       if (AppState.currentRoomPin) Storage.deleteRoom(AppState.currentRoomPin);
       Waiting.leave();
       Organizer.renderMyRooms();
-      Toast.success('Кімнату закрито');
+      Toast.success('Закрито');
     });
   };
   document.getElementById('btnStartGame').onclick = function() {
@@ -2588,9 +3298,16 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('btnPlayAgain').onclick = function() {
     var room = Storage.getRoom(AppState.currentRoomPin);
     if (room) {
+      var shuffled = QuestionBank.shuffle(room.pool);
+      var count = Math.min(room.questionCount || 10, shuffled.length);
+      var questions = shuffled.slice(0, count);
+      room.shuffledQuestions = questions;
       room.status = 'playing';
       room.startedAt = Date.now();
       room.scores = {};
+      room.currentQuestionIndex = 0;
+      room.questionStartedAt = Date.now();
+      room.answerRevealed = false;
       room.players.forEach(function(p) { p.score = 0; });
       Storage.upsertRoom(room);
       Game.reset();
@@ -2605,6 +3322,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var room = Storage.getRoom(AppState.currentRoomPin);
     if (room) {
       room.status = 'waiting';
+      room.currentQuestionIndex = 0;
+      room.questionStartedAt = null;
       Storage.upsertRoom(room);
       Waiting.open(AppState.currentRoomPin, AppState.isOrganizer);
     } else {
@@ -2612,7 +3331,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   };
 
-  // URL param
+  // ========== АВТОЗАПОВНЕННЯ PIN З URL ==========
   try {
     var params = new URLSearchParams(window.location.search);
     var pinParam = params.get('pin');
@@ -2625,13 +3344,13 @@ document.addEventListener('DOMContentLoaded', function() {
           Join.fillPin(cleanPin);
           var nameInput = document.getElementById('playerNameInput');
           if (nameInput) nameInput.focus();
-          Toast.info('PIN ' + cleanPin + ' підставлено. Введіть ім\'я.');
+          Toast.info('PIN ' + cleanPin + ' підставлено');
         }, 400);
       }
     }
   } catch(e) {}
 
-  // Періодичне очищення
+  // ========== ОЧИЩЕННЯ СТАРИХ КІМНАТ ==========
   setInterval(function() {
     try {
       var rooms = Storage.getRooms();
@@ -2650,28 +3369,17 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch(e) {}
   }, 60000);
 
-  console.log('%cSunLorem v4.0', 'color:#00e5ff;font-size:20px;font-weight:bold');
-  console.log('Кімнат у сховищі:', Storage.getRooms().length);
+  console.log('%cSunLorem v5.0', 'color:#00e5ff;font-size:20px;font-weight:bold');
+  console.log('Кімнат:', Storage.getRooms().length);
   console.log('Власних питань:', Storage.getCustomQuestions().length);
   console.log('Питань у базі:', QuestionBank.countAll());
-  console.log('Доступно імен для ботів:', BOT_FIRST_NAMES.length + ' × ' + BOT_LAST_NAMES.length + ' = ' + (BOT_FIRST_NAMES.length * BOT_LAST_NAMES.length));
+  console.log('Імен для ботів:', BOT_FIRST_NAMES.length + ' × ' + BOT_LAST_NAMES.length);
 });
 
-/* ============================================================
-   EXPORT
-   ============================================================ */
 window.SunLorem = {
-  Storage: Storage,
-  AppState: AppState,
-  QuestionBank: QuestionBank,
-  Organizer: Organizer,
-  Waiting: Waiting,
-  Join: Join,
-  Game: Game,
-  App: App,
-  Toast: Toast,
-  QRCode: QRCode,
-  Theme: Theme
+  Storage: Storage, AppState: AppState, QuestionBank: QuestionBank,
+  Organizer: Organizer, Waiting: Waiting, Join: Join, Game: Game,
+  App: App, Toast: Toast, QRCode: QRCode, Theme: Theme
 };
 </script>
 </body>
