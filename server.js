@@ -54,20 +54,20 @@ const SHOP = {
         { id: 'a_pirate', emoji: '🏴‍☠️', name: 'Пірат',          price: 75,  desc: 'Шукач скарбів' }
     ],
     accessories: [
-        { id: 'x_none',      emoji: '',   name: 'Немає',         price: 0,   slot: 'head' },
-        { id: 'x_crown',     emoji: '👑', name: 'Корона',        price: 50,  slot: 'head' },
-        { id: 'x_hat',       emoji: '🎩', name: 'Циліндр',       price: 30,  slot: 'head' },
-        { id: 'x_partyhat',  emoji: '🎉', name: 'Святковий ковпак', price: 20, slot: 'head' },
-        { id: 'x_cap',       emoji: '🧢', name: 'Кепка',         price: 15,  slot: 'head' },
-        { id: 'x_grad',      emoji: '🎓', name: 'Академічна шапочка', price: 40, slot: 'head' },
-        { id: 'x_glasses',   emoji: '🕶️', name: 'Кібер-окуляри',  price: 25,  slot: 'eyes' },
-        { id: 'x_goggles',   emoji: '🥽', name: 'Захисні окуляри', price: 35, slot: 'eyes' },
-        { id: 'x_aura',      emoji: '✨', name: 'Сяйво',         price: 60,  slot: 'effect' },
-        { id: 'x_fire',      emoji: '🔥', name: 'Полум\'я',      price: 70,  slot: 'effect' },
-        { id: 'x_star',      emoji: '⭐', name: 'Зірки',         price: 45,  slot: 'effect' },
-        { id: 'x_rainbow',   emoji: '🌈', name: 'Веселка',       price: 55,  slot: 'effect' },
-        { id: 'x_lightning', emoji: '⚡', name: 'Блискавка',     price: 65,  slot: 'effect' },
-        { id: 'x_heart',     emoji: '💖', name: 'Сердечка',      price: 40,  slot: 'effect' }
+        { id: 'x_none',      emoji: '',   name: 'Немає',             price: 0,   slot: 'head' },
+        { id: 'x_crown',     emoji: '👑', name: 'Корона',            price: 50,  slot: 'head' },
+        { id: 'x_hat',       emoji: '🎩', name: 'Циліндр',           price: 30,  slot: 'head' },
+        { id: 'x_partyhat',  emoji: '🎉', name: 'Святковий ковпак',  price: 20,  slot: 'head' },
+        { id: 'x_cap',       emoji: '🧢', name: 'Кепка',             price: 15,  slot: 'head' },
+        { id: 'x_grad',      emoji: '🎓', name: 'Академічна шапочка',price: 40,  slot: 'head' },
+        { id: 'x_glasses',   emoji: '🕶️', name: 'Кібер-окуляри',     price: 25,  slot: 'eyes' },
+        { id: 'x_goggles',   emoji: '🥽', name: 'Захисні окуляри',   price: 35,  slot: 'eyes' },
+        { id: 'x_aura',      emoji: '✨', name: 'Сяйво',             price: 60,  slot: 'effect' },
+        { id: 'x_fire',      emoji: '🔥', name: 'Полум\'я',          price: 70,  slot: 'effect' },
+        { id: 'x_star',      emoji: '⭐', name: 'Зірки',             price: 45,  slot: 'effect' },
+        { id: 'x_rainbow',   emoji: '🌈', name: 'Веселка',           price: 55,  slot: 'effect' },
+        { id: 'x_lightning', emoji: '⚡', name: 'Блискавка',         price: 65,  slot: 'effect' },
+        { id: 'x_heart',     emoji: '💖', name: 'Сердечка',          price: 40,  slot: 'effect' }
     ],
     themes: [
         { id: 't_neon',    name: 'Неон',          price: 0,   desc: 'Базовий неон' },
@@ -145,10 +145,12 @@ function generateBots(count) {
         let first, last, full;
         let attempts = 0;
         do {
-            first = poolFirst.length ? poolFirst.splice(Math.floor(Math.random()*poolFirst.length),1)[0]
-                                     : allFirst[Math.floor(Math.random()*allFirst.length)];
-            last  = poolLast.length  ? poolLast.splice(Math.floor(Math.random()*poolLast.length),1)[0]
-                                     : LAST_NAMES[Math.floor(Math.random()*LAST_NAMES.length)];
+            first = poolFirst.length
+                ? poolFirst.splice(Math.floor(Math.random() * poolFirst.length), 1)[0]
+                : allFirst[Math.floor(Math.random() * allFirst.length)];
+            last = poolLast.length
+                ? poolLast.splice(Math.floor(Math.random() * poolLast.length), 1)[0]
+                : LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
             full = first + ' ' + last;
             attempts++;
         } while (used.has(full) && attempts < 80);
@@ -177,7 +179,7 @@ function generateBots(count) {
 
 function addFeed(room, text) {
     if (!room.feed) room.feed = [];
-    room.feed.unshift({ text, t: Date.now() });
+    room.feed.unshift({ text: text, t: Date.now() });
     if (room.feed.length > 40) room.feed.length = 40;
 }
 
@@ -217,7 +219,10 @@ function broadcastState(room) {
 }
 
 function stopTimer(room) {
-    if (room.timer) { clearInterval(room.timer); room.timer = null; }
+    if (room.timer) {
+        clearInterval(room.timer);
+        room.timer = null;
+    }
 }
 
 function startTimer(room) {
@@ -240,7 +245,9 @@ function startTimer(room) {
 
         if (left <= 0) {
             stopTimer(room);
-            io.to('room_' + room.pin).emit('timeExpired', { questionIndex: room.currentQuestion });
+            io.to('room_' + room.pin).emit('timeExpired', {
+                questionIndex: room.currentQuestion
+            });
         }
     }, 250);
 }
@@ -280,7 +287,6 @@ function scheduleBotAnswers(room) {
                 const coins = Math.round(gained / 5);
                 p.coins = (p.coins || 0) + coins;
                 addFeed(room, '🤖 ' + p.name + ' правильно (+' + gained + ' балів, +' + coins + ' 🪙)');
-                // знімаємо активну силу
                 p.powerActive = null;
             } else {
                 p.wrongCount++;
@@ -302,11 +308,16 @@ function cleanupRoom(room) {
 }
 
 /* ============================================================
-   SOCKET.IO
+   HTTP-СЕРВЕР + SOCKET.IO
    ============================================================ */
 const httpServer = http.createServer(app);
+
 const io = new Server(httpServer, {
-    cors: { origin: '*', methods: ['GET', 'POST'], credentials: false },
+    cors: {
+        origin: '*',
+        methods: ['GET', 'POST'],
+        credentials: false
+    },
     transports: ['polling', 'websocket'],
     pingInterval: 25000,
     pingTimeout: 30000,
@@ -316,7 +327,7 @@ const io = new Server(httpServer, {
 });
 
 /* ============================================================
-   API для магазину
+   REST API
    ============================================================ */
 app.get('/api/shop', (req, res) => {
     res.json({ ok: true, shop: SHOP });
@@ -362,7 +373,10 @@ io.on('connection', (socket) => {
     socket.on('createRoom', (payload, cb) => {
         try {
             const questions = (payload && Array.isArray(payload.questions)) ? payload.questions : [];
-            if (questions.length === 0) { if (cb) cb({ ok: false, error: 'Немає питань' }); return; }
+            if (questions.length === 0) {
+                if (cb) cb({ ok: false, error: 'Немає питань' });
+                return;
+            }
             const mode = (payload.mode && MODES[payload.mode]) ? payload.mode : 'arcade';
             const timePerQuestion = Math.max(5, Math.min(60,
                 parseInt(payload.timePerQuestion, 10) || MODES[mode].defaultTime));
@@ -372,11 +386,11 @@ io.on('connection', (socket) => {
             const bots = generateBots(botCount);
 
             const room = {
-                pin,
+                pin: pin,
                 createdAt: Date.now(),
                 status: 'lobby',
-                mode,
-                timePerQuestion,
+                mode: mode,
+                timePerQuestion: timePerQuestion,
                 questions: questions.map(q => ({
                     text: String(q.text || '').slice(0, 300),
                     answers: (q.answers || []).map(a => String(a).slice(0, 100)).slice(0, 6),
@@ -399,9 +413,10 @@ io.on('connection', (socket) => {
             role = 'teacher';
             socket.join('room_' + pin);
             addFeed(room, '🎉 Кімнату створено. Очікуємо на учнів...');
+
             console.log('[room] created', pin, '| bots:', botCount, '| q:', questions.length);
 
-            if (cb) cb({ ok: true, pin, state: getPublicState(room) });
+            if (cb) cb({ ok: true, pin: pin, state: getPublicState(room) });
             broadcastState(room);
         } catch (err) {
             console.error('createRoom error', err);
@@ -418,14 +433,25 @@ io.on('connection', (socket) => {
             const accessories = (payload && payload.accessories) || { head: '', eyes: '', effect: '' };
             const coins = Math.max(0, parseInt(payload && payload.coins, 10) || 0);
 
-            if (!/^\d{6}$/.test(pin)) { if (cb) cb({ ok: false, error: 'Невірний PIN' }); return; }
-            if (name.length < 2)      { if (cb) cb({ ok: false, error: 'Ім\'я закоротке' }); return; }
+            if (!/^\d{6}$/.test(pin)) {
+                if (cb) cb({ ok: false, error: 'Невірний PIN' });
+                return;
+            }
+            if (name.length < 2) {
+                if (cb) cb({ ok: false, error: 'Ім\'я закоротке' });
+                return;
+            }
 
             const room = rooms.get(pin);
-            if (!room) { if (cb) cb({ ok: false, error: 'Кімнату не знайдено' }); return; }
-            if (room.status === 'finished') { if (cb) cb({ ok: false, error: 'Гра вже завершена' }); return; }
+            if (!room) {
+                if (cb) cb({ ok: false, error: 'Кімнату не знайдено' });
+                return;
+            }
+            if (room.status === 'finished') {
+                if (cb) cb({ ok: false, error: 'Гра вже завершена' });
+                return;
+            }
 
-            // визначаємо емодзі аватара за id
             let avatarEmoji = '😀';
             const found = SHOP.avatars.find(a => a.id === avatarId);
             if (found) avatarEmoji = found.emoji;
@@ -444,12 +470,12 @@ io.on('connection', (socket) => {
             } else {
                 player = {
                     id: makeId('pl'),
-                    name,
+                    name: name,
                     avatar: avatarEmoji,
-                    avatarId,
-                    accessories,
+                    avatarId: avatarId,
+                    accessories: accessories,
                     score: 0,
-                    coins,
+                    coins: coins,
                     isBot: false,
                     correctCount: 0,
                     wrongCount: 0,
@@ -477,23 +503,35 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- ОНОВЛЕННЯ ПРОФІЛЮ (аватар/аксесуари) ---------- */
+    /* ---------- ОНОВЛЕННЯ ПРОФІЛЮ ---------- */
     socket.on('updateProfile', (payload, cb) => {
         try {
             const room = rooms.get(currentRoomPin);
-            if (!room) { if (cb) cb({ ok: false }); return; }
+            if (!room) {
+                if (cb) cb({ ok: false });
+                return;
+            }
             const player = room.players.find(p => p.id === payload.playerId);
-            if (!player) { if (cb) cb({ ok: false }); return; }
+            if (!player) {
+                if (cb) cb({ ok: false });
+                return;
+            }
 
             const avatarId = String(payload.avatarId || player.avatarId || 'a_cat');
             const found = SHOP.avatars.find(a => a.id === avatarId);
-            if (found) { player.avatarId = avatarId; player.avatar = found.emoji; }
+            if (found) {
+                player.avatarId = avatarId;
+                player.avatar = found.emoji;
+            }
             if (payload.accessories) player.accessories = payload.accessories;
-            if (typeof payload.coins === 'number') player.coins = Math.max(player.coins, payload.coins);
+            if (typeof payload.coins === 'number') {
+                player.coins = Math.max(player.coins || 0, payload.coins);
+            }
 
             if (cb) cb({ ok: true });
             broadcastState(room);
         } catch (err) {
+            console.error('updateProfile error', err);
             if (cb) cb({ ok: false });
         }
     });
@@ -502,40 +540,54 @@ io.on('connection', (socket) => {
     socket.on('activatePower', (payload, cb) => {
         try {
             const room = rooms.get(currentRoomPin);
-            if (!room || room.status !== 'running') { if (cb) cb({ ok: false, error: 'Гра не активна' }); return; }
+            if (!room || room.status !== 'running') {
+                if (cb) cb({ ok: false, error: 'Гра не активна' });
+                return;
+            }
             const player = room.players.find(p => p.id === payload.playerId);
-            if (!player) { if (cb) cb({ ok: false }); return; }
-            if ((player.streak || 0) < 3) { if (cb) cb({ ok: false, error: 'Потрібно 3 правильні поспіль' }); return; }
-            if (player.powerActive) { if (cb) cb({ ok: false, error: 'Сила вже активна' }); return; }
+            if (!player) {
+                if (cb) cb({ ok: false });
+                return;
+            }
+            if ((player.streak || 0) < 3) {
+                if (cb) cb({ ok: false, error: 'Потрібно 3 правильні поспіль' });
+                return;
+            }
+            if (player.powerActive) {
+                if (cb) cb({ ok: false, error: 'Сила вже активна' });
+                return;
+            }
 
             const type = String(payload.type || 'double');
-            if (!['double','shield','reveal'].includes(type)) {
+            if (['double', 'shield', 'reveal'].indexOf(type) === -1) {
                 if (cb) cb({ ok: false, error: 'Невідома сила' });
                 return;
             }
-            player.powerActive = { type, at: Date.now() };
+
+            player.powerActive = { type: type, at: Date.now() };
             addFeed(room, '⚡ ' + player.name + ' активував суперсилу: ' + (
                 type === 'double' ? 'Подвійні бали' :
                 type === 'shield' ? 'Щит часу' : 'Підказка'
             ));
 
-            // Ефект щита: +5 секунд
             if (type === 'shield') {
                 room.questionStartedAt += 5000;
             }
-            // Ефект підказки: миттєво виключає дві неправильні
+
             let hintIndexes = null;
             if (type === 'reveal') {
                 const q = room.questions[room.currentQuestion];
                 if (q) {
                     const wrong = [];
-                    q.answers.forEach((_, i) => { if (i !== q.correct) wrong.push(i); });
+                    q.answers.forEach((_, i) => {
+                        if (i !== q.correct) wrong.push(i);
+                    });
                     wrong.sort(() => Math.random() - 0.5);
                     hintIndexes = wrong.slice(0, 2);
                 }
             }
 
-            if (cb) cb({ ok: true, type, hintIndexes });
+            if (cb) cb({ ok: true, type: type, hintIndexes: hintIndexes });
             broadcastState(room);
         } catch (err) {
             console.error('activatePower error', err);
@@ -547,9 +599,18 @@ io.on('connection', (socket) => {
     socket.on('startGame', (cb) => {
         try {
             const room = rooms.get(currentRoomPin);
-            if (!room || room.teacherSocketId !== socket.id) { if (cb) cb({ ok: false, error: 'Немає доступу' }); return; }
-            if (room.status === 'running') { if (cb) cb({ ok: false, error: 'Гра вже триває' }); return; }
-            if (room.questions.length === 0) { if (cb) cb({ ok: false, error: 'Немає питань' }); return; }
+            if (!room || room.teacherSocketId !== socket.id) {
+                if (cb) cb({ ok: false, error: 'Немає доступу' });
+                return;
+            }
+            if (room.status === 'running') {
+                if (cb) cb({ ok: false, error: 'Гра вже триває' });
+                return;
+            }
+            if (room.questions.length === 0) {
+                if (cb) cb({ ok: false, error: 'Немає питань' });
+                return;
+            }
 
             room.status = 'running';
             room.currentQuestion = 0;
@@ -565,6 +626,7 @@ io.on('connection', (socket) => {
                 p.powerActive = null;
             });
             addFeed(room, '🚀 Гру розпочато! Питання 1');
+
             stopTimer(room);
             startTimer(room);
             scheduleBotAnswers(room);
@@ -581,13 +643,26 @@ io.on('connection', (socket) => {
     socket.on('nextQuestion', (cb) => {
         try {
             const room = rooms.get(currentRoomPin);
-            if (!room || room.teacherSocketId !== socket.id) { if (cb) cb({ ok: false }); return; }
-            if (room.status !== 'running') { if (cb) cb({ ok: false }); return; }
-            if (room.currentQuestion + 1 >= room.questions.length) { if (cb) cb({ ok: false, error: 'Останнє питання' }); return; }
+            if (!room || room.teacherSocketId !== socket.id) {
+                if (cb) cb({ ok: false });
+                return;
+            }
+            if (room.status !== 'running') {
+                if (cb) cb({ ok: false });
+                return;
+            }
+            if (room.currentQuestion + 1 >= room.questions.length) {
+                if (cb) cb({ ok: false, error: 'Останнє питання' });
+                return;
+            }
 
             room.currentQuestion++;
-            room.players.forEach(p => { p.answeredThisRound = false; p.lastCorrect = null; });
+            room.players.forEach(p => {
+                p.answeredThisRound = false;
+                p.lastCorrect = null;
+            });
             addFeed(room, '➡️ Питання ' + (room.currentQuestion + 1));
+
             stopTimer(room);
             startTimer(room);
             scheduleBotAnswers(room);
@@ -595,6 +670,7 @@ io.on('connection', (socket) => {
             if (cb) cb({ ok: true, questionIndex: room.currentQuestion });
             broadcastState(room);
         } catch (err) {
+            console.error('nextQuestion error', err);
             if (cb) cb({ ok: false });
         }
     });
@@ -603,10 +679,262 @@ io.on('connection', (socket) => {
     socket.on('answer', (payload, cb) => {
         try {
             const room = rooms.get(currentRoomPin);
-            if (!room || room.status !== 'running') { if (cb) cb({ ok: false }); return; }
+            if (!room || room.status !== 'running') {
+                if (cb) cb({ ok: false });
+                return;
+            }
 
             const qIndex = parseInt(payload && payload.q, 10);
             const aIndex = parseInt(payload && payload.a, 10);
             const playerId = payload && payload.playerId;
 
-            if (qIndex !== room.currentQuestion) { if (cb) cb({ ok: false, error: 'Застаріле питання' }); return
+            if (qIndex !== room.currentQuestion) {
+                if (cb) cb({ ok: false, error: 'Застаріле питання' });
+                return;
+            }
+            const player = room.players.find(p => p.id === playerId);
+            if (!player) {
+                if (cb) cb({ ok: false });
+                return;
+            }
+            if (player.answeredThisRound) {
+                if (cb) cb({ ok: false, error: 'Вже відповіли' });
+                return;
+            }
+            if (!player.alive) {
+                if (cb) cb({ ok: false, error: 'Ви вибули' });
+                return;
+            }
+
+            const q = room.questions[room.currentQuestion];
+            if (!q) {
+                if (cb) cb({ ok: false });
+                return;
+            }
+            const isCorrect = (aIndex === q.correct);
+
+            player.answeredThisRound = true;
+            player.lastCorrect = isCorrect;
+
+            const elapsed = (Date.now() - room.questionStartedAt) / 1000;
+            const mult = MODES[room.mode] ? MODES[room.mode].multiplier : 1.0;
+
+            if (isCorrect) {
+                player.correctCount++;
+                player.streak = (player.streak || 0) + 1;
+                const basePoints = 100;
+                const timeBonus = Math.round(Math.max(0, (1 - elapsed / room.timePerQuestion)) * 50);
+                const powerMult = (player.powerActive && player.powerActive.type === 'double') ? 2 : 1;
+                const gained = Math.round((basePoints + timeBonus) * mult * powerMult);
+                player.score += gained;
+                const coins = Math.round(gained / 5);
+                player.coins = (player.coins || 0) + coins;
+                addFeed(room, '✅ ' + player.name + ' правильно (+' + gained + ' балів, +' + coins + ' 🪙)');
+                if (powerMult === 2) {
+                    addFeed(room, '⚡ Подвійні бали активовано для ' + player.name);
+                }
+                player.powerActive = null;
+            } else {
+                player.wrongCount++;
+                player.streak = 0;
+                addFeed(room, '❌ ' + player.name + ' помилився');
+                if (room.mode === 'survival' && player.wrongCount >= 3) {
+                    player.alive = false;
+                    addFeed(room, '💀 ' + player.name + ' вибуває');
+                }
+            }
+
+            if (cb) cb({
+                ok: true,
+                isCorrect: isCorrect,
+                score: player.score,
+                coins: player.coins,
+                streak: player.streak
+            });
+            broadcastState(room);
+        } catch (err) {
+            console.error('answer error', err);
+            if (cb) cb({ ok: false });
+        }
+    });
+
+    /* ---------- ЗАВЕРШЕННЯ ГРИ ---------- */
+    socket.on('finishGame', (cb) => {
+        try {
+            const room = rooms.get(currentRoomPin);
+            if (!room || room.teacherSocketId !== socket.id) {
+                if (cb) cb({ ok: false });
+                return;
+            }
+            stopTimer(room);
+            room.status = 'finished';
+            room.finishedAt = Date.now();
+            addFeed(room, '🏁 Гру завершено!');
+
+            if (cb) cb({ ok: true });
+            broadcastState(room);
+            io.to('room_' + room.pin).emit('gameOver');
+
+            room.cleanupTimer = setTimeout(() => {
+                const r = rooms.get(room.pin);
+                if (r && r.status === 'finished') {
+                    cleanupRoom(r);
+                    rooms.delete(room.pin);
+                }
+            }, 15 * 60 * 1000);
+        } catch (err) {
+            console.error('finishGame error', err);
+            if (cb) cb({ ok: false });
+        }
+    });
+
+    /* ---------- ЗАКРИТТЯ КІМНАТИ ---------- */
+    socket.on('closeRoom', (cb) => {
+        try {
+            const room = rooms.get(currentRoomPin);
+            if (!room || room.teacherSocketId !== socket.id) {
+                if (cb) cb({ ok: false });
+                return;
+            }
+            io.to('room_' + room.pin).emit('roomClosed');
+            cleanupRoom(room);
+            rooms.delete(room.pin);
+            if (cb) cb({ ok: true });
+        } catch (err) {
+            console.error('closeRoom error', err);
+            if (cb) cb({ ok: false });
+        }
+    });
+
+    /* ---------- ПЕРЕВІРКА PIN ---------- */
+    socket.on('checkPin', (payload, cb) => {
+        try {
+            const pin = String((payload && payload.pin) || '').trim();
+            const room = rooms.get(pin);
+            if (cb) cb({
+                ok: !!(room && room.status !== 'finished'),
+                exists: !!room,
+                status: room ? room.status : null
+            });
+        } catch (err) {
+            if (cb) cb({ ok: false });
+        }
+    });
+
+    /* ---------- РЕКОНЕКТ ВЧИТЕЛЯ ---------- */
+    socket.on('reconnectTeacher', (payload, cb) => {
+        try {
+            const pin = String((payload && payload.pin) || '').trim();
+            const room = rooms.get(pin);
+            if (!room) {
+                if (cb) cb({ ok: false, error: 'Кімнату не знайдено' });
+                return;
+            }
+            if (room.teacherDisconnectTimer) {
+                clearTimeout(room.teacherDisconnectTimer);
+                room.teacherDisconnectTimer = null;
+            }
+            room.teacherSocketId = socket.id;
+            currentRoomPin = pin;
+            role = 'teacher';
+            socket.join('room_' + pin);
+            addFeed(room, '✅ Вчитель повернувся');
+            if (cb) cb({ ok: true, state: getPublicState(room) });
+            broadcastState(room);
+        } catch (err) {
+            console.error('reconnectTeacher error', err);
+            if (cb) cb({ ok: false });
+        }
+    });
+
+    /* ---------- ВІД'ЄДНАННЯ ---------- */
+    socket.on('disconnect', (reason) => {
+        console.log('[disconnect]', socket.id, '| reason:', reason);
+        const room = rooms.get(currentRoomPin);
+        if (!room) return;
+
+        if (role === 'teacher') {
+            addFeed(room, '⚠️ Вчитель від\'єднався. Кімната закриється через 60 секунд...');
+            broadcastState(room);
+            room.teacherDisconnectTimer = setTimeout(() => {
+                const r = rooms.get(room.pin);
+                if (r && r.teacherSocketId === socket.id) {
+                    io.to('room_' + r.pin).emit('roomClosed');
+                    cleanupRoom(r);
+                    rooms.delete(r.pin);
+                    console.log('[room] closed after teacher disconnect', r.pin);
+                }
+            }, 60000);
+        }
+
+        if (role === 'student') {
+            const player = room.players.find(p => p.socketId === socket.id);
+            if (player) {
+                player.socketId = null;
+                player.answeredThisRound = false;
+                setTimeout(() => {
+                    if (rooms.has(room.pin)) broadcastState(room);
+                }, 2000);
+            }
+        }
+    });
+});
+
+/* ============================================================
+   АВТООЧИЩЕННЯ КІМНАТ
+   ============================================================ */
+setInterval(() => {
+    const now = Date.now();
+    let cleaned = 0;
+    for (const [pin, room] of rooms) {
+        const noHuman = room.players.filter(p => !p.isBot).length === 0;
+        const oldLobby = noHuman && now - room.createdAt > 2 * 60 * 60 * 1000;
+        const oldFinished = room.status === 'finished' &&
+            room.finishedAt && now - room.finishedAt > 60 * 60 * 1000;
+        if (oldLobby || oldFinished) {
+            cleanupRoom(room);
+            rooms.delete(pin);
+            cleaned++;
+        }
+    }
+    if (cleaned > 0) console.log('[cleanup] removed', cleaned, '| total:', rooms.size);
+}, 5 * 60 * 1000);
+
+/* ============================================================
+   СТАРТ СЕРВЕРА — ДИНАМІЧНИЙ ПОРТ (Railway / Render)
+   ============================================================ */
+const PORT = process.env.PORT || 3000;
+const HOST = '0.0.0.0';
+
+httpServer.listen(PORT, HOST, () => {
+    console.log('==============================================');
+    console.log('🌟 SunLorem: Школа-Табір 5 Клас (гейміфікація)');
+    console.log('🚀 Сервер слухає на ' + HOST + ':' + PORT);
+    console.log('🌐 NODE_ENV =', process.env.NODE_ENV || 'development');
+    console.log('🔌 Socket.io path = /socket.io/');
+    console.log('🛒 Магазин: /api/shop');
+    console.log('==============================================');
+});
+
+/* ============================================================
+   ГРАЦІЙНЕ ЗАВЕРШЕННЯ
+   ============================================================ */
+function gracefulShutdown(signal) {
+    console.log('[shutdown]', signal);
+    io.close(() => {
+        httpServer.close(() => {
+            console.log('[shutdown] closed');
+            process.exit(0);
+        });
+    });
+    setTimeout(() => process.exit(0), 5000);
+}
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on('uncaughtException', (err) => {
+    console.error('[uncaughtException]', err);
+});
+process.on('unhandledRejection', (err) => {
+    console.error('[unhandledRejection]', err);
+});
