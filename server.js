@@ -1,7 +1,9 @@
 /* ============================================================
    SunLorem: Школа-Табір 5 Клас — сервер (Railway / Render)
    Node.js + Express + Socket.io
-   Збалансована економіка: cap 30 🪙/гра + призові 70/60/50
+   + Економіка (cap 30 монет/гра, призові 70/60/50)
+   + Квести, магазин, колекції, емодзі-реакції
+   + Інтерактивний чат із культурними ботами-однокласниками
    ============================================================ */
 
 'use strict';
@@ -33,18 +35,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
 }));
 
 /* ============================================================
-   ЕКОНОМІКА (жорстко обмежена)
-   ------------------------------------------------------------
-   • За гру (відповіді) учень отримує МАКСИМУМ 30 🪙
-   • Правильна відповідь = 1 🪙, швидка (<25% часу) = +1 🪙
-   • Фінальні призові:
-       1 місце → 70 🪙
-       2 місце → 60 🪙
-       3 місце → 50 🪙
-       4–5     → 25 🪙
-       6–10    → 18 🪙
-       11+     → 10 🪙
-   • Максимум за гру: 30 + 70 = 100 🪙 (переможець)
+   ЕКОНОМІКА
    ============================================================ */
 const ECONOMY = {
     coinsCorrect: 1,
@@ -52,17 +43,11 @@ const ECONOMY = {
     coinsPerGameCap: 30,
     baseScore: 100,
     timeBonusMax: 50,
-    streakScoreMultiplier: {
-        3: 1.1,
-        5: 1.2,
-        7: 1.35,
-        10: 1.5,
-        15: 1.75
-    },
+    streakScoreMultiplier: { 3: 1.1, 5: 1.2, 7: 1.35, 10: 1.5, 15: 1.75 },
     finalPrizes: { 1: 70, 2: 60, 3: 50 },
     finalTiers: [
-        { minRank: 4,  maxRank: 5,  prize: 25 },
-        { minRank: 6,  maxRank: 10, prize: 18 },
+        { minRank: 4, maxRank: 5, prize: 25 },
+        { minRank: 6, maxRank: 10, prize: 18 },
         { minRank: 11, maxRank: 9999, prize: 10 }
     ]
 };
@@ -79,66 +64,19 @@ function getFinalPrize(rank) {
    КВЕСТИ
    ============================================================ */
 const QUEST_DEFS = {
-    first_correct: {
-        id: 'first_correct',
-        title: 'Перший крок',
-        desc: 'Дай 1 правильну відповідь',
-        goal: 1,
-        reward: 30,
-        icon: '🎯'
-    },
-    correct_3_streak: {
-        id: 'correct_3_streak',
-        title: 'Розігрів',
-        desc: '3 правильні відповіді поспіль',
-        goal: 3,
-        reward: 40,
-        icon: '🔥'
-    },
-    correct_5_streak: {
-        id: 'correct_5_streak',
-        title: 'У вогні',
-        desc: '5 правильних відповідей поспіль',
-        goal: 5,
-        reward: 75,
-        icon: '⚡'
-    },
-    correct_10_total: {
-        id: 'correct_10_total',
-        title: 'Ерудит',
-        desc: '10 правильних відповідей за гру',
-        goal: 10,
-        reward: 60,
-        icon: '🧠'
-    },
-    first_answer: {
-        id: 'first_answer',
-        title: 'Швидкий старт',
-        desc: 'Дай першу відповідь у раунді',
-        goal: 1,
-        reward: 20,
-        icon: '🚀'
-    },
-    speed_demon: {
-        id: 'speed_demon',
-        title: 'Блискавка',
-        desc: 'Відповідай за 3 секунди',
-        goal: 1,
-        reward: 50,
-        icon: '💨'
-    },
-    survivor: {
-        id: 'survivor',
-        title: 'Вижити!',
-        desc: 'Правильно в режимі «Виживання»',
-        goal: 1,
-        reward: 35,
-        icon: '🛡️'
-    }
+    first_correct:    { id: 'first_correct',    title: 'Перший крок',   desc: 'Дай 1 правильну відповідь',        goal: 1,  reward: 30, icon: '🎯' },
+    correct_3_streak: { id: 'correct_3_streak', title: 'Розігрів',      desc: '3 правильні відповіді поспіль',    goal: 3,  reward: 40, icon: '🔥' },
+    correct_5_streak: { id: 'correct_5_streak', title: 'У вогні',       desc: '5 правильних відповідей поспіль',  goal: 5,  reward: 75, icon: '⚡' },
+    correct_10_total: { id: 'correct_10_total', title: 'Ерудит',        desc: '10 правильних відповідей за гру',  goal: 10, reward: 60, icon: '🧠' },
+    first_answer:     { id: 'first_answer',     title: 'Швидкий старт', desc: 'Дай першу відповідь у раунді',     goal: 1,  reward: 20, icon: '🚀' },
+    speed_demon:      { id: 'speed_demon',      title: 'Блискавка',     desc: 'Відповідай за 3 секунди',          goal: 1,  reward: 50, icon: '💨' },
+    survivor:         { id: 'survivor',         title: 'Вижити!',       desc: 'Правильно в режимі «Виживання»',   goal: 1,  reward: 35, icon: '🛡️' },
+    chat_master:      { id: 'chat_master',      title: 'Балакун',       desc: 'Напиши 5 повідомлень у чаті',      goal: 5,  reward: 25, icon: '💬' },
+    reaction_king:    { id: 'reaction_king',    title: 'Реакціонер',    desc: 'Надішли 3 емодзі-реакції',         goal: 3,  reward: 20, icon: '🎉' }
 };
 
 /* ============================================================
-   МАГАЗИН: колекції, аватари, аксесуари, теми
+   МАГАЗИН
    ============================================================ */
 const SHOP = {
     collections: [
@@ -150,36 +88,36 @@ const SHOP = {
         { id: 'col_super',  name: 'Супергерої',          emoji: '🦸', desc: 'Захисники табору', bonus: 90 }
     ],
     avatars: [
-        { id: 'a_cat',      emoji: '🐱',  name: 'Кіт-астронавт',  price: 0,   col: 'col_base',   desc: 'Базовий кіт-космонавт' },
-        { id: 'a_dog',      emoji: '🐶',  name: 'Песик-пілот',    price: 0,   col: 'col_base',   desc: 'Вірний друг' },
-        { id: 'a_fox',      emoji: '🦊',  name: 'Лисичка-хакер',  price: 0,   col: 'col_base',   desc: 'Хитра і швидка' },
-        { id: 'a_owl',      emoji: '🦉',  name: 'Мудра сова',     price: 25,  col: 'col_autumn', desc: 'Символ знань' },
-        { id: 'a_hedgehog', emoji: '🦔',  name: 'Їжачок',         price: 30,  col: 'col_autumn', desc: 'Маленький колючий друг' },
-        { id: 'a_squirrel', emoji: '🐿️', name: 'Білочка',        price: 35,  col: 'col_autumn', desc: 'Збирач горіхів' },
-        { id: 'a_deer',     emoji: '🦌',  name: 'Олень',          price: 45,  col: 'col_autumn', desc: 'Лісовий володар' },
-        { id: 'a_bear',     emoji: '🐻',  name: 'Ведмідь-таборянин', price: 55, col: 'col_autumn', desc: 'Господар лісу' },
-        { id: 'a_astronaut',emoji: '👨‍🚀', name: 'Астронавт',      price: 60,  col: 'col_space',  desc: 'Підкорювач космосу' },
-        { id: 'a_alien',    emoji: '👽',  name: 'Прибулець',      price: 55,  col: 'col_space',  desc: 'Гість із зірок' },
-        { id: 'a_rocket',   emoji: '🚀',  name: 'Ракета',         price: 40,  col: 'col_space',  desc: 'Символ швидкості' },
-        { id: 'a_comet',    emoji: '☄️',  name: 'Комета',         price: 65,  col: 'col_space',  desc: 'Космічний мандрівник' },
-        { id: 'a_ufo',      emoji: '🛸',  name: 'НЛО',            price: 75,  col: 'col_space',  desc: 'Таємничий корабель' },
-        { id: 'a_saturn',   emoji: '🪐',  name: 'Сатурн',         price: 85,  col: 'col_space',  desc: 'Планета з кільцями' },
-        { id: 'a_robot',    emoji: '🤖',  name: 'Робот-геній',    price: 60,  col: 'col_cyber',  desc: 'Штучний інтелект' },
-        { id: 'a_cyborg',   emoji: '🦾',  name: 'Кіборг',         price: 80,  col: 'col_cyber',  desc: 'Механічна рука' },
-        { id: 'a_ninja',    emoji: '🥷',  name: 'Ніндзя',         price: 70,  col: 'col_cyber',  desc: 'Тінь серед тіней' },
-        { id: 'a_dragon',   emoji: '🐉',  name: 'Кібер-дракон',   price: 110, col: 'col_cyber',  desc: 'Легендарний захисник' },
-        { id: 'a_chip',     emoji: '💠',  name: 'Кристал-чип',    price: 90,  col: 'col_cyber',  desc: 'Джерело енергії' },
-        { id: 'a_wizard',   emoji: '🧙',  name: 'Маг',            price: 80,  col: 'col_magic',  desc: 'Володар заклять' },
-        { id: 'a_unicorn',  emoji: '🦄',  name: 'Єдиноріг',       price: 85,  col: 'col_magic',  desc: 'Магія та легенди' },
-        { id: 'a_fairy',    emoji: '🧚',  name: 'Фея',            price: 95,  col: 'col_magic',  desc: 'Дух природи' },
-        { id: 'a_genie',    emoji: '🧞',  name: 'Джин',           price: 105, col: 'col_magic',  desc: 'Виконавець бажань' },
-        { id: 'a_phoenix',  emoji: '🔥',  name: 'Фенікс',         price: 130, col: 'col_magic',  desc: 'Вічно відроджується' },
-        { id: 'a_super',    emoji: '🦸',  name: 'Супергерой',     price: 100, col: 'col_super',  desc: 'Захисник міста' },
-        { id: 'a_hero_f',   emoji: '🦸‍♀️', name: 'Супергероїня',  price: 100, col: 'col_super',  desc: 'Смілива й сильна' },
-        { id: 'a_bat',      emoji: '🦇',  name: 'Бетмен',         price: 120, col: 'col_super',  desc: 'Тіньовий лицар' },
-        { id: 'a_spider',   emoji: '🕷️', name: 'Людина-павук',   price: 115, col: 'col_super',  desc: 'Дружній сусід' },
-        { id: 'a_shield',   emoji: '🛡️', name: 'Капітан',        price: 110, col: 'col_super',  desc: 'Щит справедливості' },
-        { id: 'a_lightning',emoji: '⚡',  name: 'Громовержець',   price: 140, col: 'col_super',  desc: 'Володар блискавок' }
+        { id: 'a_cat',      emoji: '🐱',  name: 'Кіт-астронавт',      price: 0,   col: 'col_base',   desc: 'Базовий кіт-космонавт' },
+        { id: 'a_dog',      emoji: '🐶',  name: 'Песик-пілот',        price: 0,   col: 'col_base',   desc: 'Вірний друг' },
+        { id: 'a_fox',      emoji: '🦊',  name: 'Лисичка-хакер',      price: 0,   col: 'col_base',   desc: 'Хитра і швидка' },
+        { id: 'a_owl',      emoji: '🦉',  name: 'Мудра сова',         price: 25,  col: 'col_autumn', desc: 'Символ знань' },
+        { id: 'a_hedgehog', emoji: '🦔',  name: 'Їжачок',             price: 30,  col: 'col_autumn', desc: 'Маленький колючий друг' },
+        { id: 'a_squirrel', emoji: '🐿️', name: 'Білочка',            price: 35,  col: 'col_autumn', desc: 'Збирач горіхів' },
+        { id: 'a_deer',     emoji: '🦌',  name: 'Олень',              price: 45,  col: 'col_autumn', desc: 'Лісовий володар' },
+        { id: 'a_bear',     emoji: '🐻',  name: 'Ведмідь-таборянин',  price: 55,  col: 'col_autumn', desc: 'Господар лісу' },
+        { id: 'a_astronaut',emoji: '👨‍🚀', name: 'Астронавт',          price: 60,  col: 'col_space',  desc: 'Підкорювач космосу' },
+        { id: 'a_alien',    emoji: '👽',  name: 'Прибулець',          price: 55,  col: 'col_space',  desc: 'Гість із зірок' },
+        { id: 'a_rocket',   emoji: '🚀',  name: 'Ракета',             price: 40,  col: 'col_space',  desc: 'Символ швидкості' },
+        { id: 'a_comet',    emoji: '☄️',  name: 'Комета',             price: 65,  col: 'col_space',  desc: 'Космічний мандрівник' },
+        { id: 'a_ufo',      emoji: '🛸',  name: 'НЛО',                price: 75,  col: 'col_space',  desc: 'Таємничий корабель' },
+        { id: 'a_saturn',   emoji: '🪐',  name: 'Сатурн',             price: 85,  col: 'col_space',  desc: 'Планета з кільцями' },
+        { id: 'a_robot',    emoji: '🤖',  name: 'Робот-геній',        price: 60,  col: 'col_cyber',  desc: 'Штучний інтелект' },
+        { id: 'a_cyborg',   emoji: '🦾',  name: 'Кіборг',             price: 80,  col: 'col_cyber',  desc: 'Механічна рука' },
+        { id: 'a_ninja',    emoji: '🥷',  name: 'Ніндзя',             price: 70,  col: 'col_cyber',  desc: 'Тінь серед тіней' },
+        { id: 'a_dragon',   emoji: '🐉',  name: 'Кібер-дракон',       price: 110, col: 'col_cyber',  desc: 'Легендарний захисник' },
+        { id: 'a_chip',     emoji: '💠',  name: 'Кристал-чип',        price: 90,  col: 'col_cyber',  desc: 'Джерело енергії' },
+        { id: 'a_wizard',   emoji: '🧙',  name: 'Маг',                price: 80,  col: 'col_magic',  desc: 'Володар заклять' },
+        { id: 'a_unicorn',  emoji: '🦄',  name: 'Єдиноріг',           price: 85,  col: 'col_magic',  desc: 'Магія та легенди' },
+        { id: 'a_fairy',    emoji: '🧚',  name: 'Фея',                price: 95,  col: 'col_magic',  desc: 'Дух природи' },
+        { id: 'a_genie',    emoji: '🧞',  name: 'Джин',               price: 105, col: 'col_magic',  desc: 'Виконавець бажань' },
+        { id: 'a_phoenix',  emoji: '🔥',  name: 'Фенікс',             price: 130, col: 'col_magic',  desc: 'Вічно відроджується' },
+        { id: 'a_super',    emoji: '🦸',  name: 'Супергерой',         price: 100, col: 'col_super',  desc: 'Захисник міста' },
+        { id: 'a_hero_f',   emoji: '🦸‍♀️', name: 'Супергероїня',      price: 100, col: 'col_super',  desc: 'Смілива й сильна' },
+        { id: 'a_bat',      emoji: '🦇',  name: 'Бетмен',             price: 120, col: 'col_super',  desc: 'Тіньовий лицар' },
+        { id: 'a_spider',   emoji: '🕷️', name: 'Людина-павук',       price: 115, col: 'col_super',  desc: 'Дружній сусід' },
+        { id: 'a_shield',   emoji: '🛡️', name: 'Капітан',            price: 110, col: 'col_super',  desc: 'Щит справедливості' },
+        { id: 'a_lightning',emoji: '⚡',  name: 'Громовержець',       price: 140, col: 'col_super',  desc: 'Володар блискавок' }
     ],
     accessories: [
         { id: 'x_none',      emoji: '',   name: 'Немає',             price: 0,   slot: 'head' },
@@ -207,7 +145,7 @@ const SHOP = {
         { id: 't_neon',    name: 'Неон',          price: 0,   desc: 'Базовий неон' },
         { id: 't_pastel',  name: 'Пастель',       price: 0,   desc: 'Базовий пастель' },
         { id: 't_space',   name: 'Космос',        price: 100, desc: 'Глибокий космос із зорями' },
-        { id: 't_cyber',   name: 'Неон-кіберпанк',price: 130, desc: 'Агресивний неоновий стиль' },
+        { id: 't_cyber',   name: 'Неон-кіберпанк',price: 130, desc: 'Яскравий неоновий стиль' },
         { id: 't_forest',  name: 'Магічний ліс',  price: 110, desc: 'Затишний зелений ліс' },
         { id: 't_sunset',  name: 'Захід сонця',   price: 90,  desc: 'Теплі помаранчеві тони' },
         { id: 't_ocean',   name: 'Океан',         price: 105, desc: 'Блакитні глибини' },
@@ -222,7 +160,7 @@ const SHOP = {
 const REACTION_EMOJIS = ['🎉', '🔥', '👏', '🤔', '🚀', '😂', '😮', '💪', '❓', '💯'];
 
 /* ============================================================
-   БАЗА УКРАЇНСЬКИХ ІМЕН
+   БАЗА ІМЕН
    ============================================================ */
 const FIRST_NAMES_M = [
     'Андрій','Артем','Арсен','Богдан','Борис','Вадим','Валентин','Валерій','Василь','Віктор',
@@ -247,6 +185,15 @@ const LAST_NAMES = [
     'Мазур','Хоменко','Юрченко','Пилипенко','Гуменюк','Слободян','Демченко','Ващенко','Білоус','Кравець'
 ];
 
+/* Реалістичні псевдоніми для ботів у чаті */
+const BOT_NICKNAMES = [
+    'Максим', 'Софія ✨', 'Оля', 'Артем', 'Катя 🌸', 'Назар', 'Мілана', 'Денис',
+    'Владислава', 'Ілля 🚀', 'Дарина', 'Марко', 'Ніка', 'Тимур', 'Юлія 🌟',
+    'Роман', 'Аліна', 'Богдан', 'Соломія', 'Микита', 'Поліна ✨', 'Захар',
+    'Анастасія', 'Лука', 'Ангеліна', 'Остап', 'Христина', 'Левко', 'Каміла',
+    'Ярослав', 'Марія', 'Григорій', 'Вікторія', 'Павло', 'Ярина'
+];
+
 const AVATARS = ['😀','😎','🤓','🥳','😺','🐶','🦊','🐼','🐨','🦁','🐯','🐸','🐵','🐧','🦄','🐙','🦖','🐉','🌟','⚡','🔥','🌈','🍀','🎈','🚀','🎨','🎮','⚽','🏆','💎','🍕','🍩'];
 
 /* ============================================================
@@ -257,6 +204,275 @@ const MODES = {
     survival: { name: 'Виживання', multiplier: 1.5, defaultTime: 15 },
     treasure: { name: 'Полювання на скарби', multiplier: 1.2, defaultTime: 25 }
 };
+
+/* ============================================================
+   БОТ-МОЗОК ДЛЯ ЧАТУ
+   ------------------------------------------------------------
+   Правила:
+   • Повністю чиста, культурна мова — без лайки, без сленгу.
+   • Дружній підлітковий тон (5-7 клас).
+   • Помірна кількість емодзі (😊 👍 📚 ✨ 🚀 🎉).
+   • Контекстні відповіді на основі ключових слів та інтентів.
+   ============================================================ */
+const CHAT_INTENTS = [
+    {
+        name: 'greeting',
+        match: /\b(прив|привіт|вітаю|доброго|добрий|салют|здоров|хай|вітаю всіх|всім привіт)\b/i,
+        replies: [
+            'Привіт! Радий тебе бачити 😊',
+            'Вітаю всіх! Готові до гри? ✨',
+            'Привіт-привіт! Як настрій? 👍',
+            'Доброго дня! Хто сьогодні грає?',
+            'Привіт! Сподіваюсь, буде цікаво 📚',
+            'Всім привіт! Гарного настрою 😊',
+            'Привіт! Я вже тут, готуюсь відповідати 🚀',
+            'Вітання! Хто хоче першим відповісти?'
+        ]
+    },
+    {
+        name: 'how_are_you',
+        match: /\b(як справи|як ти|як діла|як життя|як настрій|як воно|що нового)\b/i,
+        replies: [
+            'У мене все добре, дякую 😊 А в тебе?',
+            'Чудово! Готуюсь до вікторини 📚',
+            'Все гаразд, настрій хороший ✨',
+            'Добре! А як твої справи?',
+            'Усе добре, дякую 👍 А ти як?',
+            'Прекрасно, тільки трохи хвилююсь перед грою 😊',
+            'Все чудово! Люблю такі вікторини 🎉'
+        ]
+    },
+    {
+        name: 'question_help',
+        match: /\b(підкажи|підкажіть|підкажи мені|допоможи|підкажіть будь ласка|як зробити|поясни)\b/i,
+        replies: [
+            'Звичайно, із задоволенням допоможу 😊',
+            'Так, я поруч! Спитай, і я підкажу 👍',
+            'Гаразд, давай подумаємо разом 📚',
+            'Звісно! Я вірю в тебе ✨',
+            'Ок, я допоможу, чим зможу 😊',
+            'Давай розбиратись разом 🚀',
+            'Це гарне запитання, я теж замислився(лась) 🤔'
+        ]
+    },
+    {
+        name: 'laugh',
+        match: /\b(смішно|весело|ахаха|хаха|сміюсь|😄|😁|😂)\b/i,
+        replies: [
+            '😄 Оце так!',
+            'Ахах, дійсно весело 😊',
+            'Ти вмієш розсмішити 👍',
+            'Дякую за гарний настрій 😄',
+            'Ох, аж сльози на очах від сміху 😊',
+            'Класний жарт! Умієш підняти настрій ✨'
+        ]
+    },
+    {
+        name: 'sad',
+        match: /\b(сумно|погано|засмучений|засмучена|втомлений|втомлена|не виходить|хвилююсь|боюсь|страшно)\b/i,
+        replies: [
+            'Не хвилюйся, усе вийде 😊',
+            'Тримайся! Ми з тобою 👍',
+            'Не засмучуйся, усе налагодиться ✨',
+            'Все буде добре, я впевнений(а) 😊',
+            'Не переживай, головне — спробувати 🚀',
+            'Я поруч, разом впораємось 💪',
+            'Вірю в тебе! Усе обов\'язково вийде 🌟'
+        ]
+    },
+    {
+        name: 'good_luck',
+        match: /\b(удачі|щасти|везіння|успіху|перемоги|бажаю перемоги)\b/i,
+        replies: [
+            'І тобі удачі! Разом переможемо 🏆',
+            'Дякую! Тобі теж щастить 🤞',
+            'Удачі! Гарного настрою 😊',
+            'І тобі успіху! Ми впораємось 👍',
+            'Дякую, і тобі перемоги ✨',
+            'Тобі теж удачі, чемпіоне 🏆'
+        ]
+    },
+    {
+        name: 'who_are_you',
+        match: /\b(хто ти|як тебе звати|як звати|твоє ім.я|твоє имя|як звати тебе)\b/i,
+        replies: [
+            'Мене звати {name}! Радий(а) знайомству 😊',
+            'Я {name}, приємно познайомитись!',
+            'Привіт! Я {name} 👍',
+            'Моє ім\'я {name}, я з вашого класу 😊',
+            'Я {name}, люблю такі вікторини ✨'
+        ]
+    },
+    {
+        name: 'bye',
+        match: /\b(бувай|пока|до побачення|до зустрічі|до завтра|на все добре)\b/i,
+        replies: [
+            'До побачення! Гарного дня 😊',
+            'Бувай! До наступної гри 👍',
+            'До зустрічі! Було приємно пограти ✨',
+            'Гарного відпочинку! До наступного разу 🚀',
+            'До побачення, друже! Успіхів 📚'
+        ]
+    },
+    {
+        name: 'thanks',
+        match: /\b(дякую|спасибі|дякс|вдячний|вдячна)\b/i,
+        replies: [
+            'Будь ласка, завжди радий(а) 😊',
+            'Немає за що! Звертайся 👍',
+            'Завжди поруч ✨',
+            'Будь ласка, приємно допомогти 🚀',
+            'Не варто подяки, ми ж одна команда 💪'
+        ]
+    },
+    {
+        name: 'about_quiz',
+        match: /\b(вікторин|гра|питання|тест|бали|монет|очки|рекорд)\b/i,
+        replies: [
+            'Люблю такі вікторини! Готуюсь уважно 📚',
+            'Питання бувають різні, головне — думати спокійно 😊',
+            'Гра — це чудово! Хто лідирує зараз? 🏆',
+            'Мені подобаються питання про космос 🚀',
+            'Цікаво дізнаватись нове під час гри ✨',
+            'Обожнюю відповідати правильно! 😊'
+        ]
+    },
+    {
+        name: 'school',
+        match: /\b(школа|урок|домашка|вчитель|вчителька|клас|табір|канікули)\b/i,
+        replies: [
+            'Люблю цікаві уроки, особливо коли є вікторини 📚',
+            'Табір — це чудово, тут весело та дружньо 😊',
+            'Домашнє завдання зробив(ла) ще вдень 👍',
+            'Наш клас дружний, це приємно ✨',
+            'Улюблений предмет — природознавство 🌿',
+            'Вчителі в нас добрі й допомагають 😊'
+        ]
+    },
+    {
+        name: 'praise',
+        match: /\b(молодець|молодчина|круто|класно|супер|вау|чудово|прекрасно|розумний|розумна)\b/i,
+        replies: [
+            'Дякую, дуже приємно 😊',
+            'Ти теж молодчина! 👍',
+            'Дякую за підтримку, це надихає ✨',
+            'Приємно чути, дякую! 😊',
+            'Дякую! Разом ми сильні 💪',
+            'Твоя підтримка мотивує 🚀'
+        ]
+    },
+    {
+        name: 'age',
+        match: /\b(скільки тобі років|тобі скільки|твій вік|в якому класі)\b/i,
+        replies: [
+            'Я вчусь у 5 класі, як і всі тут 😊',
+            'Мені одинадцять, скоро дванадцять 👍',
+            'Я з 5-Б, а ти? 📚',
+            'Як і всі — п\'ятикласник(ця) ✨'
+        ]
+    },
+    {
+        name: 'hobbies',
+        match: /\b(хобі|захоплення|люблю|подобається|цікаво|захоплююсь)\b/i,
+        replies: [
+            'Люблю читати та грати у вікторини 📚',
+            'Мені подобається малювати та слухати музику 🎨',
+            'Обожнюю спорт і активні ігри ⚽',
+            'Люблю дізнаватись нове про космос 🚀',
+            'Моє хобі — колекціонувати наліпки ✨',
+            'Люблю співати та танцювати 🎉'
+        ]
+    },
+    {
+        name: 'compliment',
+        match: /\b(ти класний|ти класна|ти добрий|ти добра|ти розумний|ти розумна|ти молодець|ти супер)\b/i,
+        replies: [
+            'Дякую! Ти теж чудовий(а) 😊',
+            'Дуже приємно, дякую! ✨',
+            'Ти теж молодчина 👍',
+            'Дякую за добрі слова 💖',
+            'Приємно, що ти так думаєш 😊'
+        ]
+    },
+    {
+        name: 'encourage',
+        match: /\b(давай|вперед|ти зможеш|впораєшся|не здавайся|підтримую)\b/i,
+        replies: [
+            'Дякую! Разом впораємось 💪',
+            'Ти теж зможеш, я вірю в тебе ✨',
+            'Так, вперед до перемоги 🏆',
+            'Дякую за підтримку! 😊',
+            'Разом ми — команда 👍'
+        ]
+    }
+];
+
+/* Резервні репліки — коли жоден інтент не спрацював */
+const FALLBACK_BOT_REPLIES = [
+    'Цікаво! 😊',
+    'Згоден(на) 👍',
+    'Розумію тебе ✨',
+    'Оце так!',
+    'Дякую, що поділився(лась) 😊',
+    'Приємно чути 📚',
+    'Звучить добре 👍',
+    'Мені теж так здається 😊',
+    'Ти гарно пишеш ✨',
+    'Класна думка 🚀',
+    'Ага, зрозуміло 😊',
+    'Це цікава історія 👍'
+];
+
+/* Несподівані, але безпечні таймер-повідомлення (не як відповідь) */
+const BOT_AMBIENT_MESSAGES = [
+    'Хто вже готовий до наступного питання? 😊',
+    'Мені подобається ця вікторина 📚',
+    'Удачі всім! 👍',
+    'Хто лідирує зараз? 🏆',
+    'Цікаво, хто переможе ✨',
+    'Усі молодці! 🎉',
+    'Гарно граємо 🚀',
+    'Люблю такі завдання 😊',
+    'Ще трохи — і буде перемога 👍',
+    'Спокійно, головне — участь ✨'
+];
+
+/* ============================================================
+   УТИЛІТИ ДЛЯ ЧАТ-БОТІВ
+   ============================================================ */
+function pickRandom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function checkMessageSafety(text) {
+    /* Перевірка, що повідомлення не містить заборонених слів.
+       Боти використовують тільки безпечні, чисті вислови. */
+    const lower = String(text).toLowerCase();
+    const banned = [
+        'фігня', 'лін', 'хайп', 'блін', 'капец', 'жопа', 'попа', 'дурень', 'дурна',
+        'тупий', 'тупа', 'ідіот', 'лох', 'козел', 'сволоч', 'гріх'
+    ];
+    for (const b of banned) {
+        if (lower.indexOf(b) !== -1) return false;
+    }
+    return true;
+}
+
+function chooseBotReaction(text, botName) {
+    /* Знаходимо відповідний інтент за ключовими словами */
+    for (const intent of CHAT_INTENTS) {
+        if (intent.match.test(text)) {
+            let reply = pickRandom(intent.replies);
+            reply = reply.replace('{name}', botName);
+            if (!checkMessageSafety(reply)) {
+                reply = pickRandom(FALLBACK_BOT_REPLIES);
+            }
+            return reply;
+        }
+    }
+    /* Якщо нічого не підійшло — беремо безпечний фолбек */
+    return pickRandom(FALLBACK_BOT_REPLIES);
+}
 
 /* ============================================================
    КІМНАТИ
@@ -280,7 +496,16 @@ function generateBots(count) {
     const allFirst = FIRST_NAMES_M.concat(FIRST_NAMES_F);
     const poolFirst = allFirst.slice();
     const poolLast = LAST_NAMES.slice();
-    const used = new Set();
+    const usedNicknames = new Set();
+    const usedNames = new Set();
+
+    /* Псевдоніми для чату — унікальні */
+    const nicknamePool = BOT_NICKNAMES.slice();
+    for (let i = nicknamePool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = nicknamePool[i]; nicknamePool[i] = nicknamePool[j]; nicknamePool[j] = tmp;
+    }
+
     for (let i = 0; i < count; i++) {
         let first, last, full;
         let attempts = 0;
@@ -293,11 +518,20 @@ function generateBots(count) {
                 : LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
             full = first + ' ' + last;
             attempts++;
-        } while (used.has(full) && attempts < 80);
-        used.add(full);
+        } while (usedNames.has(full) && attempts < 80);
+        usedNames.add(full);
+
+        /* Реалістичний псевдонім для чату */
+        let nickname = nicknamePool.length ? nicknamePool.shift() : full;
+        if (usedNicknames.has(nickname)) {
+            nickname = full;
+        }
+        usedNicknames.add(nickname);
+
         bots.push({
             id: makeId('bot' + i),
             name: full,
+            chatName: nickname,
             avatar: AVATARS[Math.floor(Math.random() * AVATARS.length)],
             avatarId: 'a_cat',
             accessories: { head: '', eyes: '', effect: '' },
@@ -330,6 +564,34 @@ function addFeed(room, text) {
     if (room.feed.length > 40) room.feed.length = 40;
 }
 
+/* ============================================================
+   ЧАТ-ПОВІДОМЛЕННЯ
+   ============================================================ */
+function addChatMessage(room, opts) {
+    if (!room.chat) room.chat = [];
+    const msg = {
+        id: makeId('msg'),
+        from: opts.from || 'system',
+        name: opts.name || 'Система',
+        avatar: opts.avatar || '',
+        avatarId: opts.avatarId || 'a_cat',
+        accessories: opts.accessories || { head: '', eyes: '', effect: '' },
+        text: String(opts.text || '').slice(0, 400),
+        isBot: !!opts.isBot,
+        t: Date.now()
+    };
+    room.chat.push(msg);
+    if (room.chat.length > 120) room.chat.splice(0, room.chat.length - 120);
+    return msg;
+}
+
+function broadcastChatMessage(room, msg) {
+    io.to('room_' + room.pin).emit('chatMessage', msg);
+}
+
+/* ============================================================
+   ПУБЛІЧНИЙ СТАН КІМНАТИ
+   ============================================================ */
 function getPublicState(room) {
     return {
         pin: room.pin,
@@ -343,6 +605,7 @@ function getPublicState(room) {
         players: room.players.map(p => ({
             id: p.id,
             name: p.name,
+            chatName: p.chatName || p.name,
             avatar: p.avatar,
             avatarId: p.avatarId,
             accessories: p.accessories,
@@ -363,7 +626,8 @@ function getPublicState(room) {
             powerActive: p.powerActive || null,
             reaction: p.reaction || null
         })),
-        feed: room.feed || []
+        feed: room.feed || [],
+        chat: (room.chat || []).slice(-50)
     };
 }
 
@@ -406,11 +670,7 @@ function startTimer(room) {
 }
 
 /* ============================================================
-   РОЗРАХУНОК НАГОРОД ПІД ЧАС ГРИ
-   ------------------------------------------------------------
-   Монети строго обмежені: 1 монета за правильну відповідь,
-   +1 якщо відповів дуже швидко. Стеля — ECONOMY.coinsPerGameCap.
-   Бали (score) рахуються окремо для рейтингу.
+   РОЗРАХУНОК НАГОРОД
    ============================================================ */
 function calculateRewards(opts) {
     const elapsed = opts.elapsed;
@@ -420,7 +680,6 @@ function calculateRewards(opts) {
     const powerActive = opts.powerActive;
     const coinsEarnedThisGame = opts.coinsEarnedThisGame || 0;
 
-    // ---------- БАЛИ ----------
     const timeBonus = Math.round(
         Math.max(0, 1 - elapsed / timePerQuestion) * ECONOMY.timeBonusMax
     );
@@ -440,7 +699,6 @@ function calculateRewards(opts) {
         (ECONOMY.baseScore + timeBonus) * modeMult * streakMultScore * powerMult
     );
 
-    // ---------- МОНЕТИ ----------
     let coins = ECONOMY.coinsCorrect;
     let speedBonus = 0;
     const speedRatio = elapsed / timePerQuestion;
@@ -472,6 +730,9 @@ function calculateRewards(opts) {
     };
 }
 
+/* ============================================================
+   БОТИ-ВІДПОВІДАЧІ У ВІКТОРИНІ
+   ============================================================ */
 function scheduleBotAnswers(room) {
     const q = room.questions[room.currentQuestion];
     if (!q) return;
@@ -515,14 +776,14 @@ function scheduleBotAnswers(room) {
                 p.coinsEarnedThisGame = (p.coinsEarnedThisGame || 0) + rewards.coins;
                 p.xp = (p.xp || 0) + rewards.xp;
 
-                addFeed(room, '🤖 ' + p.name + ' правильно (+' + rewards.score + ' балів, +' + rewards.coins + ' 🪙)');
+                addFeed(room, '✅ ' + p.name + ' відповів(ла) правильно (+' + rewards.score + ' балів, +' + rewards.coins + ' 🪙)');
                 p.powerActive = null;
             } else {
                 p.wrongCount++;
                 p.streak = 0;
                 if (room.mode === 'survival' && p.wrongCount >= 3) {
                     p.alive = false;
-                    addFeed(room, '💀 ' + p.name + ' вибуває (3 помилки)');
+                    addFeed(room, '💤 ' + p.name + ' вибуває (3 помилки)');
                 }
             }
             broadcastState(room);
@@ -530,10 +791,93 @@ function scheduleBotAnswers(room) {
     });
 }
 
+/* ============================================================
+   БОТИ В ЧАТІ — АКТИВНІ "СПІВРОЗМОВНИКИ"
+   ------------------------------------------------------------
+   Боти реагують на повідомлення реальних користувачів
+   та іноді (рідко) пишуть у чат самостійно.
+   ============================================================ */
+function scheduleBotChatReactions(room, userMessage) {
+    if (!room || room.status === 'finished') return;
+    if (!room.chatBotsEnabled) return;
+
+    const bots = room.players.filter(p => p.isBot);
+    if (bots.length === 0) return;
+
+    /* Кількість ботів, які відповідають (1-3 залежно від розміру) */
+    const maxResponders = Math.min(bots.length, 1 + Math.floor(Math.random() * 3));
+    const responders = [];
+    const pool = bots.slice();
+    for (let i = 0; i < maxResponders; i++) {
+        if (pool.length === 0) break;
+        const idx = Math.floor(Math.random() * pool.length);
+        responders.push(pool.splice(idx, 1)[0]);
+    }
+
+    responders.forEach((bot, i) => {
+        const delay = 600 + i * 400 + Math.floor(Math.random() * 1400);
+        setTimeout(() => {
+            if (!rooms.has(room.pin)) return;
+            if (room.status === 'finished') return;
+            if (!room.chatBotsEnabled) return;
+
+            const text = userMessage ? chooseBotReaction(userMessage.text, bot.chatName || bot.name)
+                                     : pickRandom(FALLBACK_BOT_REPLIES);
+
+            const msg = addChatMessage(room, {
+                from: bot.id,
+                name: bot.chatName || bot.name,
+                avatar: bot.avatar,
+                avatarId: bot.avatarId,
+                accessories: bot.accessories,
+                text: text,
+                isBot: true
+            });
+            broadcastChatMessage(room, msg);
+        }, delay);
+    });
+}
+
+/* --- Ненав'язливі самостійні повідомлення ботів --- */
+function startChatAmbientLoop(room) {
+    if (room.chatAmbientTimer) clearInterval(room.chatAmbientTimer);
+    room.chatAmbientTimer = setInterval(() => {
+        if (!rooms.has(room.pin)) {
+            clearInterval(room.chatAmbientTimer);
+            return;
+        }
+        if (room.status === 'finished') return;
+        if (!room.chatBotsEnabled) return;
+        /* Пишемо не надто часто — тільки якщо давно не було бот-повідомлень */
+        const chat = room.chat || [];
+        const lastBotMsg = chat.slice().reverse().find(m => m.isBot);
+        const cooldown = 25000; // 25 секунд тиші — і бот напише сам
+        if (lastBotMsg && (Date.now() - lastBotMsg.t) < cooldown) return;
+
+        const bots = room.players.filter(p => p.isBot);
+        if (bots.length === 0) return;
+
+        const bot = pickRandom(bots);
+        const text = pickRandom(BOT_AMBIENT_MESSAGES);
+        const msg = addChatMessage(room, {
+            from: bot.id,
+            name: bot.chatName || bot.name,
+            avatar: bot.avatar,
+            avatarId: bot.avatarId,
+            accessories: bot.accessories,
+            text: text,
+            isBot: true
+        });
+        broadcastChatMessage(room, msg);
+    }, 12000);
+}
+
 function cleanupRoom(room) {
     stopTimer(room);
     if (room.cleanupTimer) clearTimeout(room.cleanupTimer);
     if (room.teacherDisconnectTimer) clearTimeout(room.teacherDisconnectTimer);
+    if (room.chatAmbientTimer) clearInterval(room.chatAmbientTimer);
+    room.chatAmbientTimer = null;
 }
 
 /* ============================================================
@@ -622,6 +966,7 @@ io.on('connection', (socket) => {
             const timePerQuestion = Math.max(5, Math.min(60,
                 parseInt(payload.timePerQuestion, 10) || MODES[mode].defaultTime));
             const botCount = Math.max(0, Math.min(200, parseInt(payload.botCount, 10) || 0));
+            const chatBotsEnabled = payload.chatBotsEnabled !== false;
 
             const pin = generatePin();
             const bots = generateBots(botCount);
@@ -642,8 +987,11 @@ io.on('connection', (socket) => {
                 timeLeft: timePerQuestion,
                 players: bots,
                 feed: [],
+                chat: [],
                 reactions: [],
                 firstAnswer: null,
+                chatBotsEnabled: chatBotsEnabled,
+                chatAmbientTimer: null,
                 teacherSocketId: socket.id,
                 teacherPlayerId: 'teacher_' + pin,
                 timer: null,
@@ -655,7 +1003,32 @@ io.on('connection', (socket) => {
             currentRoomPin = pin;
             role = 'teacher';
             socket.join('room_' + pin);
-            addFeed(room, '🎉 Кімнату створено. Очікуємо на учнів...');
+            addFeed(room, 'Кімнату створено. Запрошуйте учнів! 📚');
+
+            /* Привітання від ботів у чат */
+            if (chatBotsEnabled && bots.length > 0) {
+                setTimeout(() => {
+                    if (!rooms.has(pin)) return;
+                    const bot = bots[Math.floor(Math.random() * bots.length)];
+                    const msg = addChatMessage(room, {
+                        from: bot.id,
+                        name: bot.chatName || bot.name,
+                        avatar: bot.avatar,
+                        avatarId: bot.avatarId,
+                        accessories: bot.accessories,
+                        text: pickRandom([
+                            'Привіт усім! Хто сьогодні грає? 😊',
+                            'Всім привіт! Готуємось до вікторини 📚',
+                            'Вітаю! Гарного настрою всім 👍',
+                            'Привіт! Хто хоче бути першим? 🚀'
+                        ]),
+                        isBot: true
+                    });
+                    broadcastChatMessage(room, msg);
+                }, 2500);
+            }
+
+            startChatAmbientLoop(room);
 
             console.log('[room] created', pin, '| bots:', botCount, '| q:', questions.length);
 
@@ -709,11 +1082,12 @@ io.on('connection', (socket) => {
                 existing.xp = Math.max(existing.xp || 0, xp);
                 existing.socketId = socket.id;
                 player = existing;
-                addFeed(room, '🔄 ' + name + ' повернувся');
+                addFeed(room, '🔄 ' + name + ' повернувся(лась) до гри');
             } else {
                 player = {
                     id: makeId('pl'),
                     name: name,
+                    chatName: name,
                     avatar: avatarEmoji,
                     avatarId: avatarId,
                     accessories: accessories,
@@ -737,7 +1111,33 @@ io.on('connection', (socket) => {
                     quests: {}
                 };
                 room.players.push(player);
-                addFeed(room, '🎒 ' + name + ' приєднався до гри!');
+                addFeed(room, '👋 ' + name + ' приєднався(лась) до гри!');
+
+                /* Боти вітають новачка у чаті */
+                if (room.chatBotsEnabled) {
+                    const bots = room.players.filter(p => p.isBot);
+                    if (bots.length > 0) {
+                        const bot = bots[Math.floor(Math.random() * bots.length)];
+                        setTimeout(() => {
+                            if (!rooms.has(pin)) return;
+                            const greet = addChatMessage(room, {
+                                from: bot.id,
+                                name: bot.chatName || bot.name,
+                                avatar: bot.avatar,
+                                avatarId: bot.avatarId,
+                                accessories: bot.accessories,
+                                text: pickRandom([
+                                    'Привіт, ' + name + '! Радий(а) тебе бачити 😊',
+                                    'Вітаю, ' + name + '! Готуйся до гри 👍',
+                                    'Привіт, ' + name + '! Гарного настрою ✨',
+                                    'О, ' + name + ' приєднався(лась)! Клас 🎉'
+                                ]),
+                                isBot: true
+                            });
+                            broadcastChatMessage(room, greet);
+                        }, 900 + Math.floor(Math.random() * 1200));
+                    }
+                }
             }
 
             currentRoomPin = pin;
@@ -786,6 +1186,70 @@ io.on('connection', (socket) => {
         }
     });
 
+    /* ---------- НАДСИЛАННЯ ПОВІДОМЛЕННЯ В ЧАТ ---------- */
+    socket.on('sendChat', (payload, cb) => {
+        try {
+            const room = rooms.get(currentRoomPin);
+            if (!room) {
+                if (cb) cb({ ok: false });
+                return;
+            }
+            const player = room.players.find(p => p.id === payload.playerId);
+            if (!player) {
+                if (cb) cb({ ok: false });
+                return;
+            }
+
+            /* Перевірка безпеки повідомлення */
+            let text = String(payload.text || '').trim().slice(0, 400);
+            if (!text) {
+                if (cb) cb({ ok: false, error: 'Порожнє повідомлення' });
+                return;
+            }
+            if (!checkMessageSafety(text)) {
+                if (cb) cb({ ok: false, error: 'Будь ласка, спілкуйся ввічливо 😊' });
+                return;
+            }
+
+            /* Захист від спаму */
+            const now = Date.now();
+            if (player.lastChatAt && (now - player.lastChatAt) < 700) {
+                if (cb) cb({ ok: false, error: 'Зачекай трохи' });
+                return;
+            }
+            player.lastChatAt = now;
+
+            const msg = addChatMessage(room, {
+                from: player.id,
+                name: player.chatName || player.name,
+                avatar: player.avatar,
+                avatarId: player.avatarId,
+                accessories: player.accessories,
+                text: text,
+                isBot: false
+            });
+            broadcastChatMessage(room, msg);
+
+            /* Квест "Балакун" — рахуємо повідомлення */
+            if (!player.isBot) {
+                if (!player.chatCount) player.chatCount = 0;
+                player.chatCount++;
+                if (!player.quests) player.quests = {};
+                if (!player.quests.chat_master && player.chatCount >= 5) {
+                    player.quests.chat_master = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.chat_master.reward };
+                }
+            }
+
+            if (cb) cb({ ok: true });
+
+            /* Дозволяємо ботам відповісти на повідомлення */
+            scheduleBotChatReactions(room, msg);
+        } catch (err) {
+            console.error('sendChat error', err);
+            if (cb) cb({ ok: false });
+        }
+    });
+
     /* ---------- АКТИВАЦІЯ СУПЕРСИЛИ ---------- */
     socket.on('activatePower', (payload, cb) => {
         try {
@@ -815,7 +1279,7 @@ io.on('connection', (socket) => {
             }
 
             player.powerActive = { type: type, at: Date.now() };
-            addFeed(room, '⚡ ' + player.name + ' активував суперсилу: ' + (
+            addFeed(room, '⚡ ' + player.name + ' активував(ла) суперсилу: ' + (
                 type === 'double' ? 'Подвійні бали' :
                 type === 'shield' ? 'Щит часу' : 'Підказка'
             ));
@@ -866,6 +1330,16 @@ io.on('connection', (socket) => {
 
             player.reaction = { emoji: emoji, t: Date.now() };
 
+            /* Квест "Реакціонер" */
+            if (!player.isBot) {
+                if (!player.reactionCount) player.reactionCount = 0;
+                player.reactionCount++;
+                if (!player.quests) player.quests = {};
+                if (!player.quests.reaction_king && player.reactionCount >= 3) {
+                    player.quests.reaction_king = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.reaction_king.reward };
+                }
+            }
+
             io.to('room_' + room.pin).emit('playerReaction', {
                 playerId: player.id,
                 playerName: player.name,
@@ -893,21 +1367,12 @@ io.on('connection', (socket) => {
     socket.on('completeQuest', (payload, cb) => {
         try {
             const room = rooms.get(currentRoomPin);
-            if (!room) {
-                if (cb) cb({ ok: false });
-                return;
-            }
+            if (!room) { if (cb) cb({ ok: false }); return; }
             const player = room.players.find(p => p.id === payload.playerId);
-            if (!player) {
-                if (cb) cb({ ok: false });
-                return;
-            }
+            if (!player) { if (cb) cb({ ok: false }); return; }
             const questId = String(payload.questId || '');
             const def = QUEST_DEFS[questId];
-            if (!def) {
-                if (cb) cb({ ok: false, error: 'Невідомий квест' });
-                return;
-            }
+            if (!def) { if (cb) cb({ ok: false, error: 'Невідомий квест' }); return; }
             if (!player.quests) player.quests = {};
             if (player.quests[questId] && player.quests[questId].completed) {
                 if (cb) cb({ ok: false, error: 'Вже виконано' });
@@ -919,7 +1384,7 @@ io.on('connection', (socket) => {
                 t: Date.now(),
                 pendingReward: def.reward
             };
-            addFeed(room, '🏆 ' + player.name + ' виконав квест «' + def.title + '» (нагорода після гри)');
+            addFeed(room, '🏆 ' + player.name + ' виконав(ла) завдання «' + def.title + '»');
 
             if (cb) cb({ ok: true, pendingReward: def.reward });
             broadcastState(room);
@@ -967,6 +1432,32 @@ io.on('connection', (socket) => {
                 p.finalRank = 0;
             });
             addFeed(room, '🚀 Гру розпочато! Питання 1');
+
+            /* Боти підбадьорюють гравців у чаті */
+            if (room.chatBotsEnabled) {
+                const bots = room.players.filter(p => p.isBot);
+                if (bots.length > 0) {
+                    const bot = bots[Math.floor(Math.random() * bots.length)];
+                    setTimeout(() => {
+                        if (!rooms.has(room.pin)) return;
+                        const msg = addChatMessage(room, {
+                            from: bot.id,
+                            name: bot.chatName || bot.name,
+                            avatar: bot.avatar,
+                            avatarId: bot.avatarId,
+                            accessories: bot.accessories,
+                            text: pickRandom([
+                                'Удачі всім! Починаємо 🚀',
+                                'Гра почалась! Усі молодці 👍',
+                                'Не хвилюйтесь, головне — спробувати 😊',
+                                'Вперед до перемоги 🏆'
+                            ]),
+                            isBot: true
+                        });
+                        broadcastChatMessage(room, msg);
+                    }, 1200);
+                }
+            }
 
             stopTimer(room);
             startTimer(room);
@@ -1035,24 +1526,12 @@ io.on('connection', (socket) => {
                 return;
             }
             const player = room.players.find(p => p.id === playerId);
-            if (!player) {
-                if (cb) cb({ ok: false });
-                return;
-            }
-            if (player.answeredThisRound) {
-                if (cb) cb({ ok: false, error: 'Вже відповіли' });
-                return;
-            }
-            if (!player.alive) {
-                if (cb) cb({ ok: false, error: 'Ви вибули' });
-                return;
-            }
+            if (!player) { if (cb) cb({ ok: false }); return; }
+            if (player.answeredThisRound) { if (cb) cb({ ok: false, error: 'Вже відповіли' }); return; }
+            if (!player.alive) { if (cb) cb({ ok: false, error: 'Ви вибули' }); return; }
 
             const q = room.questions[room.currentQuestion];
-            if (!q) {
-                if (cb) cb({ ok: false });
-                return;
-            }
+            if (!q) { if (cb) cb({ ok: false }); return; }
             const isCorrect = (aIndex === q.correct);
 
             player.answeredThisRound = true;
@@ -1084,17 +1563,9 @@ io.on('connection', (socket) => {
                 player.xp = (player.xp || 0) + rewards.xp;
 
                 let feedText = '✅ ' + player.name + ' правильно (+' + rewards.score + ' балів, +' + rewards.coins + ' 🪙)';
-                if (rewards.breakdown.speedBonus > 0) {
-                    feedText += ' ⚡ швидкість';
-                }
-                if (rewards.breakdown.remaining === 0 && rewards.coins === 0) {
-                    feedText += ' [ліміт монет за гру]';
-                }
+                if (rewards.breakdown.speedBonus > 0) feedText += ' ⚡ швидкість';
+                if (rewards.breakdown.remaining === 0 && rewards.coins === 0) feedText += ' [ліміт монет]';
                 addFeed(room, feedText);
-
-                if (rewards.breakdown.powerMult === 2) {
-                    addFeed(room, '⚡ Подвійні бали для ' + player.name);
-                }
 
                 if (!player.isBot) {
                     if (!player.quests) player.quests = {};
@@ -1125,10 +1596,10 @@ io.on('connection', (socket) => {
             } else {
                 player.wrongCount++;
                 player.streak = 0;
-                addFeed(room, '❌ ' + player.name + ' помилився');
+                addFeed(room, '❌ ' + player.name + ' помилився(лась)');
                 if (room.mode === 'survival' && player.wrongCount >= 3) {
                     player.alive = false;
-                    addFeed(room, '💀 ' + player.name + ' вибуває');
+                    addFeed(room, '💤 ' + player.name + ' вибуває');
                 }
             }
 
@@ -1149,7 +1620,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- ЗАВЕРШЕННЯ ГРИ (з фінальними призовими) ---------- */
+    /* ---------- ЗАВЕРШЕННЯ ГРИ ---------- */
     socket.on('finishGame', (cb) => {
         try {
             const room = rooms.get(currentRoomPin);
@@ -1175,6 +1646,27 @@ io.on('connection', (socket) => {
             if (ranked[0]) addFeed(room, '🥇 ' + ranked[0].name + ' — 1 місце (+' + getFinalPrize(1) + ' 🪙)');
             if (ranked[1]) addFeed(room, '🥈 ' + ranked[1].name + ' — 2 місце (+' + getFinalPrize(2) + ' 🪙)');
             if (ranked[2]) addFeed(room, '🥉 ' + ranked[2].name + ' — 3 місце (+' + getFinalPrize(3) + ' 🪙)');
+
+            /* Боти вітають переможця в чаті */
+            if (room.chatBotsEnabled && ranked[0]) {
+                const bots = room.players.filter(p => p.isBot);
+                if (bots.length > 0) {
+                    const bot = bots[Math.floor(Math.random() * bots.length)];
+                    setTimeout(() => {
+                        if (!rooms.has(room.pin)) return;
+                        const msg = addChatMessage(room, {
+                            from: bot.id,
+                            name: bot.chatName || bot.name,
+                            avatar: bot.avatar,
+                            avatarId: bot.avatarId,
+                            accessories: bot.accessories,
+                            text: 'Вітаю, ' + ranked[0].name + '! Гарний результат 🏆😊',
+                            isBot: true
+                        });
+                        broadcastChatMessage(room, msg);
+                    }, 1500);
+                }
+            }
 
             if (cb) cb({
                 ok: true,
@@ -1260,7 +1752,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- ВІД'ЄДНАННЯ ---------- */
+    /* ---------- ВІД\'ЄДНАННЯ ---------- */
     socket.on('disconnect', (reason) => {
         console.log('[disconnect]', socket.id, '| reason:', reason);
         const room = rooms.get(currentRoomPin);
@@ -1326,9 +1818,7 @@ httpServer.listen(PORT, HOST, () => {
     console.log('🌐 NODE_ENV =', process.env.NODE_ENV || 'development');
     console.log('🔌 Socket.io path = /socket.io/');
     console.log('🛒 Магазин: /api/shop');
-    console.log('⚙️  Економіка: cap ' + ECONOMY.coinsPerGameCap + ' 🪙/гра + призові 70/60/50');
-    console.log('🏆 Квестів: ' + Object.keys(QUEST_DEFS).length);
-    console.log('🎭 Емодзі-реакцій: ' + REACTION_EMOJIS.length);
+    console.log('💬 Чат із ботами активний');
     console.log('==============================================');
 });
 
