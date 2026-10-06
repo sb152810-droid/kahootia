@@ -1,13 +1,13 @@
 {
   "name": "sunlorem-school",
-  "version": "3.0.0",
-  "description": "SunLorem: інтерактивна шкільна система з вікториною, чатом Gemini, щоденником та розкладом",
+  "version": "3.1.0",
+  "description": "SunLorem: інтерактивна шкільна система з вікториною, чатом Gemini, щоденником, розкладом та ботами",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"
   },
-  "keywords": ["school", "quiz", "socket.io", "gemini", "ai", "ukrainian"],
+  "keywords": ["school", "quiz", "socket.io", "gemini", "ai", "ukrainian", "bots"],
   "author": "SunLorem",
   "license": "MIT",
   "dependencies": {
