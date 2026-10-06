@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <title>Шкільний чат · SunLorem</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div id="topbar"></div>
+  <div class="container">
+    <div class="card">
+      <h2>💬 Шкільний чат</h2>
+      <p style="font-size:13px; color:#78350f; margin-bottom:10px;">
+        Боти-однокласники відповідають ввічливо, з емодзі 😊
+      </p>
+      <div id="chatWindow" class="chat-window"></div>
+      <div class="chat-input-row">
+        <input id="msgInput" type="text" placeholder="Напишіть повідомлення..." maxlength="500" />
+        <button class="btn" onclick="sendMsg()">📨 Надіслати</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="/js/common.js"></script>
+  <script>
+    let myName = '';
+    const socket = io();
+
+    function appendMessage(m) {
+      const win = document.getElementById('chatWindow');
+      const div = document.createElement('div');
+      const isMine = m.author === myName && m.role !== 'bot';
+      div.className = 'chat-msg ' + (m.role === 'bot' ? 'bot' : isMine ? 'mine' : '');
+      const tag = m.role === 'bot' ? '🤖 ' : m.role === 'teacher' ? '👩‍🏫 ' : '🧑‍🎓 ';
+      div.innerHTML = `
+        <div class="author">${tag}${m.author}</div>
+        <div>${escapeHtml(m.text)}</div>
+        <div class="time">${fmtTime(m.time)}</div>
+      `;
+      win.appendChild(div);
+      win.scrollTop = win.scrollHeight;
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    async function sendMsg() {
+      const input = document.getElementById('msgInput');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      await api('/api/chat/send', {
+        method: 'POST',
+        body: JSON.stringify({ text })
+      });
+    }
+
+    document.getElementById('msgInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendMsg();
+    });
+
+    socket.on('chat:new', (m) => {
+      appendMessage(m);
+    });
+
+    (async () => {
+      const user = await renderTopbar('/chat');
+      if (!user) return;
+      myName = user.name || user.username;
+
+      const r = await api('/api/chat/history');
+      if (r.ok) {
+        r.messages.forEach((m) => appendMessage(m));
+      }
+    })();
+  </script>
+</body>
+</html>
