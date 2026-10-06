@@ -1,7 +1,7 @@
 {
   "name": "sunlorem-school",
-  "version": "2.0.0",
-  "description": "SunLorem: інтерактивна шкільна система з вікториною, чатом Gemini та електронним щоденником",
+  "version": "3.0.0",
+  "description": "SunLorem: інтерактивна шкільна система з вікториною, чатом Gemini, щоденником та розкладом",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
