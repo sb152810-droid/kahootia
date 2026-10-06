@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <title>Вікторина · SunLorem</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div id="topbar"></div>
+  <div class="container">
+
+    <div id="setup" class="card">
+      <h2>🧠 Вікторина SunLorem</h2>
+      <p style="margin-bottom:12px;">Налаштуйте учасників та стартуйте!</p>
+
+      <label>Кількість учасників (разом з вами):</label>
+      <input id="totalPlayers" type="number" min="2" max="15" value="6" />
+
+      <label>Власні імена ботів (через кому, необов'язково):</label>
+      <textarea id="customBots" placeholder="Наприклад: КіберКотик, Піфагорчик"></textarea>
+      <p style="font-size:13px; color:#78350f;">
+        Решта місць автоматично заповниться випадковими кумедними іменами 🤖
+      </p>
+
+      <button class="btn mt-10" onclick="startQuiz()">🚀 Старт</button>
+    </div>
+
+    <div id="quizArea" class="card" style="display:none;">
+      <h2>📋 Питання</h2>
+      <div id="questions"></div>
+      <button class="btn" onclick="finishQuiz()">🏁 Завершити</button>
+    </div>
+
+    <div id="resultsArea" class="card" style="display:none;">
+      <h2>🏆 Результати</h2>
+      <div id="results"></div>
+      <a class="btn mt-20" href="/dashboard">⬅ Повернутись у кабінет</a>
+    </div>
+
+  </div>
+
+  <script src="/js/common.js"></script>
+  <script>
+    let questions = [];
+    let participants = [];
+    let myName = '';
+
+    async function startQuiz() {
+      const totalPlayers = Number(document.getElementById('totalPlayers').value) || 6;
+      const customRaw = document.getElementById('customBots').value;
+      const customBots = customRaw.split(',').map((s) => s.trim()).filter(Boolean);
+
+      const user = await loadMe();
+      if (!user) return;
+      myName = user.name || user.username;
+
+      const r = await api('/api/quiz/start', {
+        method: 'POST',
+        body: JSON.stringify({ totalPlayers, customBots })
+      });
+      if (!r.ok) {
+        alert('Помилка старту');
+        return;
+      }
+      participants = r.participants;
+
+      const q = await api('/api/quiz/questions');
+      questions = q.questions;
+
+      document.getElementById('setup').style.display = 'none';
+      document.getElementById('quizArea').style.display = 'block';
+
+      const qc = document.getElementById('questions');
+      qc.innerHTML = questions
+        .map(
+          (qu, i) => `
+          <div class="quiz-question">
+            <h4>${i + 1}. ${qu.q}</h4>
+            <div class="quiz-answers">
+              ${qu.a
+                .map(
+                  (ans, j) =>
+                    `<label><input type="radio" name="q${i}" value="${j}" /> ${ans}</label>`
+                )
+                .join('')}
+            </div>
+          </div>`
+        )
+        .join('');
+    }
+
+    async function finishQuiz() {
+      // рахуємо бали реального гравця
+      let myScore = 0;
+      questions.forEach((qu, i) => {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        if (selected && Number(selected.value) === qu.correct) myScore += 10;
+      });
+
+      // боти отримують випадкові бали (щоб було цікаво)
+      const results = participants.map((p) => {
+        if (!p.isBot) return { ...p, score: myScore };
+        const rnd = Math.floor(Math.random() * (questions.length * 10 + 1));
+        return { ...p, score: rnd };
+      });
+
+      const r = await api('/api/quiz/finish', {
+        method: 'POST',
+        body: JSON.stringify({ results })
+      });
+      if (!r.ok) {
+        alert('Помилка завершення');
+        return;
+      }
+
+      document.getElementById('quizArea').style.display = 'none';
+      document.getElementById('resultsArea').style.display = 'block';
+
+      const rc = document.getElementById('results');
+      rc.innerHTML = r.rewards
+        .map((p) => {
+          const cls = p.place === 1 ? 'top1' : p.place === 2 ? 'top2' : p.place === 3 ? 'top3' : '';
+          const medal = p.place === 1 ? '🥇' : p.place === 2 ? '🥈' : p.place === 3 ? '🥉' : `${p.place}.`;
+          const isMe = p.name === myName && !p.isBot;
+          return `<div class="leaderboard-item ${cls}">
+            <span>${medal} ${p.isBot ? '🤖 ' : '🧑‍🎓 '}${p.name}${isMe ? ' (ви)' : ''} — ${p.score} балів</span>
+            <span>+${p.coins} 💰</span>
+          </div>`;
+        })
+        .join('');
+    }
+
+    (async () => {
+      await renderTopbar('/quiz');
+    })();
+  </script>
+</body>
+</html>
