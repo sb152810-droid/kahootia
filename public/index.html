@@ -230,7 +230,7 @@ button.gold {
 .button-row button { flex: 1 1 160px; }
 .button-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
 @media (min-width: 620px) { .button-grid.two-col { grid-template-columns: 1fr 1fr; } }
-input[type="text"], input[type="number"], textarea, select {
+input[type="text"], input[type="number"], input[type="password"], textarea, select {
     width: 100%; font-family: inherit;
     font-size: clamp(15px, 3.4vw, 17px);
     color: var(--text-main); background: var(--input-bg);
@@ -302,9 +302,6 @@ table.grades-table td.subject-cell { text-align: left; font-weight: 700; }
 .chat-input-row button { width: auto; min-width: 58px; padding: 10px 14px; min-height: 46px; font-size: 20px; }
 .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 12px 0; }
 @media (min-width: 520px) { .avatar-grid { grid-template-columns: repeat(6, 1fr); } }
-.avatar-option { aspect-ratio: 1 / 1; min-height: 58px; border-radius: 50%; background: var(--input-bg); border: 3px solid var(--panel-border); display: flex; align-items: center; justify-content: center; font-size: clamp(26px, 7.5vw, 42px); cursor: pointer; transition: var(--transition); user-select: none; touch-action: manipulation; position: relative; padding: 0; }
-.avatar-option.selected { border-color: var(--accent-2); background: linear-gradient(135deg, rgba(181, 107, 255, 0.55), rgba(255, 95, 240, 0.45)); transform: scale(1.14); box-shadow: 0 0 0 4px rgba(255, 95, 240, 0.35), 0 0 26px rgba(255, 95, 240, 0.95); }
-.avatar-option.selected::after { content: "✓"; position: absolute; top: -4px; right: -4px; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-2); color: #fff; font-size: 14px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
 .avatar-big { font-size: clamp(60px, 18vw, 120px); text-align: center; margin: 10px 0; display: block; position: relative; }
 .shop-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
 .shop-tab { flex: 1 1 auto; padding: 10px 14px; font-size: clamp(13px, 3vw, 15px); font-weight: 800; border-radius: var(--radius-sm); border: 2px solid var(--panel-border); background: var(--input-bg); color: var(--text-main); cursor: pointer; transition: var(--transition); min-width: 100px; text-align: center; }
@@ -475,57 +472,45 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
 
 <div id="app">
 
-    <!-- ЕКРАН 1: ПРИВІТАННЯ / ВХІД -->
-    <div id="screen-welcome" class="screen active">
+    <!-- ЕКРАН 1: АВТОРИЗАЦІЯ -->
+    <div id="screen-login" class="screen active">
         <h1 class="glow">🌟 SunLorem 🌟</h1>
-        <p class="subtitle">Школа-Табір для 5 класу • Гейміфікація, чат та щоденник</p>
+        <p class="subtitle">Школа-Табір 5 клас • Вікторина, щоденник, чат</p>
 
         <div class="panel panel-narrow">
             <div class="panel-title">🔑 Вхід до системи</div>
-            <label>Логін (виданий вчителем)</label>
+            <label>Логін (від вчителя)</label>
             <input type="text" id="loginInput" placeholder="наприклад, sofiiashevchenko" autocomplete="username">
             <label>Пароль</label>
             <input type="text" id="passwordInput" placeholder="6 символів" autocomplete="current-password">
             <div class="button-grid two-col">
                 <button class="primary" onclick="App.loginUser()">🚀 Увійти</button>
-                <button class="ghost" onclick="App.go('screen-register-info')">❓ Немає акаунта</button>
+                <button class="ghost" onclick="App.openModal('Про акаунти','Учнівські акаунти створює вчитель у своєму кабінеті. Після цього він роздруковує папірці з логіном та паролем і роздає їх учням.')">❓ Немає акаунта</button>
             </div>
         </div>
 
         <div class="panel panel-narrow">
             <div class="panel-title">👩‍🏫 Для вчителя</div>
             <div class="button-grid two-col">
-                <button class="gold" onclick="App.go('screen-teacher-setup')">🎮 Створити вікторину</button>
-                <button class="ghost" onclick="App.go('screen-teacher-accounts')">📇 Акаунти учнів</button>
+                <button class="gold" onclick="App.teacherQuickLogin()">📇 Кабінет учителя</button>
+                <button class="ghost" onclick="App.openModal('PIN-гра','Учні можуть приєднуватися до вікторини за PIN-кодом. PIN створює вчитель на сторінці «Вікторина».')">ℹ️ Про PIN-гру</button>
             </div>
         </div>
 
         <div class="panel panel-narrow">
-            <div class="panel-title">🎮 Як грати</div>
+            <div class="panel-title">🎮 Що вміє SunLorem</div>
             <p style="font-size:14px;line-height:1.6;">
-                1. Вчитель створює кімнату, отримує <b>PIN</b> та QR.<br>
-                2. Учні вводять PIN у розділі «Вікторина».<br>
-                3. Спілкуйтесь у чаті з однокласниками та ботами 💬<br>
-                4. За правильні відповіді — до <b>30 🪙</b>.<br>
-                5. У фіналі: 1 місце — <b>70 🪙</b>, 2 місце — <b>60 🪙</b>, 3 місце — <b>50 🪙</b>.
+                • 📓 Щоденник з оцінками<br>
+                • 🗓️ Розклад занять<br>
+                • 📝 Домашні завдання<br>
+                • 🎮 Вікторина з ботами (призові: 70/60/50 🪙)<br>
+                • 🛒 Магазин аватарів та тем<br>
+                • 💬 Шкільний чат з AI-однокласниками
             </p>
         </div>
     </div>
 
-    <!-- ЕКРАН 2: ПРО РЕЄСТРАЦІЮ -->
-    <div id="screen-register-info" class="screen">
-        <h1>📇 Про акаунти</h1>
-        <div class="panel panel-narrow">
-            <div class="panel-title">Як отримати логін і пароль</div>
-            <p>Учнівські акаунти створює <b>вчитель</b> у своєму кабінеті. Після створення вчитель роздруковує «папірці» з логіном та паролем і роздає їх учням.</p>
-            <p style="margin-top:10px;">Якщо ти вже отримав(ла) папірець — повертайся на головну та вводь дані.</p>
-            <div class="button-grid two-col" style="margin-top:14px;">
-                <button class="primary" onclick="App.go('screen-welcome')">← Назад до входу</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ЕКРАН 3: DASHBOARD УЧНЯ -->
+    <!-- ЕКРАН 2: DASHBOARD УЧНЯ -->
     <div id="screen-dashboard" class="screen">
         <h1>🎒 Мій кабінет</h1>
         <p class="subtitle" id="dashboardHello">Вітаємо!</p>
@@ -535,7 +520,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
                 <span>🪙 <span id="dashCoins">0</span></span>
                 <span class="xp-badge">⭐ XP: <span id="dashXp">0</span></span>
             </div>
-            <div id="dashAvatarPreview" class="shop-avatar-preview">
+            <div class="shop-avatar-preview">
                 <div class="big-avatar" id="dashBigAvatar">🐱</div>
                 <div id="dashAvatarName" style="font-size:14px;font-weight:800;margin-top:10px;">Кіт-астронавт</div>
             </div>
@@ -556,13 +541,12 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ЕКРАН 4: ЩОДЕННИК -->
+    <!-- ЕКРАН 3: ЩОДЕННИК -->
     <div id="screen-diary" class="screen">
         <h1>📓 Щоденник та оцінки</h1>
-        <p class="subtitle" id="diarySubtitle">Твої оцінки</p>
+        <p class="subtitle">Твої оцінки від вчителя</p>
 
         <div class="panel panel-narrow">
-            <div class="panel-title">📊 Таблиця оцінок</div>
             <div id="diaryTableWrap"></div>
         </div>
 
@@ -574,7 +558,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ЕКРАН 5: РОЗКЛАД -->
+    <!-- ЕКРАН 4: РОЗКЛАД -->
     <div id="screen-schedule" class="screen">
         <h1>🗓️ Розклад занять</h1>
         <p class="subtitle">Тижневий розклад уроків</p>
@@ -591,7 +575,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ЕКРАН 6: ДОМАШНЄ ЗАВДАННЯ -->
+    <!-- ЕКРАН 5: ДОМАШНЄ ЗАВДАННЯ -->
     <div id="screen-homework" class="screen">
         <h1>📝 Домашнє завдання</h1>
         <p class="subtitle">Завдання на найближчі дні</p>
@@ -608,16 +592,16 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ЕКРАН 7: ШКІЛЬНИЙ ЧАТ -->
+    <!-- ЕКРАН 6: ШКІЛЬНИЙ ЧАТ -->
     <div id="screen-class-chat" class="screen">
         <h1>💬 Шкільний чат</h1>
-        <p class="subtitle" id="classChatSubtitle">Чат класу • AI-однокласники</p>
+        <p class="subtitle">Спілкуйся з однокласниками та AI-ботами</p>
 
         <div class="panel panel-narrow">
             <div class="chat-panel">
                 <div class="chat-header">
                     <div class="title"><span class="online-dot"></span>Чат класу</div>
-                    <div class="count" id="classChatCount">0</div>
+                    <div class="count" id="classChatCount">0 повідомлень</div>
                 </div>
                 <div class="chat-messages" id="classChatMessages" style="max-height:55vh;"></div>
                 <div class="chat-input-row">
@@ -630,15 +614,15 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         <div class="panel panel-narrow">
             <div class="button-grid two-col">
                 <button class="ghost" onclick="App.go('screen-dashboard')">← Назад</button>
-                <button class="primary" onclick="App.startClassChatBots()">🤖 Запустити ботів у чаті</button>
+                <button class="primary" onclick="App.go('screen-quiz-join')">🎮 До вікторини</button>
             </div>
         </div>
     </div>
 
-    <!-- ЕКРАН 8: ВІКТОРИНА — ВХІД УЧНЯ -->
+    <!-- ЕКРАН 7: ВІКТОРИНА — ВХІД -->
     <div id="screen-quiz-join" class="screen">
         <h1>🎮 Вікторина</h1>
-        <p class="subtitle">Введи PIN від вчителя, щоб приєднатися</p>
+        <p class="subtitle">Введи PIN, який показав вчитель</p>
 
         <div class="panel panel-narrow">
             <div class="balance-bar">
@@ -669,7 +653,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ЕКРАН 9: ОЧІКУВАННЯ ГРИ -->
+    <!-- ЕКРАН 8: ОЧІКУВАННЯ -->
     <div id="screen-student-waiting" class="screen">
         <div class="panel panel-narrow waiting-card">
             <div class="avatar-big">
@@ -717,7 +701,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ЕКРАН 10: ГРА УЧНЯ -->
+    <!-- ЕКРАН 9: ГРА УЧНЯ -->
     <div id="screen-student-game" class="screen">
         <div class="panel">
             <div class="progress-info">
@@ -769,10 +753,10 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ЕКРАН 11: ВЧИТЕЛЬ — КАБІНЕТ АКАУНТІВ -->
+    <!-- ЕКРАН 10: ПАНЕЛЬ ВЧИТЕЛЯ — АКАУНТИ -->
     <div id="screen-teacher-accounts" class="screen">
-        <h1>📇 Кабінет акаунтів</h1>
-        <p class="subtitle">Створи учнівські акаунти та роздрукуй «папірці»</p>
+        <h1>📇 Кабінет учителя</h1>
+        <p class="subtitle">Створюй акаунти, виставляй оцінки, пиши ДЗ та розклад</p>
 
         <div class="panel panel-narrow">
             <div class="panel-title">👩‍🏫 Авторизація вчителя</div>
@@ -804,7 +788,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
 
         <div class="panel panel-narrow">
-            <div class="panel-title">📇 Створені акаунти</div>
+            <div class="panel-title">📇 Створені акаунти (поточна сесія)</div>
             <div id="createdAccountsWrap">
                 <p style="color:var(--text-dim);text-align:center;padding:10px;">Ще немає створених акаунтів.</p>
             </div>
@@ -833,22 +817,29 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
 
         <div class="panel panel-narrow">
+            <div class="panel-title">🗓️ Встановити розклад</div>
+            <p style="font-size:13px;color:var(--text-dim);">Формат: дні через кому, потім уроки через кому, кожен день з нового рядка після «|»</p>
+            <textarea id="scheduleInput" rows="8" placeholder="Понеділок,Вівторок,Середа,Четвер,П'ятниця&#10;Математика,Українська мова,Історія&#10;Англійська мова,Математика,Мистецтво"></textarea>
+            <button class="primary" onclick="App.setSchedule()">💾 Зберегти розклад</button>
+        </div>
+
+        <div class="panel panel-narrow">
             <div class="button-grid two-col">
-                <button class="ghost" onclick="App.go('screen-welcome')">← На головну</button>
+                <button class="ghost" onclick="App.go('screen-login')">← Вийти</button>
                 <button class="primary" onclick="App.go('screen-teacher-setup')">🎮 Створити вікторину</button>
             </div>
         </div>
     </div>
 
-    <!-- ЕКРАН 12: ВЧИТЕЛЬ — НАЛАШТУВАННЯ ВІКТОРИНИ -->
+    <!-- ЕКРАН 11: ПАНЕЛЬ ВЧИТЕЛЯ — НАЛАШТУВАННЯ ВІКТОРИНИ -->
     <div id="screen-teacher-setup" class="screen">
         <h1>👩‍🏫 Панель Організатора</h1>
         <p class="subtitle">Налаштуй вікторину та створи кімнату</p>
 
         <div class="panel panel-narrow">
             <div class="button-grid two-col">
-                <button class="gold" onclick="App.go('screen-teacher-accounts')">📇 Акаунти</button>
-                <button class="ghost" onclick="App.go('screen-welcome')">← На головну</button>
+                <button class="gold" onclick="App.go('screen-teacher-accounts')">📇 Кабінет</button>
+                <button class="ghost" onclick="App.go('screen-login')">← На головну</button>
             </div>
         </div>
 
@@ -902,7 +893,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
             </div>
             <label style="display:flex;align-items:center;gap:8px;margin-top:10px;cursor:pointer;">
                 <input type="checkbox" id="chatBotsEnabled" checked style="width:auto;margin:0;">
-                💬 Увімкнути AI-ботів у чаті (Gemini)
+                💬 AI-боти пишуть у чаті
             </label>
         </div>
 
@@ -923,12 +914,12 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         <div class="panel panel-narrow">
             <div class="button-grid two-col">
                 <button class="primary" onclick="App.createRoom()">🚀 Створити кімнату</button>
-                <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
+                <button class="ghost" onclick="App.go('screen-teacher-accounts')">← Назад</button>
             </div>
         </div>
     </div>
 
-    <!-- ЕКРАН 13: ЛОБІ ВЧИТЕЛЯ -->
+    <!-- ЕКРАН 12: ЛОБІ ВЧИТЕЛЯ -->
     <div id="screen-teacher-lobby" class="screen">
         <h1>🎯 Кімната створена!</h1>
         <p class="subtitle">Покажи PIN учням</p>
@@ -979,7 +970,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ЕКРАН 14: ГРА ВЧИТЕЛЯ -->
+    <!-- ЕКРАН 13: ГРА ВЧИТЕЛЯ -->
     <div id="screen-teacher-game" class="screen">
         <h1>🎮 Гра триває</h1>
         <div class="panel">
@@ -1020,7 +1011,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ЕКРАН 15: ФІНАЛ -->
+    <!-- ЕКРАН 14: ФІНАЛ -->
     <div id="screen-results" class="screen">
         <h1>🏆 Результати</h1>
         <div class="panel"><div class="podium" id="podium"></div></div>
@@ -1048,7 +1039,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ЕКРАН 16: МАГАЗИН -->
+    <!-- ЕКРАН 15: МАГАЗИН -->
     <div id="screen-shop" class="screen">
         <h1>🛒 Гардероб</h1>
         <p class="subtitle">Колекції, аксесуари та теми за СанКоїни</p>
@@ -1086,7 +1077,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ЕКРАН 17: КВЕСТИ -->
+    <!-- ЕКРАН 16: КВЕСТИ -->
     <div id="screen-quests" class="screen">
         <h1>🏆 Завдання</h1>
         <p class="subtitle">Виконуй завдання — нагорода після гри</p>
@@ -1250,9 +1241,8 @@ const App = (function () {
         currentStreak: 0,
         lastReactionTime: 0,
         _prizeApplied: false,
-        chatBotsEnabled: true,
-        classChatBotTimer: null,
-        classChatCount: 0
+        classChatHistory: [],
+        createdAccounts: []
     };
 
     const Storage = {
@@ -1303,6 +1293,7 @@ const App = (function () {
         else if (screenId === 'screen-homework') renderHomework();
         else if (screenId === 'screen-quests') renderQuests();
         else if (screenId === 'screen-quiz-join') renderJoinPreview();
+        else if (screenId === 'screen-class-chat') renderChatHistory('classChat');
         renderAllChats();
     }
 
@@ -1396,16 +1387,18 @@ const App = (function () {
             });
         }
         if (State.user && State.socket && State.connected) {
-            State.socket.emit('updateProfile', {
-                playerId: State.user.login,
-                avatarId: State.profile.equippedAvatar,
-                accessories: {
-                    head: State.profile.equippedHead,
-                    eyes: State.profile.equippedEyes,
-                    effect: State.profile.equippedEffect
-                },
-                xp: State.profile.xp
-            });
+            const sess = Storage.get('sunlorem_user');
+            if (sess && sess.login) {
+                fetch('/api/user/profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        login: sess.login,
+                        password: sess.password,
+                        profile: State.profile
+                    })
+                }).catch(() => {});
+            }
         }
     }
 
@@ -1831,9 +1824,6 @@ const App = (function () {
         setTimeout(() => el.remove(), 2600);
     }
 
-    /* ========================================================
-       ЧАТ
-       ======================================================== */
     function getChatContainer(id) {
         const containers = {
             lobby: $('lobbyChatMessages'),
@@ -1901,9 +1891,8 @@ const App = (function () {
         const c = getChatContainer(containerId);
         if (!c) return;
         if (containerId === 'classChat') {
-            const history = State.classChatHistory || [];
             c.innerHTML = '';
-            history.forEach(msg => c.appendChild(renderChatMessage(msg)));
+            (State.classChatHistory || []).forEach(msg => c.appendChild(renderChatMessage(msg)));
             c.scrollTop = c.scrollHeight;
             return;
         }
@@ -1964,9 +1953,6 @@ const App = (function () {
         updateChatCounts();
     }
 
-    /* ========================================================
-       ШКІЛЬНИЙ ЧАТ (локальний AI через сервер)
-       ======================================================== */
     function sendClassChat() {
         if (!State.socket || !State.connected) {
             toast('Немає з\'єднання');
@@ -1977,9 +1963,10 @@ const App = (function () {
         const text = input.value.trim();
         if (!text) return;
 
+        const myId = (State.user && State.user.login) || 'me';
         const msg = {
             id: 'cmsg_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
-            from: (State.user && State.user.login) || 'me',
+            from: myId,
             name: (State.user && State.user.name) || 'Я',
             avatar: getAvatarEmoji(State.profile.equippedAvatar),
             accessories: {
@@ -1991,12 +1978,11 @@ const App = (function () {
             isBot: false,
             t: Date.now()
         };
-        State.classChatHistory = State.classChatHistory || [];
         State.classChatHistory.push(msg);
         appendChatMessageTo('classChat', msg);
         input.value = '';
+        updateChatCounts();
 
-        /* Запит до сервера, щоб AI-бот відповів */
         State.socket.emit('classChatMessage', { text: msg.text }, (res) => {
             if (!res || !res.ok) return;
             const botMsgs = res.replies || [];
@@ -2020,13 +2006,6 @@ const App = (function () {
         });
     }
 
-    function startClassChatBots() {
-        toast('🤖 AI-ботів активовано. Просто напиши щось у чат!');
-    }
-
-    /* ========================================================
-       ВЧИТЕЛЬ: АКАУНТИ
-       ======================================================== */
     function teacherAuthHeaders() {
         return {
             teacherLogin: ($('accTeacherLogin').value || '').trim().toLowerCase(),
@@ -2047,7 +2026,8 @@ const App = (function () {
             });
             const data = await r.json();
             if (!data.ok) { toast(data.error || 'Помилка'); return; }
-            addAccountCard(data.student);
+            State.createdAccounts.push(data.student);
+            renderAccountsList();
             $('accStudentName').value = '';
             toast('✅ Акаунт створено: ' + data.student.login);
         } catch (e) {
@@ -2068,7 +2048,8 @@ const App = (function () {
             });
             const data = await r.json();
             if (!data.ok) { toast(data.error || 'Помилка'); return; }
-            data.students.forEach(s => addAccountCard(s));
+            data.students.forEach(s => State.createdAccounts.push(s));
+            renderAccountsList();
             $('accBulkNames').value = '';
             toast('✅ Створено: ' + data.students.length + ' акаунтів');
         } catch (e) {
@@ -2076,22 +2057,15 @@ const App = (function () {
         }
     }
 
-    const createdAccounts = [];
-
-    function addAccountCard(s) {
-        createdAccounts.push(s);
-        renderAccountsList();
-    }
-
     function renderAccountsList() {
         const wrap = $('createdAccountsWrap');
         if (!wrap) return;
-        if (createdAccounts.length === 0) {
+        if (State.createdAccounts.length === 0) {
             wrap.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:10px;">Ще немає створених акаунтів.</p>';
             return;
         }
         wrap.innerHTML = '';
-        createdAccounts.forEach(s => {
+        State.createdAccounts.forEach(s => {
             const div = document.createElement('div');
             div.className = 'hw-item';
             div.style.display = 'flex';
@@ -2104,9 +2078,8 @@ const App = (function () {
             const btn = document.createElement('button');
             btn.className = 'ghost small';
             btn.textContent = '📋';
-            btn.title = 'Скопіювати';
             btn.addEventListener('click', () => {
-                navigator.clipboard && navigator.clipboard.writeText(s.login + ' / ' + s.password);
+                if (navigator.clipboard) navigator.clipboard.writeText(s.login + ' / ' + s.password);
                 toast('Скопійовано');
             });
             div.appendChild(btn);
@@ -2115,15 +2088,16 @@ const App = (function () {
     }
 
     function printAllStudentCards() {
-        if (createdAccounts.length === 0) { toast('Немає акаунтів для друку'); return; }
+        if (State.createdAccounts.length === 0) { toast('Немає акаунтів для друку'); return; }
         const win = window.open('', '_blank');
         if (!win) { toast('Дозволь спливаючі вікна'); return; }
+        const classId = ($('accClassId') && $('accClassId').value) || '5-А';
         let html = '<html><head><meta charset="UTF-8"><title>Папірці з логінами</title>';
         html += '<style>body{font-family:Arial,sans-serif;padding:20px;} .card{border:2px dashed #333;border-radius:12px;padding:16px;margin:10px 0;page-break-inside:avoid;} .name{font-size:20px;font-weight:900;margin-bottom:8px;} .row{font-size:16px;margin:4px 0;} code{background:#f0f0f0;padding:2px 6px;border-radius:4px;font-size:18px;} h1{text-align:center;} @media print{.no-print{display:none;}}</style>';
         html += '</head><body>';
         html += '<h1>🎒 SunLorem — доступи учнів</h1>';
-        html += '<p style="text-align:center;">Клас: ' + escapeHtml(($('accClassId') && $('accClassId').value) || '5-А') + '</p>';
-        createdAccounts.forEach(s => {
+        html += '<p style="text-align:center;">Клас: ' + escapeHtml(classId) + '</p>';
+        State.createdAccounts.forEach(s => {
             html += '<div class="card">';
             html += '<div class="name">' + escapeHtml(s.name) + '</div>';
             html += '<div class="row">Логін: <code>' + escapeHtml(s.login) + '</code></div>';
@@ -2174,9 +2148,33 @@ const App = (function () {
         } catch (e) { toast('Помилка мережі'); }
     }
 
-    /* ========================================================
-       АВТОРИЗАЦІЯ
-       ======================================================== */
+    async function setSchedule() {
+        const h = teacherAuthHeaders();
+        const raw = ($('scheduleInput').value || '').trim();
+        if (!raw) { toast('Введи розклад'); return; }
+
+        const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+        if (lines.length < 2) { toast('Потрібні дні + уроки'); return; }
+
+        const days = lines[0].split(',').map(s => s.trim()).filter(Boolean);
+        const lessonsByDay = days.map((_, idx) => {
+            const line = lines[idx + 1] || '';
+            return line.split(',').map(s => s.trim()).filter(Boolean);
+        });
+
+        const schedule = { days, lessons: lessonsByDay };
+        try {
+            const r = await fetch('/api/teacher/set-schedule', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...h, schedule })
+            });
+            const data = await r.json();
+            if (!data.ok) { toast(data.error || 'Помилка'); return; }
+            toast('✅ Розклад збережено');
+        } catch (e) { toast('Помилка мережі'); }
+    }
+
     async function loginUser() {
         const login = ($('loginInput').value || '').trim().toLowerCase();
         const password = $('passwordInput').value || '';
@@ -2208,15 +2206,22 @@ const App = (function () {
         }
     }
 
-    function logout() {
-        State.user = null;
-        Storage.remove('sunlorem_user');
-        go('screen-welcome');
+    function teacherQuickLogin() {
+        $('loginInput').value = 'teacher';
+        $('passwordInput').value = 'teacher123';
+        loginUser();
     }
 
-    /* ========================================================
-       ВІКТОРИНА
-       ======================================================== */
+    function logout() {
+        State.user = null;
+        State.grades = null;
+        State.schedule = null;
+        State.homework = null;
+        State.classChatHistory = [];
+        Storage.remove('sunlorem_user');
+        go('screen-login');
+    }
+
     function renderQuestionsEditor() {
         const wrap = $('questionsEditor');
         if (!wrap) return;
@@ -2329,7 +2334,6 @@ const App = (function () {
                 }
             });
 
-            /* Автоматичний вхід з локального сховища */
             const user = Storage.get('sunlorem_user');
             if (user && user.login && user.password) {
                 fetch('/api/login', {
@@ -2403,7 +2407,7 @@ const App = (function () {
         socket.on('roomClosed', () => {
             openModal('Кімнату закрито', 'Вчитель закрив кімнату.', () => {
                 State.role = null; State.pin = null; State.room = null;
-                go(State.user ? 'screen-dashboard' : 'screen-welcome');
+                go(State.user ? 'screen-dashboard' : 'screen-login');
             });
         });
 
@@ -2600,13 +2604,13 @@ const App = (function () {
 
     function closeRoom() {
         if (!State.socket || !State.connected) {
-            go('screen-welcome');
+            go('screen-login');
             return;
         }
         if (!confirm('Закрити кімнату?')) return;
         State.socket.emit('closeRoom', () => {
             State.role = null; State.pin = null; State.room = null;
-            go(State.user ? 'screen-dashboard' : 'screen-welcome');
+            go(State.user ? 'screen-dashboard' : 'screen-login');
             toast('Кімнату закрито');
         });
     }
@@ -2977,7 +2981,7 @@ const App = (function () {
         } else if (State.user) {
             go('screen-dashboard');
         } else {
-            go('screen-welcome');
+            go('screen-login');
         }
     }
 
@@ -2986,7 +2990,7 @@ const App = (function () {
         const pin = params.get('pin');
         if (pin && /^\d{6}$/.test(pin)) {
             if (State.user) go('screen-quiz-join');
-            else go('screen-welcome');
+            else go('screen-login');
             const inp = $('quizPinInput');
             if (inp) inp.value = pin;
         }
@@ -3018,6 +3022,7 @@ const App = (function () {
         State.initDone = true;
         loadProfile();
         State.classChatHistory = [];
+        State.createdAccounts = [];
         const savedTheme = Storage.get('sunlorem_theme', 'neon');
         State.theme = State.profile.ownedThemes.includes(savedTheme) ? savedTheme : 'neon';
         document.body.className = 'theme-' + State.theme;
@@ -3070,14 +3075,15 @@ const App = (function () {
         studentJoinQuiz,
         leaveStudentQuiz,
         loginUser,
+        teacherQuickLogin,
         logout,
         createStudentAccount,
         createStudentsBulk,
         printAllStudentCards,
         setStudentGrade,
         setClassHomework,
+        setSchedule,
         sendClassChat,
-        startClassChatBots,
         closeModal,
         openModal,
         toast,
