@@ -1,9 +1,14 @@
 /* ============================================================
-   SunLorem: Школа-Табір 5 Клас — сервер (Railway / Render)
-   Node.js + Express + Socket.io
-   + Економіка (cap 30 монет/гра, призові 70/60/50)
-   + Квести, магазин, колекції, емодзі-реакції
-   + Інтерактивний чат із культурними ботами-однокласниками
+   SunLorem: Інтерактивна шкільна система
+   Node.js + Express + Socket.io + Gemini AI
+   ------------------------------------------------------------
+   Можливості:
+     • Кабінет вчителя: створення учнівських акаунтів (логін+пароль)
+     • Авторизація учнів за логіном та паролем
+     • Дашборд: Вікторина, Щоденник, Розклад, ДЗ, Шкільний чат
+     • Вікторина з СанКоїнами (cap 30/гра, призові 70/60/50)
+     • Магазин аватарів/аксесуарів/тем, квести, емодзі-реакції
+     • Шкільний чат класу з AI-ботами через Google Gemini API
    ============================================================ */
 
 'use strict';
@@ -17,8 +22,8 @@ const app = express();
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
 
-app.use(express.json({ limit: '1mb' }));
-app.use(express.urlencoded({ extended: false, limit: '1mb' }));
+app.use(express.json({ limit: '2mb' }));
+app.use(express.urlencoded({ extended: false, limit: '2mb' }));
 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -33,6 +38,93 @@ app.use(express.static(path.join(__dirname, 'public'), {
     etag: true,
     fallthrough: true
 }));
+
+/* ============================================================
+   GEMINI API
+   ============================================================ */
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+const GEMINI_ENDPOINT =
+    'https://generativelanguage.googleapis.com/v1beta/models/' +
+    GEMINI_MODEL + ':generateContent';
+
+const GEMINI_SYSTEM_PROMPT =
+    'Ти учень 5–7 класу української школи. Ти дружній, веселий, доброзичливий школяр. ' +
+    'Відповідай українською мовою, коротко (1–2 речення), природно, як у звичайному чаті з однокласниками. ' +
+    'Іноді додавай одне-два доречних емодзі (😊, 👍, 📚, ✨, 🚀). ' +
+    'Категорично заборонено використовувати лайку, грубі, образливі, принизливі слова чи будь-який грубий сленг. ' +
+    'Не використовуй слова-паразити та зневажливі вирази. ' +
+    'Якщо тема незрозуміла — перепитай дружньо, без агресії.';
+
+async function callGeminiChat(history, userText) {
+    if (!GEMINI_API_KEY) return null;
+
+    /* Формуємо контекст для Gemini */
+    const contents = [];
+    contents.push({
+        role: 'user',
+        parts: [{ text: GEMINI_SYSTEM_PROMPT }]
+    });
+    contents.push({
+        role: 'model',
+        parts: [{ text: 'Гаразд, я зрозумів правила. Спілкуюсь як учень 5–7 класу.' }]
+    });
+    const recent = Array.isArray(history) ? history.slice(-10) : [];
+    recent.forEach(m => {
+        if (!m || !m.text) return;
+        contents.push({
+            role: m.isBot ? 'model' : 'user',
+            parts: [{ text: String(m.text).slice(0, 400) }]
+        });
+    });
+    contents.push({
+        role: 'user',
+        parts: [{ text: String(userText).slice(0, 400) }]
+    });
+
+    const body = {
+        contents,
+        generationConfig: {
+            temperature: 0.9,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 200
+        },
+        safetySettings: [
+            { category: 'HARM_CATEGORY_HARASSMENT',        threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+            { category: 'HARM_CATEGORY_HATE_SPEECH',       threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' }
+        ]
+    };
+
+    try {
+        const res = await fetch(GEMINI_ENDPOINT + '?key=' + encodeURIComponent(GEMINI_API_KEY), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        if (!res.ok) {
+            const errText = await res.text();
+            console.warn('[gemini] non-ok', res.status, errText.slice(0, 200));
+            return null;
+        }
+        const data = await res.json();
+        const cand = data && data.candidates && data.candidates[0];
+        if (!cand) return null;
+        const parts = cand.content && cand.content.parts;
+        if (!Array.isArray(parts) || parts.length === 0) return null;
+        let text = parts.map(p => p.text || '').join(' ').trim();
+        if (!text) return null;
+        /* М'яка постобробка */
+        text = text.replace(/\s+/g, ' ').trim();
+        if (text.length > 300) text = text.slice(0, 300) + '…';
+        return text;
+    } catch (e) {
+        console.warn('[gemini] error', e && e.message);
+        return null;
+    }
+}
 
 /* ============================================================
    ЕКОНОМІКА
@@ -64,15 +156,14 @@ function getFinalPrize(rank) {
    КВЕСТИ
    ============================================================ */
 const QUEST_DEFS = {
-    first_correct:    { id: 'first_correct',    title: 'Перший крок',   desc: 'Дай 1 правильну відповідь',        goal: 1,  reward: 30, icon: '🎯' },
-    correct_3_streak: { id: 'correct_3_streak', title: 'Розігрів',      desc: '3 правильні відповіді поспіль',    goal: 3,  reward: 40, icon: '🔥' },
-    correct_5_streak: { id: 'correct_5_streak', title: 'У вогні',       desc: '5 правильних відповідей поспіль',  goal: 5,  reward: 75, icon: '⚡' },
-    correct_10_total: { id: 'correct_10_total', title: 'Ерудит',        desc: '10 правильних відповідей за гру',  goal: 10, reward: 60, icon: '🧠' },
-    first_answer:     { id: 'first_answer',     title: 'Швидкий старт', desc: 'Дай першу відповідь у раунді',     goal: 1,  reward: 20, icon: '🚀' },
-    speed_demon:      { id: 'speed_demon',      title: 'Блискавка',     desc: 'Відповідай за 3 секунди',          goal: 1,  reward: 50, icon: '💨' },
-    survivor:         { id: 'survivor',         title: 'Вижити!',       desc: 'Правильно в режимі «Виживання»',   goal: 1,  reward: 35, icon: '🛡️' },
-    chat_master:      { id: 'chat_master',      title: 'Балакун',       desc: 'Напиши 5 повідомлень у чаті',      goal: 5,  reward: 25, icon: '💬' },
-    reaction_king:    { id: 'reaction_king',    title: 'Реакціонер',    desc: 'Надішли 3 емодзі-реакції',         goal: 3,  reward: 20, icon: '🎉' }
+    first_correct:    { id: 'first_correct',    title: 'Перший крок',   desc: 'Дай 1 правильну відповідь',       goal: 1,  reward: 30, icon: '🎯' },
+    correct_3_streak: { id: 'correct_3_streak', title: 'Розігрів',      desc: '3 правильні відповіді поспіль',   goal: 3,  reward: 40, icon: '🔥' },
+    correct_5_streak: { id: 'correct_5_streak', title: 'У вогні',       desc: '5 правильних відповідей поспіль', goal: 5,  reward: 75, icon: '⚡' },
+    correct_10_total: { id: 'correct_10_total', title: 'Ерудит',        desc: '10 правильних відповідей за гру', goal: 10, reward: 60, icon: '🧠' },
+    first_answer:     { id: 'first_answer',     title: 'Швидкий старт', desc: 'Перша відповідь у раунді',        goal: 1,  reward: 20, icon: '🚀' },
+    speed_demon:      { id: 'speed_demon',      title: 'Блискавка',     desc: 'Відповідай за 3 секунди',         goal: 1,  reward: 50, icon: '💨' },
+    survivor:         { id: 'survivor',         title: 'Вижити!',       desc: 'Правильно в режимі «Виживання»',  goal: 1,  reward: 35, icon: '🛡️' },
+    chat_master:      { id: 'chat_master',      title: 'Балакун',       desc: 'Напиши 5 повідомлень у чаті',     goal: 5,  reward: 25, icon: '💬' }
 };
 
 /* ============================================================
@@ -81,76 +172,68 @@ const QUEST_DEFS = {
 const SHOP = {
     collections: [
         { id: 'col_base',   name: 'Базова',              emoji: '🎒', desc: 'Стартовий набір', bonus: 0 },
-        { id: 'col_autumn', name: 'Осінній табір',       emoji: '🍂', desc: 'Атмосфера осені та багаття', bonus: 50 },
+        { id: 'col_autumn', name: 'Осінній табір',       emoji: '🍂', desc: 'Атмосфера осені', bonus: 50 },
         { id: 'col_space',  name: 'Космічна експедиція', emoji: '🚀', desc: 'Підкорювачі зірок', bonus: 70 },
         { id: 'col_cyber',  name: 'Кібер-табір',         emoji: '🤖', desc: 'Технології майбутнього', bonus: 70 },
-        { id: 'col_magic',  name: 'Магічний табір',      emoji: '🔮', desc: 'Чарівні створіння', bonus: 80 },
-        { id: 'col_super',  name: 'Супергерої',          emoji: '🦸', desc: 'Захисники табору', bonus: 90 }
+        { id: 'col_magic',  name: 'Магічний табір',      emoji: '🔮', desc: 'Чарівні створіння', bonus: 80 }
     ],
     avatars: [
-        { id: 'a_cat',      emoji: '🐱',  name: 'Кіт-астронавт',      price: 0,   col: 'col_base',   desc: 'Базовий кіт-космонавт' },
-        { id: 'a_dog',      emoji: '🐶',  name: 'Песик-пілот',        price: 0,   col: 'col_base',   desc: 'Вірний друг' },
-        { id: 'a_fox',      emoji: '🦊',  name: 'Лисичка-хакер',      price: 0,   col: 'col_base',   desc: 'Хитра і швидка' },
-        { id: 'a_owl',      emoji: '🦉',  name: 'Мудра сова',         price: 25,  col: 'col_autumn', desc: 'Символ знань' },
-        { id: 'a_hedgehog', emoji: '🦔',  name: 'Їжачок',             price: 30,  col: 'col_autumn', desc: 'Маленький колючий друг' },
-        { id: 'a_squirrel', emoji: '🐿️', name: 'Білочка',            price: 35,  col: 'col_autumn', desc: 'Збирач горіхів' },
-        { id: 'a_deer',     emoji: '🦌',  name: 'Олень',              price: 45,  col: 'col_autumn', desc: 'Лісовий володар' },
-        { id: 'a_bear',     emoji: '🐻',  name: 'Ведмідь-таборянин',  price: 55,  col: 'col_autumn', desc: 'Господар лісу' },
-        { id: 'a_astronaut',emoji: '👨‍🚀', name: 'Астронавт',          price: 60,  col: 'col_space',  desc: 'Підкорювач космосу' },
-        { id: 'a_alien',    emoji: '👽',  name: 'Прибулець',          price: 55,  col: 'col_space',  desc: 'Гість із зірок' },
-        { id: 'a_rocket',   emoji: '🚀',  name: 'Ракета',             price: 40,  col: 'col_space',  desc: 'Символ швидкості' },
-        { id: 'a_comet',    emoji: '☄️',  name: 'Комета',             price: 65,  col: 'col_space',  desc: 'Космічний мандрівник' },
-        { id: 'a_ufo',      emoji: '🛸',  name: 'НЛО',                price: 75,  col: 'col_space',  desc: 'Таємничий корабель' },
-        { id: 'a_saturn',   emoji: '🪐',  name: 'Сатурн',             price: 85,  col: 'col_space',  desc: 'Планета з кільцями' },
-        { id: 'a_robot',    emoji: '🤖',  name: 'Робот-геній',        price: 60,  col: 'col_cyber',  desc: 'Штучний інтелект' },
-        { id: 'a_cyborg',   emoji: '🦾',  name: 'Кіборг',             price: 80,  col: 'col_cyber',  desc: 'Механічна рука' },
-        { id: 'a_ninja',    emoji: '🥷',  name: 'Ніндзя',             price: 70,  col: 'col_cyber',  desc: 'Тінь серед тіней' },
-        { id: 'a_dragon',   emoji: '🐉',  name: 'Кібер-дракон',       price: 110, col: 'col_cyber',  desc: 'Легендарний захисник' },
-        { id: 'a_chip',     emoji: '💠',  name: 'Кристал-чип',        price: 90,  col: 'col_cyber',  desc: 'Джерело енергії' },
-        { id: 'a_wizard',   emoji: '🧙',  name: 'Маг',                price: 80,  col: 'col_magic',  desc: 'Володар заклять' },
-        { id: 'a_unicorn',  emoji: '🦄',  name: 'Єдиноріг',           price: 85,  col: 'col_magic',  desc: 'Магія та легенди' },
-        { id: 'a_fairy',    emoji: '🧚',  name: 'Фея',                price: 95,  col: 'col_magic',  desc: 'Дух природи' },
-        { id: 'a_genie',    emoji: '🧞',  name: 'Джин',               price: 105, col: 'col_magic',  desc: 'Виконавець бажань' },
-        { id: 'a_phoenix',  emoji: '🔥',  name: 'Фенікс',             price: 130, col: 'col_magic',  desc: 'Вічно відроджується' },
-        { id: 'a_super',    emoji: '🦸',  name: 'Супергерой',         price: 100, col: 'col_super',  desc: 'Захисник міста' },
-        { id: 'a_hero_f',   emoji: '🦸‍♀️', name: 'Супергероїня',      price: 100, col: 'col_super',  desc: 'Смілива й сильна' },
-        { id: 'a_bat',      emoji: '🦇',  name: 'Бетмен',             price: 120, col: 'col_super',  desc: 'Тіньовий лицар' },
-        { id: 'a_spider',   emoji: '🕷️', name: 'Людина-павук',       price: 115, col: 'col_super',  desc: 'Дружній сусід' },
-        { id: 'a_shield',   emoji: '🛡️', name: 'Капітан',            price: 110, col: 'col_super',  desc: 'Щит справедливості' },
-        { id: 'a_lightning',emoji: '⚡',  name: 'Громовержець',       price: 140, col: 'col_super',  desc: 'Володар блискавок' }
+        { id: 'a_cat',     emoji: '🐱', name: 'Кіт-астронавт', price: 0,   col: 'col_base',   desc: 'Базовий кіт' },
+        { id: 'a_dog',     emoji: '🐶', name: 'Песик-пілот',   price: 0,   col: 'col_base',   desc: 'Вірний друг' },
+        { id: 'a_fox',     emoji: '🦊', name: 'Лисичка',       price: 0,   col: 'col_base',   desc: 'Хитра і швидка' },
+        { id: 'a_owl',     emoji: '🦉', name: 'Мудра сова',    price: 25,  col: 'col_autumn', desc: 'Символ знань' },
+        { id: 'a_hedgehog',emoji: '🦔', name: 'Їжачок',        price: 30,  col: 'col_autumn', desc: 'Колючий друг' },
+        { id: 'a_squirrel',emoji: '🐿️', name: 'Білочка',      price: 35,  col: 'col_autumn', desc: 'Збирач горіхів' },
+        { id: 'a_deer',    emoji: '🦌', name: 'Олень',         price: 45,  col: 'col_autumn', desc: 'Лісовий володар' },
+        { id: 'a_bear',    emoji: '🐻', name: 'Ведмідь',       price: 55,  col: 'col_autumn', desc: 'Господар лісу' },
+        { id: 'a_astro',   emoji: '👨‍🚀', name: 'Астронавт',    price: 60,  col: 'col_space',  desc: 'Підкорювач космосу' },
+        { id: 'a_alien',   emoji: '👽', name: 'Прибулець',     price: 55,  col: 'col_space',  desc: 'Гість із зірок' },
+        { id: 'a_rocket',  emoji: '🚀', name: 'Ракета',        price: 40,  col: 'col_space',  desc: 'Символ швидкості' },
+        { id: 'a_comet',   emoji: '☄️', name: 'Комета',        price: 65,  col: 'col_space',  desc: 'Космічний мандрівник' },
+        { id: 'a_ufo',     emoji: '🛸', name: 'НЛО',           price: 75,  col: 'col_space',  desc: 'Таємничий корабель' },
+        { id: 'a_saturn',  emoji: '🪐', name: 'Сатурн',        price: 85,  col: 'col_space',  desc: 'Планета з кільцями' },
+        { id: 'a_robot',   emoji: '🤖', name: 'Робот-геній',   price: 60,  col: 'col_cyber',  desc: 'Штучний інтелект' },
+        { id: 'a_cyborg',  emoji: '🦾', name: 'Кіборг',        price: 80,  col: 'col_cyber',  desc: 'Механічна рука' },
+        { id: 'a_ninja',   emoji: '🥷', name: 'Ніндзя',        price: 70,  col: 'col_cyber',  desc: 'Тінь серед тіней' },
+        { id: 'a_dragon',  emoji: '🐉', name: 'Кібер-дракон',  price: 110, col: 'col_cyber',  desc: 'Легендарний захисник' },
+        { id: 'a_chip',    emoji: '💠', name: 'Кристал-чип',   price: 90,  col: 'col_cyber',  desc: 'Джерело енергії' },
+        { id: 'a_wizard',  emoji: '🧙', name: 'Маг',           price: 80,  col: 'col_magic',  desc: 'Володар заклять' },
+        { id: 'a_unicorn', emoji: '🦄', name: 'Єдиноріг',      price: 85,  col: 'col_magic',  desc: 'Магія та легенди' },
+        { id: 'a_fairy',   emoji: '🧚', name: 'Фея',           price: 95,  col: 'col_magic',  desc: 'Дух природи' },
+        { id: 'a_genie',   emoji: '🧞', name: 'Джин',          price: 105, col: 'col_magic',  desc: 'Виконавець бажань' },
+        { id: 'a_phoenix', emoji: '🔥', name: 'Фенікс',        price: 130, col: 'col_magic',  desc: 'Вічно відроджується' }
     ],
     accessories: [
-        { id: 'x_none',      emoji: '',   name: 'Немає',             price: 0,   slot: 'head' },
-        { id: 'x_crown',     emoji: '👑', name: 'Корона',            price: 50,  slot: 'head' },
-        { id: 'x_hat',       emoji: '🎩', name: 'Циліндр',           price: 30,  slot: 'head' },
-        { id: 'x_partyhat',  emoji: '🎉', name: 'Святковий ковпак',  price: 20,  slot: 'head' },
-        { id: 'x_cap',       emoji: '🧢', name: 'Кепка',             price: 15,  slot: 'head' },
-        { id: 'x_grad',      emoji: '🎓', name: 'Академічна шапочка',price: 40,  slot: 'head' },
-        { id: 'x_beanie',    emoji: '🧣', name: 'Осінній шарф',      price: 25,  slot: 'head' },
-        { id: 'x_helmet',    emoji: '⛑️', name: 'Шолом',            price: 45,  slot: 'head' },
-        { id: 'x_top_hat',   emoji: '🎓', name: 'Магістерський',     price: 55,  slot: 'head' },
-        { id: 'x_glasses',   emoji: '🕶️', name: 'Кібер-окуляри',     price: 25,  slot: 'eyes' },
-        { id: 'x_goggles',   emoji: '🥽', name: 'Захисні окуляри',   price: 35,  slot: 'eyes' },
-        { id: 'x_monocle',   emoji: '🧐', name: 'Монокль',           price: 40,  slot: 'eyes' },
-        { id: 'x_aura',      emoji: '✨', name: 'Сяйво',             price: 60,  slot: 'effect' },
-        { id: 'x_fire',      emoji: '🔥', name: 'Полум\'я',          price: 70,  slot: 'effect' },
-        { id: 'x_star',      emoji: '⭐', name: 'Зірки',             price: 45,  slot: 'effect' },
-        { id: 'x_rainbow',   emoji: '🌈', name: 'Веселка',           price: 55,  slot: 'effect' },
-        { id: 'x_lightning', emoji: '⚡', name: 'Блискавка',         price: 65,  slot: 'effect' },
-        { id: 'x_heart',     emoji: '💖', name: 'Сердечка',          price: 40,  slot: 'effect' },
-        { id: 'x_leaf',      emoji: '🍁', name: 'Осіннє листя',      price: 30,  slot: 'effect' },
-        { id: 'x_snow',      emoji: '❄️', name: 'Сніжинки',          price: 35,  slot: 'effect' }
+        { id: 'x_none',      emoji: '',   name: 'Немає',           price: 0,   slot: 'head' },
+        { id: 'x_crown',     emoji: '👑', name: 'Корона',          price: 50,  slot: 'head' },
+        { id: 'x_hat',       emoji: '🎩', name: 'Циліндр',         price: 30,  slot: 'head' },
+        { id: 'x_partyhat',  emoji: '🎉', name: 'Святковий ковпак',price: 20,  slot: 'head' },
+        { id: 'x_cap',       emoji: '🧢', name: 'Кепка',           price: 15,  slot: 'head' },
+        { id: 'x_grad',      emoji: '🎓', name: 'Шапочка',         price: 40,  slot: 'head' },
+        { id: 'x_beanie',    emoji: '🧣', name: 'Шарф',            price: 25,  slot: 'head' },
+        { id: 'x_helmet',    emoji: '⛑️', name: 'Шолом',          price: 45,  slot: 'head' },
+        { id: 'x_glasses',   emoji: '🕶️', name: 'Окуляри',         price: 25,  slot: 'eyes' },
+        { id: 'x_goggles',   emoji: '🥽', name: 'Захисні окуляри', price: 35,  slot: 'eyes' },
+        { id: 'x_monocle',   emoji: '🧐', name: 'Монокль',         price: 40,  slot: 'eyes' },
+        { id: 'x_aura',      emoji: '✨', name: 'Сяйво',           price: 60,  slot: 'effect' },
+        { id: 'x_fire',      emoji: '🔥', name: 'Полум\'я',        price: 70,  slot: 'effect' },
+        { id: 'x_star',      emoji: '⭐', name: 'Зірки',           price: 45,  slot: 'effect' },
+        { id: 'x_rainbow',   emoji: '🌈', name: 'Веселка',         price: 55,  slot: 'effect' },
+        { id: 'x_lightning', emoji: '⚡', name: 'Блискавка',       price: 65,  slot: 'effect' },
+        { id: 'x_heart',     emoji: '💖', name: 'Сердечка',        price: 40,  slot: 'effect' },
+        { id: 'x_leaf',      emoji: '🍁', name: 'Осіннє листя',    price: 30,  slot: 'effect' },
+        { id: 'x_snow',      emoji: '❄️', name: 'Сніжинки',        price: 35,  slot: 'effect' }
     ],
     themes: [
         { id: 't_neon',    name: 'Неон',          price: 0,   desc: 'Базовий неон' },
         { id: 't_pastel',  name: 'Пастель',       price: 0,   desc: 'Базовий пастель' },
-        { id: 't_space',   name: 'Космос',        price: 100, desc: 'Глибокий космос із зорями' },
-        { id: 't_cyber',   name: 'Неон-кіберпанк',price: 130, desc: 'Яскравий неоновий стиль' },
-        { id: 't_forest',  name: 'Магічний ліс',  price: 110, desc: 'Затишний зелений ліс' },
-        { id: 't_sunset',  name: 'Захід сонця',   price: 90,  desc: 'Теплі помаранчеві тони' },
+        { id: 't_space',   name: 'Космос',        price: 100, desc: 'Глибокий космос' },
+        { id: 't_cyber',   name: 'Кіберпанк',     price: 130, desc: 'Яскравий неон' },
+        { id: 't_forest',  name: 'Магічний ліс',  price: 110, desc: 'Зелений ліс' },
+        { id: 't_sunset',  name: 'Захід сонця',   price: 90,  desc: 'Теплі тони' },
         { id: 't_ocean',   name: 'Океан',         price: 105, desc: 'Блакитні глибини' },
-        { id: 't_candy',   name: 'Цукеркова',     price: 80,  desc: 'Рожева солодка тема' },
-        { id: 't_autumn',  name: 'Осінній табір', price: 120, desc: 'Тепло багаття та листя' }
+        { id: 't_candy',   name: 'Цукеркова',     price: 80,  desc: 'Рожева тема' },
+        { id: 't_autumn',  name: 'Осінь',         price: 120, desc: 'Тепло багаття' }
     ]
 };
 
@@ -160,15 +243,15 @@ const SHOP = {
 const REACTION_EMOJIS = ['🎉', '🔥', '👏', '🤔', '🚀', '😂', '😮', '💪', '❓', '💯'];
 
 /* ============================================================
-   БАЗА ІМЕН
+   БАЗИ ІМЕН
    ============================================================ */
 const FIRST_NAMES_M = [
     'Андрій','Артем','Арсен','Богдан','Борис','Вадим','Валентин','Валерій','Василь','Віктор',
-    'Віталій','Владислав','Володимир','В\'ячеслав','Геннадій','Георгій','Григорій','Данило','Денис','Дмитро',
+    'Віталій','Владислав','Володимир','Геннадій','Георгій','Григорій','Данило','Денис','Дмитро',
     'Євген','Єгор','Захар','Іван','Ігор','Ілля','Кирило','Костянтин','Леонід','Максим',
     'Марко','Микита','Микола','Мирон','Михайло','Назар','Нестор','Олег','Олександр','Олексій',
-    'Остап','Павло','Петро','Роман','Ростислав','Руслан','Святослав','Сергій','Станіслав','Степан',
-    'Тарас','Тимофій','Тимур','Устим','Юрій','Ярема','Ярослав','Яків','Лука','Левко'
+    'Остап','Павло','Петро','Роман','Руслан','Святослав','Сергій','Станіслав','Степан',
+    'Тарас','Тимофій','Тимур','Юрій','Ярослав','Яків','Лука','Левко'
 ];
 const FIRST_NAMES_F = [
     'Аліна','Аліса','Анастасія','Ангеліна','Анна','Аріна','Богдана','Валерія','Вікторія','Віолетта',
@@ -185,7 +268,6 @@ const LAST_NAMES = [
     'Мазур','Хоменко','Юрченко','Пилипенко','Гуменюк','Слободян','Демченко','Ващенко','Білоус','Кравець'
 ];
 
-/* Реалістичні псевдоніми для ботів у чаті */
 const BOT_NICKNAMES = [
     'Максим', 'Софія ✨', 'Оля', 'Артем', 'Катя 🌸', 'Назар', 'Мілана', 'Денис',
     'Владислава', 'Ілля 🚀', 'Дарина', 'Марко', 'Ніка', 'Тимур', 'Юлія 🌟',
@@ -196,286 +278,110 @@ const BOT_NICKNAMES = [
 
 const AVATARS = ['😀','😎','🤓','🥳','😺','🐶','🦊','🐼','🐨','🦁','🐯','🐸','🐵','🐧','🦄','🐙','🦖','🐉','🌟','⚡','🔥','🌈','🍀','🎈','🚀','🎨','🎮','⚽','🏆','💎','🍕','🍩'];
 
-/* ============================================================
-   РЕЖИМИ
-   ============================================================ */
 const MODES = {
     arcade:   { name: 'Аркада', multiplier: 1.0, defaultTime: 20 },
     survival: { name: 'Виживання', multiplier: 1.5, defaultTime: 15 },
-    treasure: { name: 'Полювання на скарби', multiplier: 1.2, defaultTime: 25 }
+    treasure: { name: 'Скарби', multiplier: 1.2, defaultTime: 25 }
 };
 
 /* ============================================================
-   БОТ-МОЗОК ДЛЯ ЧАТУ
-   ------------------------------------------------------------
-   Правила:
-   • Повністю чиста, культурна мова — без лайки, без сленгу.
-   • Дружній підлітковий тон (5-7 клас).
-   • Помірна кількість емодзі (😊 👍 📚 ✨ 🚀 🎉).
-   • Контекстні відповіді на основі ключових слів та інтентів.
+   АКАУНТИ ТА РЕЄСТРАЦІЯ
    ============================================================ */
-const CHAT_INTENTS = [
-    {
-        name: 'greeting',
-        match: /\b(прив|привіт|вітаю|доброго|добрий|салют|здоров|хай|вітаю всіх|всім привіт)\b/i,
-        replies: [
-            'Привіт! Радий тебе бачити 😊',
-            'Вітаю всіх! Готові до гри? ✨',
-            'Привіт-привіт! Як настрій? 👍',
-            'Доброго дня! Хто сьогодні грає?',
-            'Привіт! Сподіваюсь, буде цікаво 📚',
-            'Всім привіт! Гарного настрою 😊',
-            'Привіт! Я вже тут, готуюсь відповідати 🚀',
-            'Вітання! Хто хоче першим відповісти?'
-        ]
-    },
-    {
-        name: 'how_are_you',
-        match: /\b(як справи|як ти|як діла|як життя|як настрій|як воно|що нового)\b/i,
-        replies: [
-            'У мене все добре, дякую 😊 А в тебе?',
-            'Чудово! Готуюсь до вікторини 📚',
-            'Все гаразд, настрій хороший ✨',
-            'Добре! А як твої справи?',
-            'Усе добре, дякую 👍 А ти як?',
-            'Прекрасно, тільки трохи хвилююсь перед грою 😊',
-            'Все чудово! Люблю такі вікторини 🎉'
-        ]
-    },
-    {
-        name: 'question_help',
-        match: /\b(підкажи|підкажіть|підкажи мені|допоможи|підкажіть будь ласка|як зробити|поясни)\b/i,
-        replies: [
-            'Звичайно, із задоволенням допоможу 😊',
-            'Так, я поруч! Спитай, і я підкажу 👍',
-            'Гаразд, давай подумаємо разом 📚',
-            'Звісно! Я вірю в тебе ✨',
-            'Ок, я допоможу, чим зможу 😊',
-            'Давай розбиратись разом 🚀',
-            'Це гарне запитання, я теж замислився(лась) 🤔'
-        ]
-    },
-    {
-        name: 'laugh',
-        match: /\b(смішно|весело|ахаха|хаха|сміюсь|😄|😁|😂)\b/i,
-        replies: [
-            '😄 Оце так!',
-            'Ахах, дійсно весело 😊',
-            'Ти вмієш розсмішити 👍',
-            'Дякую за гарний настрій 😄',
-            'Ох, аж сльози на очах від сміху 😊',
-            'Класний жарт! Умієш підняти настрій ✨'
-        ]
-    },
-    {
-        name: 'sad',
-        match: /\b(сумно|погано|засмучений|засмучена|втомлений|втомлена|не виходить|хвилююсь|боюсь|страшно)\b/i,
-        replies: [
-            'Не хвилюйся, усе вийде 😊',
-            'Тримайся! Ми з тобою 👍',
-            'Не засмучуйся, усе налагодиться ✨',
-            'Все буде добре, я впевнений(а) 😊',
-            'Не переживай, головне — спробувати 🚀',
-            'Я поруч, разом впораємось 💪',
-            'Вірю в тебе! Усе обов\'язково вийде 🌟'
-        ]
-    },
-    {
-        name: 'good_luck',
-        match: /\b(удачі|щасти|везіння|успіху|перемоги|бажаю перемоги)\b/i,
-        replies: [
-            'І тобі удачі! Разом переможемо 🏆',
-            'Дякую! Тобі теж щастить 🤞',
-            'Удачі! Гарного настрою 😊',
-            'І тобі успіху! Ми впораємось 👍',
-            'Дякую, і тобі перемоги ✨',
-            'Тобі теж удачі, чемпіоне 🏆'
-        ]
-    },
-    {
-        name: 'who_are_you',
-        match: /\b(хто ти|як тебе звати|як звати|твоє ім.я|твоє имя|як звати тебе)\b/i,
-        replies: [
-            'Мене звати {name}! Радий(а) знайомству 😊',
-            'Я {name}, приємно познайомитись!',
-            'Привіт! Я {name} 👍',
-            'Моє ім\'я {name}, я з вашого класу 😊',
-            'Я {name}, люблю такі вікторини ✨'
-        ]
-    },
-    {
-        name: 'bye',
-        match: /\b(бувай|пока|до побачення|до зустрічі|до завтра|на все добре)\b/i,
-        replies: [
-            'До побачення! Гарного дня 😊',
-            'Бувай! До наступної гри 👍',
-            'До зустрічі! Було приємно пограти ✨',
-            'Гарного відпочинку! До наступного разу 🚀',
-            'До побачення, друже! Успіхів 📚'
-        ]
-    },
-    {
-        name: 'thanks',
-        match: /\b(дякую|спасибі|дякс|вдячний|вдячна)\b/i,
-        replies: [
-            'Будь ласка, завжди радий(а) 😊',
-            'Немає за що! Звертайся 👍',
-            'Завжди поруч ✨',
-            'Будь ласка, приємно допомогти 🚀',
-            'Не варто подяки, ми ж одна команда 💪'
-        ]
-    },
-    {
-        name: 'about_quiz',
-        match: /\b(вікторин|гра|питання|тест|бали|монет|очки|рекорд)\b/i,
-        replies: [
-            'Люблю такі вікторини! Готуюсь уважно 📚',
-            'Питання бувають різні, головне — думати спокійно 😊',
-            'Гра — це чудово! Хто лідирує зараз? 🏆',
-            'Мені подобаються питання про космос 🚀',
-            'Цікаво дізнаватись нове під час гри ✨',
-            'Обожнюю відповідати правильно! 😊'
-        ]
-    },
-    {
-        name: 'school',
-        match: /\b(школа|урок|домашка|вчитель|вчителька|клас|табір|канікули)\b/i,
-        replies: [
-            'Люблю цікаві уроки, особливо коли є вікторини 📚',
-            'Табір — це чудово, тут весело та дружньо 😊',
-            'Домашнє завдання зробив(ла) ще вдень 👍',
-            'Наш клас дружний, це приємно ✨',
-            'Улюблений предмет — природознавство 🌿',
-            'Вчителі в нас добрі й допомагають 😊'
-        ]
-    },
-    {
-        name: 'praise',
-        match: /\b(молодець|молодчина|круто|класно|супер|вау|чудово|прекрасно|розумний|розумна)\b/i,
-        replies: [
-            'Дякую, дуже приємно 😊',
-            'Ти теж молодчина! 👍',
-            'Дякую за підтримку, це надихає ✨',
-            'Приємно чути, дякую! 😊',
-            'Дякую! Разом ми сильні 💪',
-            'Твоя підтримка мотивує 🚀'
-        ]
-    },
-    {
-        name: 'age',
-        match: /\b(скільки тобі років|тобі скільки|твій вік|в якому класі)\b/i,
-        replies: [
-            'Я вчусь у 5 класі, як і всі тут 😊',
-            'Мені одинадцять, скоро дванадцять 👍',
-            'Я з 5-Б, а ти? 📚',
-            'Як і всі — п\'ятикласник(ця) ✨'
-        ]
-    },
-    {
-        name: 'hobbies',
-        match: /\b(хобі|захоплення|люблю|подобається|цікаво|захоплююсь)\b/i,
-        replies: [
-            'Люблю читати та грати у вікторини 📚',
-            'Мені подобається малювати та слухати музику 🎨',
-            'Обожнюю спорт і активні ігри ⚽',
-            'Люблю дізнаватись нове про космос 🚀',
-            'Моє хобі — колекціонувати наліпки ✨',
-            'Люблю співати та танцювати 🎉'
-        ]
-    },
-    {
-        name: 'compliment',
-        match: /\b(ти класний|ти класна|ти добрий|ти добра|ти розумний|ти розумна|ти молодець|ти супер)\b/i,
-        replies: [
-            'Дякую! Ти теж чудовий(а) 😊',
-            'Дуже приємно, дякую! ✨',
-            'Ти теж молодчина 👍',
-            'Дякую за добрі слова 💖',
-            'Приємно, що ти так думаєш 😊'
-        ]
-    },
-    {
-        name: 'encourage',
-        match: /\b(давай|вперед|ти зможеш|впораєшся|не здавайся|підтримую)\b/i,
-        replies: [
-            'Дякую! Разом впораємось 💪',
-            'Ти теж зможеш, я вірю в тебе ✨',
-            'Так, вперед до перемоги 🏆',
-            'Дякую за підтримку! 😊',
-            'Разом ми — команда 👍'
-        ]
+/* users: Map<login, userRecord>
+   userRecord: { login, password, name, role, createdAt, classId, profile, grades, schedule, homework } */
+const users = new Map();
+
+function generateLogin(name) {
+    /* Логін: транслітерація + номер, макс 16 символів */
+    const map = {
+        'а':'a','б':'b','в':'v','г':'g','ґ':'g','д':'d','е':'e','є':'ie','ж':'zh','з':'z',
+        'и':'y','і':'i','ї':'i','й':'i','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p',
+        'р':'r','с':'s','т':'t','у':'u','ф':'f','х':'kh','ц':'ts','ч':'ch','ш':'sh','щ':'shch',
+        'ь':'','ю':'iu','я':'ia',' ':'','\'':'','-':''
+    };
+    let base = String(name || '').toLowerCase().split('').map(ch => map[ch] !== undefined ? map[ch] : ch).join('');
+    base = base.replace(/[^a-z0-9]/g, '').slice(0, 10) || 'user';
+    let login = base;
+    let n = 1;
+    while (users.has(login)) {
+        login = base + n;
+        n++;
     }
-];
-
-/* Резервні репліки — коли жоден інтент не спрацював */
-const FALLBACK_BOT_REPLIES = [
-    'Цікаво! 😊',
-    'Згоден(на) 👍',
-    'Розумію тебе ✨',
-    'Оце так!',
-    'Дякую, що поділився(лась) 😊',
-    'Приємно чути 📚',
-    'Звучить добре 👍',
-    'Мені теж так здається 😊',
-    'Ти гарно пишеш ✨',
-    'Класна думка 🚀',
-    'Ага, зрозуміло 😊',
-    'Це цікава історія 👍'
-];
-
-/* Несподівані, але безпечні таймер-повідомлення (не як відповідь) */
-const BOT_AMBIENT_MESSAGES = [
-    'Хто вже готовий до наступного питання? 😊',
-    'Мені подобається ця вікторина 📚',
-    'Удачі всім! 👍',
-    'Хто лідирує зараз? 🏆',
-    'Цікаво, хто переможе ✨',
-    'Усі молодці! 🎉',
-    'Гарно граємо 🚀',
-    'Люблю такі завдання 😊',
-    'Ще трохи — і буде перемога 👍',
-    'Спокійно, головне — участь ✨'
-];
-
-/* ============================================================
-   УТИЛІТИ ДЛЯ ЧАТ-БОТІВ
-   ============================================================ */
-function pickRandom(arr) {
-    return arr[Math.floor(Math.random() * arr.length)];
+    return login;
 }
 
-function checkMessageSafety(text) {
-    /* Перевірка, що повідомлення не містить заборонених слів.
-       Боти використовують тільки безпечні, чисті вислови. */
-    const lower = String(text).toLowerCase();
-    const banned = [
-        'фігня', 'лін', 'хайп', 'блін', 'капец', 'жопа', 'попа', 'дурень', 'дурна',
-        'тупий', 'тупа', 'ідіот', 'лох', 'козел', 'сволоч', 'гріх'
+function generatePassword(len) {
+    const alphabet = 'abcdefghjkmnpqrstuvwxyz23456789';
+    let out = '';
+    const L = len || 6;
+    for (let i = 0; i < L; i++) {
+        out += alphabet[Math.floor(Math.random() * alphabet.length)];
+    }
+    return out;
+}
+
+function defaultProfile() {
+    return {
+        coins: 0,
+        xp: 0,
+        ownedAvatars: ['a_cat'],
+        ownedAccessories: ['x_none'],
+        ownedThemes: ['neon', 'pastel'],
+        equippedAvatar: 'a_cat',
+        equippedHead: '',
+        equippedEyes: '',
+        equippedEffect: ''
+    };
+}
+
+function defaultGrades() {
+    /* 6 предметів × 4 дати останніх уроків */
+    return {
+        subjects: ['Математика', 'Українська мова', 'Історія', 'Природознавство', 'Англійська мова', 'Мистецтво'],
+        rows: []
+    };
+}
+
+function defaultSchedule() {
+    return {
+        days: ['Понеділок', 'Вівторок', 'Середа', 'Четвер', 'П’ятниця'],
+        lessons: [
+            ['Математика', 'Українська мова', 'Природознавство', 'Фізкультура', 'Історія'],
+            ['Українська мова', 'Англійська мова', 'Математика', 'Мистецтво', 'Природознавство'],
+            ['Математика', 'Історія', 'Українська мова', 'Фізкультура', 'Англійська мова'],
+            ['Природознавство', 'Математика', 'Українська мова', 'Історія', 'Мистецтво'],
+            ['Англійська мова', 'Фізкультура', 'Математика', 'Українська мова', 'Класна година']
+        ]
+    };
+}
+
+function defaultHomework() {
+    return [
+        { subject: 'Математика',        task: 'С. 42, №5–8 (письмово)', due: 'завтра' },
+        { subject: 'Українська мова',   task: 'Вправа 78, вивчити правило', due: 'завтра' },
+        { subject: 'Історія',           task: 'Прочитати §12, відповісти на питання', due: 'через день' },
+        { subject: 'Природознавство',   task: 'Спостереження за погодою, заповнити щоденник', due: 'через 2 дні' },
+        { subject: 'Англійська мова',   task: 'Вивчити 10 нових слів на тему «Школа»', due: 'завтра' }
     ];
-    for (const b of banned) {
-        if (lower.indexOf(b) !== -1) return false;
-    }
-    return true;
 }
 
-function chooseBotReaction(text, botName) {
-    /* Знаходимо відповідний інтент за ключовими словами */
-    for (const intent of CHAT_INTENTS) {
-        if (intent.match.test(text)) {
-            let reply = pickRandom(intent.replies);
-            reply = reply.replace('{name}', botName);
-            if (!checkMessageSafety(reply)) {
-                reply = pickRandom(FALLBACK_BOT_REPLIES);
-            }
-            return reply;
-        }
-    }
-    /* Якщо нічого не підійшло — беремо безпечний фолбек */
-    return pickRandom(FALLBACK_BOT_REPLIES);
-}
+/* Ініціалізація: створюємо вчителя за замовчуванням */
+(function initDefaultUsers() {
+    const teacherLogin = 'teacher';
+    const teacherPassword = 'teacher123';
+    users.set(teacherLogin, {
+        login: teacherLogin,
+        password: teacherPassword,
+        name: 'Вчитель',
+        role: 'teacher',
+        createdAt: Date.now(),
+        classId: '5-А'
+    });
+    console.log('[init] default teacher: login=' + teacherLogin + ' password=' + teacherPassword);
+})();
 
 /* ============================================================
-   КІМНАТИ
+   КІМНАТИ ВІКТОРИНИ
    ============================================================ */
 const rooms = new Map();
 
@@ -496,16 +402,12 @@ function generateBots(count) {
     const allFirst = FIRST_NAMES_M.concat(FIRST_NAMES_F);
     const poolFirst = allFirst.slice();
     const poolLast = LAST_NAMES.slice();
-    const usedNicknames = new Set();
     const usedNames = new Set();
-
-    /* Псевдоніми для чату — унікальні */
-    const nicknamePool = BOT_NICKNAMES.slice();
-    for (let i = nicknamePool.length - 1; i > 0; i--) {
+    const nickPool = BOT_NICKNAMES.slice();
+    for (let i = nickPool.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        const tmp = nicknamePool[i]; nicknamePool[i] = nicknamePool[j]; nicknamePool[j] = tmp;
+        const tmp = nickPool[i]; nickPool[i] = nickPool[j]; nickPool[j] = tmp;
     }
-
     for (let i = 0; i < count; i++) {
         let first, last, full;
         let attempts = 0;
@@ -520,14 +422,7 @@ function generateBots(count) {
             attempts++;
         } while (usedNames.has(full) && attempts < 80);
         usedNames.add(full);
-
-        /* Реалістичний псевдонім для чату */
-        let nickname = nicknamePool.length ? nicknamePool.shift() : full;
-        if (usedNicknames.has(nickname)) {
-            nickname = full;
-        }
-        usedNicknames.add(nickname);
-
+        const nickname = nickPool.length ? nickPool.shift() : full;
         bots.push({
             id: makeId('bot' + i),
             name: full,
@@ -564,9 +459,6 @@ function addFeed(room, text) {
     if (room.feed.length > 40) room.feed.length = 40;
 }
 
-/* ============================================================
-   ЧАТ-ПОВІДОМЛЕННЯ
-   ============================================================ */
 function addChatMessage(room, opts) {
     if (!room.chat) room.chat = [];
     const msg = {
@@ -576,12 +468,12 @@ function addChatMessage(room, opts) {
         avatar: opts.avatar || '',
         avatarId: opts.avatarId || 'a_cat',
         accessories: opts.accessories || { head: '', eyes: '', effect: '' },
-        text: String(opts.text || '').slice(0, 400),
+        text: String(opts.text || '').slice(0, 500),
         isBot: !!opts.isBot,
         t: Date.now()
     };
     room.chat.push(msg);
-    if (room.chat.length > 120) room.chat.splice(0, room.chat.length - 120);
+    if (room.chat.length > 150) room.chat.splice(0, room.chat.length - 150);
     return msg;
 }
 
@@ -589,9 +481,6 @@ function broadcastChatMessage(room, msg) {
     io.to('room_' + room.pin).emit('chatMessage', msg);
 }
 
-/* ============================================================
-   ПУБЛІЧНИЙ СТАН КІМНАТИ
-   ============================================================ */
 function getPublicState(room) {
     return {
         pin: room.pin,
@@ -627,7 +516,7 @@ function getPublicState(room) {
             reaction: p.reaction || null
         })),
         feed: room.feed || [],
-        chat: (room.chat || []).slice(-50)
+        chat: (room.chat || []).slice(-80)
     };
 }
 
@@ -636,10 +525,7 @@ function broadcastState(room) {
 }
 
 function stopTimer(room) {
-    if (room.timer) {
-        clearInterval(room.timer);
-        room.timer = null;
-    }
+    if (room.timer) { clearInterval(room.timer); room.timer = null; }
 }
 
 function startTimer(room) {
@@ -647,19 +533,16 @@ function startTimer(room) {
     room.questionStartedAt = Date.now();
     room.timeLeft = room.timePerQuestion;
     broadcastState(room);
-
     room.timer = setInterval(() => {
         const elapsed = (Date.now() - room.questionStartedAt) / 1000;
         const left = Math.max(0, room.timePerQuestion - elapsed);
         const leftInt = Math.ceil(left);
         room.timeLeft = leftInt;
-
         io.to('room_' + room.pin).emit('tick', {
             timeLeft: leftInt,
             questionIndex: room.currentQuestion,
             total: room.timePerQuestion
         });
-
         if (left <= 0) {
             stopTimer(room);
             io.to('room_' + room.pin).emit('timeExpired', {
@@ -669,9 +552,6 @@ function startTimer(room) {
     }, 250);
 }
 
-/* ============================================================
-   РОЗРАХУНОК НАГОРОД
-   ============================================================ */
 function calculateRewards(opts) {
     const elapsed = opts.elapsed;
     const timePerQuestion = opts.timePerQuestion;
@@ -680,110 +560,77 @@ function calculateRewards(opts) {
     const powerActive = opts.powerActive;
     const coinsEarnedThisGame = opts.coinsEarnedThisGame || 0;
 
-    const timeBonus = Math.round(
-        Math.max(0, 1 - elapsed / timePerQuestion) * ECONOMY.timeBonusMax
-    );
+    const timeBonus = Math.round(Math.max(0, 1 - elapsed / timePerQuestion) * ECONOMY.timeBonusMax);
     const modeMult = MODES[mode] ? MODES[mode].multiplier : 1.0;
 
     let streakMultScore = 1.0;
     const scoreKeys = Object.keys(ECONOMY.streakScoreMultiplier).map(Number).sort((a, b) => b - a);
     for (let i = 0; i < scoreKeys.length; i++) {
-        if (streak >= scoreKeys[i]) {
-            streakMultScore = ECONOMY.streakScoreMultiplier[scoreKeys[i]];
-            break;
-        }
+        if (streak >= scoreKeys[i]) { streakMultScore = ECONOMY.streakScoreMultiplier[scoreKeys[i]]; break; }
     }
-
     const powerMult = (powerActive && powerActive.type === 'double') ? 2 : 1;
-    const gainedScore = Math.round(
-        (ECONOMY.baseScore + timeBonus) * modeMult * streakMultScore * powerMult
-    );
+    const gainedScore = Math.round((ECONOMY.baseScore + timeBonus) * modeMult * streakMultScore * powerMult);
 
     let coins = ECONOMY.coinsCorrect;
     let speedBonus = 0;
-    const speedRatio = elapsed / timePerQuestion;
-    if (speedRatio <= 0.25) {
+    if ((elapsed / timePerQuestion) <= 0.25) {
         speedBonus = ECONOMY.coinsSpeedBonus;
         coins += speedBonus;
     }
-
     const cap = ECONOMY.coinsPerGameCap;
     const remaining = Math.max(0, cap - coinsEarnedThisGame);
     if (coins > remaining) coins = remaining;
 
     const gainedXp = Math.round(gainedScore / 10);
-
     return {
         score: gainedScore,
         coins: coins,
         xp: gainedXp,
-        breakdown: {
-            timeBonus: timeBonus,
-            modeMult: modeMult,
-            streakMultScore: streakMultScore,
-            speedBonus: speedBonus,
-            powerMult: powerMult,
-            cap: cap,
-            alreadyEarned: coinsEarnedThisGame,
-            remaining: remaining
-        }
+        breakdown: { timeBonus, modeMult, streakMultScore, speedBonus, powerMult, cap, alreadyEarned: coinsEarnedThisGame, remaining }
     };
 }
 
-/* ============================================================
-   БОТИ-ВІДПОВІДАЧІ У ВІКТОРИНІ
-   ============================================================ */
 function scheduleBotAnswers(room) {
     const q = room.questions[room.currentQuestion];
     if (!q) return;
     const qIndex = room.currentQuestion;
     const qStart = room.questionStartedAt;
-
     room.players.forEach(p => {
         if (!p.isBot || !p.alive) return;
         const speed = p.botSpeed || 0.7;
         const delayMs = (0.2 + (1 - speed) * 0.7) * room.timePerQuestion * 1000;
-
         setTimeout(() => {
             if (room.status !== 'running') return;
             if (room.currentQuestion !== qIndex) return;
             if (room.questionStartedAt !== qStart) return;
             if (p.answeredThisRound) return;
             if (!room.players.includes(p)) return;
-
             p.answeredThisRound = true;
             const correctChance = 0.35 + speed * 0.5;
             const isCorrect = Math.random() < correctChance;
             p.lastCorrect = isCorrect;
-
             if (isCorrect) {
                 p.correctCount++;
                 p.streak = (p.streak || 0) + 1;
                 if (p.streak > (p.bestStreak || 0)) p.bestStreak = p.streak;
-
                 const elapsed = (Date.now() - room.questionStartedAt) / 1000;
                 const rewards = calculateRewards({
-                    elapsed: elapsed,
-                    timePerQuestion: room.timePerQuestion,
-                    mode: room.mode,
-                    streak: p.streak,
-                    powerActive: p.powerActive,
+                    elapsed, timePerQuestion: room.timePerQuestion, mode: room.mode,
+                    streak: p.streak, powerActive: p.powerActive,
                     coinsEarnedThisGame: p.coinsEarnedThisGame || 0
                 });
-
                 p.score += rewards.score;
                 p.coins = (p.coins || 0) + rewards.coins;
                 p.coinsEarnedThisGame = (p.coinsEarnedThisGame || 0) + rewards.coins;
                 p.xp = (p.xp || 0) + rewards.xp;
-
-                addFeed(room, '✅ ' + p.name + ' відповів(ла) правильно (+' + rewards.score + ' балів, +' + rewards.coins + ' 🪙)');
+                addFeed(room, '✅ ' + p.name + ' правильно (+' + rewards.score + ' балів, +' + rewards.coins + ' 🪙)');
                 p.powerActive = null;
             } else {
                 p.wrongCount++;
                 p.streak = 0;
                 if (room.mode === 'survival' && p.wrongCount >= 3) {
                     p.alive = false;
-                    addFeed(room, '💤 ' + p.name + ' вибуває (3 помилки)');
+                    addFeed(room, '💤 ' + p.name + ' вибуває');
                 }
             }
             broadcastState(room);
@@ -792,20 +639,51 @@ function scheduleBotAnswers(room) {
 }
 
 /* ============================================================
-   БОТИ В ЧАТІ — АКТИВНІ "СПІВРОЗМОВНИКИ"
+   AI-БОТИ В ЧАТІ
    ------------------------------------------------------------
-   Боти реагують на повідомлення реальних користувачів
-   та іноді (рідко) пишуть у чат самостійно.
+   Використовуємо Google Gemini API. Якщо ключ не задано —
+   працює локальний резервний варіант з безпечними фразами.
    ============================================================ */
+const FALLBACK_AI_REPLIES = [
+    'О, цікаво! 😊',
+    'Згоден 👍',
+    'Добре сказано! ✨',
+    'Розумію тебе 📚',
+    'Класно, що ти поділився 😊',
+    'Ага, я теж так думаю 👍',
+    'Оце так! Цікаво 😊',
+    'Дякую, що написав ✨',
+    'Звучить добре 📚',
+    'Ти гарно пишеш 😊'
+];
+
+async function generateAIReply(room, userMessage, botName) {
+    const text = String(userMessage.text || '').trim();
+    if (!text) return null;
+
+    const history = (room.chat || []).slice(-10).map(m => ({
+        text: m.text,
+        isBot: m.isBot
+    }));
+
+    /* Пробуємо Gemini, якщо є ключ */
+    if (GEMINI_API_KEY) {
+        const aiText = await callGeminiChat(history, text);
+        if (aiText) return aiText;
+    }
+
+    /* Резервний варіант */
+    return FALLBACK_AI_REPLIES[Math.floor(Math.random() * FALLBACK_AI_REPLIES.length)];
+}
+
 function scheduleBotChatReactions(room, userMessage) {
     if (!room || room.status === 'finished') return;
     if (!room.chatBotsEnabled) return;
-
     const bots = room.players.filter(p => p.isBot);
     if (bots.length === 0) return;
 
-    /* Кількість ботів, які відповідають (1-3 залежно від розміру) */
-    const maxResponders = Math.min(bots.length, 1 + Math.floor(Math.random() * 3));
+    /* Вибираємо 1-2 ботів, які «читають» повідомлення і відповідають */
+    const maxResponders = Math.min(bots.length, 1 + Math.floor(Math.random() * 2));
     const responders = [];
     const pool = bots.slice();
     for (let i = 0; i < maxResponders; i++) {
@@ -815,14 +693,14 @@ function scheduleBotChatReactions(room, userMessage) {
     }
 
     responders.forEach((bot, i) => {
-        const delay = 600 + i * 400 + Math.floor(Math.random() * 1400);
-        setTimeout(() => {
+        const delay = 800 + i * 600 + Math.floor(Math.random() * 1200);
+        setTimeout(async () => {
             if (!rooms.has(room.pin)) return;
             if (room.status === 'finished') return;
             if (!room.chatBotsEnabled) return;
 
-            const text = userMessage ? chooseBotReaction(userMessage.text, bot.chatName || bot.name)
-                                     : pickRandom(FALLBACK_BOT_REPLIES);
+            let reply = await generateAIReply(room, userMessage, bot.chatName || bot.name);
+            if (!reply) reply = FALLBACK_AI_REPLIES[Math.floor(Math.random() * FALLBACK_AI_REPLIES.length)];
 
             const msg = addChatMessage(room, {
                 from: bot.id,
@@ -830,46 +708,12 @@ function scheduleBotChatReactions(room, userMessage) {
                 avatar: bot.avatar,
                 avatarId: bot.avatarId,
                 accessories: bot.accessories,
-                text: text,
+                text: reply,
                 isBot: true
             });
             broadcastChatMessage(room, msg);
         }, delay);
     });
-}
-
-/* --- Ненав'язливі самостійні повідомлення ботів --- */
-function startChatAmbientLoop(room) {
-    if (room.chatAmbientTimer) clearInterval(room.chatAmbientTimer);
-    room.chatAmbientTimer = setInterval(() => {
-        if (!rooms.has(room.pin)) {
-            clearInterval(room.chatAmbientTimer);
-            return;
-        }
-        if (room.status === 'finished') return;
-        if (!room.chatBotsEnabled) return;
-        /* Пишемо не надто часто — тільки якщо давно не було бот-повідомлень */
-        const chat = room.chat || [];
-        const lastBotMsg = chat.slice().reverse().find(m => m.isBot);
-        const cooldown = 25000; // 25 секунд тиші — і бот напише сам
-        if (lastBotMsg && (Date.now() - lastBotMsg.t) < cooldown) return;
-
-        const bots = room.players.filter(p => p.isBot);
-        if (bots.length === 0) return;
-
-        const bot = pickRandom(bots);
-        const text = pickRandom(BOT_AMBIENT_MESSAGES);
-        const msg = addChatMessage(room, {
-            from: bot.id,
-            name: bot.chatName || bot.name,
-            avatar: bot.avatar,
-            avatarId: bot.avatarId,
-            accessories: bot.accessories,
-            text: text,
-            isBot: true
-        });
-        broadcastChatMessage(room, msg);
-    }, 12000);
 }
 
 function cleanupRoom(room) {
@@ -886,11 +730,7 @@ function cleanupRoom(room) {
 const httpServer = http.createServer(app);
 
 const io = new Server(httpServer, {
-    cors: {
-        origin: '*',
-        methods: ['GET', 'POST'],
-        credentials: false
-    },
+    cors: { origin: '*', methods: ['GET', 'POST'], credentials: false },
     transports: ['polling', 'websocket'],
     pingInterval: 25000,
     pingTimeout: 30000,
@@ -908,18 +748,190 @@ app.get('/api/shop', (req, res) => {
         shop: SHOP,
         economy: ECONOMY,
         quests: QUEST_DEFS,
-        reactions: REACTION_EMOJIS
+        reactions: REACTION_EMOJIS,
+        aiEnabled: !!GEMINI_API_KEY
     });
 });
 
-app.get('/health', (req, res) => {
+app.get('/api/health', (req, res) => {
     res.json({
         ok: true,
         rooms: rooms.size,
+        users: users.size,
+        gemini: !!GEMINI_API_KEY,
         uptime: Math.round(process.uptime()),
-        node: process.version,
-        now: Date.now()
+        node: process.version
     });
+});
+
+/* Авторизація учня/вчителя */
+app.post('/api/login', (req, res) => {
+    try {
+        const login = String((req.body && req.body.login) || '').trim().toLowerCase();
+        const password = String((req.body && req.body.password) || '');
+        if (!login || !password) {
+            return res.json({ ok: false, error: 'Введи логін і пароль' });
+        }
+        const user = users.get(login);
+        if (!user || user.password !== password) {
+            return res.json({ ok: false, error: 'Невірний логін або пароль' });
+        }
+        res.json({
+            ok: true,
+            user: {
+                login: user.login,
+                name: user.name,
+                role: user.role,
+                classId: user.classId || '5-А',
+                profile: user.profile || defaultProfile(),
+                grades: user.grades || defaultGrades(),
+                schedule: user.schedule || defaultSchedule(),
+                homework: user.homework || defaultHomework()
+            }
+        });
+    } catch (e) {
+        res.json({ ok: false, error: 'Помилка входу' });
+    }
+});
+
+/* Створення учнівського акаунта вчителем */
+app.post('/api/teacher/create-student', (req, res) => {
+    try {
+        const teacherLogin = String((req.body && req.body.teacherLogin) || '').trim().toLowerCase();
+        const teacherPassword = String((req.body && req.body.teacherPassword) || '');
+        const studentName = String((req.body && req.body.studentName) || '').trim();
+        const classId = String((req.body && req.body.classId) || '5-А').trim();
+
+        const teacher = users.get(teacherLogin);
+        if (!teacher || teacher.role !== 'teacher' || teacher.password !== teacherPassword) {
+            return res.json({ ok: false, error: 'Немає прав вчителя' });
+        }
+        if (studentName.length < 2) return res.json({ ok: false, error: 'Введи ім\'я учня' });
+
+        const login = generateLogin(studentName);
+        const password = generatePassword(6);
+
+        const student = {
+            login,
+            password,
+            name: studentName,
+            role: 'student',
+            classId,
+            createdAt: Date.now(),
+            profile: defaultProfile(),
+            grades: defaultGrades(),
+            schedule: defaultSchedule(),
+            homework: defaultHomework()
+        };
+        users.set(login, student);
+        res.json({
+            ok: true,
+            student: {
+                login, password, name: student.name, classId: student.classId
+            }
+        });
+    } catch (e) {
+        res.json({ ok: false, error: 'Помилка створення' });
+    }
+});
+
+/* Список учнів класу (для вчителя) */
+app.post('/api/teacher/list-students', (req, res) => {
+    try {
+        const teacherLogin = String((req.body && req.body.teacherLogin) || '').trim().toLowerCase();
+        const teacherPassword = String((req.body && req.body.teacherPassword) || '');
+        const teacher = users.get(teacherLogin);
+        if (!teacher || teacher.role !== 'teacher' || teacher.password !== teacherPassword) {
+            return res.json({ ok: false, error: 'Немає прав вчителя' });
+        }
+        const list = [];
+        for (const u of users.values()) {
+            if (u.role === 'student') {
+                list.push({
+                    login: u.login,
+                    name: u.name,
+                    classId: u.classId || '5-А'
+                });
+            }
+        }
+        res.json({ ok: true, students: list });
+    } catch (e) {
+        res.json({ ok: false, error: 'Помилка' });
+    }
+});
+
+/* Встановлення оцінки учневі */
+app.post('/api/teacher/set-grade', (req, res) => {
+    try {
+        const teacherLogin = String((req.body && req.body.teacherLogin) || '').trim().toLowerCase();
+        const teacherPassword = String((req.body && req.body.teacherPassword) || '');
+        const studentLogin = String((req.body && req.body.studentLogin) || '').trim().toLowerCase();
+        const subject = String((req.body && req.body.subject) || '').trim();
+        const grade = parseInt(req.body && req.body.grade, 10);
+        const teacher = users.get(teacherLogin);
+        if (!teacher || teacher.role !== 'teacher' || teacher.password !== teacherPassword) {
+            return res.json({ ok: false, error: 'Немає прав' });
+        }
+        const student = users.get(studentLogin);
+        if (!student || student.role !== 'student') {
+            return res.json({ ok: false, error: 'Учня не знайдено' });
+        }
+        if (!subject || !(grade >= 1 && grade <= 12)) {
+            return res.json({ ok: false, error: 'Некоректна оцінка або предмет' });
+        }
+        if (!student.grades) student.grades = defaultGrades();
+        student.grades.rows.push({
+            subject,
+            grade,
+            date: new Date().toISOString().slice(0, 10)
+        });
+        res.json({ ok: true });
+    } catch (e) {
+        res.json({ ok: false, error: 'Помилка' });
+    }
+});
+
+/* Оновлення ДЗ (вчителем) */
+app.post('/api/teacher/set-homework', (req, res) => {
+    try {
+        const teacherLogin = String((req.body && req.body.teacherLogin) || '').trim().toLowerCase();
+        const teacherPassword = String((req.body && req.body.teacherPassword) || '');
+        const teacher = users.get(teacherLogin);
+        if (!teacher || teacher.role !== 'teacher' || teacher.password !== teacherPassword) {
+            return res.json({ ok: false, error: 'Немає прав' });
+        }
+        const subject = String((req.body && req.body.subject) || '').trim();
+        const task = String((req.body && req.body.task) || '').trim();
+        const due = String((req.body && req.body.due) || '').trim();
+        if (!subject || !task) return res.json({ ok: false, error: 'Заповни предмет і завдання' });
+
+        for (const u of users.values()) {
+            if (u.role === 'student') {
+                if (!u.homework) u.homework = defaultHomework();
+                u.homework.unshift({ subject, task, due: due || 'найближчим часом' });
+                if (u.homework.length > 30) u.homework.length = 30;
+            }
+        }
+        res.json({ ok: true });
+    } catch (e) {
+        res.json({ ok: false, error: 'Помилка' });
+    }
+});
+
+/* Збереження профілю (монети, куплені предмети) */
+app.post('/api/user/profile', (req, res) => {
+    try {
+        const login = String((req.body && req.body.login) || '').trim().toLowerCase();
+        const password = String((req.body && req.body.password) || '');
+        const user = users.get(login);
+        if (!user || user.password !== password) return res.json({ ok: false, error: 'Немає прав' });
+        if (req.body && req.body.profile && typeof req.body.profile === 'object') {
+            user.profile = Object.assign(defaultProfile(), req.body.profile);
+        }
+        res.json({ ok: true, profile: user.profile });
+    } catch (e) {
+        res.json({ ok: false, error: 'Помилка' });
+    }
 });
 
 app.get('/', (req, res) => {
@@ -931,13 +943,14 @@ app.get(/^\/(?!socket\.io|api\/).*/, (req, res) => {
 });
 
 /* ============================================================
-   SOCKET.IO — ОБРОБНИКИ
+   SOCKET.IO
    ============================================================ */
 io.on('connection', (socket) => {
     console.log('[connect]', socket.id, '| transport:', socket.conn.transport.name);
 
     let currentRoomPin = null;
     let role = null;
+    let currentUserLogin = null;
 
     socket.conn.on('upgrade', () => {
         console.log('[upgrade]', socket.id, '→', socket.conn.transport.name);
@@ -950,18 +963,41 @@ io.on('connection', (socket) => {
             shop: SHOP,
             economy: ECONOMY,
             quests: QUEST_DEFS,
-            reactions: REACTION_EMOJIS
+            reactions: REACTION_EMOJIS,
+            aiEnabled: !!GEMINI_API_KEY
         });
     });
 
-    /* ---------- СТВОРЕННЯ КІМНАТИ ---------- */
+    /* ---------- АВТОРИЗАЦІЯ SOCKET ---------- */
+    socket.on('auth', (payload, cb) => {
+        try {
+            const login = String(payload && payload.login || '').trim().toLowerCase();
+            const password = String(payload && payload.password || '');
+            const user = users.get(login);
+            if (!user || user.password !== password) {
+                if (cb) cb({ ok: false, error: 'Невірний логін або пароль' });
+                return;
+            }
+            currentUserLogin = login;
+            if (cb) cb({
+                ok: true,
+                user: {
+                    login: user.login,
+                    name: user.name,
+                    role: user.role,
+                    classId: user.classId || '5-А'
+                }
+            });
+        } catch (e) {
+            if (cb) cb({ ok: false, error: 'Помилка авторизації' });
+        }
+    });
+
+    /* ---------- СТВОРЕННЯ КІМНАТИ (ВЧИТЕЛЬ) ---------- */
     socket.on('createRoom', (payload, cb) => {
         try {
             const questions = (payload && Array.isArray(payload.questions)) ? payload.questions : [];
-            if (questions.length === 0) {
-                if (cb) cb({ ok: false, error: 'Немає питань' });
-                return;
-            }
+            if (questions.length === 0) { if (cb) cb({ ok: false, error: 'Немає питань' }); return; }
             const mode = (payload.mode && MODES[payload.mode]) ? payload.mode : 'arcade';
             const timePerQuestion = Math.max(5, Math.min(60,
                 parseInt(payload.timePerQuestion, 10) || MODES[mode].defaultTime));
@@ -972,11 +1008,7 @@ io.on('connection', (socket) => {
             const bots = generateBots(botCount);
 
             const room = {
-                pin: pin,
-                createdAt: Date.now(),
-                status: 'lobby',
-                mode: mode,
-                timePerQuestion: timePerQuestion,
+                pin, createdAt: Date.now(), status: 'lobby', mode, timePerQuestion,
                 questions: questions.map(q => ({
                     text: String(q.text || '').slice(0, 300),
                     answers: (q.answers || []).map(a => String(a).slice(0, 100)).slice(0, 6),
@@ -990,7 +1022,7 @@ io.on('connection', (socket) => {
                 chat: [],
                 reactions: [],
                 firstAnswer: null,
-                chatBotsEnabled: chatBotsEnabled,
+                chatBotsEnabled,
                 chatAmbientTimer: null,
                 teacherSocketId: socket.id,
                 teacherPlayerId: 'teacher_' + pin,
@@ -998,41 +1030,27 @@ io.on('connection', (socket) => {
                 cleanupTimer: null,
                 teacherDisconnectTimer: null
             };
-
             rooms.set(pin, room);
             currentRoomPin = pin;
             role = 'teacher';
             socket.join('room_' + pin);
             addFeed(room, 'Кімнату створено. Запрошуйте учнів! 📚');
 
-            /* Привітання від ботів у чат */
             if (chatBotsEnabled && bots.length > 0) {
                 setTimeout(() => {
                     if (!rooms.has(pin)) return;
                     const bot = bots[Math.floor(Math.random() * bots.length)];
                     const msg = addChatMessage(room, {
-                        from: bot.id,
-                        name: bot.chatName || bot.name,
-                        avatar: bot.avatar,
-                        avatarId: bot.avatarId,
-                        accessories: bot.accessories,
-                        text: pickRandom([
-                            'Привіт усім! Хто сьогодні грає? 😊',
-                            'Всім привіт! Готуємось до вікторини 📚',
-                            'Вітаю! Гарного настрою всім 👍',
-                            'Привіт! Хто хоче бути першим? 🚀'
-                        ]),
+                        from: bot.id, name: bot.chatName || bot.name,
+                        avatar: bot.avatar, avatarId: bot.avatarId, accessories: bot.accessories,
+                        text: 'Привіт усім! Хто сьогодні грає? 😊',
                         isBot: true
                     });
                     broadcastChatMessage(room, msg);
-                }, 2500);
+                }, 2200);
             }
 
-            startChatAmbientLoop(room);
-
-            console.log('[room] created', pin, '| bots:', botCount, '| q:', questions.length);
-
-            if (cb) cb({ ok: true, pin: pin, state: getPublicState(room) });
+            if (cb) cb({ ok: true, pin, state: getPublicState(room) });
             broadcastState(room);
         } catch (err) {
             console.error('createRoom error', err);
@@ -1040,63 +1058,57 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- ПРИЄДНАННЯ ---------- */
+    /* ---------- ПРИЄДНАННЯ УЧНЯ (з авторизацією) ---------- */
     socket.on('joinRoom', (payload, cb) => {
         try {
-            const pin = String((payload && payload.pin) || '').trim();
-            const name = String((payload && payload.name) || '').trim().slice(0, 24);
-            const avatarId = String((payload && payload.avatarId) || 'a_cat');
+            const pin = String(payload && payload.pin || '').trim();
+            const login = String(payload && payload.login || '').trim().toLowerCase();
+            const password = String(payload && payload.password || '');
+            const avatarId = String(payload && payload.avatarId || 'a_cat');
             const accessories = (payload && payload.accessories) || { head: '', eyes: '', effect: '' };
-            const xp = Math.max(0, parseInt(payload && payload.xp, 10) || 0);
 
-            if (!/^\d{6}$/.test(pin)) {
-                if (cb) cb({ ok: false, error: 'Невірний PIN' });
+            if (!/^\d{6}$/.test(pin)) { if (cb) cb({ ok: false, error: 'Невірний PIN' }); return; }
+            const user = users.get(login);
+            if (!user || user.password !== password) {
+                if (cb) cb({ ok: false, error: 'Невірний логін або пароль' });
                 return;
             }
-            if (name.length < 2) {
-                if (cb) cb({ ok: false, error: 'Ім\'я закоротке' });
+            if (user.role !== 'student') {
+                if (cb) cb({ ok: false, error: 'Тільки учні можуть приєднуватись' });
                 return;
             }
-
             const room = rooms.get(pin);
-            if (!room) {
-                if (cb) cb({ ok: false, error: 'Кімнату не знайдено' });
-                return;
-            }
-            if (room.status === 'finished') {
-                if (cb) cb({ ok: false, error: 'Гра вже завершена' });
-                return;
-            }
+            if (!room) { if (cb) cb({ ok: false, error: 'Кімнату не знайдено' }); return; }
+            if (room.status === 'finished') { if (cb) cb({ ok: false, error: 'Гра завершена' }); return; }
 
             let avatarEmoji = '😀';
             const found = SHOP.avatars.find(a => a.id === avatarId);
             if (found) avatarEmoji = found.emoji;
 
-            const existing = room.players.find(p => !p.isBot && p.name.toLowerCase() === name.toLowerCase());
+            const existing = room.players.find(p => !p.isBot && p.login === login);
             let player;
-
             if (existing) {
                 existing.avatarId = avatarId;
                 existing.avatar = avatarEmoji;
                 existing.accessories = accessories;
-                existing.xp = Math.max(existing.xp || 0, xp);
                 existing.socketId = socket.id;
                 player = existing;
-                addFeed(room, '🔄 ' + name + ' повернувся(лась) до гри');
+                addFeed(room, '🔄 ' + user.name + ' повернувся(лась)');
             } else {
                 player = {
                     id: makeId('pl'),
-                    name: name,
-                    chatName: name,
+                    login: user.login,
+                    name: user.name,
+                    chatName: user.name,
                     avatar: avatarEmoji,
-                    avatarId: avatarId,
-                    accessories: accessories,
+                    avatarId,
+                    accessories,
                     score: 0,
-                    coins: 0,
+                    coins: (user.profile && user.profile.coins) || 0,
                     coinsEarnedThisGame: 0,
                     finalPrize: 0,
                     finalRank: 0,
-                    xp: xp,
+                    xp: (user.profile && user.profile.xp) || 0,
                     isBot: false,
                     correctCount: 0,
                     wrongCount: 0,
@@ -1108,12 +1120,11 @@ io.on('connection', (socket) => {
                     bestStreak: 0,
                     powerActive: null,
                     reaction: null,
-                    quests: {}
+                    quests: {},
+                    chatCount: 0
                 };
                 room.players.push(player);
-                addFeed(room, '👋 ' + name + ' приєднався(лась) до гри!');
-
-                /* Боти вітають новачка у чаті */
+                addFeed(room, '👋 ' + user.name + ' приєднався(лась)');
                 if (room.chatBotsEnabled) {
                     const bots = room.players.filter(p => p.isBot);
                     if (bots.length > 0) {
@@ -1121,29 +1132,21 @@ io.on('connection', (socket) => {
                         setTimeout(() => {
                             if (!rooms.has(pin)) return;
                             const greet = addChatMessage(room, {
-                                from: bot.id,
-                                name: bot.chatName || bot.name,
-                                avatar: bot.avatar,
-                                avatarId: bot.avatarId,
-                                accessories: bot.accessories,
-                                text: pickRandom([
-                                    'Привіт, ' + name + '! Радий(а) тебе бачити 😊',
-                                    'Вітаю, ' + name + '! Готуйся до гри 👍',
-                                    'Привіт, ' + name + '! Гарного настрою ✨',
-                                    'О, ' + name + ' приєднався(лась)! Клас 🎉'
-                                ]),
+                                from: bot.id, name: bot.chatName || bot.name,
+                                avatar: bot.avatar, avatarId: bot.avatarId, accessories: bot.accessories,
+                                text: 'Привіт, ' + user.name + '! Радий(а) тебе бачити 😊',
                                 isBot: true
                             });
                             broadcastChatMessage(room, greet);
-                        }, 900 + Math.floor(Math.random() * 1200));
+                        }, 900 + Math.floor(Math.random() * 1000));
                     }
                 }
             }
 
             currentRoomPin = pin;
             role = 'student';
+            currentUserLogin = login;
             socket.join('room_' + pin);
-            console.log('[room] join', pin, '| name:', name, '| total:', room.players.length);
 
             if (cb) cb({ ok: true, playerId: player.id, state: getPublicState(room) });
             broadcastState(room);
@@ -1153,96 +1156,40 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- ОНОВЛЕННЯ ПРОФІЛЮ ---------- */
-    socket.on('updateProfile', (payload, cb) => {
-        try {
-            const room = rooms.get(currentRoomPin);
-            if (!room) {
-                if (cb) cb({ ok: false });
-                return;
-            }
-            const player = room.players.find(p => p.id === payload.playerId);
-            if (!player) {
-                if (cb) cb({ ok: false });
-                return;
-            }
-
-            const avatarId = String(payload.avatarId || player.avatarId || 'a_cat');
-            const found = SHOP.avatars.find(a => a.id === avatarId);
-            if (found) {
-                player.avatarId = avatarId;
-                player.avatar = found.emoji;
-            }
-            if (payload.accessories) player.accessories = payload.accessories;
-            if (typeof payload.xp === 'number') {
-                player.xp = Math.max(player.xp || 0, payload.xp);
-            }
-
-            if (cb) cb({ ok: true });
-            broadcastState(room);
-        } catch (err) {
-            console.error('updateProfile error', err);
-            if (cb) cb({ ok: false });
-        }
-    });
-
-    /* ---------- НАДСИЛАННЯ ПОВІДОМЛЕННЯ В ЧАТ ---------- */
+    /* ---------- НАДСИЛАННЯ В ЧАТ ---------- */
     socket.on('sendChat', (payload, cb) => {
         try {
             const room = rooms.get(currentRoomPin);
-            if (!room) {
-                if (cb) cb({ ok: false });
-                return;
-            }
+            if (!room) { if (cb) cb({ ok: false }); return; }
             const player = room.players.find(p => p.id === payload.playerId);
-            if (!player) {
-                if (cb) cb({ ok: false });
-                return;
-            }
+            if (!player) { if (cb) cb({ ok: false }); return; }
 
-            /* Перевірка безпеки повідомлення */
-            let text = String(payload.text || '').trim().slice(0, 400);
-            if (!text) {
-                if (cb) cb({ ok: false, error: 'Порожнє повідомлення' });
-                return;
-            }
-            if (!checkMessageSafety(text)) {
-                if (cb) cb({ ok: false, error: 'Будь ласка, спілкуйся ввічливо 😊' });
-                return;
-            }
+            const text = String(payload.text || '').trim().slice(0, 500);
+            if (!text) { if (cb) cb({ ok: false, error: 'Порожнє повідомлення' }); return; }
 
-            /* Захист від спаму */
             const now = Date.now();
             if (player.lastChatAt && (now - player.lastChatAt) < 700) {
-                if (cb) cb({ ok: false, error: 'Зачекай трохи' });
-                return;
+                if (cb) cb({ ok: false, error: 'Зачекай трохи' }); return;
             }
             player.lastChatAt = now;
 
             const msg = addChatMessage(room, {
-                from: player.id,
-                name: player.chatName || player.name,
-                avatar: player.avatar,
-                avatarId: player.avatarId,
-                accessories: player.accessories,
-                text: text,
-                isBot: false
+                from: player.id, name: player.chatName || player.name,
+                avatar: player.avatar, avatarId: player.avatarId, accessories: player.accessories,
+                text, isBot: false
             });
             broadcastChatMessage(room, msg);
 
-            /* Квест "Балакун" — рахуємо повідомлення */
             if (!player.isBot) {
-                if (!player.chatCount) player.chatCount = 0;
-                player.chatCount++;
+                player.chatCount = (player.chatCount || 0) + 1;
                 if (!player.quests) player.quests = {};
                 if (!player.quests.chat_master && player.chatCount >= 5) {
                     player.quests.chat_master = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.chat_master.reward };
                 }
             }
-
             if (cb) cb({ ok: true });
 
-            /* Дозволяємо ботам відповісти на повідомлення */
+            /* AI-боти відповідають */
             scheduleBotChatReactions(room, msg);
         } catch (err) {
             console.error('sendChat error', err);
@@ -1250,166 +1197,12 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- АКТИВАЦІЯ СУПЕРСИЛИ ---------- */
-    socket.on('activatePower', (payload, cb) => {
-        try {
-            const room = rooms.get(currentRoomPin);
-            if (!room || room.status !== 'running') {
-                if (cb) cb({ ok: false, error: 'Гра не активна' });
-                return;
-            }
-            const player = room.players.find(p => p.id === payload.playerId);
-            if (!player) {
-                if (cb) cb({ ok: false });
-                return;
-            }
-            if ((player.streak || 0) < 3) {
-                if (cb) cb({ ok: false, error: 'Потрібно 3 правильні поспіль' });
-                return;
-            }
-            if (player.powerActive) {
-                if (cb) cb({ ok: false, error: 'Сила вже активна' });
-                return;
-            }
-
-            const type = String(payload.type || 'double');
-            if (['double', 'shield', 'reveal'].indexOf(type) === -1) {
-                if (cb) cb({ ok: false, error: 'Невідома сила' });
-                return;
-            }
-
-            player.powerActive = { type: type, at: Date.now() };
-            addFeed(room, '⚡ ' + player.name + ' активував(ла) суперсилу: ' + (
-                type === 'double' ? 'Подвійні бали' :
-                type === 'shield' ? 'Щит часу' : 'Підказка'
-            ));
-
-            if (type === 'shield') {
-                room.questionStartedAt += 5000;
-            }
-
-            let hintIndexes = null;
-            if (type === 'reveal') {
-                const q = room.questions[room.currentQuestion];
-                if (q) {
-                    const wrong = [];
-                    q.answers.forEach((_, i) => {
-                        if (i !== q.correct) wrong.push(i);
-                    });
-                    wrong.sort(() => Math.random() - 0.5);
-                    hintIndexes = wrong.slice(0, 2);
-                }
-            }
-
-            if (cb) cb({ ok: true, type: type, hintIndexes: hintIndexes });
-            broadcastState(room);
-        } catch (err) {
-            console.error('activatePower error', err);
-            if (cb) cb({ ok: false });
-        }
-    });
-
-    /* ---------- ЕМОДЗІ-РЕАКЦІЯ ---------- */
-    socket.on('sendReaction', (payload, cb) => {
-        try {
-            const room = rooms.get(currentRoomPin);
-            if (!room) {
-                if (cb) cb({ ok: false });
-                return;
-            }
-            const player = room.players.find(p => p.id === payload.playerId);
-            if (!player) {
-                if (cb) cb({ ok: false });
-                return;
-            }
-            const emoji = String(payload.emoji || '').slice(0, 4);
-            if (REACTION_EMOJIS.indexOf(emoji) === -1) {
-                if (cb) cb({ ok: false, error: 'Недоступна емодзі' });
-                return;
-            }
-
-            player.reaction = { emoji: emoji, t: Date.now() };
-
-            /* Квест "Реакціонер" */
-            if (!player.isBot) {
-                if (!player.reactionCount) player.reactionCount = 0;
-                player.reactionCount++;
-                if (!player.quests) player.quests = {};
-                if (!player.quests.reaction_king && player.reactionCount >= 3) {
-                    player.quests.reaction_king = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.reaction_king.reward };
-                }
-            }
-
-            io.to('room_' + room.pin).emit('playerReaction', {
-                playerId: player.id,
-                playerName: player.name,
-                emoji: emoji,
-                t: Date.now()
-            });
-
-            if (cb) cb({ ok: true });
-
-            setTimeout(() => {
-                const r = rooms.get(room.pin);
-                if (!r) return;
-                const p = r.players.find(x => x.id === player.id);
-                if (p && p.reaction && (Date.now() - p.reaction.t) > 2900) {
-                    p.reaction = null;
-                }
-            }, 3200);
-        } catch (err) {
-            console.error('sendReaction error', err);
-            if (cb) cb({ ok: false });
-        }
-    });
-
-    /* ---------- КВЕСТИ (нагороди видаються після гри) ---------- */
-    socket.on('completeQuest', (payload, cb) => {
-        try {
-            const room = rooms.get(currentRoomPin);
-            if (!room) { if (cb) cb({ ok: false }); return; }
-            const player = room.players.find(p => p.id === payload.playerId);
-            if (!player) { if (cb) cb({ ok: false }); return; }
-            const questId = String(payload.questId || '');
-            const def = QUEST_DEFS[questId];
-            if (!def) { if (cb) cb({ ok: false, error: 'Невідомий квест' }); return; }
-            if (!player.quests) player.quests = {};
-            if (player.quests[questId] && player.quests[questId].completed) {
-                if (cb) cb({ ok: false, error: 'Вже виконано' });
-                return;
-            }
-
-            player.quests[questId] = {
-                completed: true,
-                t: Date.now(),
-                pendingReward: def.reward
-            };
-            addFeed(room, '🏆 ' + player.name + ' виконав(ла) завдання «' + def.title + '»');
-
-            if (cb) cb({ ok: true, pendingReward: def.reward });
-            broadcastState(room);
-        } catch (err) {
-            console.error('completeQuest error', err);
-            if (cb) cb({ ok: false });
-        }
-    });
-
-    /* ---------- ПОЧАТОК ГРИ ---------- */
+    /* ---------- СТАРТ ГРИ ---------- */
     socket.on('startGame', (cb) => {
         try {
             const room = rooms.get(currentRoomPin);
-            if (!room || room.teacherSocketId !== socket.id) {
-                if (cb) cb({ ok: false, error: 'Немає доступу' });
-                return;
-            }
-            if (room.status === 'running') {
-                if (cb) cb({ ok: false, error: 'Гра вже триває' });
-                return;
-            }
-            if (room.questions.length === 0) {
-                if (cb) cb({ ok: false, error: 'Немає питань' });
-                return;
-            }
+            if (!room || room.teacherSocketId !== socket.id) { if (cb) cb({ ok: false }); return; }
+            if (room.status === 'running') { if (cb) cb({ ok: false }); return; }
 
             room.status = 'running';
             room.currentQuestion = 0;
@@ -1432,37 +1225,9 @@ io.on('connection', (socket) => {
                 p.finalRank = 0;
             });
             addFeed(room, '🚀 Гру розпочато! Питання 1');
-
-            /* Боти підбадьорюють гравців у чаті */
-            if (room.chatBotsEnabled) {
-                const bots = room.players.filter(p => p.isBot);
-                if (bots.length > 0) {
-                    const bot = bots[Math.floor(Math.random() * bots.length)];
-                    setTimeout(() => {
-                        if (!rooms.has(room.pin)) return;
-                        const msg = addChatMessage(room, {
-                            from: bot.id,
-                            name: bot.chatName || bot.name,
-                            avatar: bot.avatar,
-                            avatarId: bot.avatarId,
-                            accessories: bot.accessories,
-                            text: pickRandom([
-                                'Удачі всім! Починаємо 🚀',
-                                'Гра почалась! Усі молодці 👍',
-                                'Не хвилюйтесь, головне — спробувати 😊',
-                                'Вперед до перемоги 🏆'
-                            ]),
-                            isBot: true
-                        });
-                        broadcastChatMessage(room, msg);
-                    }, 1200);
-                }
-            }
-
             stopTimer(room);
             startTimer(room);
             scheduleBotAnswers(room);
-
             if (cb) cb({ ok: true });
             broadcastState(room);
         } catch (err) {
@@ -1475,18 +1240,9 @@ io.on('connection', (socket) => {
     socket.on('nextQuestion', (cb) => {
         try {
             const room = rooms.get(currentRoomPin);
-            if (!room || room.teacherSocketId !== socket.id) {
-                if (cb) cb({ ok: false });
-                return;
-            }
-            if (room.status !== 'running') {
-                if (cb) cb({ ok: false });
-                return;
-            }
-            if (room.currentQuestion + 1 >= room.questions.length) {
-                if (cb) cb({ ok: false, error: 'Останнє питання' });
-                return;
-            }
+            if (!room || room.teacherSocketId !== socket.id) { if (cb) cb({ ok: false }); return; }
+            if (room.status !== 'running') { if (cb) cb({ ok: false }); return; }
+            if (room.currentQuestion + 1 >= room.questions.length) { if (cb) cb({ ok: false }); return; }
 
             room.currentQuestion++;
             room.firstAnswer = null;
@@ -1495,12 +1251,10 @@ io.on('connection', (socket) => {
                 p.lastCorrect = null;
             });
             addFeed(room, '➡️ Питання ' + (room.currentQuestion + 1));
-
             stopTimer(room);
             startTimer(room);
             scheduleBotAnswers(room);
-
-            if (cb) cb({ ok: true, questionIndex: room.currentQuestion });
+            if (cb) cb({ ok: true });
             broadcastState(room);
         } catch (err) {
             console.error('nextQuestion error', err);
@@ -1508,91 +1262,50 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- ВІДПОВІДЬ УЧНЯ ---------- */
+    /* ---------- ВІДПОВІДЬ ---------- */
     socket.on('answer', (payload, cb) => {
         try {
             const room = rooms.get(currentRoomPin);
-            if (!room || room.status !== 'running') {
-                if (cb) cb({ ok: false });
-                return;
-            }
-
+            if (!room || room.status !== 'running') { if (cb) cb({ ok: false }); return; }
             const qIndex = parseInt(payload && payload.q, 10);
             const aIndex = parseInt(payload && payload.a, 10);
             const playerId = payload && payload.playerId;
-
-            if (qIndex !== room.currentQuestion) {
-                if (cb) cb({ ok: false, error: 'Застаріле питання' });
-                return;
-            }
+            if (qIndex !== room.currentQuestion) { if (cb) cb({ ok: false }); return; }
             const player = room.players.find(p => p.id === playerId);
-            if (!player) { if (cb) cb({ ok: false }); return; }
-            if (player.answeredThisRound) { if (cb) cb({ ok: false, error: 'Вже відповіли' }); return; }
-            if (!player.alive) { if (cb) cb({ ok: false, error: 'Ви вибули' }); return; }
-
+            if (!player || player.answeredThisRound || !player.alive) { if (cb) cb({ ok: false }); return; }
             const q = room.questions[room.currentQuestion];
             if (!q) { if (cb) cb({ ok: false }); return; }
             const isCorrect = (aIndex === q.correct);
-
             player.answeredThisRound = true;
             player.lastCorrect = isCorrect;
-
             const elapsed = (Date.now() - room.questionStartedAt) / 1000;
-
-            if (!room.firstAnswer) {
-                room.firstAnswer = player.id;
-            }
+            if (!room.firstAnswer) room.firstAnswer = player.id;
 
             if (isCorrect) {
                 player.correctCount++;
                 player.streak = (player.streak || 0) + 1;
                 if (player.streak > (player.bestStreak || 0)) player.bestStreak = player.streak;
-
                 const rewards = calculateRewards({
-                    elapsed: elapsed,
-                    timePerQuestion: room.timePerQuestion,
-                    mode: room.mode,
-                    streak: player.streak,
-                    powerActive: player.powerActive,
+                    elapsed, timePerQuestion: room.timePerQuestion, mode: room.mode,
+                    streak: player.streak, powerActive: player.powerActive,
                     coinsEarnedThisGame: player.coinsEarnedThisGame || 0
                 });
-
                 player.score += rewards.score;
                 player.coins = (player.coins || 0) + rewards.coins;
                 player.coinsEarnedThisGame = (player.coinsEarnedThisGame || 0) + rewards.coins;
                 player.xp = (player.xp || 0) + rewards.xp;
+                addFeed(room, '✅ ' + player.name + ' правильно (+' + rewards.score + ' балів, +' + rewards.coins + ' 🪙)');
+                player.powerActive = null;
 
-                let feedText = '✅ ' + player.name + ' правильно (+' + rewards.score + ' балів, +' + rewards.coins + ' 🪙)';
-                if (rewards.breakdown.speedBonus > 0) feedText += ' ⚡ швидкість';
-                if (rewards.breakdown.remaining === 0 && rewards.coins === 0) feedText += ' [ліміт монет]';
-                addFeed(room, feedText);
-
-                if (!player.isBot) {
-                    if (!player.quests) player.quests = {};
-                    if (!player.quests.first_correct && player.correctCount >= 1) {
-                        player.quests.first_correct = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.first_correct.reward };
-                    }
-                    if (!player.quests.correct_3_streak && player.streak >= 3) {
-                        player.quests.correct_3_streak = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.correct_3_streak.reward };
-                    }
-                    if (!player.quests.correct_5_streak && player.streak >= 5) {
-                        player.quests.correct_5_streak = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.correct_5_streak.reward };
-                    }
-                    if (!player.quests.correct_10_total && player.correctCount >= 10) {
-                        player.quests.correct_10_total = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.correct_10_total.reward };
-                    }
-                    if (!player.quests.first_answer && room.firstAnswer === player.id) {
-                        player.quests.first_answer = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.first_answer.reward };
-                    }
-                    if (!player.quests.speed_demon && elapsed <= 3) {
-                        player.quests.speed_demon = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.speed_demon.reward };
-                    }
-                    if (!player.quests.survivor && room.mode === 'survival') {
-                        player.quests.survivor = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.survivor.reward };
+                /* Синхронізація з профілем користувача */
+                if (!player.isBot && player.login) {
+                    const u = users.get(player.login);
+                    if (u) {
+                        if (!u.profile) u.profile = defaultProfile();
+                        u.profile.coins = player.coins;
+                        u.profile.xp = player.xp;
                     }
                 }
-
-                player.powerActive = null;
             } else {
                 player.wrongCount++;
                 player.streak = 0;
@@ -1602,16 +1315,10 @@ io.on('connection', (socket) => {
                     addFeed(room, '💤 ' + player.name + ' вибуває');
                 }
             }
-
             if (cb) cb({
-                ok: true,
-                isCorrect: isCorrect,
-                score: player.score,
-                coins: player.coins,
+                ok: true, isCorrect, score: player.score, coins: player.coins,
                 coinsEarnedThisGame: player.coinsEarnedThisGame || 0,
-                coinsRemaining: Math.max(0, ECONOMY.coinsPerGameCap - (player.coinsEarnedThisGame || 0)),
-                xp: player.xp,
-                streak: player.streak
+                xp: player.xp, streak: player.streak
             });
             broadcastState(room);
         } catch (err) {
@@ -1620,72 +1327,95 @@ io.on('connection', (socket) => {
         }
     });
 
+    /* ---------- АКТИВАЦІЯ СИЛИ ---------- */
+    socket.on('activatePower', (payload, cb) => {
+        try {
+            const room = rooms.get(currentRoomPin);
+            if (!room || room.status !== 'running') { if (cb) cb({ ok: false }); return; }
+            const player = room.players.find(p => p.id === payload.playerId);
+            if (!player || (player.streak || 0) < 3 || player.powerActive) { if (cb) cb({ ok: false }); return; }
+            const type = String(payload.type || 'double');
+            if (!['double', 'shield', 'reveal'].includes(type)) { if (cb) cb({ ok: false }); return; }
+            player.powerActive = { type, at: Date.now() };
+            addFeed(room, '⚡ ' + player.name + ' активував(ла) суперсилу');
+            if (type === 'shield') room.questionStartedAt += 5000;
+            let hintIndexes = null;
+            if (type === 'reveal') {
+                const q = room.questions[room.currentQuestion];
+                if (q) {
+                    const wrong = [];
+                    q.answers.forEach((_, i) => { if (i !== q.correct) wrong.push(i); });
+                    wrong.sort(() => Math.random() - 0.5);
+                    hintIndexes = wrong.slice(0, 2);
+                }
+            }
+            if (cb) cb({ ok: true, type, hintIndexes });
+            broadcastState(room);
+        } catch (err) {
+            console.error('activatePower error', err);
+            if (cb) cb({ ok: false });
+        }
+    });
+
+    /* ---------- ЕМОДЗІ-РЕАКЦІЯ ---------- */
+    socket.on('sendReaction', (payload, cb) => {
+        try {
+            const room = rooms.get(currentRoomPin);
+            if (!room) { if (cb) cb({ ok: false }); return; }
+            const player = room.players.find(p => p.id === payload.playerId);
+            if (!player) { if (cb) cb({ ok: false }); return; }
+            const emoji = String(payload.emoji || '').slice(0, 4);
+            if (!REACTION_EMOJIS.includes(emoji)) { if (cb) cb({ ok: false }); return; }
+            player.reaction = { emoji, t: Date.now() };
+            io.to('room_' + room.pin).emit('playerReaction', {
+                playerId: player.id, playerName: player.name, emoji, t: Date.now()
+            });
+            if (cb) cb({ ok: true });
+            setTimeout(() => {
+                const r = rooms.get(room.pin);
+                if (!r) return;
+                const p = r.players.find(x => x.id === player.id);
+                if (p && p.reaction && (Date.now() - p.reaction.t) > 2900) p.reaction = null;
+            }, 3200);
+        } catch (err) {
+            console.error('sendReaction error', err);
+            if (cb) cb({ ok: false });
+        }
+    });
+
     /* ---------- ЗАВЕРШЕННЯ ГРИ ---------- */
     socket.on('finishGame', (cb) => {
         try {
             const room = rooms.get(currentRoomPin);
-            if (!room || room.teacherSocketId !== socket.id) {
-                if (cb) cb({ ok: false });
-                return;
-            }
+            if (!room || room.teacherSocketId !== socket.id) { if (cb) cb({ ok: false }); return; }
             stopTimer(room);
             room.status = 'finished';
             room.finishedAt = Date.now();
-
             const ranked = room.players.slice().sort((a, b) => b.score - a.score);
-
             ranked.forEach((p, idx) => {
                 const rank = idx + 1;
                 const prize = getFinalPrize(rank);
                 p.finalRank = rank;
                 p.finalPrize = prize;
                 p.coins = (p.coins || 0) + prize;
+                if (!p.isBot && p.login) {
+                    const u = users.get(p.login);
+                    if (u) {
+                        if (!u.profile) u.profile = defaultProfile();
+                        u.profile.coins = p.coins;
+                    }
+                }
             });
-
             addFeed(room, '🏁 Гру завершено!');
             if (ranked[0]) addFeed(room, '🥇 ' + ranked[0].name + ' — 1 місце (+' + getFinalPrize(1) + ' 🪙)');
             if (ranked[1]) addFeed(room, '🥈 ' + ranked[1].name + ' — 2 місце (+' + getFinalPrize(2) + ' 🪙)');
             if (ranked[2]) addFeed(room, '🥉 ' + ranked[2].name + ' — 3 місце (+' + getFinalPrize(3) + ' 🪙)');
-
-            /* Боти вітають переможця в чаті */
-            if (room.chatBotsEnabled && ranked[0]) {
-                const bots = room.players.filter(p => p.isBot);
-                if (bots.length > 0) {
-                    const bot = bots[Math.floor(Math.random() * bots.length)];
-                    setTimeout(() => {
-                        if (!rooms.has(room.pin)) return;
-                        const msg = addChatMessage(room, {
-                            from: bot.id,
-                            name: bot.chatName || bot.name,
-                            avatar: bot.avatar,
-                            avatarId: bot.avatarId,
-                            accessories: bot.accessories,
-                            text: 'Вітаю, ' + ranked[0].name + '! Гарний результат 🏆😊',
-                            isBot: true
-                        });
-                        broadcastChatMessage(room, msg);
-                    }, 1500);
-                }
-            }
-
-            if (cb) cb({
-                ok: true,
-                finalPrizes: ranked.map(p => ({
-                    id: p.id,
-                    name: p.name,
-                    rank: p.finalRank,
-                    prize: p.finalPrize
-                }))
-            });
+            if (cb) cb({ ok: true });
             broadcastState(room);
             io.to('room_' + room.pin).emit('gameOver');
-
             room.cleanupTimer = setTimeout(() => {
                 const r = rooms.get(room.pin);
-                if (r && r.status === 'finished') {
-                    cleanupRoom(r);
-                    rooms.delete(room.pin);
-                }
+                if (r && r.status === 'finished') { cleanupRoom(r); rooms.delete(room.pin); }
             }, 15 * 60 * 1000);
         } catch (err) {
             console.error('finishGame error', err);
@@ -1697,10 +1427,7 @@ io.on('connection', (socket) => {
     socket.on('closeRoom', (cb) => {
         try {
             const room = rooms.get(currentRoomPin);
-            if (!room || room.teacherSocketId !== socket.id) {
-                if (cb) cb({ ok: false });
-                return;
-            }
+            if (!room || room.teacherSocketId !== socket.id) { if (cb) cb({ ok: false }); return; }
             io.to('room_' + room.pin).emit('roomClosed');
             cleanupRoom(room);
             rooms.delete(room.pin);
@@ -1711,53 +1438,29 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- ПЕРЕВІРКА PIN ---------- */
-    socket.on('checkPin', (payload, cb) => {
-        try {
-            const pin = String((payload && payload.pin) || '').trim();
-            const room = rooms.get(pin);
-            if (cb) cb({
-                ok: !!(room && room.status !== 'finished'),
-                exists: !!room,
-                status: room ? room.status : null
-            });
-        } catch (err) {
-            if (cb) cb({ ok: false });
-        }
-    });
-
     /* ---------- РЕКОНЕКТ ВЧИТЕЛЯ ---------- */
     socket.on('reconnectTeacher', (payload, cb) => {
         try {
-            const pin = String((payload && payload.pin) || '').trim();
+            const pin = String(payload && payload.pin || '').trim();
             const room = rooms.get(pin);
-            if (!room) {
-                if (cb) cb({ ok: false, error: 'Кімнату не знайдено' });
-                return;
-            }
-            if (room.teacherDisconnectTimer) {
-                clearTimeout(room.teacherDisconnectTimer);
-                room.teacherDisconnectTimer = null;
-            }
+            if (!room) { if (cb) cb({ ok: false }); return; }
+            if (room.teacherDisconnectTimer) { clearTimeout(room.teacherDisconnectTimer); room.teacherDisconnectTimer = null; }
             room.teacherSocketId = socket.id;
             currentRoomPin = pin;
             role = 'teacher';
             socket.join('room_' + pin);
-            addFeed(room, '✅ Вчитель повернувся');
             if (cb) cb({ ok: true, state: getPublicState(room) });
             broadcastState(room);
         } catch (err) {
-            console.error('reconnectTeacher error', err);
             if (cb) cb({ ok: false });
         }
     });
 
-    /* ---------- ВІД\'ЄДНАННЯ ---------- */
+    /* ---------- ВІД'ЄДНАННЯ ---------- */
     socket.on('disconnect', (reason) => {
         console.log('[disconnect]', socket.id, '| reason:', reason);
         const room = rooms.get(currentRoomPin);
         if (!room) return;
-
         if (role === 'teacher') {
             addFeed(room, '⚠️ Вчитель від\'єднався. Кімната закриється через 60 секунд...');
             broadcastState(room);
@@ -1767,19 +1470,15 @@ io.on('connection', (socket) => {
                     io.to('room_' + r.pin).emit('roomClosed');
                     cleanupRoom(r);
                     rooms.delete(r.pin);
-                    console.log('[room] closed after teacher disconnect', r.pin);
                 }
             }, 60000);
         }
-
         if (role === 'student') {
             const player = room.players.find(p => p.socketId === socket.id);
             if (player) {
                 player.socketId = null;
                 player.answeredThisRound = false;
-                setTimeout(() => {
-                    if (rooms.has(room.pin)) broadcastState(room);
-                }, 2000);
+                setTimeout(() => { if (rooms.has(room.pin)) broadcastState(room); }, 2000);
             }
         }
     });
@@ -1794,8 +1493,7 @@ setInterval(() => {
     for (const [pin, room] of rooms) {
         const noHuman = room.players.filter(p => !p.isBot).length === 0;
         const oldLobby = noHuman && now - room.createdAt > 2 * 60 * 60 * 1000;
-        const oldFinished = room.status === 'finished' &&
-            room.finishedAt && now - room.finishedAt > 60 * 60 * 1000;
+        const oldFinished = room.status === 'finished' && room.finishedAt && now - room.finishedAt > 60 * 60 * 1000;
         if (oldLobby || oldFinished) {
             cleanupRoom(room);
             rooms.delete(pin);
@@ -1813,34 +1511,21 @@ const HOST = '0.0.0.0';
 
 httpServer.listen(PORT, HOST, () => {
     console.log('==============================================');
-    console.log('🌟 SunLorem: Школа-Табір 5 Клас');
+    console.log('🌟 SunLorem: Інтерактивна шкільна система');
     console.log('🚀 Сервер слухає на ' + HOST + ':' + PORT);
-    console.log('🌐 NODE_ENV =', process.env.NODE_ENV || 'development');
     console.log('🔌 Socket.io path = /socket.io/');
     console.log('🛒 Магазин: /api/shop');
-    console.log('💬 Чат із ботами активний');
+    console.log('🤖 Gemini AI: ' + (GEMINI_API_KEY ? 'увімкнено' : 'ВИМКНЕНО (немає GEMINI_API_KEY)'));
+    console.log('👩‍🏫 Вчитель за замовчуванням: teacher / teacher123');
     console.log('==============================================');
 });
 
-/* ============================================================
-   ГРАЦІЙНЕ ЗАВЕРШЕННЯ
-   ============================================================ */
 function gracefulShutdown(signal) {
     console.log('[shutdown]', signal);
-    io.close(() => {
-        httpServer.close(() => {
-            console.log('[shutdown] closed');
-            process.exit(0);
-        });
-    });
+    io.close(() => httpServer.close(() => process.exit(0)));
     setTimeout(() => process.exit(0), 5000);
 }
-
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
-process.on('uncaughtException', (err) => {
-    console.error('[uncaughtException]', err);
-});
-process.on('unhandledRejection', (err) => {
-    console.error('[unhandledRejection]', err);
-});
+process.on('uncaughtException', (err) => console.error('[uncaughtException]', err));
+process.on('unhandledRejection', (err) => console.error('[unhandledRejection]', err));
