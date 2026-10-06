@@ -2,22 +2,82 @@
    SunLorem: Інтерактивна шкільна система
    Node.js + Express + Socket.io + Gemini AI
    ------------------------------------------------------------
-   Можливості:
-     • Кабінет вчителя: створення учнівських акаунтів (логін+пароль)
-     • Авторизація учнів за логіном та паролем
-     • Дашборд: Вікторина, Щоденник, Розклад, ДЗ, Шкільний чат
-     • Вікторина з СанКоїнами (cap 30/гра, призові 70/60/50)
-     • Магазин аватарів/аксесуарів/тем, квести, емодзі-реакції
-     • Шкільний чат класу з AI-ботами через Google Gemini API
+   • Акаунти учнів (створює вчитель, дані зберігаються на диску)
+   • Оцінки, розклад, ДЗ (зберігаються в data/data.json)
+   • Вікторина з PIN-кімнатами, ботами, СанКоїнами
+   • Шкільний чат класу з AI-ботами через Google Gemini API
+   • Магазин аватарів/аксесуарів/тем, квести, емодзі-реакції
    ============================================================ */
 
 'use strict';
 
+const fs = require('fs');
 const path = require('path');
 const http = require('http');
 const express = require('express');
 const { Server } = require('socket.io');
 
+/* ============================================================
+   ПОСТІЙНЕ СХОВИЩЕ (файлова база)
+   ============================================================ */
+const DATA_DIR = path.join(__dirname, 'data');
+const DATA_FILE = path.join(DATA_DIR, 'data.json');
+
+if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+
+let DB = {
+    users: {},
+    grades: {},
+    schedule: {},
+    homework: {},
+    meta: { createdAt: Date.now() }
+};
+
+function loadDB() {
+    try {
+        if (fs.existsSync(DATA_FILE)) {
+            const raw = fs.readFileSync(DATA_FILE, 'utf8');
+            const parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === 'object') {
+                DB = Object.assign(DB, parsed);
+                if (!DB.users) DB.users = {};
+                if (!DB.grades) DB.grades = {};
+                if (!DB.schedule) DB.schedule = {};
+                if (!DB.homework) DB.homework = {};
+            }
+        }
+    } catch (e) {
+        console.warn('[db] load error', e.message);
+    }
+}
+
+let saveTimer = null;
+function saveDB() {
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+        try {
+            fs.writeFileSync(DATA_FILE, JSON.stringify(DB, null, 2), 'utf8');
+        } catch (e) {
+            console.warn('[db] save error', e.message);
+        }
+    }, 200);
+}
+
+function saveDBImmediate() {
+    try {
+        fs.writeFileSync(DATA_FILE, JSON.stringify(DB, null, 2), 'utf8');
+    } catch (e) {
+        console.warn('[db] save error', e.message);
+    }
+}
+
+loadDB();
+
+/* ============================================================
+   EXPRESS APP
+   ============================================================ */
 const app = express();
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
@@ -52,14 +112,33 @@ const GEMINI_SYSTEM_PROMPT =
     'Ти учень 5–7 класу української школи. Ти дружній, веселий, доброзичливий школяр. ' +
     'Відповідай українською мовою, коротко (1–2 речення), природно, як у звичайному чаті з однокласниками. ' +
     'Іноді додавай одне-два доречних емодзі (😊, 👍, 📚, ✨, 🚀). ' +
-    'Категорично заборонено використовувати лайку, грубі, образливі, принизливі слова чи будь-який грубий сленг. ' +
-    'Не використовуй слова-паразити та зневажливі вирази. ' +
-    'Якщо тема незрозуміла — перепитай дружньо, без агресії.';
+    'Категорично заборонено використовувати лайку, грубі, образливі, принизливі слова, слова-паразити ' +
+    'чи грубий сленг (заборонені слова: фігня, фіг, блін, чорт, дідько, лайливі слова). ' +
+    'Говори виховано, як ввічливий підліток. Якщо тема незрозуміла — перепитай дружньо.';
+
+const FORBIDDEN_WORDS = [
+    'фігня', 'фіг', 'блін', 'чорт', 'дідько',
+    'дурень', 'ідіот', 'дебил', 'кретин',
+    'лох', 'тупий', 'тупа', 'придурок',
+    'хай', 'блін', 'капець', 'піпець'
+];
+
+function sanitizeAIOutput(text) {
+    if (!text) return text;
+    let result = String(text);
+    const lower = result.toLowerCase();
+    for (const word of FORBIDDEN_WORDS) {
+        if (lower.indexOf(word) !== -1) {
+            const re = new RegExp(word, 'gi');
+            result = result.replace(re, 'ой');
+        }
+    }
+    return result;
+}
 
 async function callGeminiChat(history, userText) {
     if (!GEMINI_API_KEY) return null;
 
-    /* Формуємо контекст для Gemini */
     const contents = [];
     contents.push({
         role: 'user',
@@ -99,13 +178,17 @@ async function callGeminiChat(history, userText) {
     };
 
     try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
         const res = await fetch(GEMINI_ENDPOINT + '?key=' + encodeURIComponent(GEMINI_API_KEY), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
+            body: JSON.stringify(body),
+            signal: controller.signal
         });
+        clearTimeout(timeoutId);
         if (!res.ok) {
-            const errText = await res.text();
+            const errText = await res.text().catch(() => '');
             console.warn('[gemini] non-ok', res.status, errText.slice(0, 200));
             return null;
         }
@@ -116,9 +199,9 @@ async function callGeminiChat(history, userText) {
         if (!Array.isArray(parts) || parts.length === 0) return null;
         let text = parts.map(p => p.text || '').join(' ').trim();
         if (!text) return null;
-        /* М'яка постобробка */
         text = text.replace(/\s+/g, ' ').trim();
         if (text.length > 300) text = text.slice(0, 300) + '…';
+        text = sanitizeAIOutput(text);
         return text;
     } catch (e) {
         console.warn('[gemini] error', e && e.message);
@@ -225,15 +308,15 @@ const SHOP = {
         { id: 'x_snow',      emoji: '❄️', name: 'Сніжинки',        price: 35,  slot: 'effect' }
     ],
     themes: [
-        { id: 't_neon',    name: 'Неон',          price: 0,   desc: 'Базовий неон' },
-        { id: 't_pastel',  name: 'Пастель',       price: 0,   desc: 'Базовий пастель' },
-        { id: 't_space',   name: 'Космос',        price: 100, desc: 'Глибокий космос' },
-        { id: 't_cyber',   name: 'Кіберпанк',     price: 130, desc: 'Яскравий неон' },
-        { id: 't_forest',  name: 'Магічний ліс',  price: 110, desc: 'Зелений ліс' },
-        { id: 't_sunset',  name: 'Захід сонця',   price: 90,  desc: 'Теплі тони' },
-        { id: 't_ocean',   name: 'Океан',         price: 105, desc: 'Блакитні глибини' },
-        { id: 't_candy',   name: 'Цукеркова',     price: 80,  desc: 'Рожева тема' },
-        { id: 't_autumn',  name: 'Осінь',         price: 120, desc: 'Тепло багаття' }
+        { id: 'neon',    name: 'Неон',          price: 0,   desc: 'Базовий неон' },
+        { id: 'pastel',  name: 'Пастель',       price: 0,   desc: 'Базовий пастель' },
+        { id: 'space',   name: 'Космос',        price: 100, desc: 'Глибокий космос' },
+        { id: 'cyber',   name: 'Кіберпанк',     price: 130, desc: 'Яскравий неон' },
+        { id: 'forest',  name: 'Магічний ліс',  price: 110, desc: 'Зелений ліс' },
+        { id: 'sunset',  name: 'Захід сонця',   price: 90,  desc: 'Теплі тони' },
+        { id: 'ocean',   name: 'Океан',         price: 105, desc: 'Блакитні глибини' },
+        { id: 'candy',   name: 'Цукеркова',     price: 80,  desc: 'Рожева тема' },
+        { id: 'autumn',  name: 'Осінь',         price: 120, desc: 'Тепло багаття' }
     ]
 };
 
@@ -285,60 +368,25 @@ const MODES = {
 };
 
 /* ============================================================
-   АКАУНТИ ТА РЕЄСТРАЦІЯ
+   ДЕФОЛТНІ ДАНІ ДЛЯ УЧНІВ
    ============================================================ */
-/* users: Map<login, userRecord>
-   userRecord: { login, password, name, role, createdAt, classId, profile, grades, schedule, homework } */
-const users = new Map();
-
-function generateLogin(name) {
-    /* Логін: транслітерація + номер, макс 16 символів */
-    const map = {
-        'а':'a','б':'b','в':'v','г':'g','ґ':'g','д':'d','е':'e','є':'ie','ж':'zh','з':'z',
-        'и':'y','і':'i','ї':'i','й':'i','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p',
-        'р':'r','с':'s','т':'t','у':'u','ф':'f','х':'kh','ц':'ts','ч':'ch','ш':'sh','щ':'shch',
-        'ь':'','ю':'iu','я':'ia',' ':'','\'':'','-':''
-    };
-    let base = String(name || '').toLowerCase().split('').map(ch => map[ch] !== undefined ? map[ch] : ch).join('');
-    base = base.replace(/[^a-z0-9]/g, '').slice(0, 10) || 'user';
-    let login = base;
-    let n = 1;
-    while (users.has(login)) {
-        login = base + n;
-        n++;
-    }
-    return login;
-}
-
-function generatePassword(len) {
-    const alphabet = 'abcdefghjkmnpqrstuvwxyz23456789';
-    let out = '';
-    const L = len || 6;
-    for (let i = 0; i < L; i++) {
-        out += alphabet[Math.floor(Math.random() * alphabet.length)];
-    }
-    return out;
-}
+const DEFAULT_SUBJECTS = [
+    'Математика', 'Українська мова', 'Історія',
+    'Природознавство', 'Англійська мова', 'Мистецтво'
+];
 
 function defaultProfile() {
     return {
         coins: 0,
         xp: 0,
-        ownedAvatars: ['a_cat'],
+        ownedAvatars: ['a_cat', 'a_dog', 'a_fox'],
         ownedAccessories: ['x_none'],
         ownedThemes: ['neon', 'pastel'],
         equippedAvatar: 'a_cat',
         equippedHead: '',
         equippedEyes: '',
-        equippedEffect: ''
-    };
-}
-
-function defaultGrades() {
-    /* 6 предметів × 4 дати останніх уроків */
-    return {
-        subjects: ['Математика', 'Українська мова', 'Історія', 'Природознавство', 'Англійська мова', 'Мистецтво'],
-        rows: []
+        equippedEffect: '',
+        completedQuests: {}
     };
 }
 
@@ -360,24 +408,58 @@ function defaultHomework() {
         { subject: 'Математика',        task: 'С. 42, №5–8 (письмово)', due: 'завтра' },
         { subject: 'Українська мова',   task: 'Вправа 78, вивчити правило', due: 'завтра' },
         { subject: 'Історія',           task: 'Прочитати §12, відповісти на питання', due: 'через день' },
-        { subject: 'Природознавство',   task: 'Спостереження за погодою, заповнити щоденник', due: 'через 2 дні' },
+        { subject: 'Природознавство',   task: 'Спостереження за погодою', due: 'через 2 дні' },
         { subject: 'Англійська мова',   task: 'Вивчити 10 нових слів на тему «Школа»', due: 'завтра' }
     ];
 }
 
-/* Ініціалізація: створюємо вчителя за замовчуванням */
-(function initDefaultUsers() {
-    const teacherLogin = 'teacher';
-    const teacherPassword = 'teacher123';
-    users.set(teacherLogin, {
-        login: teacherLogin,
-        password: teacherPassword,
-        name: 'Вчитель',
-        role: 'teacher',
-        createdAt: Date.now(),
-        classId: '5-А'
-    });
-    console.log('[init] default teacher: login=' + teacherLogin + ' password=' + teacherPassword);
+/* ============================================================
+   ГЕНЕРАЦІЯ ЛОГІНІВ ТА ПАРОЛІВ
+   ============================================================ */
+function generateLogin(name) {
+    const map = {
+        'а':'a','б':'b','в':'v','г':'g','ґ':'g','д':'d','е':'e','є':'ie','ж':'zh','з':'z',
+        'и':'y','і':'i','ї':'i','й':'i','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p',
+        'р':'r','с':'s','т':'t','у':'u','ф':'f','х':'kh','ц':'ts','ч':'ch','ш':'sh','щ':'shch',
+        'ь':'','ю':'iu','я':'ia',' ':'','\'':'','-':''
+    };
+    let base = String(name || '').toLowerCase().split('').map(ch => map[ch] !== undefined ? map[ch] : ch).join('');
+    base = base.replace(/[^a-z0-9]/g, '').slice(0, 14) || 'user';
+    let login = base;
+    let n = 1;
+    while (DB.users[login]) {
+        login = base + n;
+        n++;
+    }
+    return login;
+}
+
+function generatePassword(len) {
+    const alphabet = 'abcdefghjkmnpqrstuvwxyz23456789';
+    let out = '';
+    const L = len || 6;
+    for (let i = 0; i < L; i++) {
+        out += alphabet[Math.floor(Math.random() * alphabet.length)];
+    }
+    return out;
+}
+
+/* ============================================================
+   ІНІЦІАЛІЗАЦІЯ ВЧИТЕЛЯ
+   ============================================================ */
+(function initTeacher() {
+    if (!DB.users['teacher']) {
+        DB.users['teacher'] = {
+            login: 'teacher',
+            password: 'teacher123',
+            name: 'Вчитель',
+            role: 'teacher',
+            classId: '5-А',
+            createdAt: Date.now()
+        };
+        saveDB();
+        console.log('[init] default teacher: teacher / teacher123');
+    }
 })();
 
 /* ============================================================
@@ -640,9 +722,6 @@ function scheduleBotAnswers(room) {
 
 /* ============================================================
    AI-БОТИ В ЧАТІ
-   ------------------------------------------------------------
-   Використовуємо Google Gemini API. Якщо ключ не задано —
-   працює локальний резервний варіант з безпечними фразами.
    ============================================================ */
 const FALLBACK_AI_REPLIES = [
     'О, цікаво! 😊',
@@ -654,10 +733,12 @@ const FALLBACK_AI_REPLIES = [
     'Оце так! Цікаво 😊',
     'Дякую, що написав ✨',
     'Звучить добре 📚',
-    'Ти гарно пишеш 😊'
+    'Ти гарно пишеш 😊',
+    'Класна думка! 🌟',
+    'Погоджуюсь 👍'
 ];
 
-async function generateAIReply(room, userMessage, botName) {
+async function generateAIReply(room, userMessage) {
     const text = String(userMessage.text || '').trim();
     if (!text) return null;
 
@@ -666,13 +747,11 @@ async function generateAIReply(room, userMessage, botName) {
         isBot: m.isBot
     }));
 
-    /* Пробуємо Gemini, якщо є ключ */
     if (GEMINI_API_KEY) {
         const aiText = await callGeminiChat(history, text);
         if (aiText) return aiText;
     }
 
-    /* Резервний варіант */
     return FALLBACK_AI_REPLIES[Math.floor(Math.random() * FALLBACK_AI_REPLIES.length)];
 }
 
@@ -682,7 +761,6 @@ function scheduleBotChatReactions(room, userMessage) {
     const bots = room.players.filter(p => p.isBot);
     if (bots.length === 0) return;
 
-    /* Вибираємо 1-2 ботів, які «читають» повідомлення і відповідають */
     const maxResponders = Math.min(bots.length, 1 + Math.floor(Math.random() * 2));
     const responders = [];
     const pool = bots.slice();
@@ -699,8 +777,9 @@ function scheduleBotChatReactions(room, userMessage) {
             if (room.status === 'finished') return;
             if (!room.chatBotsEnabled) return;
 
-            let reply = await generateAIReply(room, userMessage, bot.chatName || bot.name);
+            let reply = await generateAIReply(room, userMessage);
             if (!reply) reply = FALLBACK_AI_REPLIES[Math.floor(Math.random() * FALLBACK_AI_REPLIES.length)];
+            reply = sanitizeAIOutput(reply);
 
             const msg = addChatMessage(room, {
                 from: bot.id,
@@ -720,8 +799,6 @@ function cleanupRoom(room) {
     stopTimer(room);
     if (room.cleanupTimer) clearTimeout(room.cleanupTimer);
     if (room.teacherDisconnectTimer) clearTimeout(room.teacherDisconnectTimer);
-    if (room.chatAmbientTimer) clearInterval(room.chatAmbientTimer);
-    room.chatAmbientTimer = null;
 }
 
 /* ============================================================
@@ -757,14 +834,14 @@ app.get('/api/health', (req, res) => {
     res.json({
         ok: true,
         rooms: rooms.size,
-        users: users.size,
+        users: Object.keys(DB.users).length,
         gemini: !!GEMINI_API_KEY,
         uptime: Math.round(process.uptime()),
         node: process.version
     });
 });
 
-/* Авторизація учня/вчителя */
+/* Авторизація */
 app.post('/api/login', (req, res) => {
     try {
         const login = String((req.body && req.body.login) || '').trim().toLowerCase();
@@ -772,10 +849,16 @@ app.post('/api/login', (req, res) => {
         if (!login || !password) {
             return res.json({ ok: false, error: 'Введи логін і пароль' });
         }
-        const user = users.get(login);
+        const user = DB.users[login];
         if (!user || user.password !== password) {
             return res.json({ ok: false, error: 'Невірний логін або пароль' });
         }
+
+        const profile = user.profile || defaultProfile();
+        const grades = DB.grades[login] || { subjects: DEFAULT_SUBJECTS.slice(), rows: [] };
+        const schedule = DB.schedule[login] || defaultSchedule();
+        const homework = DB.homework[login] || defaultHomework();
+
         res.json({
             ok: true,
             user: {
@@ -783,10 +866,10 @@ app.post('/api/login', (req, res) => {
                 name: user.name,
                 role: user.role,
                 classId: user.classId || '5-А',
-                profile: user.profile || defaultProfile(),
-                grades: user.grades || defaultGrades(),
-                schedule: user.schedule || defaultSchedule(),
-                homework: user.homework || defaultHomework()
+                profile,
+                grades,
+                schedule,
+                homework
             }
         });
     } catch (e) {
@@ -794,7 +877,7 @@ app.post('/api/login', (req, res) => {
     }
 });
 
-/* Створення учнівського акаунта вчителем */
+/* Створення одного учня */
 app.post('/api/teacher/create-student', (req, res) => {
     try {
         const teacherLogin = String((req.body && req.body.teacherLogin) || '').trim().toLowerCase();
@@ -802,7 +885,7 @@ app.post('/api/teacher/create-student', (req, res) => {
         const studentName = String((req.body && req.body.studentName) || '').trim();
         const classId = String((req.body && req.body.classId) || '5-А').trim();
 
-        const teacher = users.get(teacherLogin);
+        const teacher = DB.users[teacherLogin];
         if (!teacher || teacher.role !== 'teacher' || teacher.password !== teacherPassword) {
             return res.json({ ok: false, error: 'Немає прав вчителя' });
         }
@@ -811,47 +894,85 @@ app.post('/api/teacher/create-student', (req, res) => {
         const login = generateLogin(studentName);
         const password = generatePassword(6);
 
-        const student = {
+        DB.users[login] = {
             login,
             password,
             name: studentName,
             role: 'student',
             classId,
             createdAt: Date.now(),
-            profile: defaultProfile(),
-            grades: defaultGrades(),
-            schedule: defaultSchedule(),
-            homework: defaultHomework()
+            profile: defaultProfile()
         };
-        users.set(login, student);
+        DB.grades[login] = { subjects: DEFAULT_SUBJECTS.slice(), rows: [] };
+        DB.schedule[login] = defaultSchedule();
+        DB.homework[login] = defaultHomework();
+        saveDB();
+
         res.json({
             ok: true,
-            student: {
-                login, password, name: student.name, classId: student.classId
-            }
+            student: { login, password, name: studentName, classId }
         });
     } catch (e) {
         res.json({ ok: false, error: 'Помилка створення' });
     }
 });
 
-/* Список учнів класу (для вчителя) */
+/* Масове створення */
+app.post('/api/teacher/create-students-bulk', (req, res) => {
+    try {
+        const teacherLogin = String((req.body && req.body.teacherLogin) || '').trim().toLowerCase();
+        const teacherPassword = String((req.body && req.body.teacherPassword) || '');
+        const classId = String((req.body && req.body.classId) || '5-А').trim();
+        const namesRaw = String((req.body && req.body.names) || '');
+
+        const teacher = DB.users[teacherLogin];
+        if (!teacher || teacher.role !== 'teacher' || teacher.password !== teacherPassword) {
+            return res.json({ ok: false, error: 'Немає прав вчителя' });
+        }
+
+        const names = namesRaw
+            .split(/\r?\n|,|;/)
+            .map(s => s.trim())
+            .filter(s => s.length >= 2);
+
+        if (names.length === 0) return res.json({ ok: false, error: 'Немає імен' });
+
+        const created = [];
+        names.forEach(name => {
+            const login = generateLogin(name);
+            const password = generatePassword(6);
+            DB.users[login] = {
+                login, password, name,
+                role: 'student', classId,
+                createdAt: Date.now(),
+                profile: defaultProfile()
+            };
+            DB.grades[login] = { subjects: DEFAULT_SUBJECTS.slice(), rows: [] };
+            DB.schedule[login] = defaultSchedule();
+            DB.homework[login] = defaultHomework();
+            created.push({ login, password, name, classId });
+        });
+        saveDB();
+        res.json({ ok: true, students: created });
+    } catch (e) {
+        res.json({ ok: false, error: 'Помилка створення' });
+    }
+});
+
+/* Список учнів */
 app.post('/api/teacher/list-students', (req, res) => {
     try {
         const teacherLogin = String((req.body && req.body.teacherLogin) || '').trim().toLowerCase();
         const teacherPassword = String((req.body && req.body.teacherPassword) || '');
-        const teacher = users.get(teacherLogin);
+        const teacher = DB.users[teacherLogin];
         if (!teacher || teacher.role !== 'teacher' || teacher.password !== teacherPassword) {
             return res.json({ ok: false, error: 'Немає прав вчителя' });
         }
         const list = [];
-        for (const u of users.values()) {
+        for (const login in DB.users) {
+            const u = DB.users[login];
             if (u.role === 'student') {
-                list.push({
-                    login: u.login,
-                    name: u.name,
-                    classId: u.classId || '5-А'
-                });
+                list.push({ login: u.login, name: u.name, classId: u.classId || '5-А' });
             }
         }
         res.json({ ok: true, students: list });
@@ -860,7 +981,7 @@ app.post('/api/teacher/list-students', (req, res) => {
     }
 });
 
-/* Встановлення оцінки учневі */
+/* Виставлення оцінки */
 app.post('/api/teacher/set-grade', (req, res) => {
     try {
         const teacherLogin = String((req.body && req.body.teacherLogin) || '').trim().toLowerCase();
@@ -868,35 +989,39 @@ app.post('/api/teacher/set-grade', (req, res) => {
         const studentLogin = String((req.body && req.body.studentLogin) || '').trim().toLowerCase();
         const subject = String((req.body && req.body.subject) || '').trim();
         const grade = parseInt(req.body && req.body.grade, 10);
-        const teacher = users.get(teacherLogin);
+
+        const teacher = DB.users[teacherLogin];
         if (!teacher || teacher.role !== 'teacher' || teacher.password !== teacherPassword) {
             return res.json({ ok: false, error: 'Немає прав' });
         }
-        const student = users.get(studentLogin);
+        const student = DB.users[studentLogin];
         if (!student || student.role !== 'student') {
             return res.json({ ok: false, error: 'Учня не знайдено' });
         }
         if (!subject || !(grade >= 1 && grade <= 12)) {
             return res.json({ ok: false, error: 'Некоректна оцінка або предмет' });
         }
-        if (!student.grades) student.grades = defaultGrades();
-        student.grades.rows.push({
-            subject,
-            grade,
-            date: new Date().toISOString().slice(0, 10)
-        });
+        if (!DB.grades[studentLogin]) {
+            DB.grades[studentLogin] = { subjects: DEFAULT_SUBJECTS.slice(), rows: [] };
+        }
+        const dateStr = new Date().toISOString().slice(0, 10);
+        DB.grades[studentLogin].rows.push({ subject, grade, date: dateStr });
+        if (DB.grades[studentLogin].rows.length > 500) {
+            DB.grades[studentLogin].rows = DB.grades[studentLogin].rows.slice(-500);
+        }
+        saveDB();
         res.json({ ok: true });
     } catch (e) {
         res.json({ ok: false, error: 'Помилка' });
     }
 });
 
-/* Оновлення ДЗ (вчителем) */
+/* ДЗ для всіх учнів */
 app.post('/api/teacher/set-homework', (req, res) => {
     try {
         const teacherLogin = String((req.body && req.body.teacherLogin) || '').trim().toLowerCase();
         const teacherPassword = String((req.body && req.body.teacherPassword) || '');
-        const teacher = users.get(teacherLogin);
+        const teacher = DB.users[teacherLogin];
         if (!teacher || teacher.role !== 'teacher' || teacher.password !== teacherPassword) {
             return res.json({ ok: false, error: 'Немає прав' });
         }
@@ -905,28 +1030,63 @@ app.post('/api/teacher/set-homework', (req, res) => {
         const due = String((req.body && req.body.due) || '').trim();
         if (!subject || !task) return res.json({ ok: false, error: 'Заповни предмет і завдання' });
 
-        for (const u of users.values()) {
+        for (const login in DB.users) {
+            const u = DB.users[login];
             if (u.role === 'student') {
-                if (!u.homework) u.homework = defaultHomework();
-                u.homework.unshift({ subject, task, due: due || 'найближчим часом' });
-                if (u.homework.length > 30) u.homework.length = 30;
+                if (!DB.homework[login]) DB.homework[login] = defaultHomework();
+                DB.homework[login].unshift({
+                    subject, task, due: due || 'найближчим часом'
+                });
+                if (DB.homework[login].length > 30) DB.homework[login].length = 30;
             }
         }
+        saveDB();
         res.json({ ok: true });
     } catch (e) {
         res.json({ ok: false, error: 'Помилка' });
     }
 });
 
-/* Збереження профілю (монети, куплені предмети) */
+/* Розклад для конкретного учня */
+app.post('/api/teacher/set-schedule', (req, res) => {
+    try {
+        const teacherLogin = String((req.body && req.body.teacherLogin) || '').trim().toLowerCase();
+        const teacherPassword = String((req.body && req.body.teacherPassword) || '');
+        const teacher = DB.users[teacherLogin];
+        if (!teacher || teacher.role !== 'teacher' || teacher.password !== teacherPassword) {
+            return res.json({ ok: false, error: 'Немає прав' });
+        }
+        const studentLogin = String((req.body && req.body.studentLogin) || '').trim().toLowerCase();
+        const schedule = req.body && req.body.schedule;
+
+        if (studentLogin && DB.users[studentLogin] && DB.users[studentLogin].role === 'student') {
+            if (schedule && Array.isArray(schedule.days) && Array.isArray(schedule.lessons)) {
+                DB.schedule[studentLogin] = schedule;
+            }
+        } else {
+            for (const login in DB.users) {
+                if (DB.users[login].role === 'student' && schedule && Array.isArray(schedule.days) && Array.isArray(schedule.lessons)) {
+                    DB.schedule[login] = schedule;
+                }
+            }
+        }
+        saveDB();
+        res.json({ ok: true });
+    } catch (e) {
+        res.json({ ok: false, error: 'Помилка' });
+    }
+});
+
+/* Оновлення профілю */
 app.post('/api/user/profile', (req, res) => {
     try {
         const login = String((req.body && req.body.login) || '').trim().toLowerCase();
         const password = String((req.body && req.body.password) || '');
-        const user = users.get(login);
+        const user = DB.users[login];
         if (!user || user.password !== password) return res.json({ ok: false, error: 'Немає прав' });
         if (req.body && req.body.profile && typeof req.body.profile === 'object') {
             user.profile = Object.assign(defaultProfile(), req.body.profile);
+            saveDB();
         }
         res.json({ ok: true, profile: user.profile });
     } catch (e) {
@@ -973,7 +1133,7 @@ io.on('connection', (socket) => {
         try {
             const login = String(payload && payload.login || '').trim().toLowerCase();
             const password = String(payload && payload.password || '');
-            const user = users.get(login);
+            const user = DB.users[login];
             if (!user || user.password !== password) {
                 if (cb) cb({ ok: false, error: 'Невірний логін або пароль' });
                 return;
@@ -993,7 +1153,46 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- СТВОРЕННЯ КІМНАТИ (ВЧИТЕЛЬ) ---------- */
+    /* ---------- ШКІЛЬНИЙ ЧАТ (окремий канал) ---------- */
+    socket.on('classChatMessage', (payload, cb) => {
+        try {
+            const text = String(payload && payload.text || '').trim().slice(0, 400);
+            if (!text) {
+                if (cb) cb({ ok: false, error: 'Порожнє повідомлення' });
+                return;
+            }
+
+            const botCount = 1 + Math.floor(Math.random() * 2);
+            const replies = [];
+            const chatBots = BOT_NICKNAMES.slice();
+            const avatars = AVATARS.slice();
+
+            for (let i = 0; i < botCount; i++) {
+                replies.push({
+                    name: chatBots[Math.floor(Math.random() * chatBots.length)],
+                    avatar: avatars[Math.floor(Math.random() * avatars.length)],
+                    text: FALLBACK_AI_REPLIES[Math.floor(Math.random() * FALLBACK_AI_REPLIES.length)]
+                });
+            }
+
+            if (GEMINI_API_KEY) {
+                callGeminiChat([], text).then(aiText => {
+                    if (aiText) {
+                        replies[0].text = aiText;
+                    }
+                    if (cb) cb({ ok: true, replies });
+                }).catch(() => {
+                    if (cb) cb({ ok: true, replies });
+                });
+            } else {
+                if (cb) cb({ ok: true, replies });
+            }
+        } catch (e) {
+            if (cb) cb({ ok: false, error: 'Помилка' });
+        }
+    });
+
+    /* ---------- СТВОРЕННЯ КІМНАТИ ---------- */
     socket.on('createRoom', (payload, cb) => {
         try {
             const questions = (payload && Array.isArray(payload.questions)) ? payload.questions : [];
@@ -1023,7 +1222,6 @@ io.on('connection', (socket) => {
                 reactions: [],
                 firstAnswer: null,
                 chatBotsEnabled,
-                chatAmbientTimer: null,
                 teacherSocketId: socket.id,
                 teacherPlayerId: 'teacher_' + pin,
                 timer: null,
@@ -1058,7 +1256,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- ПРИЄДНАННЯ УЧНЯ (з авторизацією) ---------- */
+    /* ---------- ПРИЄДНАННЯ УЧНЯ ---------- */
     socket.on('joinRoom', (payload, cb) => {
         try {
             const pin = String(payload && payload.pin || '').trim();
@@ -1068,7 +1266,7 @@ io.on('connection', (socket) => {
             const accessories = (payload && payload.accessories) || { head: '', eyes: '', effect: '' };
 
             if (!/^\d{6}$/.test(pin)) { if (cb) cb({ ok: false, error: 'Невірний PIN' }); return; }
-            const user = users.get(login);
+            const user = DB.users[login];
             if (!user || user.password !== password) {
                 if (cb) cb({ ok: false, error: 'Невірний логін або пароль' });
                 return;
@@ -1095,6 +1293,7 @@ io.on('connection', (socket) => {
                 player = existing;
                 addFeed(room, '🔄 ' + user.name + ' повернувся(лась)');
             } else {
+                const prof = user.profile || defaultProfile();
                 player = {
                     id: makeId('pl'),
                     login: user.login,
@@ -1104,11 +1303,11 @@ io.on('connection', (socket) => {
                     avatarId,
                     accessories,
                     score: 0,
-                    coins: (user.profile && user.profile.coins) || 0,
+                    coins: prof.coins || 0,
                     coinsEarnedThisGame: 0,
                     finalPrize: 0,
                     finalRank: 0,
-                    xp: (user.profile && user.profile.xp) || 0,
+                    xp: prof.xp || 0,
                     isBot: false,
                     correctCount: 0,
                     wrongCount: 0,
@@ -1156,7 +1355,25 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- НАДСИЛАННЯ В ЧАТ ---------- */
+    /* ---------- ОНОВЛЕННЯ ПРОФІЛЮ ГРАВЦЯ ---------- */
+    socket.on('updateProfile', (payload) => {
+        try {
+            const room = rooms.get(currentRoomPin);
+            if (!room) return;
+            const player = room.players.find(p => p.id === payload.playerId);
+            if (!player) return;
+            if (payload.avatarId) {
+                player.avatarId = payload.avatarId;
+                const a = SHOP.avatars.find(x => x.id === payload.avatarId);
+                if (a) player.avatar = a.emoji;
+            }
+            if (payload.accessories) player.accessories = payload.accessories;
+            if (typeof payload.xp === 'number') player.xp = payload.xp;
+            broadcastState(room);
+        } catch (e) { }
+    });
+
+    /* ---------- ЧАТ КІМНАТИ ---------- */
     socket.on('sendChat', (payload, cb) => {
         try {
             const room = rooms.get(currentRoomPin);
@@ -1188,8 +1405,6 @@ io.on('connection', (socket) => {
                 }
             }
             if (cb) cb({ ok: true });
-
-            /* AI-боти відповідають */
             scheduleBotChatReactions(room, msg);
         } catch (err) {
             console.error('sendChat error', err);
@@ -1297,13 +1512,13 @@ io.on('connection', (socket) => {
                 addFeed(room, '✅ ' + player.name + ' правильно (+' + rewards.score + ' балів, +' + rewards.coins + ' 🪙)');
                 player.powerActive = null;
 
-                /* Синхронізація з профілем користувача */
                 if (!player.isBot && player.login) {
-                    const u = users.get(player.login);
+                    const u = DB.users[player.login];
                     if (u) {
                         if (!u.profile) u.profile = defaultProfile();
                         u.profile.coins = player.coins;
                         u.profile.xp = player.xp;
+                        saveDB();
                     }
                 }
             } else {
@@ -1327,7 +1542,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- АКТИВАЦІЯ СИЛИ ---------- */
+    /* ---------- СУПЕРСИЛИ ---------- */
     socket.on('activatePower', (payload, cb) => {
         try {
             const room = rooms.get(currentRoomPin);
@@ -1357,7 +1572,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- ЕМОДЗІ-РЕАКЦІЯ ---------- */
+    /* ---------- РЕАКЦІЇ ---------- */
     socket.on('sendReaction', (payload, cb) => {
         try {
             const room = rooms.get(currentRoomPin);
@@ -1399,10 +1614,11 @@ io.on('connection', (socket) => {
                 p.finalPrize = prize;
                 p.coins = (p.coins || 0) + prize;
                 if (!p.isBot && p.login) {
-                    const u = users.get(p.login);
+                    const u = DB.users[p.login];
                     if (u) {
                         if (!u.profile) u.profile = defaultProfile();
                         u.profile.coins = p.coins;
+                        saveDB();
                     }
                 }
             });
@@ -1516,12 +1732,14 @@ httpServer.listen(PORT, HOST, () => {
     console.log('🔌 Socket.io path = /socket.io/');
     console.log('🛒 Магазин: /api/shop');
     console.log('🤖 Gemini AI: ' + (GEMINI_API_KEY ? 'увімкнено' : 'ВИМКНЕНО (немає GEMINI_API_KEY)'));
-    console.log('👩‍🏫 Вчитель за замовчуванням: teacher / teacher123');
+    console.log('👩‍🏫 Вчитель: teacher / teacher123');
+    console.log('💾 Дані: ' + DATA_FILE);
     console.log('==============================================');
 });
 
 function gracefulShutdown(signal) {
     console.log('[shutdown]', signal);
+    saveDBImmediate();
     io.close(() => httpServer.close(() => process.exit(0)));
     setTimeout(() => process.exit(0), 5000);
 }
