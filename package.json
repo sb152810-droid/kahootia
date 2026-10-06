@@ -1,20 +1,16 @@
 {
-  "name": "sunlorem-school",
-  "version": "2.0.0",
-  "description": "SunLorem: інтерактивна шкільна система з вікториною, чатом Gemini та електронним щоденником",
+  "name": "sunlorem-camp",
+  "version": "1.0.0",
+  "description": "SunLorem: Школа-Табір 5 Клас - інтерактивна вікторина",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node server.js"
   },
-  "keywords": ["school", "quiz", "socket.io", "gemini", "ai", "ukrainian"],
-  "author": "SunLorem",
-  "license": "MIT",
   "dependencies": {
     "express": "^4.19.2",
     "socket.io": "^4.7.5"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18"
   }
 }
