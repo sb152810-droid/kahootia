@@ -41,4 +41,9 @@
       window.location.href = r.role === 'teacher' ? '/teacher' : '/dashboard';
     }
 
-    document.getElementById('password').addEventListener('keydown', (e) =>
+    document.getElementById('password').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') doLogin();
+    });
+  </script>
+</body>
+</html>
