@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
 <title>SunLorem: Школа-Табір 5 Клас</title>
 <style>
-/* ============================================================
-   ГЛОБАЛЬНІ СТИЛІ
-   ============================================================ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html { height: 100%; width: 100%; overflow: hidden; }
 body {
@@ -53,16 +50,14 @@ body.theme-pastel {
     --button-shadow: 0 4px 12px rgba(160, 130, 200, 0.22);
     --input-bg: #fbf7ff; --input-border: #d9c9ef;
     --glow-text: none;
-    background:
-        radial-gradient(circle at 15% 10%, #fde8f0, transparent 40%),
+    background: radial-gradient(circle at 15% 10%, #fde8f0, transparent 40%),
         radial-gradient(circle at 88% 85%, #e0f4ec, transparent 42%),
         linear-gradient(160deg, var(--bg-1), var(--bg-2) 55%, var(--bg-3));
     color: var(--text-main);
 }
 body.theme-space {
     --bg-1: #000010; --bg-2: #0a0a2a; --bg-3: #1a0a3a;
-    --panel-bg: rgba(15, 10, 45, 0.75);
-    --panel-border: rgba(120, 90, 255, 0.45);
+    --panel-bg: rgba(15, 10, 45, 0.75); --panel-border: rgba(120, 90, 255, 0.45);
     --panel-shadow: 0 8px 32px rgba(80, 40, 200, 0.5), 0 0 80px rgba(150, 80, 255, 0.2) inset;
     --text-main: #e0d8ff; --text-dim: #9a8fdc;
     --accent-1: #7d5fff; --accent-2: #ff5fff; --accent-3: #5fcfff;
@@ -70,20 +65,16 @@ body.theme-space {
     --button-bg: linear-gradient(135deg, rgba(125, 95, 255, 0.4), rgba(95, 207, 255, 0.25));
     --button-border: rgba(125, 95, 255, 0.8);
     --button-shadow: 0 0 22px rgba(125, 95, 255, 0.7), 0 0 48px rgba(95, 207, 255, 0.3);
-    --input-bg: rgba(15, 10, 40, 0.9);
-    --input-border: rgba(120, 90, 255, 0.55);
+    --input-bg: rgba(15, 10, 40, 0.9); --input-border: rgba(120, 90, 255, 0.55);
     --glow-text: 0 0 10px rgba(200, 150, 255, 1), 0 0 30px rgba(125, 95, 255, 0.7);
-    background:
-        radial-gradient(circle at 15% 15%, rgba(125, 95, 255, 0.35), transparent 40%),
+    background: radial-gradient(circle at 15% 15%, rgba(125, 95, 255, 0.35), transparent 40%),
         radial-gradient(circle at 85% 85%, rgba(95, 207, 255, 0.25), transparent 45%),
-        radial-gradient(circle at 50% 50%, rgba(255, 95, 255, 0.15), transparent 55%),
         linear-gradient(160deg, var(--bg-1), var(--bg-2) 55%, var(--bg-3));
     color: var(--text-main);
 }
 body.theme-cyber {
     --bg-1: #0a0000; --bg-2: #1a0505; --bg-3: #2a0a0a;
-    --panel-bg: rgba(35, 5, 10, 0.72);
-    --panel-border: rgba(255, 60, 100, 0.55);
+    --panel-bg: rgba(35, 5, 10, 0.72); --panel-border: rgba(255, 60, 100, 0.55);
     --panel-shadow: 0 8px 32px rgba(255, 40, 100, 0.5), 0 0 80px rgba(255, 200, 40, 0.15) inset;
     --text-main: #ffe8f0; --text-dim: #d88a9a;
     --accent-1: #ff2a5f; --accent-2: #ffcc00; --accent-3: #ff5ff0;
@@ -91,19 +82,16 @@ body.theme-cyber {
     --button-bg: linear-gradient(135deg, rgba(255, 42, 95, 0.45), rgba(255, 204, 0, 0.3));
     --button-border: rgba(255, 42, 95, 0.85);
     --button-shadow: 0 0 22px rgba(255, 42, 95, 0.8), 0 0 48px rgba(255, 204, 0, 0.3);
-    --input-bg: rgba(35, 5, 10, 0.9);
-    --input-border: rgba(255, 60, 100, 0.55);
+    --input-bg: rgba(35, 5, 10, 0.9); --input-border: rgba(255, 60, 100, 0.55);
     --glow-text: 0 0 10px rgba(255, 200, 40, 1), 0 0 30px rgba(255, 42, 95, 0.8);
-    background:
-        radial-gradient(circle at 15% 15%, rgba(255, 42, 95, 0.35), transparent 40%),
+    background: radial-gradient(circle at 15% 15%, rgba(255, 42, 95, 0.35), transparent 40%),
         radial-gradient(circle at 85% 85%, rgba(255, 204, 0, 0.25), transparent 45%),
         linear-gradient(160deg, var(--bg-1), var(--bg-2) 55%, var(--bg-3));
     color: var(--text-main);
 }
 body.theme-forest {
     --bg-1: #0a1a0f; --bg-2: #0f2a18; --bg-3: #1a3a20;
-    --panel-bg: rgba(15, 35, 20, 0.72);
-    --panel-border: rgba(120, 200, 130, 0.4);
+    --panel-bg: rgba(15, 35, 20, 0.72); --panel-border: rgba(120, 200, 130, 0.4);
     --panel-shadow: 0 8px 32px rgba(40, 120, 60, 0.5), 0 0 80px rgba(100, 200, 120, 0.15) inset;
     --text-main: #e8ffe8; --text-dim: #9ad0a0;
     --accent-1: #4fd070; --accent-2: #d0ff5f; --accent-3: #5fffd0;
@@ -111,19 +99,16 @@ body.theme-forest {
     --button-bg: linear-gradient(135deg, rgba(79, 208, 112, 0.4), rgba(95, 255, 208, 0.25));
     --button-border: rgba(79, 208, 112, 0.8);
     --button-shadow: 0 0 22px rgba(79, 208, 112, 0.7), 0 0 48px rgba(95, 255, 208, 0.3);
-    --input-bg: rgba(15, 35, 20, 0.9);
-    --input-border: rgba(120, 200, 130, 0.5);
+    --input-bg: rgba(15, 35, 20, 0.9); --input-border: rgba(120, 200, 130, 0.5);
     --glow-text: 0 0 10px rgba(208, 255, 95, 1), 0 0 30px rgba(79, 208, 112, 0.7);
-    background:
-        radial-gradient(circle at 15% 15%, rgba(79, 208, 112, 0.3), transparent 40%),
+    background: radial-gradient(circle at 15% 15%, rgba(79, 208, 112, 0.3), transparent 40%),
         radial-gradient(circle at 85% 85%, rgba(208, 255, 95, 0.2), transparent 45%),
         linear-gradient(160deg, var(--bg-1), var(--bg-2) 55%, var(--bg-3));
     color: var(--text-main);
 }
 body.theme-sunset {
     --bg-1: #2a0a10; --bg-2: #3a1015; --bg-3: #4a1a20;
-    --panel-bg: rgba(50, 15, 20, 0.7);
-    --panel-border: rgba(255, 150, 80, 0.5);
+    --panel-bg: rgba(50, 15, 20, 0.7); --panel-border: rgba(255, 150, 80, 0.5);
     --panel-shadow: 0 8px 32px rgba(255, 100, 60, 0.5), 0 0 80px rgba(255, 200, 100, 0.15) inset;
     --text-main: #fff0e0; --text-dim: #d8a088;
     --accent-1: #ff8040; --accent-2: #ffcc5f; --accent-3: #ff5f8f;
@@ -131,19 +116,16 @@ body.theme-sunset {
     --button-bg: linear-gradient(135deg, rgba(255, 128, 64, 0.45), rgba(255, 204, 95, 0.3));
     --button-border: rgba(255, 128, 64, 0.85);
     --button-shadow: 0 0 22px rgba(255, 128, 64, 0.8), 0 0 48px rgba(255, 204, 95, 0.3);
-    --input-bg: rgba(50, 15, 20, 0.9);
-    --input-border: rgba(255, 150, 80, 0.5);
+    --input-bg: rgba(50, 15, 20, 0.9); --input-border: rgba(255, 150, 80, 0.5);
     --glow-text: 0 0 10px rgba(255, 204, 95, 1), 0 0 30px rgba(255, 128, 64, 0.8);
-    background:
-        radial-gradient(circle at 15% 85%, rgba(255, 128, 64, 0.35), transparent 45%),
+    background: radial-gradient(circle at 15% 85%, rgba(255, 128, 64, 0.35), transparent 45%),
         radial-gradient(circle at 85% 15%, rgba(255, 204, 95, 0.25), transparent 45%),
         linear-gradient(160deg, var(--bg-1), var(--bg-2) 55%, var(--bg-3));
     color: var(--text-main);
 }
 body.theme-ocean {
     --bg-1: #001018; --bg-2: #001f30; --bg-3: #002a45;
-    --panel-bg: rgba(0, 30, 50, 0.72);
-    --panel-border: rgba(80, 200, 255, 0.45);
+    --panel-bg: rgba(0, 30, 50, 0.72); --panel-border: rgba(80, 200, 255, 0.45);
     --panel-shadow: 0 8px 32px rgba(0, 120, 200, 0.5), 0 0 80px rgba(80, 200, 255, 0.15) inset;
     --text-main: #e0f8ff; --text-dim: #80c0d8;
     --accent-1: #4fc8ff; --accent-2: #5f9fff; --accent-3: #5fffe0;
@@ -151,11 +133,9 @@ body.theme-ocean {
     --button-bg: linear-gradient(135deg, rgba(79, 200, 255, 0.4), rgba(95, 255, 224, 0.25));
     --button-border: rgba(79, 200, 255, 0.8);
     --button-shadow: 0 0 22px rgba(79, 200, 255, 0.7), 0 0 48px rgba(95, 255, 224, 0.3);
-    --input-bg: rgba(0, 30, 50, 0.9);
-    --input-border: rgba(80, 200, 255, 0.5);
+    --input-bg: rgba(0, 30, 50, 0.9); --input-border: rgba(80, 200, 255, 0.5);
     --glow-text: 0 0 10px rgba(95, 255, 224, 1), 0 0 30px rgba(79, 200, 255, 0.8);
-    background:
-        radial-gradient(circle at 20% 20%, rgba(79, 200, 255, 0.3), transparent 42%),
+    background: radial-gradient(circle at 20% 20%, rgba(79, 200, 255, 0.3), transparent 42%),
         radial-gradient(circle at 80% 80%, rgba(95, 255, 224, 0.22), transparent 45%),
         linear-gradient(160deg, var(--bg-1), var(--bg-2) 55%, var(--bg-3));
     color: var(--text-main);
@@ -172,16 +152,14 @@ body.theme-candy {
     --button-shadow: 0 4px 12px rgba(255, 150, 200, 0.35);
     --input-bg: #fff8fc; --input-border: #ffc0dc;
     --glow-text: none;
-    background:
-        radial-gradient(circle at 15% 10%, #ffe0f0, transparent 40%),
+    background: radial-gradient(circle at 15% 10%, #ffe0f0, transparent 40%),
         radial-gradient(circle at 88% 85%, #e0d8ff, transparent 42%),
         linear-gradient(160deg, var(--bg-1), var(--bg-2) 55%, var(--bg-3));
     color: var(--text-main);
 }
 body.theme-autumn {
     --bg-1: #2a1208; --bg-2: #3a1a10; --bg-3: #4a2215;
-    --panel-bg: rgba(50, 22, 12, 0.72);
-    --panel-border: rgba(255, 150, 70, 0.5);
+    --panel-bg: rgba(50, 22, 12, 0.72); --panel-border: rgba(255, 150, 70, 0.5);
     --panel-shadow: 0 8px 32px rgba(200, 100, 40, 0.5), 0 0 80px rgba(255, 180, 90, 0.15) inset;
     --text-main: #ffeedd; --text-dim: #d8a878;
     --accent-1: #ff8040; --accent-2: #ffb347; --accent-3: #ffd75f;
@@ -189,11 +167,9 @@ body.theme-autumn {
     --button-bg: linear-gradient(135deg, rgba(255, 128, 64, 0.45), rgba(255, 179, 71, 0.3));
     --button-border: rgba(255, 128, 64, 0.8);
     --button-shadow: 0 0 22px rgba(255, 128, 64, 0.7), 0 0 48px rgba(255, 215, 95, 0.3);
-    --input-bg: rgba(50, 22, 12, 0.9);
-    --input-border: rgba(255, 150, 70, 0.5);
+    --input-bg: rgba(50, 22, 12, 0.9); --input-border: rgba(255, 150, 70, 0.5);
     --glow-text: 0 0 10px rgba(255, 215, 95, 1), 0 0 30px rgba(255, 128, 64, 0.7);
-    background:
-        radial-gradient(circle at 15% 15%, rgba(255, 128, 64, 0.3), transparent 42%),
+    background: radial-gradient(circle at 15% 15%, rgba(255, 128, 64, 0.3), transparent 42%),
         radial-gradient(circle at 85% 85%, rgba(255, 215, 95, 0.22), transparent 45%),
         linear-gradient(160deg, var(--bg-1), var(--bg-2) 55%, var(--bg-3));
     color: var(--text-main);
@@ -201,11 +177,9 @@ body.theme-autumn {
 #app { position: fixed; inset: 0; overflow: hidden; }
 .screen {
     position: absolute; inset: 0; display: none; flex-direction: column;
-    overflow-y: auto; overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
+    overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch;
     padding: 14px; padding-top: 18px; padding-bottom: 90px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--accent-1) transparent;
+    scrollbar-width: thin; scrollbar-color: var(--accent-1) transparent;
     animation: screenFade 0.4s ease;
 }
 .screen.active { display: flex; }
@@ -255,7 +229,7 @@ button.gold {
 .button-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
 .button-row button { flex: 1 1 160px; }
 .button-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
-@media (min-width: 620px) { .button-grid.two-col { grid-template-columns: 1fr 1fr; } .button-grid.three-col { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 620px) { .button-grid.two-col { grid-template-columns: 1fr 1fr; } }
 input[type="text"], input[type="number"], textarea, select {
     width: 100%; font-family: inherit;
     font-size: clamp(15px, 3.4vw, 17px);
@@ -278,7 +252,155 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
 .pin-input { text-align: center; font-size: clamp(28px, 8vw, 46px) !important; font-weight: 900; letter-spacing: 10px; padding: 16px !important; }
 
 /* ============================================================
-   АВАТАРИ
+   ЧАТ
+   ============================================================ */
+.chat-panel {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1.5px solid var(--panel-border);
+    background: var(--panel-bg);
+    box-shadow: var(--panel-shadow);
+}
+.chat-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, rgba(181, 107, 255, 0.25), rgba(255, 95, 240, 0.15));
+    border-bottom: 1px solid var(--panel-border);
+}
+.chat-header .title {
+    font-weight: 900;
+    font-size: clamp(14px, 3.2vw, 16px);
+    display: flex; align-items: center; gap: 8px;
+}
+.chat-header .online-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--accent-5);
+    box-shadow: 0 0 8px var(--accent-5);
+    animation: pulseDot 1.6s ease-in-out infinite;
+}
+.chat-header .count {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-weight: 700;
+}
+.chat-messages {
+    flex: 1;
+    min-height: 240px;
+    max-height: 380px;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: var(--input-bg);
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-1) transparent;
+}
+.chat-messages::-webkit-scrollbar { width: 6px; }
+.chat-messages::-webkit-scrollbar-thumb { background: var(--accent-1); border-radius: 6px; }
+.chat-message {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    max-width: 100%;
+    animation: msgIn 0.3s ease;
+}
+@keyframes msgIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.chat-message.self {
+    flex-direction: row-reverse;
+}
+.chat-message.system {
+    justify-content: center;
+    opacity: 0.8;
+}
+.chat-message .msg-avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    background: var(--panel-bg);
+    border: 1.5px solid var(--panel-border);
+    flex-shrink: 0;
+    position: relative;
+}
+.chat-message .msg-avatar .acc-head-chat {
+    position: absolute; top: -6px; right: -4px;
+    font-size: 12px;
+}
+.chat-message .msg-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-width: calc(100% - 60px);
+}
+.chat-message .msg-name {
+    font-size: 11px;
+    font-weight: 900;
+    color: var(--accent-1);
+    padding: 0 4px;
+}
+.chat-message.self .msg-name {
+    text-align: right;
+}
+.chat-message .msg-text {
+    padding: 8px 12px;
+    border-radius: 14px;
+    font-size: clamp(13px, 3vw, 15px);
+    line-height: 1.4;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+.chat-message.self .msg-text {
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+    color: #fff;
+    border-color: var(--accent-2);
+}
+.chat-message.system .msg-text {
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    font-size: 12px;
+    padding: 4px 8px;
+}
+.chat-message .msg-time {
+    font-size: 10px;
+    color: var(--text-dim);
+    padding: 0 4px;
+}
+.chat-message.self .msg-time {
+    text-align: right;
+}
+.chat-input-row {
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+    border-top: 1px solid var(--panel-border);
+    background: var(--panel-bg);
+}
+.chat-input-row input {
+    margin-bottom: 0;
+    flex: 1;
+}
+.chat-input-row button {
+    width: auto;
+    min-width: 58px;
+    padding: 10px 14px;
+    min-height: 46px;
+    font-size: 20px;
+}
+
+/* ============================================================
+   АВАТАРИ, МАГАЗИН
    ============================================================ */
 .avatar-grid {
     display: grid; grid-template-columns: repeat(4, 1fr);
@@ -291,15 +413,14 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
     border: 3px solid var(--panel-border);
     display: flex; align-items: center; justify-content: center;
     font-size: clamp(26px, 7.5vw, 42px);
-    cursor: pointer; transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
-    user-select: none; -webkit-user-select: none;
-    touch-action: manipulation; position: relative; padding: 0;
+    cursor: pointer; transition: var(--transition);
+    user-select: none; touch-action: manipulation;
+    position: relative; padding: 0;
 }
-.avatar-option:hover { transform: scale(1.09); border-color: var(--accent-1); }
 .avatar-option.selected {
     border-color: var(--accent-2);
     background: linear-gradient(135deg, rgba(181, 107, 255, 0.55), rgba(255, 95, 240, 0.45));
-    transform: scale(1.14); z-index: 3;
+    transform: scale(1.14);
     box-shadow: 0 0 0 4px rgba(255, 95, 240, 0.35), 0 0 26px rgba(255, 95, 240, 0.95);
 }
 .avatar-option.selected::after {
@@ -309,14 +430,9 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
     background: var(--accent-2); color: #fff;
     font-size: 14px; font-weight: 900;
     display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
-    line-height: 1;
 }
 .avatar-big { font-size: clamp(60px, 18vw, 120px); text-align: center; margin: 10px 0; display: block; position: relative; }
 
-/* ============================================================
-   МАГАЗИН / ГАРДЕРОБ
-   ============================================================ */
 .shop-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
 .shop-tab {
     flex: 1 1 auto; padding: 10px 14px;
@@ -344,25 +460,11 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
     gap: 8px;
     flex-wrap: wrap;
 }
-.collection-header .col-title {
-    font-size: clamp(15px, 3.4vw, 18px);
-    font-weight: 900;
-    color: var(--accent-4);
-}
-.collection-header .col-bonus {
-    font-size: clamp(12px, 2.8vw, 14px);
-    font-weight: 800;
-    color: var(--accent-5);
-}
-.collection-header.complete .col-bonus {
-    color: var(--accent-5);
-    text-shadow: 0 0 10px var(--accent-5);
-}
+.collection-header .col-title { font-size: clamp(15px, 3.4vw, 18px); font-weight: 900; color: var(--accent-4); }
+.collection-header .col-bonus { font-size: clamp(12px, 2.8vw, 14px); font-weight: 800; color: var(--accent-5); }
 .shop-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-top: 10px;
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 10px; margin-top: 10px;
 }
 @media (min-width: 520px) { .shop-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 780px) { .shop-grid { grid-template-columns: repeat(4, 1fr); } }
@@ -370,18 +472,15 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
     background: var(--input-bg);
     border: 2px solid var(--panel-border);
     border-radius: var(--radius-sm);
-    padding: 10px;
-    text-align: center;
-    position: relative;
-    transition: var(--transition);
-    cursor: pointer;
-    overflow: hidden;
+    padding: 10px; text-align: center;
+    position: relative; transition: var(--transition);
+    cursor: pointer; overflow: hidden;
 }
 .shop-card:hover { transform: translateY(-3px); border-color: var(--accent-1); }
 .shop-card.locked { opacity: 0.75; }
 .shop-card.locked::after {
     content: "🔒"; position: absolute; top: 6px; right: 6px;
-    font-size: 20px; filter: drop-shadow(0 0 6px rgba(0,0,0,0.5));
+    font-size: 20px;
 }
 .shop-card.owned::before {
     content: "✓"; position: absolute; top: 6px; left: 6px;
@@ -390,16 +489,14 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
     font-size: 14px; font-weight: 900;
     display: flex; align-items: center; justify-content: center;
 }
-.shop-card.equipped {
-    border-color: var(--accent-4);
-    box-shadow: 0 0 18px rgba(255, 215, 95, 0.65);
-}
+.shop-card.equipped { border-color: var(--accent-4); box-shadow: 0 0 18px rgba(255, 215, 95, 0.65); }
 .shop-card .preview { font-size: clamp(36px, 9vw, 52px); margin: 6px 0; display: block; line-height: 1; }
-.shop-card .name { font-size: clamp(12px, 2.9vw, 14px); font-weight: 800; margin-bottom: 3px; color: var(--text-main); }
+.shop-card .name { font-size: clamp(12px, 2.9vw, 14px); font-weight: 800; margin-bottom: 3px; }
 .shop-card .price { font-size: clamp(11px, 2.7vw, 13px); font-weight: 800; color: var(--accent-4); }
 .shop-card .price.owned { color: var(--accent-5); }
 .shop-card .price.cant { color: #ff6b8b; }
 .shop-card .buy-hint { margin-top: 6px; font-size: 11px; color: var(--text-dim); }
+
 .shop-avatar-preview {
     text-align: center; padding: 16px;
     background: var(--input-bg);
@@ -413,7 +510,6 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
 .shop-avatar-preview .big-accessory {
     position: absolute; font-size: clamp(36px, 10vw, 60px);
     top: -12px; right: -24px;
-    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
     animation: floatAccessory 3s ease-in-out infinite;
 }
 @keyframes floatAccessory {
@@ -423,13 +519,13 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
 .shop-avatar-preview .big-effect {
     position: absolute; font-size: clamp(28px, 8vw, 44px);
     bottom: -6px; left: -14px;
-    filter: drop-shadow(0 0 12px currentColor);
     animation: pulseEffect 2s ease-in-out infinite;
 }
 @keyframes pulseEffect {
     0%, 100% { transform: scale(1); opacity: 0.9; }
     50% { transform: scale(1.2); opacity: 1; }
 }
+
 .balance-bar {
     display: flex; align-items: center; justify-content: center;
     gap: 12px; padding: 10px 16px;
@@ -440,10 +536,7 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
     font-weight: 900; color: var(--accent-4);
     flex-wrap: wrap;
 }
-.balance-bar .xp-badge {
-    color: var(--accent-3);
-    font-size: 0.85em;
-}
+.balance-bar .xp-badge { color: var(--accent-3); font-size: 0.85em; }
 
 /* ============================================================
    КВЕСТИ
@@ -455,8 +548,6 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
     border: 2px solid var(--panel-border);
     border-radius: var(--radius-sm);
     padding: 12px;
-    transition: var(--transition);
-    position: relative;
 }
 .quest-item.done {
     border-color: var(--accent-5);
@@ -464,21 +555,9 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
 }
 .quest-item .q-icon { font-size: 30px; flex-shrink: 0; }
 .quest-item .q-info { flex: 1; min-width: 0; }
-.quest-item .q-title {
-    font-size: clamp(14px, 3.2vw, 16px);
-    font-weight: 800;
-    margin-bottom: 3px;
-}
-.quest-item .q-desc {
-    font-size: clamp(12px, 2.8vw, 14px);
-    color: var(--text-dim);
-}
-.quest-item .q-reward {
-    font-size: clamp(12px, 2.9vw, 14px);
-    font-weight: 900;
-    color: var(--accent-4);
-    flex-shrink: 0;
-}
+.quest-item .q-title { font-size: clamp(14px, 3.2vw, 16px); font-weight: 800; margin-bottom: 3px; }
+.quest-item .q-desc { font-size: clamp(12px, 2.8vw, 14px); color: var(--text-dim); }
+.quest-item .q-reward { font-size: clamp(12px, 2.9vw, 14px); font-weight: 900; color: var(--accent-4); flex-shrink: 0; }
 .quest-item.done .q-reward { color: var(--accent-5); }
 
 /* ============================================================
@@ -490,29 +569,20 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
     margin-top: 10px;
 }
 .reaction-btn {
-    width: auto;
-    min-width: 48px;
-    padding: 8px 10px;
-    font-size: 24px;
+    width: auto; min-width: 48px;
+    padding: 8px 10px; font-size: 24px;
     background: var(--input-bg);
     border: 2px solid var(--panel-border);
     border-radius: 12px;
-    box-shadow: none;
-    min-height: 48px;
-    transition: transform 0.15s ease, background 0.15s ease;
+    box-shadow: none; min-height: 48px;
+    transition: transform 0.15s ease;
     cursor: pointer;
 }
-.reaction-btn:hover {
-    transform: scale(1.15) translateY(-3px);
-    background: linear-gradient(135deg, rgba(255, 215, 95, 0.3), rgba(255, 95, 240, 0.2));
-    border-color: var(--accent-4);
-}
+.reaction-btn:hover { transform: scale(1.15) translateY(-3px); }
 .reaction-btn:active { transform: scale(0.9); }
 .float-emoji {
-    position: fixed;
-    font-size: 44px;
-    pointer-events: none;
-    z-index: 9999;
+    position: fixed; font-size: 44px;
+    pointer-events: none; z-index: 9999;
     animation: floatAway 2.4s ease-out forwards;
     filter: drop-shadow(0 0 10px rgba(255, 215, 95, 0.9));
 }
@@ -523,7 +593,7 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
 }
 
 /* ============================================================
-   ІГРОВИЙ ІНТЕРФЕЙС
+   ГРА / ПЛЕЄРИ / ПИТАННЯ
    ============================================================ */
 .player-list { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 10px; }
 @media (min-width: 520px) { .player-list { grid-template-columns: 1fr 1fr; } }
@@ -533,10 +603,8 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
     background: var(--input-bg); border: 1.5px solid var(--panel-border);
     border-radius: var(--radius-sm); padding: 10px 12px;
     transition: var(--transition);
-    animation: slideIn 0.35s ease;
     position: relative;
 }
-@keyframes slideIn { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
 .player-card .avatar-wrap { position: relative; display: inline-block; flex-shrink: 0; }
 .player-card .avatar { font-size: 30px; display: block; line-height: 1; }
 .player-card .acc-head { position: absolute; top: -8px; right: -6px; font-size: 16px; }
@@ -546,20 +614,18 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
 .player-card .score { font-weight: 900; color: var(--accent-4); font-size: clamp(14px, 3.2vw, 17px); flex-shrink: 0; }
 .player-card .coins { font-weight: 800; color: #ffcc55; font-size: clamp(11px, 2.7vw, 13px); margin-left: 4px; }
 .player-card.leader { border-color: var(--accent-4); }
-.player-card.bot .name::after { content: " 🤖"; opacity: 0.7; font-size: 0.85em; }
+.player-card.bot .name::after { content: ""; }
 .player-card.self { border-color: var(--accent-5); }
 .player-card.dead { opacity: 0.45; filter: grayscale(0.6); }
 .player-card .power-badge {
     position: absolute; top: 4px; right: 6px;
     font-size: 14px;
-    animation: pulseEffect 1.2s ease-in-out infinite;
 }
 .player-card .reaction-bubble {
     position: absolute; top: -6px; left: 50%;
     transform: translateX(-50%);
     font-size: 22px;
     animation: bubblePop 0.6s ease;
-    filter: drop-shadow(0 0 8px rgba(255, 215, 95, 0.9));
 }
 @keyframes bubblePop {
     0% { transform: translateX(-50%) scale(0); opacity: 0; }
@@ -570,7 +636,7 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
     font-size: clamp(18px, 4.4vw, 26px);
     font-weight: 800; text-align: center;
     padding: 16px 10px; margin-bottom: 8px;
-    color: var(--text-main); line-height: 1.35;
+    line-height: 1.35;
 }
 .answers-grid {
     display: grid;
@@ -584,9 +650,9 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
     font-weight: 800; text-align: left; justify-content: flex-start;
     padding: 15px 18px; background: var(--input-bg);
     border: 2px solid var(--panel-border); color: var(--text-main);
-    box-shadow: none; border-radius: var(--radius); transition: var(--transition);
+    box-shadow: none; border-radius: var(--radius);
 }
-.answer-btn:hover:not(:disabled) { border-color: var(--accent-2); transform: translateY(-2px); }
+.answer-btn:hover:not(:disabled) { border-color: var(--accent-2); }
 .answer-btn .key {
     display: inline-flex; align-items: center; justify-content: center;
     min-width: 34px; height: 34px; border-radius: 50%;
@@ -597,7 +663,7 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
 .answer-btn.wrong { border-color: #ff3d6e; background: linear-gradient(135deg, rgba(255, 61, 110, 0.28), rgba(255, 107, 139, 0.16)); }
 .answer-btn.hint-hidden { opacity: 0.25; text-decoration: line-through; }
 .timer-wrap { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
-.timer-bar { flex: 1; height: 22px; background: var(--input-bg); border: 1.5px solid var(--panel-border); border-radius: 14px; overflow: hidden; position: relative; }
+.timer-bar { flex: 1; height: 22px; background: var(--input-bg); border: 1.5px solid var(--panel-border); border-radius: 14px; overflow: hidden; }
 .timer-fill { height: 100%; background: linear-gradient(90deg, var(--accent-3), var(--accent-1), var(--accent-2)); transition: width 0.35s linear; border-radius: 14px 0 0 14px; }
 .timer-text { font-weight: 900; font-size: clamp(18px, 4.6vw, 26px); color: var(--accent-4); min-width: 56px; text-align: right; }
 .theme-switcher { display: flex; gap: 10px; margin: 10px 0; flex-wrap: wrap; }
@@ -606,9 +672,8 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
     font-size: clamp(14px, 3.2vw, 16px); font-weight: 800;
     border-radius: var(--radius-sm); border: 2px solid var(--panel-border);
     background: var(--input-bg); color: var(--text-main);
-    cursor: pointer; transition: var(--transition);
-    display: flex; align-items: center; justify-content: center;
-    gap: 6px; min-height: 54px; box-shadow: none;
+    cursor: pointer; min-height: 54px; box-shadow: none;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
 }
 .theme-btn.active { border-color: var(--accent-2); background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: #fff; }
 .badge {
@@ -616,12 +681,10 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
     padding: 5px 12px; font-size: clamp(12px, 2.8vw, 14px);
     font-weight: 800; border-radius: 20px;
     background: var(--input-bg); border: 1.5px solid var(--panel-border);
-    color: var(--text-main);
 }
 .badge.live { color: var(--accent-5); border-color: var(--accent-5); }
 .badge.waiting { color: var(--accent-4); border-color: var(--accent-4); }
 .badge.gold { color: var(--accent-4); border-color: var(--accent-4); }
-.badge.xp { color: var(--accent-3); border-color: var(--accent-3); }
 .status-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; margin-bottom: 12px; }
 .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
 .particle { position: absolute; border-radius: 50%; opacity: 0.55; animation: floatUp linear infinite; }
@@ -664,7 +727,6 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
 .question-item {
     background: var(--input-bg); border: 1.5px solid var(--panel-border);
     border-radius: var(--radius-sm); padding: 12px; margin-bottom: 10px;
-    transition: var(--transition);
 }
 .question-item .q-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
 .question-item .q-index { font-weight: 900; color: var(--accent-2); font-size: clamp(15px, 3.4vw, 18px); }
@@ -676,11 +738,9 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
 .template-card, .mode-card {
     background: var(--input-bg); border: 2px solid var(--panel-border);
     border-radius: var(--radius-sm); padding: 14px; cursor: pointer;
-    transition: var(--transition);
     display: flex; align-items: center; gap: 12px;
     min-height: 70px; text-align: left; width: 100%;
 }
-.template-card:hover, .mode-card:hover { transform: translateY(-3px); }
 .template-card.selected, .mode-card.selected { border-color: var(--accent-2); background: linear-gradient(135deg, rgba(181, 107, 255, 0.22), rgba(255, 95, 240, 0.14)); }
 .template-card .icon, .mode-card .icon { font-size: clamp(28px, 7vw, 40px); flex-shrink: 0; }
 .template-card .info, .mode-card .info { flex: 1; min-width: 0; }
@@ -712,9 +772,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
     background: var(--panel-bg); border: 2px solid var(--panel-border);
     border-radius: var(--radius); padding: 20px; max-width: 520px; width: 100%;
     max-height: 90vh; overflow-y: auto; box-shadow: var(--panel-shadow);
-    animation: modalIn 0.3s ease;
 }
-@keyframes modalIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
 .toast {
     position: fixed; bottom: 20px; left: 50%;
     transform: translateX(-50%) translateY(140px);
@@ -738,7 +796,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
     border-radius: var(--radius-sm); padding: 10px;
     border: 1px solid var(--panel-border);
 }
-.event-feed .event-line { padding: 3px 0; border-bottom: 1px dashed var(--panel-border); animation: slideIn 0.3s ease; }
+.event-feed .event-line { padding: 3px 0; border-bottom: 1px dashed var(--panel-border); }
 .event-feed .event-line:last-child { border-bottom: none; }
 .connection-status {
     position: fixed; top: 6px; right: 6px;
@@ -755,31 +813,15 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
 @keyframes confetti-fall { 0% { transform: translateY(-10vh) rotate(0); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
 .confetti { position: fixed; width: 10px; height: 14px; top: 0; z-index: 998; pointer-events: none; animation: confetti-fall linear forwards; }
 
-/* ============================================================
-   ДРУК ЛИШЕ ГРАМОТИ
-   ============================================================ */
 @media print {
     @page { size: A4 portrait; margin: 15mm; }
-    html, body {
-        background: #ffffff !important; color: #000000 !important;
-        height: auto !important; overflow: visible !important;
-        width: 100% !important; margin: 0 !important; padding: 0 !important;
-    }
+    html, body { background: #ffffff !important; color: #000000 !important; height: auto !important; overflow: visible !important; width: 100% !important; }
     body * { visibility: hidden !important; }
     #particles, #particles *, #toast, .modal-overlay, .confetti, .connection-status, #floatLayer, #floatLayer * {
         display: none !important; visibility: hidden !important;
     }
-    .screen {
-        display: none !important; position: static !important;
-        overflow: visible !important; padding: 0 !important;
-        margin: 0 !important; background: #ffffff !important;
-    }
-    #screen-results {
-        display: block !important; position: static !important;
-        overflow: visible !important; padding: 0 !important;
-        margin: 0 !important; background: #ffffff !important;
-        height: auto !important; width: 100% !important; inset: auto !important;
-    }
+    .screen { display: none !important; position: static !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; background: #ffffff !important; }
+    #screen-results { display: block !important; position: static !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; background: #ffffff !important; height: auto !important; width: 100% !important; inset: auto !important; }
     #screen-results > * { display: none !important; visibility: hidden !important; }
     #certificateBox {
         display: block !important; visibility: visible !important;
@@ -789,31 +831,12 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         color: #1a1a1a !important; border: 5px double #b8860b !important;
         border-radius: 6px !important; box-shadow: none !important;
         text-align: center !important; page-break-inside: avoid !important;
-        page-break-after: avoid !important;
-        font-family: 'Georgia', 'Times New Roman', serif !important;
     }
     #certificateBox, #certificateBox * { visibility: visible !important; text-shadow: none !important; }
-    #certificateBox h2 {
-        display: block !important; color: #8b6914 !important;
-        font-size: 34pt !important; font-weight: 900 !important;
-        margin: 0 0 24pt 0 !important; letter-spacing: 2pt !important;
-        text-transform: uppercase !important;
-        border-bottom: 2pt solid #b8860b !important; padding-bottom: 12pt !important;
-    }
-    #certificateBox p {
-        display: block !important; color: #2b2b2b !important;
-        font-size: 14pt !important; line-height: 1.6 !important;
-        margin: 6pt 0 !important;
-        font-family: 'Georgia', 'Times New Roman', serif !important;
-    }
-    #certificateBox .recipient {
-        display: block !important; color: #4b0082 !important;
-        font-size: 30pt !important; font-weight: 900 !important;
-        margin: 22pt 0 !important; padding: 12pt 0 !important;
-        border-top: 1pt dashed #999 !important; border-bottom: 1pt dashed #999 !important;
-        font-style: italic !important; letter-spacing: 1pt !important;
-    }
-    #certScore { display: block !important; color: #8b0000 !important; font-size: 20pt !important; font-weight: 900 !important; margin: 18pt 0 !important; }
+    #certificateBox h2 { display: block !important; color: #8b6914 !important; font-size: 34pt !important; font-weight: 900 !important; margin: 0 0 24pt 0 !important; text-transform: uppercase !important; border-bottom: 2pt solid #b8860b !important; padding-bottom: 12pt !important; }
+    #certificateBox p { display: block !important; color: #2b2b2b !important; font-size: 14pt !important; line-height: 1.6 !important; }
+    #certificateBox .recipient { display: block !important; color: #4b0082 !important; font-size: 30pt !important; font-weight: 900 !important; margin: 22pt 0 !important; border-top: 1pt dashed #999 !important; border-bottom: 1pt dashed #999 !important; font-style: italic !important; }
+    #certScore { display: block !important; color: #8b0000 !important; font-size: 20pt !important; font-weight: 900 !important; }
     #certCoins { display: block !important; color: #8b6914 !important; font-size: 16pt !important; font-weight: 800 !important; }
     #certDate { display: block !important; color: #555 !important; font-size: 12pt !important; margin-top: 28pt !important; font-style: italic !important; }
 }
@@ -829,7 +852,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
     <!-- ЕКРАН 1: ПРИВІТАННЯ -->
     <div id="screen-welcome" class="screen active">
         <h1 class="glow">🌟 SunLorem 🌟</h1>
-        <p class="subtitle">Школа-Табір для 5 класу • Гейміфікація</p>
+        <p class="subtitle">Школа-Табір для 5 класу • Гейміфікація та чат</p>
 
         <div class="panel panel-narrow">
             <div class="balance-bar">
@@ -845,7 +868,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
             </div>
             <div class="button-row">
                 <button class="gold" onclick="App.go('screen-shop')">🛒 Гардероб / Магазин</button>
-                <button class="ghost" onclick="App.go('screen-quests')">🏆 Квести</button>
+                <button class="ghost" onclick="App.go('screen-quests')">🏆 Завдання</button>
             </div>
         </div>
 
@@ -854,17 +877,16 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
             <p style="font-size:14px;line-height:1.6;">
                 1. Вчитель створює кімнату, отримує <b>PIN</b> та QR.<br>
                 2. Учні вводять PIN, обирають аватар та аксесуари.<br>
-                3. За гру (відповіді) — до <b>30 🪙</b>.<br>
-                4. У фіналі: 1 місце — <b>70 🪙</b>, 2 місце — <b>60 🪙</b>, 3 місце — <b>50 🪙</b>.<br>
-                5. Серія 3+ правильних множить бали (для рейтингу).<br>
-                6. Виконуй <b>квести</b> та відкривай нові теми.
+                3. Спілкуйтесь у чаті з однокласниками та ботами 💬<br>
+                4. За правильні відповіді — до <b>30 🪙</b>.<br>
+                5. У фіналі: 1 місце — <b>70 🪙</b>, 2 місце — <b>60 🪙</b>, 3 місце — <b>50 🪙</b>.
             </p>
         </div>
     </div>
 
     <!-- ЕКРАН 2: КВЕСТИ -->
     <div id="screen-quests" class="screen">
-        <h1>🏆 Квести</h1>
+        <h1>🏆 Завдання</h1>
         <p class="subtitle">Виконуй завдання — нагорода після гри</p>
 
         <div class="panel panel-narrow">
@@ -873,7 +895,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
                 <span class="xp-badge">⭐ XP: <span id="questsXp">0</span></span>
             </div>
             <div id="questsList" class="quest-list">
-                <p style="color:var(--text-dim);text-align:center;padding:14px;">Квести завантажуються...</p>
+                <p style="color:var(--text-dim);text-align:center;padding:14px;">Завдання завантажуються...</p>
             </div>
         </div>
 
@@ -885,7 +907,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ЕКРАН 3: ГАРДЕРОБ / МАГАЗИН -->
+    <!-- ЕКРАН 3: МАГАЗИН -->
     <div id="screen-shop" class="screen">
         <h1>🛒 Гардероб</h1>
         <p class="subtitle">Колекції, аксесуари та теми за СанКоїни</p>
@@ -924,7 +946,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ЕКРАН 4: НАЛАШТУВАННЯ ВЧИТЕЛЯ -->
+    <!-- ЕКРАН 4: ВЧИТЕЛЬ -->
     <div id="screen-teacher-setup" class="screen">
         <h1>👩‍🏫 Панель Організатора</h1>
         <p class="subtitle">Налаштуй гру та створи кімнату</p>
@@ -977,6 +999,10 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
                 <button class="ghost small" onclick="document.getElementById('botCount').value=25">25</button>
                 <button class="ghost small" onclick="document.getElementById('botCount').value=50">50</button>
             </div>
+            <label style="display:flex;align-items:center;gap:8px;margin-top:10px;cursor:pointer;">
+                <input type="checkbox" id="chatBotsEnabled" checked style="width:auto;margin:0;">
+                💬 Увімкнути ботів у чаті
+            </label>
         </div>
 
         <div class="panel panel-narrow">
@@ -1030,6 +1056,24 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
 
         <div class="panel panel-narrow">
+            <div class="panel-title">💬 Чат кімнати</div>
+            <div class="chat-panel">
+                <div class="chat-header">
+                    <div class="title">
+                        <span class="online-dot"></span>
+                        Загальний чат
+                    </div>
+                    <div class="count" id="chatCount">0 повідомлень</div>
+                </div>
+                <div class="chat-messages" id="lobbyChatMessages"></div>
+                <div class="chat-input-row">
+                    <input type="text" id="lobbyChatInput" placeholder="Повідомлення..." maxlength="400">
+                    <button class="gold small" onclick="App.sendChatFrom('lobby')">📨</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-narrow">
             <div class="button-grid two-col">
                 <button class="primary" onclick="App.startGame()">▶️ Почати гру</button>
                 <button class="danger" onclick="App.closeRoom()">✖️ Закрити</button>
@@ -1057,8 +1101,18 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
             <div id="tqLeaderboard" class="player-list"></div>
         </div>
         <div class="panel">
-            <div class="panel-title">📡 Жива стрічка</div>
-            <div class="event-feed" id="tqFeed"></div>
+            <div class="panel-title">💬 Чат</div>
+            <div class="chat-panel">
+                <div class="chat-header">
+                    <div class="title"><span class="online-dot"></span>Загальний чат</div>
+                    <div class="count" id="chatCountGame">0</div>
+                </div>
+                <div class="chat-messages" id="gameChatMessages"></div>
+                <div class="chat-input-row">
+                    <input type="text" id="gameChatInput" placeholder="Повідомлення..." maxlength="400">
+                    <button class="gold small" onclick="App.sendChatFrom('game')">📨</button>
+                </div>
+            </div>
         </div>
         <div class="panel">
             <div class="button-grid two-col">
@@ -1134,15 +1188,32 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
                 <span class="badge live" id="swPinBadge">PIN: ------</span>
                 <span class="badge gold" id="swCoinsBadge">🪙 0</span>
             </div>
-            <p class="waiting-text">Ти в кімнаті! Зачекай старту.</p>
+            <p class="waiting-text">Ти в кімнаті! Зачекай старту гри.</p>
 
             <div class="panel-title" style="justify-content:center;margin-top:14px;">🎉 Емодзі-реакції</div>
             <div class="reactions-bar" id="waitingReactions"></div>
+        </div>
 
-            <div class="spacer"></div>
-            <div class="panel-title" style="justify-content:center;">👥 Разом з тобою грають</div>
+        <div class="panel panel-narrow">
+            <div class="panel-title">💬 Чат кімнати</div>
+            <div class="chat-panel">
+                <div class="chat-header">
+                    <div class="title"><span class="online-dot"></span>Загальний чат</div>
+                    <div class="count" id="chatCountWaiting">0</div>
+                </div>
+                <div class="chat-messages" id="waitingChatMessages"></div>
+                <div class="chat-input-row">
+                    <input type="text" id="waitingChatInput" placeholder="Напиши щось..." maxlength="400">
+                    <button class="gold small" onclick="App.sendChatFrom('waiting')">📨</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="panel-title">👥 Разом з тобою грають</div>
             <div id="swPlayers" class="player-list"></div>
         </div>
+
         <div class="panel panel-narrow">
             <div class="button-grid two-col">
                 <button class="ghost" onclick="App.leaveStudent()">🚪 Вийти</button>
@@ -1175,14 +1246,26 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
                 <button class="gold small" id="btnPowerShield" onclick="App.activatePower('shield')" disabled>🛡️ Щит</button>
                 <button class="gold small" id="btnPowerReveal" onclick="App.activatePower('reveal')" disabled>🔍 Підказка</button>
             </div>
-            <p style="font-size:12px;color:var(--text-dim);text-align:center;margin-top:6px;">
-                Суперсила після 3 правильних поспіль
-            </p>
         </div>
 
         <div class="panel">
             <div class="panel-title">🎉 Реакції</div>
             <div class="reactions-bar" id="gameReactions"></div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">💬 Чат</div>
+            <div class="chat-panel">
+                <div class="chat-header">
+                    <div class="title"><span class="online-dot"></span>Загальний чат</div>
+                    <div class="count" id="chatCountStudentGame">0</div>
+                </div>
+                <div class="chat-messages" id="studentGameChatMessages"></div>
+                <div class="chat-input-row">
+                    <input type="text" id="studentGameChatInput" placeholder="Повідомлення..." maxlength="400">
+                    <button class="gold small" onclick="App.sendChatFrom('studentGame')">📨</button>
+                </div>
+            </div>
         </div>
 
         <div class="panel">
@@ -1356,7 +1439,9 @@ const App = (function () {
         shopTab: 'avatars',
         currentStreak: 0,
         lastReactionTime: 0,
-        _prizeApplied: false
+        _prizeApplied: false,
+        chatBotsEnabled: true,
+        lastChatMsgId: null
     };
 
     const Storage = {
@@ -1404,6 +1489,7 @@ const App = (function () {
         else if (screenId === 'screen-student-join') renderJoinPreview();
         else if (screenId === 'screen-welcome') updateCoinsDisplays();
         else if (screenId === 'screen-quests') renderQuests();
+        renderAllChats();
     }
 
     function setTheme(themeId) {
@@ -1574,7 +1660,6 @@ const App = (function () {
         const wrap = $('questsList');
         if (!wrap || !State.questDefs) return;
         wrap.innerHTML = '';
-
         const defs = Object.values(State.questDefs);
         defs.forEach(def => {
             const done = !!State.profile.completedQuests[def.id];
@@ -1601,7 +1686,6 @@ const App = (function () {
         if (!State.shop) return;
         renderShopPreview();
         updateCoinsDisplays();
-
         const wrap = $('shopGrid');
         if (!wrap) return;
         wrap.innerHTML = '';
@@ -1611,10 +1695,8 @@ const App = (function () {
             collections.forEach(col => {
                 const items = State.shop.avatars.filter(a => a.col === col.id);
                 if (items.length === 0) return;
-
                 const ownedCount = items.filter(a => State.profile.ownedAvatars.includes(a.id)).length;
                 const isComplete = ownedCount === items.length;
-
                 const header = document.createElement('div');
                 header.className = 'collection-header' + (isComplete ? ' complete' : '');
                 header.innerHTML =
@@ -1622,7 +1704,6 @@ const App = (function () {
                     '<div class="col-bonus">' + ownedCount + '/' + items.length +
                         (isComplete ? ' ✅ +' + col.bonus + ' 🪙 бонус' : '') + '</div>';
                 wrap.appendChild(header);
-
                 const grid = document.createElement('div');
                 grid.className = 'shop-grid';
                 items.forEach(a => {
@@ -1634,8 +1715,7 @@ const App = (function () {
                         '<span class="preview">' + a.emoji + '</span>' +
                         '<div class="name">' + escapeHtml(a.name) + '</div>' +
                         '<div class="price ' + (owned ? 'owned' : (State.profile.coins < a.price ? 'cant' : '')) + '">' +
-                            (owned ? '✓ Куплено' : '🪙 ' + a.price) +
-                        '</div>' +
+                            (owned ? '✓ Куплено' : '🪙 ' + a.price) + '</div>' +
                         '<div class="buy-hint">' + (equipped ? 'Одягнуто' : (owned ? 'Одягнути' : 'Купити')) + '</div>';
                     card.addEventListener('click', () => onAvatarClick(a));
                     grid.appendChild(card);
@@ -1659,8 +1739,7 @@ const App = (function () {
                     '<div class="name">' + escapeHtml(a.name) + '</div>' +
                     '<div style="font-size:11px;color:var(--text-dim);">' + (a.slot === 'head' ? 'голова' : a.slot === 'eyes' ? 'очі' : 'ефект') + '</div>' +
                     '<div class="price ' + (owned ? 'owned' : (State.profile.coins < a.price ? 'cant' : '')) + '">' +
-                        (owned ? '✓ Куплено' : '🪙 ' + a.price) +
-                    '</div>' +
+                        (owned ? '✓ Куплено' : '🪙 ' + a.price) + '</div>' +
                     '<div class="buy-hint">' + (equipped ? 'Одягнуто' : (owned ? 'Одягнути' : 'Купити')) + '</div>';
                 card.addEventListener('click', () => onAccessoryClick(a));
                 grid.appendChild(card);
@@ -1680,8 +1759,7 @@ const App = (function () {
                     '<div class="name">' + escapeHtml(t.name) + '</div>' +
                     '<div style="font-size:11px;color:var(--text-dim);">' + escapeHtml(t.desc) + '</div>' +
                     '<div class="price ' + (owned ? 'owned' : (State.profile.coins < t.price ? 'cant' : '')) + '">' +
-                        (owned ? '✓ Куплено' : '🪙 ' + t.price) +
-                    '</div>' +
+                        (owned ? '✓ Куплено' : '🪙 ' + t.price) + '</div>' +
                     '<div class="buy-hint">' + (equipped ? 'Активна' : (owned ? 'Застосувати' : 'Купити')) + '</div>';
                 card.addEventListener('click', () => onThemeClick(t));
                 grid.appendChild(card);
@@ -1713,7 +1791,7 @@ const App = (function () {
             renderJoinPreview();
         } else {
             if (State.profile.coins < a.price) {
-                toast('Недостатньо СанКоїнів. Потрібно ще ' + (a.price - State.profile.coins));
+                toast('Недостатньо монет. Потрібно ще ' + (a.price - State.profile.coins));
                 return;
             }
             if (!confirm('Купити "' + a.name + '" за ' + a.price + ' 🪙?')) return;
@@ -1725,7 +1803,6 @@ const App = (function () {
             renderShop();
             renderJoinPreview();
             toast('🎉 Куплено: ' + a.name);
-
             const col = State.shop.collections.find(c => c.id === a.col);
             if (col) checkCollectionBonus(col);
         }
@@ -1750,7 +1827,7 @@ const App = (function () {
             renderJoinPreview();
         } else {
             if (State.profile.coins < a.price) {
-                toast('Недостатньо СанКоїнів. Потрібно ще ' + (a.price - State.profile.coins));
+                toast('Недостатньо монет. Потрібно ще ' + (a.price - State.profile.coins));
                 return;
             }
             if (!confirm('Купити "' + a.name + '" за ' + a.price + ' 🪙?')) return;
@@ -1774,7 +1851,7 @@ const App = (function () {
             toast('Тема застосована: ' + t.name);
         } else {
             if (State.profile.coins < t.price) {
-                toast('Недостатньо СанКоїнів. Потрібно ще ' + (t.price - State.profile.coins));
+                toast('Недостатньо монет. Потрібно ще ' + (t.price - State.profile.coins));
                 return;
             }
             if (!confirm('Розблокувати "' + t.name + '" за ' + t.price + ' 🪙?')) return;
@@ -1811,14 +1888,11 @@ const App = (function () {
         const now = Date.now();
         if (now - State.lastReactionTime < 700) return;
         State.lastReactionTime = now;
-
         State.socket.emit('sendReaction', {
             playerId: State.playerId,
             emoji: emoji
         }, (res) => {
-            if (res && res.ok) {
-                spawnFloatEmoji(emoji);
-            }
+            if (res && res.ok) spawnFloatEmoji(emoji);
         });
     }
 
@@ -1833,6 +1907,136 @@ const App = (function () {
         setTimeout(() => el.remove(), 2600);
     }
 
+    /* ========================================================
+       ЧАТ — КЛІЄНТ
+       ======================================================== */
+    function getChatContainer(id) {
+        const containers = {
+            lobby: $('lobbyChatMessages'),
+            game: $('gameChatMessages'),
+            waiting: $('waitingChatMessages'),
+            studentGame: $('studentGameChatMessages')
+        };
+        return containers[id] || null;
+    }
+
+    function getChatInput(id) {
+        const inputs = {
+            lobby: $('lobbyChatInput'),
+            game: $('gameChatInput'),
+            waiting: $('waitingChatInput'),
+            studentGame: $('studentGameChatInput')
+        };
+        return inputs[id] || null;
+    }
+
+    function renderChatMessage(msg) {
+        const wrap = document.createElement('div');
+        wrap.className = 'chat-message';
+        if (msg.from === State.playerId) wrap.classList.add('self');
+        if (!msg.isBot && msg.from !== State.playerId) {
+            /* повідомлення інших людей */
+        }
+        const av = document.createElement('div');
+        av.className = 'msg-avatar';
+        av.textContent = msg.avatar || '😊';
+        if (msg.accessories && msg.accessories.head) {
+            const acc = document.createElement('span');
+            acc.className = 'acc-head-chat';
+            acc.textContent = getAccEmoji(msg.accessories.head);
+            if (acc.textContent) av.appendChild(acc);
+        }
+        wrap.appendChild(av);
+        const body = document.createElement('div');
+        body.className = 'msg-body';
+        const nm = document.createElement('div');
+        nm.className = 'msg-name';
+        nm.textContent = msg.name + (msg.isBot ? '' : '');
+        body.appendChild(nm);
+        const txt = document.createElement('div');
+        txt.className = 'msg-text';
+        txt.textContent = msg.text;
+        body.appendChild(txt);
+        const time = document.createElement('div');
+        time.className = 'msg-time';
+        time.textContent = new Date(msg.t).toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+        body.appendChild(time);
+        wrap.appendChild(body);
+        return wrap;
+    }
+
+    function appendChatMessageTo(containerId, msg, autoScroll) {
+        const c = getChatContainer(containerId);
+        if (!c) return;
+        const el = renderChatMessage(msg);
+        c.appendChild(el);
+        /* Обмеження DOM */
+        while (c.children.length > 80) c.removeChild(c.firstChild);
+        if (autoScroll !== false) c.scrollTop = c.scrollHeight;
+    }
+
+    function renderChatHistory(containerId) {
+        const c = getChatContainer(containerId);
+        if (!c || !State.room) return;
+        c.innerHTML = '';
+        const history = State.room.chat || [];
+        history.forEach(msg => {
+            const el = renderChatMessage(msg);
+            c.appendChild(el);
+        });
+        c.scrollTop = c.scrollHeight;
+    }
+
+    function renderAllChats() {
+        ['lobby', 'game', 'waiting', 'studentGame'].forEach(renderChatHistory);
+        updateChatCounts();
+    }
+
+    function updateChatCounts() {
+        const history = (State.room && State.room.chat) ? State.room.chat : [];
+        const n = history.length;
+        const ids = ['chatCount', 'chatCountGame', 'chatCountWaiting', 'chatCountStudentGame'];
+        ids.forEach(id => {
+            const el = $(id);
+            if (el) el.textContent = n + ' повідомлень';
+        });
+    }
+
+    function sendChatFrom(which) {
+        if (!State.socket || !State.connected || !State.playerId) {
+            toast('Приєднайся до кімнати, щоб писати в чат');
+            return;
+        }
+        const input = getChatInput(which);
+        if (!input) return;
+        const text = input.value.trim();
+        if (!text) return;
+        if (text.length > 400) { toast('Повідомлення задовге'); return; }
+
+        State.socket.emit('sendChat', {
+            playerId: State.playerId,
+            text: text
+        }, (res) => {
+            if (res && res.ok) {
+                input.value = '';
+            } else {
+                toast((res && res.error) || 'Не вдалося надіслати');
+            }
+        });
+    }
+
+    function onChatMessage(msg) {
+        /* Додаємо в усі активні чати */
+        ['lobby', 'game', 'waiting', 'studentGame'].forEach(cid => {
+            appendChatMessageTo(cid, msg, true);
+        });
+        if (State.room && State.room.chat) {
+            State.room.chat.push(msg);
+            if (State.room.chat.length > 120) State.room.chat.splice(0, State.room.chat.length - 120);
+        }
+        updateChatCounts();
+    }
+
     function renderQuestionsEditor() {
         const wrap = $('questionsEditor');
         if (!wrap) return;
@@ -1844,7 +2048,6 @@ const App = (function () {
         State.questions.forEach((q, qi) => {
             const item = document.createElement('div');
             item.className = 'question-item';
-
             const header = document.createElement('div');
             header.className = 'q-header';
             const idx = document.createElement('span');
@@ -1857,14 +2060,12 @@ const App = (function () {
             del.addEventListener('click', () => removeQuestion(qi));
             header.appendChild(del);
             item.appendChild(header);
-
             const t = document.createElement('input');
             t.type = 'text';
             t.value = q.text;
             t.placeholder = 'Текст питання';
             t.addEventListener('input', () => { State.questions[qi].text = t.value; });
             item.appendChild(t);
-
             q.answers.forEach((ans, ai) => {
                 const row = document.createElement('div');
                 row.className = 'answer-input-row';
@@ -1882,7 +2083,6 @@ const App = (function () {
                 row.appendChild(inp);
                 item.appendChild(row);
             });
-
             wrap.appendChild(item);
         });
     }
@@ -1935,7 +2135,6 @@ const App = (function () {
         socket.on('connect', () => {
             State.connected = true;
             showConn(true, '🟢 Онлайн');
-
             socket.emit('getShop', (res) => {
                 if (res && res.ok) {
                     State.shop = res.shop;
@@ -1960,6 +2159,7 @@ const App = (function () {
                             State.room = res.state;
                             updateTeacherLobbyUI();
                             go('screen-teacher-lobby');
+                            renderAllChats();
                             toast('Відновлено кімнату ' + sess.pin);
                         } else {
                             Storage.remove('sunlorem_session');
@@ -1985,6 +2185,7 @@ const App = (function () {
                             State.room = res.state;
                             State._prizeApplied = false;
                             onStudentState(res.state);
+                            renderAllChats();
                         } else {
                             Storage.remove('sunlorem_session');
                         }
@@ -2026,8 +2227,18 @@ const App = (function () {
                     }
                 }
             }
+            /* Перемалювання чату з серверної історії (перший раз і при оновленні) */
+            if (!State.lastChatMsgId && state.chat && state.chat.length > 0) {
+                State.lastChatMsgId = state.chat[state.chat.length - 1].id;
+                renderAllChats();
+            }
             if (State.role === 'teacher') onTeacherState(state);
             else if (State.role === 'student') onStudentState(state);
+        });
+
+        socket.on('chatMessage', (msg) => {
+            State.lastChatMsgId = msg.id;
+            onChatMessage(msg);
         });
 
         socket.on('tick', (data) => updateTimers(data.timeLeft, data.total));
@@ -2079,13 +2290,15 @@ const App = (function () {
         if (State.questions.length === 0) { openModal('Мало питань', 'Додай хоча б одне.'); return; }
         const botCount = Math.max(0, Math.min(200, parseInt($('botCount').value || '0', 10)));
         const tPerQ = Math.max(5, Math.min(60, parseInt($('timePerQuestion').value || '20', 10)));
+        const chatBotsEnabled = $('chatBotsEnabled') ? $('chatBotsEnabled').checked : true;
 
         toast('Створюємо кімнату...');
         State.socket.emit('createRoom', {
             questions: State.questions,
             mode: State.mode,
             timePerQuestion: tPerQ,
-            botCount: botCount
+            botCount: botCount,
+            chatBotsEnabled: chatBotsEnabled
         }, (res) => {
             if (!res || !res.ok) { openModal('Помилка', (res && res.error) || 'Помилка'); return; }
             State.role = 'teacher';
@@ -2099,6 +2312,7 @@ const App = (function () {
             renderQR(link);
             updateTeacherLobbyUI();
             go('screen-teacher-lobby');
+            renderAllChats();
             toast('PIN: ' + res.pin);
         });
     }
@@ -2137,7 +2351,6 @@ const App = (function () {
         const total = room.players.length;
         $('lobbyCount').textContent = 'Гравців: ' + total;
         $('lobbyCountInline').textContent = total;
-
         const wrap = $('lobbyPlayerList');
         wrap.innerHTML = '';
         if (total === 0) {
@@ -2187,7 +2400,7 @@ const App = (function () {
 
         const nm = document.createElement('div');
         nm.className = 'name';
-        nm.textContent = p.name + (isSelf && p.id === State.playerId ? ' (ти)' : '');
+        nm.textContent = (p.chatName || p.name) + (isSelf && p.id === State.playerId ? ' (ти)' : '');
         card.appendChild(nm);
 
         const sc = document.createElement('div');
@@ -2272,14 +2485,11 @@ const App = (function () {
     function renderTeacherGame(state) {
         const q = state.questions[state.currentQuestion];
         if (!q) return;
-
         $('tqIndex').textContent = state.currentQuestion + 1;
         $('tqTotal').textContent = state.questions.length;
         $('tqText').textContent = q.text;
-
         const answered = state.players.filter(p => p.answeredThisRound).length;
         $('tqAnswered').textContent = 'Відповіли: ' + answered + ' / ' + state.players.length;
-
         const wrap = $('tqAnswers');
         wrap.innerHTML = '';
         q.answers.forEach((a, i) => {
@@ -2289,10 +2499,7 @@ const App = (function () {
             if (i === q.correct) btn.classList.add('correct');
             wrap.appendChild(btn);
         });
-
         renderLeaderboard(state, 'tqLeaderboard');
-        renderFeed(state, 'tqFeed');
-
         const btnNext = $('btnNext');
         if (btnNext) {
             btnNext.textContent = (state.currentQuestion >= state.questions.length - 1) ?
@@ -2316,27 +2523,9 @@ const App = (function () {
         });
     }
 
-    function renderFeed(state, targetId) {
-        const wrap = $(targetId);
-        if (!wrap) return;
-        wrap.innerHTML = '';
-        const feed = state.feed || [];
-        if (feed.length === 0) {
-            wrap.innerHTML = '<div class="event-line" style="opacity:0.5;">Подій поки немає...</div>';
-            return;
-        }
-        feed.slice(0, 15).forEach(ev => {
-            const line = document.createElement('div');
-            line.className = 'event-line';
-            line.textContent = ev.text;
-            wrap.appendChild(line);
-        });
-    }
-
     function onStudentState(state) {
         if (!state) return;
         const me = state.players.find(p => p.id === State.playerId);
-
         if (state.status === 'lobby') {
             if (!$('screen-student-waiting').classList.contains('active') &&
                 !$('screen-student-game').classList.contains('active') &&
@@ -2388,10 +2577,8 @@ const App = (function () {
     function renderStudentGame(state, me) {
         const q = state.questions[state.currentQuestion];
         if (!q) return;
-
         const qChanged = (state.currentQuestion !== State.lastQuestionIndex) ||
                          (state.questionStartedAt !== State.lastQuestionStartedAt);
-
         if (qChanged) {
             State.lastQuestionIndex = state.currentQuestion;
             State.lastQuestionStartedAt = state.questionStartedAt;
@@ -2401,7 +2588,6 @@ const App = (function () {
             if (fb) fb.textContent = '';
             qsa('#sqAnswers .answer-btn').forEach(b => b.classList.remove('hint-hidden'));
         }
-
         $('sqIndex').textContent = state.currentQuestion + 1;
         $('sqTotal').textContent = state.questions.length;
         $('sqText').textContent = q.text;
@@ -2412,7 +2598,6 @@ const App = (function () {
             $('sqCoins').textContent = '🪙 ' + earnedThisGame + '/30';
             $('sqXp').textContent = '⭐ XP: ' + (me.xp || 0);
         }
-
         const wrap = $('sqAnswers');
         if (qChanged) {
             wrap.innerHTML = '';
@@ -2425,7 +2610,6 @@ const App = (function () {
                 wrap.appendChild(btn);
             });
         }
-
         const elapsed = (Date.now() - State.currentQuestionLocalStart) / 1000;
         if (State.answeredCurrent || elapsed >= state.timePerQuestion) {
             qsa('#sqAnswers .answer-btn').forEach((b, i) => {
@@ -2433,7 +2617,6 @@ const App = (function () {
                 if (i === q.correct) b.classList.add('correct');
             });
         }
-
         const streak = me ? (me.streak || 0) : 0;
         const hasPower = me && me.powerActive;
         const canActivate = streak >= 3 && !hasPower;
@@ -2441,7 +2624,6 @@ const App = (function () {
             const btn = $(id);
             if (btn) btn.disabled = !canActivate;
         });
-
         renderLeaderboard(state, 'sqLeaderboard');
     }
 
@@ -2450,15 +2632,12 @@ const App = (function () {
         if (!State.room || State.room.status !== 'running') return;
         const q = State.room.questions[State.room.currentQuestion];
         if (!q) return;
-
         State.answeredCurrent = true;
-
         qsa('#sqAnswers .answer-btn').forEach((b, i) => {
             b.disabled = true;
             if (i === q.correct) b.classList.add('correct');
             if (i === index && i !== q.correct) b.classList.add('wrong');
         });
-
         const isCorrect = (index === q.correct);
         const fb = $('sqFeedback');
         if (isCorrect) {
@@ -2468,7 +2647,6 @@ const App = (function () {
             fb.textContent = '❌ Неправильно';
             fb.style.color = '#ff3d6e';
         }
-
         State.socket.emit('answer', {
             playerId: State.playerId,
             q: State.room.currentQuestion,
@@ -2531,10 +2709,8 @@ const App = (function () {
         const name = ($('studentName').value || '').trim();
         if (!/^\d{6}$/.test(pin)) { toast('Введи 6-значний PIN'); return; }
         if (name.length < 2) { toast('Ім\'я закоротке'); return; }
-
         State.playerName = name;
         State._prizeApplied = false;
-
         toast('Підключаємось...');
         State.socket.emit('joinRoom', {
             pin: pin,
@@ -2554,16 +2730,15 @@ const App = (function () {
             State.room = res.state;
             State._prizeApplied = false;
             Storage.set('sunlorem_session', { role: 'student', pin: pin, playerId: res.playerId, name: name });
-
             const swAv = $('swAvatar');
             if (swAv) swAv.textContent = getAvatarEmoji(State.profile.equippedAvatar);
             const swN = $('swName');
             if (swN) swN.textContent = name;
             const swP = $('swPinBadge');
             if (swP) swP.textContent = 'PIN: ' + pin;
-
             go('screen-student-waiting');
             renderStudentWaiting(res.state);
+            renderAllChats();
             toast('Ти в кімнаті!');
         });
     }
@@ -2586,7 +2761,6 @@ const App = (function () {
     function renderResults(state) {
         if (!state) return;
         const sorted = state.players.slice().sort((a, b) => b.score - a.score);
-
         const podium = $('podium');
         podium.innerHTML = '';
         const top3 = [sorted[1], sorted[0], sorted[2]];
@@ -2602,13 +2776,12 @@ const App = (function () {
             } else {
                 place.innerHTML =
                     '<div class="avatar">' + (p.avatar || '🐱') + '</div>' +
-                    '<div class="name">' + escapeHtml(p.name) + '</div>' +
+                    '<div class="name">' + escapeHtml(p.chatName || p.name) + '</div>' +
                     '<div class="prize-line">+' + prizes[i] + ' 🪙</div>' +
                     '<div class="pedestal">' + medals[i] + '</div>';
             }
             podium.appendChild(place);
         }
-
         const finalLb = $('finalLeaderboard');
         finalLb.innerHTML = '';
         sorted.slice(0, 50).forEach((p, i) => {
@@ -2620,10 +2793,9 @@ const App = (function () {
             card.appendChild(prizeEl);
             finalLb.appendChild(card);
         });
-
         const winner = sorted[0];
         if (winner) {
-            $('certName').textContent = winner.name;
+            $('certName').textContent = winner.chatName || winner.name;
             $('certScore').textContent = 'Балів: ' + winner.score;
             $('certCoins').textContent = '🪙 Разом: ' + (winner.coins || 0) + ' (у т.ч. призове +' + getFinalPrizeClient(1) + ')';
         } else {
@@ -2666,10 +2838,28 @@ const App = (function () {
         }
     }
 
+    function bindChatEnterKeys() {
+        const mappings = [
+            ['lobbyChatInput', 'lobby'],
+            ['gameChatInput', 'game'],
+            ['waitingChatInput', 'waiting'],
+            ['studentGameChatInput', 'studentGame']
+        ];
+        mappings.forEach(m => {
+            const el = $(m[0]);
+            if (!el) return;
+            el.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    sendChatFrom(m[1]);
+                }
+            });
+        });
+    }
+
     function init() {
         if (State.initDone) return;
         State.initDone = true;
-
         loadProfile();
         const savedTheme = Storage.get('sunlorem_theme', 'neon');
         State.theme = State.profile.ownedThemes.includes(savedTheme) ? savedTheme : 'neon';
@@ -2679,6 +2869,7 @@ const App = (function () {
         updateCoinsDisplays();
         buildReactionsBars();
         renderQuests();
+        bindChatEnterKeys();
 
         const pinInput = $('studentPin');
         if (pinInput) {
@@ -2696,11 +2887,9 @@ const App = (function () {
         if (nameInput) {
             nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') studentJoin(); });
         }
-
         $('modalOverlay').addEventListener('click', e => {
             if (e.target === $('modalOverlay')) closeModal();
         });
-
         autoJoinFromUrl();
         initSocket();
     }
@@ -2729,6 +2918,7 @@ const App = (function () {
         switchShopTab,
         saveProfile,
         activatePower,
+        sendChatFrom,
         init,
         get theme() { return State.theme; }
     };
