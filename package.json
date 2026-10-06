@@ -1,13 +1,13 @@
 {
-  "name": "sunlorem-camp-5",
-  "version": "1.0.0",
-  "description": "SunLorem: Школа-Табір 5 Клас — інтерактивна вікторина з реальночасовою синхронізацією, гейміфікацією та чатом з ботами",
+  "name": "sunlorem-school",
+  "version": "2.0.0",
+  "description": "SunLorem: інтерактивна шкільна система з вікториною, чатом Gemini та електронним щоденником",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"
   },
-  "keywords": ["quiz", "socket.io", "express", "school", "ukrainian", "camp", "gamification", "chat", "bots"],
+  "keywords": ["school", "quiz", "socket.io", "gemini", "ai", "ukrainian"],
   "author": "SunLorem",
   "license": "MIT",
   "dependencies": {
