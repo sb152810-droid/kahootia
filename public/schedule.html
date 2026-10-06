@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <title>Розклад · SunLorem</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div id="topbar"></div>
+  <div class="container">
+    <div class="card">
+      <h2>📅 Розклад уроків</h2>
+      <div id="scheduleList"></div>
+    </div>
+    <div class="card">
+      <h2>📚 Домашнє завдання</h2>
+      <div id="hwList"></div>
+    </div>
+  </div>
+
+  <script src="/js/common.js"></script>
+  <script>
+    (async () => {
+      const user = await renderTopbar('/schedule');
+      if (!user) return;
+
+      const r = await api('/api/schedule');
+      const sch = r.schedule || [];
+      const hw = r.homework || [];
+
+      const schEl = document.getElementById('scheduleList');
+      schEl.innerHTML = sch.length
+        ? sch
+            .map(
+              (s) =>
+                `<div class="user-card"><span class="name">📖 ${s.subject}</span><span>${s.day}, ${s.time}</span></div>`
+            )
+            .join('')
+        : '<p style="color:#999;">Розклад порожній 😊</p>';
+
+      const hwEl = document.getElementById('hwList');
+      hwEl.innerHTML = hw.length
+        ? hw
+            .map(
+              (h) =>
+                `<div class="user-card"><span class="name">📝 ${h.subject} (${h.day})</span><span>${h.text}</span></div>`
+            )
+            .join('')
+        : '<p style="color:#999;">Домашнього завдання немає 🎉</p>';
+    })();
+  </script>
+</body>
+</html>
