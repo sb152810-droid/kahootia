@@ -2,11 +2,11 @@
    SunLorem: Інтерактивна шкільна система
    Node.js + Express + Socket.io + Gemini AI
    ------------------------------------------------------------
-   • Акаунти учнів (створює вчитель, дані зберігаються на диску)
+   • Акаунти учнів + ботами (зберігаються в data/data.json)
    • Оцінки, розклад, ДЗ (зберігаються в data/data.json)
    • Вікторина з PIN-кімнатами, ботами, СанКоїнами
+   • Кастомні + випадкові імена ботів у вікторинах
    • Шкільний чат класу з AI-ботами через Google Gemini API
-   • Магазин аватарів/аксесуарів/тем, квести, емодзі-реакції
    ============================================================ */
 
 'use strict';
@@ -18,7 +18,7 @@ const express = require('express');
 const { Server } = require('socket.io');
 
 /* ============================================================
-   ПОСТІЙНЕ СХОВИЩЕ (файлова база)
+   ПОСТІЙНЕ СХОВИЩЕ
    ============================================================ */
 const DATA_DIR = path.join(__dirname, 'data');
 const DATA_FILE = path.join(DATA_DIR, 'data.json');
@@ -32,6 +32,7 @@ let DB = {
     grades: {},
     schedule: {},
     homework: {},
+    bots: [],
     meta: { createdAt: Date.now() }
 };
 
@@ -46,6 +47,7 @@ function loadDB() {
                 if (!DB.grades) DB.grades = {};
                 if (!DB.schedule) DB.schedule = {};
                 if (!DB.homework) DB.homework = {};
+                if (!Array.isArray(DB.bots)) DB.bots = [];
             }
         }
     } catch (e) {
@@ -113,14 +115,13 @@ const GEMINI_SYSTEM_PROMPT =
     'Відповідай українською мовою, коротко (1–2 речення), природно, як у звичайному чаті з однокласниками. ' +
     'Іноді додавай одне-два доречних емодзі (😊, 👍, 📚, ✨, 🚀). ' +
     'Категорично заборонено використовувати лайку, грубі, образливі, принизливі слова, слова-паразити ' +
-    'чи грубий сленг (заборонені слова: фігня, фіг, блін, чорт, дідько, лайливі слова). ' +
-    'Говори виховано, як ввічливий підліток. Якщо тема незрозуміла — перепитай дружньо.';
+    'чи грубий сленг. Говори виховано, як ввічливий підліток. Якщо тема незрозуміла — перепитай дружньо.';
 
 const FORBIDDEN_WORDS = [
     'фігня', 'фіг', 'блін', 'чорт', 'дідько',
     'дурень', 'ідіот', 'дебил', 'кретин',
     'лох', 'тупий', 'тупа', 'придурок',
-    'хай', 'блін', 'капець', 'піпець'
+    'хай', 'капець', 'піпець'
 ];
 
 function sanitizeAIOutput(text) {
@@ -359,6 +360,17 @@ const BOT_NICKNAMES = [
     'Ярослав', 'Марія', 'Григорій', 'Вікторія', 'Павло', 'Ярина'
 ];
 
+const FUNNY_BOT_NAMES = [
+    'Космо-Кіт 🐱', 'Ракетка 🚀', 'Зіронька ✨', 'Комета ☄️',
+    'Сонячний Зайчик ☀️', 'Місячний Пельмень 🌙', 'Кібер-Хом\'як 🐹',
+    'Піксель 👾', 'Байт 🤖', 'Дракончик 🐉', 'Весела Панда 🐼',
+    'Мудра Сова 🦉', 'Блискавка ⚡', 'Космічна Овечка 🐑', 'Ласкава Лисичка 🦊',
+    'Планетарій 🪐', 'Кристалик 💎', 'Вогник 🔥', 'Льодяник ❄️',
+    'Чарівник 🧙', 'Єдиноріг 🦄', 'Кібер-Ніндзя 🥷', 'Робо-Пес 🦾',
+    'Зоряний Пилосос 🌌', 'Міжгалактичний Песик 🐕', 'Магічна Черепашка 🐢',
+    'Космо-Пінгвін 🐧', 'Вітамінка 🍊', 'Шоколадний Кіт 🍫'
+];
+
 const AVATARS = ['😀','😎','🤓','🥳','😺','🐶','🦊','🐼','🐨','🦁','🐯','🐸','🐵','🐧','🦄','🐙','🦖','🐉','🌟','⚡','🔥','🌈','🍀','🎈','🚀','🎨','🎮','⚽','🏆','💎','🍕','🍩'];
 
 const MODES = {
@@ -368,7 +380,7 @@ const MODES = {
 };
 
 /* ============================================================
-   ДЕФОЛТНІ ДАНІ ДЛЯ УЧНІВ
+   ДЕФОЛТНІ ДАНІ
    ============================================================ */
 const DEFAULT_SUBJECTS = [
     'Математика', 'Українська мова', 'Історія',
@@ -463,33 +475,33 @@ function generatePassword(len) {
 })();
 
 /* ============================================================
-   КІМНАТИ ВІКТОРИНИ
+   УТИЛІТИ
    ============================================================ */
-const rooms = new Map();
-
-function generatePin() {
-    for (let i = 0; i < 200; i++) {
-        const pin = String(Math.floor(100000 + Math.random() * 900000));
-        if (!rooms.has(pin)) return pin;
-    }
-    return String(Math.floor(100000 + Math.random() * 900000));
-}
-
 function makeId(prefix) {
     return prefix + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
 }
 
+function shuffleArray(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+}
+
+/* ============================================================
+   ГЕНЕРАЦІЯ БОТІВ ДЛЯ ВІКТОРИНИ
+   ============================================================ */
 function generateBots(count) {
     const bots = [];
     const allFirst = FIRST_NAMES_M.concat(FIRST_NAMES_F);
-    const poolFirst = allFirst.slice();
-    const poolLast = LAST_NAMES.slice();
+    const poolFirst = shuffleArray(allFirst);
+    const poolLast = shuffleArray(LAST_NAMES);
+    const nickPool = shuffleArray(BOT_NICKNAMES);
+    const funnyPool = shuffleArray(FUNNY_BOT_NAMES);
     const usedNames = new Set();
-    const nickPool = BOT_NICKNAMES.slice();
-    for (let i = nickPool.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        const tmp = nickPool[i]; nickPool[i] = nickPool[j]; nickPool[j] = tmp;
-    }
+
     for (let i = 0; i < count; i++) {
         let first, last, full;
         let attempts = 0;
@@ -504,7 +516,16 @@ function generateBots(count) {
             attempts++;
         } while (usedNames.has(full) && attempts < 80);
         usedNames.add(full);
-        const nickname = nickPool.length ? nickPool.shift() : full;
+
+        let nickname;
+        if (nickPool.length > 0) {
+            nickname = nickPool.shift();
+        } else if (funnyPool.length > 0) {
+            nickname = funnyPool.shift();
+        } else {
+            nickname = full;
+        }
+
         bots.push({
             id: makeId('bot' + i),
             name: full,
@@ -519,6 +540,7 @@ function generateBots(count) {
             finalRank: 0,
             xp: 0,
             isBot: true,
+            isCustomBot: false,
             correctCount: 0,
             wrongCount: 0,
             alive: true,
@@ -533,6 +555,75 @@ function generateBots(count) {
         });
     }
     return bots;
+}
+
+/* ============================================================
+   ЗМІШАНА ГЕНЕРАЦІЯ БОТІВ: КАСТОМНІ + ВИПАДКОВІ
+   ------------------------------------------------------------
+   customNames — масив імен, які вписує вчитель
+   count — загальна кількість ботів, потрібних у грі
+   ============================================================ */
+function generateBotsMixed(count, customNames) {
+    const bots = [];
+    const customList = Array.isArray(customNames)
+        ? customNames.map(s => String(s).trim()).filter(Boolean)
+        : [];
+
+    const usedCustom = new Set();
+    customList.slice(0, count).forEach((name, i) => {
+        const key = name.toLowerCase();
+        if (usedCustom.has(key)) return;
+        usedCustom.add(key);
+
+        bots.push({
+            id: makeId('cbot' + i),
+            name: name,
+            chatName: name,
+            avatar: AVATARS[Math.floor(Math.random() * AVATARS.length)],
+            avatarId: 'a_cat',
+            accessories: { head: '', eyes: '', effect: '' },
+            score: 0,
+            coins: 0,
+            coinsEarnedThisGame: 0,
+            finalPrize: 0,
+            finalRank: 0,
+            xp: 0,
+            isBot: true,
+            isCustomBot: true,
+            correctCount: 0,
+            wrongCount: 0,
+            alive: true,
+            answeredThisRound: false,
+            lastCorrect: null,
+            botSpeed: 0.5 + Math.random() * 0.5,
+            streak: 0,
+            bestStreak: 0,
+            powerActive: null,
+            reaction: null,
+            quests: {}
+        });
+    });
+
+    const remaining = Math.max(0, count - bots.length);
+    if (remaining > 0) {
+        const autoBots = generateBots(remaining);
+        autoBots.forEach(b => bots.push(b));
+    }
+
+    return bots;
+}
+
+/* ============================================================
+   ЛОГІКА КІМНАТИ ВІКТОРИНИ
+   ============================================================ */
+const rooms = new Map();
+
+function generatePin() {
+    for (let i = 0; i < 200; i++) {
+        const pin = String(Math.floor(100000 + Math.random() * 900000));
+        if (!rooms.has(pin)) return pin;
+    }
+    return String(Math.floor(100000 + Math.random() * 900000));
 }
 
 function addFeed(room, text) {
@@ -587,6 +678,7 @@ function getPublicState(room) {
             finalRank: p.finalRank || 0,
             xp: p.xp || 0,
             isBot: p.isBot,
+            isCustomBot: p.isCustomBot || false,
             correctCount: p.correctCount,
             wrongCount: p.wrongCount,
             alive: p.alive,
@@ -835,6 +927,7 @@ app.get('/api/health', (req, res) => {
         ok: true,
         rooms: rooms.size,
         users: Object.keys(DB.users).length,
+        bots: Array.isArray(DB.bots) ? DB.bots.length : 0,
         gemini: !!GEMINI_API_KEY,
         uptime: Math.round(process.uptime()),
         node: process.version
@@ -917,7 +1010,7 @@ app.post('/api/teacher/create-student', (req, res) => {
     }
 });
 
-/* Масове створення */
+/* Масове створення учнів */
 app.post('/api/teacher/create-students-bulk', (req, res) => {
     try {
         const teacherLogin = String((req.body && req.body.teacherLogin) || '').trim().toLowerCase();
@@ -1047,7 +1140,7 @@ app.post('/api/teacher/set-homework', (req, res) => {
     }
 });
 
-/* Розклад для конкретного учня */
+/* Розклад */
 app.post('/api/teacher/set-schedule', (req, res) => {
     try {
         const teacherLogin = String((req.body && req.body.teacherLogin) || '').trim().toLowerCase();
@@ -1070,6 +1163,96 @@ app.post('/api/teacher/set-schedule', (req, res) => {
                 }
             }
         }
+        saveDB();
+        res.json({ ok: true });
+    } catch (e) {
+        res.json({ ok: false, error: 'Помилка' });
+    }
+});
+
+/* ============================================================
+   БОТИ — REST API
+   ============================================================ */
+app.post('/api/teacher/add-bots', (req, res) => {
+    try {
+        const teacherLogin = String((req.body && req.body.teacherLogin) || '').trim().toLowerCase();
+        const teacherPassword = String((req.body && req.body.teacherPassword) || '');
+        const raw = String((req.body && req.body.names) || '');
+
+        const teacher = DB.users[teacherLogin];
+        if (!teacher || teacher.role !== 'teacher' || teacher.password !== teacherPassword) {
+            return res.json({ ok: false, error: 'Немає прав вчителя' });
+        }
+
+        const names = raw
+            .split(/\r?\n|,|;/)
+            .map(s => s.trim())
+            .filter(s => s.length >= 2);
+
+        if (names.length === 0) return res.json({ ok: false, error: 'Немає імен' });
+
+        if (!Array.isArray(DB.bots)) DB.bots = [];
+        const added = [];
+        let skipped = 0;
+        names.forEach(name => {
+            const exists = DB.bots.find(b => b.name.toLowerCase() === name.toLowerCase());
+            if (exists) { skipped++; return; }
+            const bot = {
+                id: 'bot_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                name: name,
+                createdAt: Date.now()
+            };
+            DB.bots.push(bot);
+            added.push(bot);
+        });
+        saveDB();
+        res.json({ ok: true, added, skipped, total: DB.bots.length });
+    } catch (e) {
+        res.json({ ok: false, error: 'Помилка' });
+    }
+});
+
+app.post('/api/teacher/list-bots', (req, res) => {
+    try {
+        const teacherLogin = String((req.body && req.body.teacherLogin) || '').trim().toLowerCase();
+        const teacherPassword = String((req.body && req.body.teacherPassword) || '');
+        const teacher = DB.users[teacherLogin];
+        if (!teacher || teacher.role !== 'teacher' || teacher.password !== teacherPassword) {
+            return res.json({ ok: false, error: 'Немає прав вчителя' });
+        }
+        res.json({ ok: true, bots: Array.isArray(DB.bots) ? DB.bots : [] });
+    } catch (e) {
+        res.json({ ok: false, error: 'Помилка' });
+    }
+});
+
+app.post('/api/teacher/delete-bot', (req, res) => {
+    try {
+        const teacherLogin = String((req.body && req.body.teacherLogin) || '').trim().toLowerCase();
+        const teacherPassword = String((req.body && req.body.teacherPassword) || '');
+        const botId = String((req.body && req.body.botId) || '');
+        const teacher = DB.users[teacherLogin];
+        if (!teacher || teacher.role !== 'teacher' || teacher.password !== teacherPassword) {
+            return res.json({ ok: false, error: 'Немає прав вчителя' });
+        }
+        if (!Array.isArray(DB.bots)) DB.bots = [];
+        DB.bots = DB.bots.filter(b => b.id !== botId);
+        saveDB();
+        res.json({ ok: true, total: DB.bots.length });
+    } catch (e) {
+        res.json({ ok: false, error: 'Помилка' });
+    }
+});
+
+app.post('/api/teacher/clear-bots', (req, res) => {
+    try {
+        const teacherLogin = String((req.body && req.body.teacherLogin) || '').trim().toLowerCase();
+        const teacherPassword = String((req.body && req.body.teacherPassword) || '');
+        const teacher = DB.users[teacherLogin];
+        if (!teacher || teacher.role !== 'teacher' || teacher.password !== teacherPassword) {
+            return res.json({ ok: false, error: 'Немає прав вчителя' });
+        }
+        DB.bots = [];
         saveDB();
         res.json({ ok: true });
     } catch (e) {
@@ -1116,7 +1299,6 @@ io.on('connection', (socket) => {
         console.log('[upgrade]', socket.id, '→', socket.conn.transport.name);
     });
 
-    /* ---------- МАГАЗИН ---------- */
     socket.on('getShop', (cb) => {
         if (cb) cb({
             ok: true,
@@ -1128,7 +1310,6 @@ io.on('connection', (socket) => {
         });
     });
 
-    /* ---------- АВТОРИЗАЦІЯ SOCKET ---------- */
     socket.on('auth', (payload, cb) => {
         try {
             const login = String(payload && payload.login || '').trim().toLowerCase();
@@ -1153,7 +1334,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- ШКІЛЬНИЙ ЧАТ (окремий канал) ---------- */
+    /* ---------- ШКІЛЬНИЙ ЧАТ ---------- */
     socket.on('classChatMessage', (payload, cb) => {
         try {
             const text = String(payload && payload.text || '').trim().slice(0, 400);
@@ -1202,9 +1383,12 @@ io.on('connection', (socket) => {
                 parseInt(payload.timePerQuestion, 10) || MODES[mode].defaultTime));
             const botCount = Math.max(0, Math.min(200, parseInt(payload.botCount, 10) || 0));
             const chatBotsEnabled = payload.chatBotsEnabled !== false;
+            const customBotNames = Array.isArray(payload.customBotNames)
+                ? payload.customBotNames.map(s => String(s).trim()).filter(Boolean)
+                : [];
 
             const pin = generatePin();
-            const bots = generateBots(botCount);
+            const bots = generateBotsMixed(botCount, customBotNames);
 
             const room = {
                 pin, createdAt: Date.now(), status: 'lobby', mode, timePerQuestion,
@@ -1222,6 +1406,7 @@ io.on('connection', (socket) => {
                 reactions: [],
                 firstAnswer: null,
                 chatBotsEnabled,
+                customBotNames: customBotNames,
                 teacherSocketId: socket.id,
                 teacherPlayerId: 'teacher_' + pin,
                 timer: null,
@@ -1232,7 +1417,17 @@ io.on('connection', (socket) => {
             currentRoomPin = pin;
             role = 'teacher';
             socket.join('room_' + pin);
-            addFeed(room, 'Кімнату створено. Запрошуйте учнів! 📚');
+
+            const customCount = bots.filter(b => b.isCustomBot).length;
+            const autoCount = bots.length - customCount;
+            let feedMsg = 'Кімнату створено. Запрошуйте учнів! 📚';
+            if (bots.length > 0) {
+                feedMsg += ' (ботів: ' + bots.length;
+                if (customCount > 0) feedMsg += ', з них кастомних: ' + customCount;
+                if (autoCount > 0) feedMsg += ', автогенерованих: ' + autoCount;
+                feedMsg += ')';
+            }
+            addFeed(room, feedMsg);
 
             if (chatBotsEnabled && bots.length > 0) {
                 setTimeout(() => {
@@ -1355,7 +1550,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- ОНОВЛЕННЯ ПРОФІЛЮ ГРАВЦЯ ---------- */
     socket.on('updateProfile', (payload) => {
         try {
             const room = rooms.get(currentRoomPin);
@@ -1373,7 +1567,6 @@ io.on('connection', (socket) => {
         } catch (e) { }
     });
 
-    /* ---------- ЧАТ КІМНАТИ ---------- */
     socket.on('sendChat', (payload, cb) => {
         try {
             const room = rooms.get(currentRoomPin);
@@ -1412,7 +1605,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- СТАРТ ГРИ ---------- */
     socket.on('startGame', (cb) => {
         try {
             const room = rooms.get(currentRoomPin);
@@ -1451,7 +1643,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- НАСТУПНЕ ПИТАННЯ ---------- */
     socket.on('nextQuestion', (cb) => {
         try {
             const room = rooms.get(currentRoomPin);
@@ -1477,7 +1668,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- ВІДПОВІДЬ ---------- */
     socket.on('answer', (payload, cb) => {
         try {
             const room = rooms.get(currentRoomPin);
@@ -1542,7 +1732,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- СУПЕРСИЛИ ---------- */
     socket.on('activatePower', (payload, cb) => {
         try {
             const room = rooms.get(currentRoomPin);
@@ -1572,7 +1761,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- РЕАКЦІЇ ---------- */
     socket.on('sendReaction', (payload, cb) => {
         try {
             const room = rooms.get(currentRoomPin);
@@ -1598,7 +1786,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- ЗАВЕРШЕННЯ ГРИ ---------- */
     socket.on('finishGame', (cb) => {
         try {
             const room = rooms.get(currentRoomPin);
@@ -1639,7 +1826,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- ЗАКРИТТЯ КІМНАТИ ---------- */
     socket.on('closeRoom', (cb) => {
         try {
             const room = rooms.get(currentRoomPin);
@@ -1654,7 +1840,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- РЕКОНЕКТ ВЧИТЕЛЯ ---------- */
     socket.on('reconnectTeacher', (payload, cb) => {
         try {
             const pin = String(payload && payload.pin || '').trim();
@@ -1672,7 +1857,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- ВІД'ЄДНАННЯ ---------- */
     socket.on('disconnect', (reason) => {
         console.log('[disconnect]', socket.id, '| reason:', reason);
         const room = rooms.get(currentRoomPin);
@@ -1734,6 +1918,7 @@ httpServer.listen(PORT, HOST, () => {
     console.log('🤖 Gemini AI: ' + (GEMINI_API_KEY ? 'увімкнено' : 'ВИМКНЕНО (немає GEMINI_API_KEY)'));
     console.log('👩‍🏫 Вчитель: teacher / teacher123');
     console.log('💾 Дані: ' + DATA_FILE);
+    console.log('🤖 Ботів у базі: ' + (Array.isArray(DB.bots) ? DB.bots.length : 0));
     console.log('==============================================');
 });
 
