@@ -250,245 +250,76 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
     color: var(--accent-2); padding: 12px 4px; margin: 8px 0;
 }
 .pin-input { text-align: center; font-size: clamp(28px, 8vw, 46px) !important; font-weight: 900; letter-spacing: 10px; padding: 16px !important; }
-
-/* ============================================================
-   ЧАТ
-   ============================================================ */
-.chat-panel {
-    display: flex;
-    flex-direction: column;
-    border-radius: var(--radius);
-    overflow: hidden;
-    border: 1.5px solid var(--panel-border);
-    background: var(--panel-bg);
-    box-shadow: var(--panel-shadow);
+table.grades-table { width: 100%; border-collapse: collapse; font-size: clamp(13px, 3vw, 15px); }
+table.grades-table th, table.grades-table td {
+    border: 1px solid var(--panel-border); padding: 8px 10px; text-align: center;
 }
-.chat-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 14px;
-    background: linear-gradient(135deg, rgba(181, 107, 255, 0.25), rgba(255, 95, 240, 0.15));
-    border-bottom: 1px solid var(--panel-border);
+table.grades-table th { background: var(--input-bg); color: var(--accent-1); font-weight: 900; }
+table.grades-table td.subject-cell { text-align: left; font-weight: 700; }
+.grade-badge {
+    display: inline-block; min-width: 30px; padding: 3px 8px;
+    border-radius: 8px; font-weight: 900;
+    background: var(--input-bg); border: 1.5px solid var(--panel-border);
 }
-.chat-header .title {
-    font-weight: 900;
-    font-size: clamp(14px, 3.2vw, 16px);
-    display: flex; align-items: center; gap: 8px;
+.grade-badge.g5 { color: #1b7a3d; border-color: #4fd070; }
+.grade-badge.g4 { color: #8a6d1a; border-color: #ffd75f; }
+.grade-badge.g3 { color: #b3541e; border-color: #ff8c42; }
+.grade-badge.g2 { color: #b3202f; border-color: #ff6b8b; }
+.schedule-table { width: 100%; border-collapse: collapse; font-size: clamp(12px, 2.8vw, 14px); }
+.schedule-table th, .schedule-table td { border: 1px solid var(--panel-border); padding: 6px 8px; vertical-align: top; }
+.schedule-table th { background: var(--input-bg); color: var(--accent-1); }
+.hw-item {
+    background: var(--input-bg); border: 1.5px solid var(--panel-border);
+    border-radius: var(--radius-sm); padding: 12px; margin-bottom: 10px;
 }
-.chat-header .online-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: var(--accent-5);
-    box-shadow: 0 0 8px var(--accent-5);
-    animation: pulseDot 1.6s ease-in-out infinite;
-}
-.chat-header .count {
-    font-size: 12px;
-    color: var(--text-dim);
-    font-weight: 700;
-}
-.chat-messages {
-    flex: 1;
-    min-height: 240px;
-    max-height: 380px;
-    overflow-y: auto;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    background: var(--input-bg);
-    scrollbar-width: thin;
-    scrollbar-color: var(--accent-1) transparent;
-}
+.hw-item .hw-subject { font-weight: 900; color: var(--accent-2); font-size: clamp(14px, 3.2vw, 16px); }
+.hw-item .hw-task { font-size: clamp(13px, 3vw, 15px); margin: 6px 0; }
+.hw-item .hw-due { font-size: clamp(11px, 2.7vw, 13px); color: var(--text-dim); }
+.chat-panel { display: flex; flex-direction: column; border-radius: var(--radius); overflow: hidden; border: 1.5px solid var(--panel-border); background: var(--panel-bg); box-shadow: var(--panel-shadow); }
+.chat-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: linear-gradient(135deg, rgba(181, 107, 255, 0.25), rgba(255, 95, 240, 0.15)); border-bottom: 1px solid var(--panel-border); }
+.chat-header .title { font-weight: 900; font-size: clamp(14px, 3.2vw, 16px); display: flex; align-items: center; gap: 8px; }
+.chat-header .online-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-5); box-shadow: 0 0 8px var(--accent-5); animation: pulseDot 1.6s ease-in-out infinite; }
+.chat-header .count { font-size: 12px; color: var(--text-dim); font-weight: 700; }
+.chat-messages { flex: 1; min-height: 240px; max-height: 380px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; background: var(--input-bg); scrollbar-width: thin; scrollbar-color: var(--accent-1) transparent; }
 .chat-messages::-webkit-scrollbar { width: 6px; }
 .chat-messages::-webkit-scrollbar-thumb { background: var(--accent-1); border-radius: 6px; }
-.chat-message {
-    display: flex;
-    gap: 8px;
-    align-items: flex-start;
-    max-width: 100%;
-    animation: msgIn 0.3s ease;
-}
-@keyframes msgIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-.chat-message.self {
-    flex-direction: row-reverse;
-}
-.chat-message.system {
-    justify-content: center;
-    opacity: 0.8;
-}
-.chat-message .msg-avatar {
-    width: 34px; height: 34px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    background: var(--panel-bg);
-    border: 1.5px solid var(--panel-border);
-    flex-shrink: 0;
-    position: relative;
-}
-.chat-message .msg-avatar .acc-head-chat {
-    position: absolute; top: -6px; right: -4px;
-    font-size: 12px;
-}
-.chat-message .msg-body {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    max-width: calc(100% - 60px);
-}
-.chat-message .msg-name {
-    font-size: 11px;
-    font-weight: 900;
-    color: var(--accent-1);
-    padding: 0 4px;
-}
-.chat-message.self .msg-name {
-    text-align: right;
-}
-.chat-message .msg-text {
-    padding: 8px 12px;
-    border-radius: 14px;
-    font-size: clamp(13px, 3vw, 15px);
-    line-height: 1.4;
-    background: var(--panel-bg);
-    border: 1px solid var(--panel-border);
-    word-wrap: break-word;
-    white-space: pre-wrap;
-}
-.chat-message.self .msg-text {
-    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-    color: #fff;
-    border-color: var(--accent-2);
-}
-.chat-message.system .msg-text {
-    background: transparent;
-    border: none;
-    color: var(--text-dim);
-    font-size: 12px;
-    padding: 4px 8px;
-}
-.chat-message .msg-time {
-    font-size: 10px;
-    color: var(--text-dim);
-    padding: 0 4px;
-}
-.chat-message.self .msg-time {
-    text-align: right;
-}
-.chat-input-row {
-    display: flex;
-    gap: 8px;
-    padding: 10px;
-    border-top: 1px solid var(--panel-border);
-    background: var(--panel-bg);
-}
-.chat-input-row input {
-    margin-bottom: 0;
-    flex: 1;
-}
-.chat-input-row button {
-    width: auto;
-    min-width: 58px;
-    padding: 10px 14px;
-    min-height: 46px;
-    font-size: 20px;
-}
-
-/* ============================================================
-   АВАТАРИ, МАГАЗИН
-   ============================================================ */
-.avatar-grid {
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    gap: 10px; margin: 12px 0;
-}
+.chat-message { display: flex; gap: 8px; align-items: flex-start; max-width: 100%; animation: msgIn 0.3s ease; }
+@keyframes msgIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.chat-message.self { flex-direction: row-reverse; }
+.chat-message.system { justify-content: center; opacity: 0.8; }
+.chat-message .msg-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; background: var(--panel-bg); border: 1.5px solid var(--panel-border); flex-shrink: 0; position: relative; }
+.chat-message .msg-avatar .acc-head-chat { position: absolute; top: -6px; right: -4px; font-size: 12px; }
+.chat-message .msg-body { display: flex; flex-direction: column; gap: 2px; max-width: calc(100% - 60px); }
+.chat-message .msg-name { font-size: 11px; font-weight: 900; color: var(--accent-1); padding: 0 4px; }
+.chat-message.self .msg-name { text-align: right; }
+.chat-message .msg-text { padding: 8px 12px; border-radius: 14px; font-size: clamp(13px, 3vw, 15px); line-height: 1.4; background: var(--panel-bg); border: 1px solid var(--panel-border); word-wrap: break-word; white-space: pre-wrap; }
+.chat-message.self .msg-text { background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: #fff; border-color: var(--accent-2); }
+.chat-message.system .msg-text { background: transparent; border: none; color: var(--text-dim); font-size: 12px; padding: 4px 8px; }
+.chat-message .msg-time { font-size: 10px; color: var(--text-dim); padding: 0 4px; }
+.chat-message.self .msg-time { text-align: right; }
+.chat-input-row { display: flex; gap: 8px; padding: 10px; border-top: 1px solid var(--panel-border); background: var(--panel-bg); }
+.chat-input-row input { margin-bottom: 0; flex: 1; }
+.chat-input-row button { width: auto; min-width: 58px; padding: 10px 14px; min-height: 46px; font-size: 20px; }
+.avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 12px 0; }
 @media (min-width: 520px) { .avatar-grid { grid-template-columns: repeat(6, 1fr); } }
-.avatar-option {
-    aspect-ratio: 1 / 1; min-height: 58px;
-    border-radius: 50%; background: var(--input-bg);
-    border: 3px solid var(--panel-border);
-    display: flex; align-items: center; justify-content: center;
-    font-size: clamp(26px, 7.5vw, 42px);
-    cursor: pointer; transition: var(--transition);
-    user-select: none; touch-action: manipulation;
-    position: relative; padding: 0;
-}
-.avatar-option.selected {
-    border-color: var(--accent-2);
-    background: linear-gradient(135deg, rgba(181, 107, 255, 0.55), rgba(255, 95, 240, 0.45));
-    transform: scale(1.14);
-    box-shadow: 0 0 0 4px rgba(255, 95, 240, 0.35), 0 0 26px rgba(255, 95, 240, 0.95);
-}
-.avatar-option.selected::after {
-    content: "✓"; position: absolute;
-    top: -4px; right: -4px;
-    width: 22px; height: 22px; border-radius: 50%;
-    background: var(--accent-2); color: #fff;
-    font-size: 14px; font-weight: 900;
-    display: flex; align-items: center; justify-content: center;
-}
+.avatar-option { aspect-ratio: 1 / 1; min-height: 58px; border-radius: 50%; background: var(--input-bg); border: 3px solid var(--panel-border); display: flex; align-items: center; justify-content: center; font-size: clamp(26px, 7.5vw, 42px); cursor: pointer; transition: var(--transition); user-select: none; touch-action: manipulation; position: relative; padding: 0; }
+.avatar-option.selected { border-color: var(--accent-2); background: linear-gradient(135deg, rgba(181, 107, 255, 0.55), rgba(255, 95, 240, 0.45)); transform: scale(1.14); box-shadow: 0 0 0 4px rgba(255, 95, 240, 0.35), 0 0 26px rgba(255, 95, 240, 0.95); }
+.avatar-option.selected::after { content: "✓"; position: absolute; top: -4px; right: -4px; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-2); color: #fff; font-size: 14px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
 .avatar-big { font-size: clamp(60px, 18vw, 120px); text-align: center; margin: 10px 0; display: block; position: relative; }
-
 .shop-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
-.shop-tab {
-    flex: 1 1 auto; padding: 10px 14px;
-    font-size: clamp(13px, 3vw, 15px); font-weight: 800;
-    border-radius: var(--radius-sm);
-    border: 2px solid var(--panel-border);
-    background: var(--input-bg); color: var(--text-main);
-    cursor: pointer; transition: var(--transition);
-    min-width: 100px; text-align: center;
-}
-.shop-tab.active {
-    border-color: var(--accent-2);
-    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-    color: #fff;
-}
-.collection-header {
-    margin: 18px 0 10px 0;
-    padding: 10px 14px;
-    border-radius: var(--radius-sm);
-    background: linear-gradient(135deg, rgba(255, 215, 95, 0.16), rgba(255, 95, 240, 0.08));
-    border: 1.5px solid var(--accent-4);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    flex-wrap: wrap;
-}
+.shop-tab { flex: 1 1 auto; padding: 10px 14px; font-size: clamp(13px, 3vw, 15px); font-weight: 800; border-radius: var(--radius-sm); border: 2px solid var(--panel-border); background: var(--input-bg); color: var(--text-main); cursor: pointer; transition: var(--transition); min-width: 100px; text-align: center; }
+.shop-tab.active { border-color: var(--accent-2); background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: #fff; }
+.collection-header { margin: 18px 0 10px 0; padding: 10px 14px; border-radius: var(--radius-sm); background: linear-gradient(135deg, rgba(255, 215, 95, 0.16), rgba(255, 95, 240, 0.08)); border: 1.5px solid var(--accent-4); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
 .collection-header .col-title { font-size: clamp(15px, 3.4vw, 18px); font-weight: 900; color: var(--accent-4); }
 .collection-header .col-bonus { font-size: clamp(12px, 2.8vw, 14px); font-weight: 800; color: var(--accent-5); }
-.shop-grid {
-    display: grid; grid-template-columns: repeat(2, 1fr);
-    gap: 10px; margin-top: 10px;
-}
+.shop-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
 @media (min-width: 520px) { .shop-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 780px) { .shop-grid { grid-template-columns: repeat(4, 1fr); } }
-.shop-card {
-    background: var(--input-bg);
-    border: 2px solid var(--panel-border);
-    border-radius: var(--radius-sm);
-    padding: 10px; text-align: center;
-    position: relative; transition: var(--transition);
-    cursor: pointer; overflow: hidden;
-}
+.shop-card { background: var(--input-bg); border: 2px solid var(--panel-border); border-radius: var(--radius-sm); padding: 10px; text-align: center; position: relative; transition: var(--transition); cursor: pointer; overflow: hidden; }
 .shop-card:hover { transform: translateY(-3px); border-color: var(--accent-1); }
 .shop-card.locked { opacity: 0.75; }
-.shop-card.locked::after {
-    content: "🔒"; position: absolute; top: 6px; right: 6px;
-    font-size: 20px;
-}
-.shop-card.owned::before {
-    content: "✓"; position: absolute; top: 6px; left: 6px;
-    width: 22px; height: 22px; border-radius: 50%;
-    background: var(--accent-5); color: #10261a;
-    font-size: 14px; font-weight: 900;
-    display: flex; align-items: center; justify-content: center;
-}
+.shop-card.locked::after { content: "🔒"; position: absolute; top: 6px; right: 6px; font-size: 20px; }
+.shop-card.owned::before { content: "✓"; position: absolute; top: 6px; left: 6px; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-5); color: #10261a; font-size: 14px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
 .shop-card.equipped { border-color: var(--accent-4); box-shadow: 0 0 18px rgba(255, 215, 95, 0.65); }
 .shop-card .preview { font-size: clamp(36px, 9vw, 52px); margin: 6px 0; display: block; line-height: 1; }
 .shop-card .name { font-size: clamp(12px, 2.9vw, 14px); font-weight: 800; margin-bottom: 3px; }
@@ -496,115 +327,33 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
 .shop-card .price.owned { color: var(--accent-5); }
 .shop-card .price.cant { color: #ff6b8b; }
 .shop-card .buy-hint { margin-top: 6px; font-size: 11px; color: var(--text-dim); }
-
-.shop-avatar-preview {
-    text-align: center; padding: 16px;
-    background: var(--input-bg);
-    border: 2px dashed var(--panel-border);
-    border-radius: var(--radius); margin: 10px 0;
-}
-.shop-avatar-preview .big-avatar {
-    font-size: clamp(72px, 20vw, 130px);
-    position: relative; display: inline-block; line-height: 1;
-}
-.shop-avatar-preview .big-accessory {
-    position: absolute; font-size: clamp(36px, 10vw, 60px);
-    top: -12px; right: -24px;
-    animation: floatAccessory 3s ease-in-out infinite;
-}
-@keyframes floatAccessory {
-    0%, 100% { transform: translateY(0) rotate(-5deg); }
-    50% { transform: translateY(-6px) rotate(5deg); }
-}
-.shop-avatar-preview .big-effect {
-    position: absolute; font-size: clamp(28px, 8vw, 44px);
-    bottom: -6px; left: -14px;
-    animation: pulseEffect 2s ease-in-out infinite;
-}
-@keyframes pulseEffect {
-    0%, 100% { transform: scale(1); opacity: 0.9; }
-    50% { transform: scale(1.2); opacity: 1; }
-}
-
-.balance-bar {
-    display: flex; align-items: center; justify-content: center;
-    gap: 12px; padding: 10px 16px;
-    background: linear-gradient(135deg, rgba(255, 215, 95, 0.22), rgba(255, 170, 0, 0.12));
-    border: 1.5px solid var(--accent-4);
-    border-radius: 30px; margin-bottom: 14px;
-    font-size: clamp(14px, 3.4vw, 18px);
-    font-weight: 900; color: var(--accent-4);
-    flex-wrap: wrap;
-}
+.shop-avatar-preview { text-align: center; padding: 16px; background: var(--input-bg); border: 2px dashed var(--panel-border); border-radius: var(--radius); margin: 10px 0; }
+.shop-avatar-preview .big-avatar { font-size: clamp(72px, 20vw, 130px); position: relative; display: inline-block; line-height: 1; }
+.shop-avatar-preview .big-accessory { position: absolute; font-size: clamp(36px, 10vw, 60px); top: -12px; right: -24px; animation: floatAccessory 3s ease-in-out infinite; }
+@keyframes floatAccessory { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-6px) rotate(5deg); } }
+.shop-avatar-preview .big-effect { position: absolute; font-size: clamp(28px, 8vw, 44px); bottom: -6px; left: -14px; animation: pulseEffect 2s ease-in-out infinite; }
+@keyframes pulseEffect { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.2); opacity: 1; } }
+.balance-bar { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 10px 16px; background: linear-gradient(135deg, rgba(255, 215, 95, 0.22), rgba(255, 170, 0, 0.12)); border: 1.5px solid var(--accent-4); border-radius: 30px; margin-bottom: 14px; font-size: clamp(14px, 3.4vw, 18px); font-weight: 900; color: var(--accent-4); flex-wrap: wrap; }
 .balance-bar .xp-badge { color: var(--accent-3); font-size: 0.85em; }
-
-/* ============================================================
-   КВЕСТИ
-   ============================================================ */
 .quest-list { display: grid; gap: 10px; margin-top: 10px; }
-.quest-item {
-    display: flex; align-items: center; gap: 12px;
-    background: var(--input-bg);
-    border: 2px solid var(--panel-border);
-    border-radius: var(--radius-sm);
-    padding: 12px;
-}
-.quest-item.done {
-    border-color: var(--accent-5);
-    background: linear-gradient(135deg, rgba(95, 255, 155, 0.14), rgba(95, 240, 255, 0.08));
-}
+.quest-item { display: flex; align-items: center; gap: 12px; background: var(--input-bg); border: 2px solid var(--panel-border); border-radius: var(--radius-sm); padding: 12px; }
+.quest-item.done { border-color: var(--accent-5); background: linear-gradient(135deg, rgba(95, 255, 155, 0.14), rgba(95, 240, 255, 0.08)); }
 .quest-item .q-icon { font-size: 30px; flex-shrink: 0; }
 .quest-item .q-info { flex: 1; min-width: 0; }
 .quest-item .q-title { font-size: clamp(14px, 3.2vw, 16px); font-weight: 800; margin-bottom: 3px; }
 .quest-item .q-desc { font-size: clamp(12px, 2.8vw, 14px); color: var(--text-dim); }
 .quest-item .q-reward { font-size: clamp(12px, 2.9vw, 14px); font-weight: 900; color: var(--accent-4); flex-shrink: 0; }
 .quest-item.done .q-reward { color: var(--accent-5); }
-
-/* ============================================================
-   ЕМОДЗІ-РЕАКЦІЇ
-   ============================================================ */
-.reactions-bar {
-    display: flex; gap: 6px;
-    flex-wrap: wrap; justify-content: center;
-    margin-top: 10px;
-}
-.reaction-btn {
-    width: auto; min-width: 48px;
-    padding: 8px 10px; font-size: 24px;
-    background: var(--input-bg);
-    border: 2px solid var(--panel-border);
-    border-radius: 12px;
-    box-shadow: none; min-height: 48px;
-    transition: transform 0.15s ease;
-    cursor: pointer;
-}
+.reactions-bar { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+.reaction-btn { width: auto; min-width: 48px; padding: 8px 10px; font-size: 24px; background: var(--input-bg); border: 2px solid var(--panel-border); border-radius: 12px; box-shadow: none; min-height: 48px; transition: transform 0.15s ease; cursor: pointer; }
 .reaction-btn:hover { transform: scale(1.15) translateY(-3px); }
 .reaction-btn:active { transform: scale(0.9); }
-.float-emoji {
-    position: fixed; font-size: 44px;
-    pointer-events: none; z-index: 9999;
-    animation: floatAway 2.4s ease-out forwards;
-    filter: drop-shadow(0 0 10px rgba(255, 215, 95, 0.9));
-}
-@keyframes floatAway {
-    0% { transform: translateY(0) scale(0.6); opacity: 0; }
-    15% { transform: translateY(-20px) scale(1.3); opacity: 1; }
-    100% { transform: translateY(-220px) scale(0.8); opacity: 0; }
-}
-
-/* ============================================================
-   ГРА / ПЛЕЄРИ / ПИТАННЯ
-   ============================================================ */
+.float-emoji { position: fixed; font-size: 44px; pointer-events: none; z-index: 9999; animation: floatAway 2.4s ease-out forwards; filter: drop-shadow(0 0 10px rgba(255, 215, 95, 0.9)); }
+@keyframes floatAway { 0% { transform: translateY(0) scale(0.6); opacity: 0; } 15% { transform: translateY(-20px) scale(1.3); opacity: 1; } 100% { transform: translateY(-220px) scale(0.8); opacity: 0; } }
 .player-list { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 10px; }
 @media (min-width: 520px) { .player-list { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 900px) { .player-list { grid-template-columns: 1fr 1fr 1fr; } }
-.player-card {
-    display: flex; align-items: center; gap: 10px;
-    background: var(--input-bg); border: 1.5px solid var(--panel-border);
-    border-radius: var(--radius-sm); padding: 10px 12px;
-    transition: var(--transition);
-    position: relative;
-}
+.player-card { display: flex; align-items: center; gap: 10px; background: var(--input-bg); border: 1.5px solid var(--panel-border); border-radius: var(--radius-sm); padding: 10px 12px; transition: var(--transition); position: relative; }
 .player-card .avatar-wrap { position: relative; display: inline-block; flex-shrink: 0; }
 .player-card .avatar { font-size: 30px; display: block; line-height: 1; }
 .player-card .acc-head { position: absolute; top: -8px; right: -6px; font-size: 16px; }
@@ -617,48 +366,15 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
 .player-card.bot .name::after { content: ""; }
 .player-card.self { border-color: var(--accent-5); }
 .player-card.dead { opacity: 0.45; filter: grayscale(0.6); }
-.player-card .power-badge {
-    position: absolute; top: 4px; right: 6px;
-    font-size: 14px;
-}
-.player-card .reaction-bubble {
-    position: absolute; top: -6px; left: 50%;
-    transform: translateX(-50%);
-    font-size: 22px;
-    animation: bubblePop 0.6s ease;
-}
-@keyframes bubblePop {
-    0% { transform: translateX(-50%) scale(0); opacity: 0; }
-    50% { transform: translateX(-50%) scale(1.4); opacity: 1; }
-    100% { transform: translateX(-50%) scale(1); opacity: 1; }
-}
-.question-text {
-    font-size: clamp(18px, 4.4vw, 26px);
-    font-weight: 800; text-align: center;
-    padding: 16px 10px; margin-bottom: 8px;
-    line-height: 1.35;
-}
-.answers-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
-    margin-top: 10px;
-}
+.player-card .power-badge { position: absolute; top: 4px; right: 6px; font-size: 14px; }
+.player-card .reaction-bubble { position: absolute; top: -6px; left: 50%; transform: translateX(-50%); font-size: 22px; animation: bubblePop 0.6s ease; }
+@keyframes bubblePop { 0% { transform: translateX(-50%) scale(0); opacity: 0; } 50% { transform: translateX(-50%) scale(1.4); opacity: 1; } 100% { transform: translateX(-50%) scale(1); opacity: 1; } }
+.question-text { font-size: clamp(18px, 4.4vw, 26px); font-weight: 800; text-align: center; padding: 16px 10px; margin-bottom: 8px; line-height: 1.35; }
+.answers-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
 @media (min-width: 700px) { .answers-grid { grid-template-columns: 1fr 1fr; } }
-.answer-btn {
-    min-height: 64px; font-size: clamp(16px, 3.8vw, 19px);
-    font-weight: 800; text-align: left; justify-content: flex-start;
-    padding: 15px 18px; background: var(--input-bg);
-    border: 2px solid var(--panel-border); color: var(--text-main);
-    box-shadow: none; border-radius: var(--radius);
-}
+.answer-btn { min-height: 64px; font-size: clamp(16px, 3.8vw, 19px); font-weight: 800; text-align: left; justify-content: flex-start; padding: 15px 18px; background: var(--input-bg); border: 2px solid var(--panel-border); color: var(--text-main); box-shadow: none; border-radius: var(--radius); }
 .answer-btn:hover:not(:disabled) { border-color: var(--accent-2); }
-.answer-btn .key {
-    display: inline-flex; align-items: center; justify-content: center;
-    min-width: 34px; height: 34px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-    color: #fff; font-weight: 900; margin-right: 12px; flex-shrink: 0;
-}
+.answer-btn .key { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: #fff; font-weight: 900; margin-right: 12px; flex-shrink: 0; }
 .answer-btn.correct { border-color: var(--accent-5); background: linear-gradient(135deg, rgba(95, 255, 155, 0.28), rgba(95, 240, 255, 0.16)); }
 .answer-btn.wrong { border-color: #ff3d6e; background: linear-gradient(135deg, rgba(255, 61, 110, 0.28), rgba(255, 107, 139, 0.16)); }
 .answer-btn.hint-hidden { opacity: 0.25; text-decoration: line-through; }
@@ -667,39 +383,19 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
 .timer-fill { height: 100%; background: linear-gradient(90deg, var(--accent-3), var(--accent-1), var(--accent-2)); transition: width 0.35s linear; border-radius: 14px 0 0 14px; }
 .timer-text { font-weight: 900; font-size: clamp(18px, 4.6vw, 26px); color: var(--accent-4); min-width: 56px; text-align: right; }
 .theme-switcher { display: flex; gap: 10px; margin: 10px 0; flex-wrap: wrap; }
-.theme-btn {
-    flex: 1 1 100px; padding: 12px;
-    font-size: clamp(14px, 3.2vw, 16px); font-weight: 800;
-    border-radius: var(--radius-sm); border: 2px solid var(--panel-border);
-    background: var(--input-bg); color: var(--text-main);
-    cursor: pointer; min-height: 54px; box-shadow: none;
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-}
+.theme-btn { flex: 1 1 100px; padding: 12px; font-size: clamp(14px, 3.2vw, 16px); font-weight: 800; border-radius: var(--radius-sm); border: 2px solid var(--panel-border); background: var(--input-bg); color: var(--text-main); cursor: pointer; min-height: 54px; box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 6px; }
 .theme-btn.active { border-color: var(--accent-2); background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: #fff; }
-.badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 5px 12px; font-size: clamp(12px, 2.8vw, 14px);
-    font-weight: 800; border-radius: 20px;
-    background: var(--input-bg); border: 1.5px solid var(--panel-border);
-}
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; font-size: clamp(12px, 2.8vw, 14px); font-weight: 800; border-radius: 20px; background: var(--input-bg); border: 1.5px solid var(--panel-border); }
 .badge.live { color: var(--accent-5); border-color: var(--accent-5); }
 .badge.waiting { color: var(--accent-4); border-color: var(--accent-4); }
 .badge.gold { color: var(--accent-4); border-color: var(--accent-4); }
 .status-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; margin-bottom: 12px; }
 .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
 .particle { position: absolute; border-radius: 50%; opacity: 0.55; animation: floatUp linear infinite; }
-@keyframes floatUp {
-    from { transform: translateY(110vh) translateX(0) scale(0.6); opacity: 0; }
-    20% { opacity: 0.75; }
-    to { transform: translateY(-15vh) translateX(40px) scale(1.1); opacity: 0; }
-}
+@keyframes floatUp { from { transform: translateY(110vh) translateX(0) scale(0.6); opacity: 0; } 20% { opacity: 0.75; } to { transform: translateY(-15vh) translateX(40px) scale(1.1); opacity: 0; } }
 body.theme-pastel .particles, body.theme-candy .particles { display: none; }
 .waiting-card { text-align: center; padding: 22px 16px; }
-.waiting-card .pulse {
-    display: inline-block; width: 16px; height: 16px;
-    border-radius: 50%; background: var(--accent-5);
-    margin-right: 8px; animation: pulseDot 1.4s ease-in-out infinite;
-}
+.waiting-card .pulse { display: inline-block; width: 16px; height: 16px; border-radius: 50%; background: var(--accent-5); margin-right: 8px; animation: pulseDot 1.4s ease-in-out infinite; }
 @keyframes pulseDot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.6; } }
 .waiting-text { font-size: clamp(15px, 3.4vw, 18px); color: var(--text-dim); margin-top: 8px; }
 .podium { display: flex; align-items: flex-end; justify-content: center; gap: 8px; margin: 20px 0; min-height: 220px; }
@@ -707,27 +403,14 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
 .podium-place .avatar { font-size: clamp(34px, 9vw, 56px); }
 .podium-place .name { font-weight: 800; font-size: clamp(12px, 2.9vw, 15px); text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; }
 .podium-place .prize-line { font-size: clamp(11px, 2.7vw, 14px); font-weight: 900; color: var(--accent-4); }
-.podium-place .pedestal {
-    width: 100%; border-radius: 10px 10px 0 0;
-    background: linear-gradient(180deg, var(--accent-4), var(--accent-1));
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 900; font-size: clamp(20px, 5vw, 32px); color: #fff;
-}
+.podium-place .pedestal { width: 100%; border-radius: 10px 10px 0 0; background: linear-gradient(180deg, var(--accent-4), var(--accent-1)); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: clamp(20px, 5vw, 32px); color: #fff; }
 .podium-place.p1 .pedestal { height: 130px; }
 .podium-place.p2 .pedestal { height: 95px; }
 .podium-place.p3 .pedestal { height: 70px; }
-.certificate {
-    background: var(--panel-bg); border: 3px double var(--accent-4);
-    border-radius: var(--radius); padding: 22px 16px;
-    text-align: center; margin: 14px 0;
-    box-shadow: var(--panel-shadow);
-}
+.certificate { background: var(--panel-bg); border: 3px double var(--accent-4); border-radius: var(--radius); padding: 22px 16px; text-align: center; margin: 14px 0; box-shadow: var(--panel-shadow); }
 .certificate h2 { color: var(--accent-4); margin-bottom: 10px; }
 .certificate .recipient { font-size: clamp(22px, 5vw, 32px); font-weight: 900; color: var(--accent-2); margin: 12px 0; }
-.question-item {
-    background: var(--input-bg); border: 1.5px solid var(--panel-border);
-    border-radius: var(--radius-sm); padding: 12px; margin-bottom: 10px;
-}
+.question-item { background: var(--input-bg); border: 1.5px solid var(--panel-border); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 10px; }
 .question-item .q-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
 .question-item .q-index { font-weight: 900; color: var(--accent-2); font-size: clamp(15px, 3.4vw, 18px); }
 .answer-input-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
@@ -735,76 +418,30 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
 .answer-input-row input[type="text"] { margin-bottom: 0; flex: 1; }
 .template-grid, .mode-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
 @media (min-width: 620px) { .template-grid, .mode-grid { grid-template-columns: 1fr 1fr; } }
-.template-card, .mode-card {
-    background: var(--input-bg); border: 2px solid var(--panel-border);
-    border-radius: var(--radius-sm); padding: 14px; cursor: pointer;
-    display: flex; align-items: center; gap: 12px;
-    min-height: 70px; text-align: left; width: 100%;
-}
+.template-card, .mode-card { background: var(--input-bg); border: 2px solid var(--panel-border); border-radius: var(--radius-sm); padding: 14px; cursor: pointer; display: flex; align-items: center; gap: 12px; min-height: 70px; text-align: left; width: 100%; }
 .template-card.selected, .mode-card.selected { border-color: var(--accent-2); background: linear-gradient(135deg, rgba(181, 107, 255, 0.22), rgba(255, 95, 240, 0.14)); }
 .template-card .icon, .mode-card .icon { font-size: clamp(28px, 7vw, 40px); flex-shrink: 0; }
 .template-card .info, .mode-card .info { flex: 1; min-width: 0; }
 .template-card .info h4, .mode-card .info h4 { font-size: clamp(14px, 3.2vw, 17px); margin-bottom: 3px; }
 .template-card .info p, .mode-card .info p { font-size: clamp(12px, 2.8vw, 14px); color: var(--text-dim); line-height: 1.3; }
-.qr-container {
-    background: #fff; border-radius: var(--radius-sm);
-    padding: 12px; display: inline-flex;
-    align-items: center; justify-content: center;
-    margin: 10px auto; min-width: 180px; min-height: 180px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-}
+.qr-container { background: #fff; border-radius: var(--radius-sm); padding: 12px; display: inline-flex; align-items: center; justify-content: center; margin: 10px auto; min-width: 180px; min-height: 180px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25); }
 .qr-container img { display: block; width: 180px; height: 180px; image-rendering: pixelated; border-radius: 4px; }
-@media (min-width: 520px) {
-    .qr-container img { width: 220px; height: 220px; }
-    .qr-container { min-width: 220px; min-height: 220px; }
-}
+@media (min-width: 520px) { .qr-container img { width: 220px; height: 220px; } .qr-container { min-width: 220px; min-height: 220px; } }
 .link-box { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
 .link-box input { margin-bottom: 0; flex: 1 1 200px; font-size: 13px; }
-.modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0, 0, 0, 0.72);
-    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-    display: none; align-items: center; justify-content: center;
-    z-index: 999; padding: 16px; overflow-y: auto;
-}
+.modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 999; padding: 16px; overflow-y: auto; }
 .modal-overlay.active { display: flex; }
-.modal-box {
-    background: var(--panel-bg); border: 2px solid var(--panel-border);
-    border-radius: var(--radius); padding: 20px; max-width: 520px; width: 100%;
-    max-height: 90vh; overflow-y: auto; box-shadow: var(--panel-shadow);
-}
-.toast {
-    position: fixed; bottom: 20px; left: 50%;
-    transform: translateX(-50%) translateY(140px);
-    background: var(--panel-bg); border: 1.5px solid var(--accent-2);
-    color: var(--text-main); padding: 12px 22px; border-radius: 30px;
-    font-weight: 700; font-size: clamp(13px, 3vw, 15px);
-    z-index: 1000; box-shadow: var(--panel-shadow);
-    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-    max-width: 90vw; text-align: center;
-    backdrop-filter: blur(12px);
-}
+.modal-box { background: var(--panel-bg); border: 2px solid var(--panel-border); border-radius: var(--radius); padding: 20px; max-width: 520px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: var(--panel-shadow); }
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(140px); background: var(--panel-bg); border: 1.5px solid var(--accent-2); color: var(--text-main); padding: 12px 22px; border-radius: 30px; font-weight: 700; font-size: clamp(13px, 3vw, 15px); z-index: 1000; box-shadow: var(--panel-shadow); transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); max-width: 90vw; text-align: center; backdrop-filter: blur(12px); }
 .toast.show { transform: translateX(-50%) translateY(0); }
 .spacer { height: 20px; }
 .center { text-align: center; }
 .hidden { display: none !important; }
 .progress-info { display: flex; justify-content: space-between; font-size: clamp(13px, 3vw, 15px); color: var(--text-dim); font-weight: 700; margin-bottom: 6px; flex-wrap: wrap; gap: 6px; }
-.event-feed {
-    max-height: 180px; overflow-y: auto;
-    font-size: clamp(12px, 2.8vw, 14px);
-    color: var(--text-dim); background: var(--input-bg);
-    border-radius: var(--radius-sm); padding: 10px;
-    border: 1px solid var(--panel-border);
-}
+.event-feed { max-height: 180px; overflow-y: auto; font-size: clamp(12px, 2.8vw, 14px); color: var(--text-dim); background: var(--input-bg); border-radius: var(--radius-sm); padding: 10px; border: 1px solid var(--panel-border); }
 .event-feed .event-line { padding: 3px 0; border-bottom: 1px dashed var(--panel-border); }
 .event-feed .event-line:last-child { border-bottom: none; }
-.connection-status {
-    position: fixed; top: 6px; right: 6px;
-    z-index: 1001; padding: 4px 10px;
-    border-radius: 20px; font-size: 11px; font-weight: 800;
-    background: rgba(0,0,0,0.5); color: #fff;
-    display: none; transition: all 0.3s;
-}
+.connection-status { position: fixed; top: 6px; right: 6px; z-index: 1001; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; background: rgba(0,0,0,0.5); color: #fff; display: none; transition: all 0.3s; }
 .connection-status.show { display: block; }
 .connection-status.ok { background: rgba(95, 255, 155, 0.9); color: #10261a; }
 .connection-status.err { background: rgba(255, 61, 110, 0.9); color: #fff; }
@@ -812,26 +449,15 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
 @media (max-width: 380px) { button { min-height: 48px; padding: 12px 14px; } .panel { padding: 12px; } }
 @keyframes confetti-fall { 0% { transform: translateY(-10vh) rotate(0); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
 .confetti { position: fixed; width: 10px; height: 14px; top: 0; z-index: 998; pointer-events: none; animation: confetti-fall linear forwards; }
-
 @media print {
     @page { size: A4 portrait; margin: 15mm; }
     html, body { background: #ffffff !important; color: #000000 !important; height: auto !important; overflow: visible !important; width: 100% !important; }
     body * { visibility: hidden !important; }
-    #particles, #particles *, #toast, .modal-overlay, .confetti, .connection-status, #floatLayer, #floatLayer * {
-        display: none !important; visibility: hidden !important;
-    }
+    #particles, #particles *, #toast, .modal-overlay, .confetti, .connection-status, #floatLayer, #floatLayer * { display: none !important; visibility: hidden !important; }
     .screen { display: none !important; position: static !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; background: #ffffff !important; }
     #screen-results { display: block !important; position: static !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; background: #ffffff !important; height: auto !important; width: 100% !important; inset: auto !important; }
     #screen-results > * { display: none !important; visibility: hidden !important; }
-    #certificateBox {
-        display: block !important; visibility: visible !important;
-        position: static !important; width: 100% !important;
-        max-width: 100% !important; margin: 0 auto !important;
-        padding: 40px 30px !important; background: #ffffff !important;
-        color: #1a1a1a !important; border: 5px double #b8860b !important;
-        border-radius: 6px !important; box-shadow: none !important;
-        text-align: center !important; page-break-inside: avoid !important;
-    }
+    #certificateBox { display: block !important; visibility: visible !important; position: static !important; width: 100% !important; max-width: 100% !important; margin: 0 auto !important; padding: 40px 30px !important; background: #ffffff !important; color: #1a1a1a !important; border: 5px double #b8860b !important; border-radius: 6px !important; box-shadow: none !important; text-align: center !important; page-break-inside: avoid !important; }
     #certificateBox, #certificateBox * { visibility: visible !important; text-shadow: none !important; }
     #certificateBox h2 { display: block !important; color: #8b6914 !important; font-size: 34pt !important; font-weight: 900 !important; margin: 0 0 24pt 0 !important; text-transform: uppercase !important; border-bottom: 2pt solid #b8860b !important; padding-bottom: 12pt !important; }
     #certificateBox p { display: block !important; color: #2b2b2b !important; font-size: 14pt !important; line-height: 1.6 !important; }
@@ -849,26 +475,28 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
 
 <div id="app">
 
-    <!-- ЕКРАН 1: ПРИВІТАННЯ -->
+    <!-- ЕКРАН 1: ПРИВІТАННЯ / ВХІД -->
     <div id="screen-welcome" class="screen active">
         <h1 class="glow">🌟 SunLorem 🌟</h1>
-        <p class="subtitle">Школа-Табір для 5 класу • Гейміфікація та чат</p>
+        <p class="subtitle">Школа-Табір для 5 класу • Гейміфікація, чат та щоденник</p>
 
         <div class="panel panel-narrow">
-            <div class="balance-bar">
-                <span>🪙 <span id="welcomeCoins">0</span></span>
-                <span class="xp-badge">⭐ XP: <span id="welcomeXp">0</span></span>
+            <div class="panel-title">🔑 Вхід до системи</div>
+            <label>Логін (виданий вчителем)</label>
+            <input type="text" id="loginInput" placeholder="наприклад, sofiiashevchenko" autocomplete="username">
+            <label>Пароль</label>
+            <input type="text" id="passwordInput" placeholder="6 символів" autocomplete="current-password">
+            <div class="button-grid two-col">
+                <button class="primary" onclick="App.loginUser()">🚀 Увійти</button>
+                <button class="ghost" onclick="App.go('screen-register-info')">❓ Немає акаунта</button>
             </div>
         </div>
 
         <div class="panel panel-narrow">
+            <div class="panel-title">👩‍🏫 Для вчителя</div>
             <div class="button-grid two-col">
-                <button class="primary" onclick="App.go('screen-teacher-setup')">👩‍🏫 Я Вчитель</button>
-                <button class="success" onclick="App.go('screen-student-join')">🎒 Я Учень</button>
-            </div>
-            <div class="button-row">
-                <button class="gold" onclick="App.go('screen-shop')">🛒 Гардероб / Магазин</button>
-                <button class="ghost" onclick="App.go('screen-quests')">🏆 Завдання</button>
+                <button class="gold" onclick="App.go('screen-teacher-setup')">🎮 Створити вікторину</button>
+                <button class="ghost" onclick="App.go('screen-teacher-accounts')">📇 Акаунти учнів</button>
             </div>
         </div>
 
@@ -876,7 +504,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
             <div class="panel-title">🎮 Як грати</div>
             <p style="font-size:14px;line-height:1.6;">
                 1. Вчитель створює кімнату, отримує <b>PIN</b> та QR.<br>
-                2. Учні вводять PIN, обирають аватар та аксесуари.<br>
+                2. Учні вводять PIN у розділі «Вікторина».<br>
                 3. Спілкуйтесь у чаті з однокласниками та ботами 💬<br>
                 4. За правильні відповіді — до <b>30 🪙</b>.<br>
                 5. У фіналі: 1 місце — <b>70 🪙</b>, 2 місце — <b>60 🪙</b>, 3 місце — <b>50 🪙</b>.
@@ -884,302 +512,169 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ЕКРАН 2: КВЕСТИ -->
-    <div id="screen-quests" class="screen">
-        <h1>🏆 Завдання</h1>
-        <p class="subtitle">Виконуй завдання — нагорода після гри</p>
+    <!-- ЕКРАН 2: ПРО РЕЄСТРАЦІЮ -->
+    <div id="screen-register-info" class="screen">
+        <h1>📇 Про акаунти</h1>
+        <div class="panel panel-narrow">
+            <div class="panel-title">Як отримати логін і пароль</div>
+            <p>Учнівські акаунти створює <b>вчитель</b> у своєму кабінеті. Після створення вчитель роздруковує «папірці» з логіном та паролем і роздає їх учням.</p>
+            <p style="margin-top:10px;">Якщо ти вже отримав(ла) папірець — повертайся на головну та вводь дані.</p>
+            <div class="button-grid two-col" style="margin-top:14px;">
+                <button class="primary" onclick="App.go('screen-welcome')">← Назад до входу</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЕКРАН 3: DASHBOARD УЧНЯ -->
+    <div id="screen-dashboard" class="screen">
+        <h1>🎒 Мій кабінет</h1>
+        <p class="subtitle" id="dashboardHello">Вітаємо!</p>
 
         <div class="panel panel-narrow">
             <div class="balance-bar">
-                <span>🪙 <span id="questsCoins">0</span></span>
-                <span class="xp-badge">⭐ XP: <span id="questsXp">0</span></span>
+                <span>🪙 <span id="dashCoins">0</span></span>
+                <span class="xp-badge">⭐ XP: <span id="dashXp">0</span></span>
             </div>
-            <div id="questsList" class="quest-list">
-                <p style="color:var(--text-dim);text-align:center;padding:14px;">Завдання завантажуються...</p>
+            <div id="dashAvatarPreview" class="shop-avatar-preview">
+                <div class="big-avatar" id="dashBigAvatar">🐱</div>
+                <div id="dashAvatarName" style="font-size:14px;font-weight:800;margin-top:10px;">Кіт-астронавт</div>
             </div>
         </div>
 
         <div class="panel panel-narrow">
+            <div class="panel-title">📚 Розділи</div>
             <div class="button-grid two-col">
-                <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
-                <button class="gold" onclick="App.go('screen-shop')">🛒 Магазин</button>
+                <button class="primary" onclick="App.go('screen-quiz-join')">🎮 Вікторина</button>
+                <button class="success" onclick="App.go('screen-diary')">📓 Щоденник</button>
+                <button class="gold" onclick="App.go('screen-schedule')">🗓️ Розклад</button>
+                <button class="gold" onclick="App.go('screen-homework')">📝 Домашнє завдання</button>
+                <button class="primary" onclick="App.go('screen-class-chat')">💬 Шкільний чат</button>
+                <button class="ghost" onclick="App.go('screen-shop')">🛒 Гардероб</button>
+                <button class="ghost" onclick="App.go('screen-quests')">🏆 Завдання</button>
+                <button class="danger" onclick="App.logout()">🚪 Вийти</button>
             </div>
         </div>
     </div>
 
-    <!-- ЕКРАН 3: МАГАЗИН -->
-    <div id="screen-shop" class="screen">
-        <h1>🛒 Гардероб</h1>
-        <p class="subtitle">Колекції, аксесуари та теми за СанКоїни</p>
+    <!-- ЕКРАН 4: ЩОДЕННИК -->
+    <div id="screen-diary" class="screen">
+        <h1>📓 Щоденник та оцінки</h1>
+        <p class="subtitle" id="diarySubtitle">Твої оцінки</p>
 
         <div class="panel panel-narrow">
-            <div class="balance-bar">
-                <span>🪙 <span id="shopCoins">0</span></span>
-                <span class="xp-badge">⭐ XP: <span id="shopXp">0</span></span>
-            </div>
-
-            <div class="shop-avatar-preview">
-                <div style="font-size:14px;color:var(--text-dim);margin-bottom:8px;">Твій вигляд:</div>
-                <div class="big-avatar" id="shopPreviewAvatar">
-                    🐱
-                    <span class="big-accessory" id="shopPreviewHead" style="display:none;"></span>
-                    <span class="big-accessory" id="shopPreviewEyes" style="display:none;top:0;right:-20px;font-size:28px;"></span>
-                    <span class="big-effect" id="shopPreviewEffect" style="display:none;"></span>
-                </div>
-                <div id="shopPreviewName" style="font-size:14px;font-weight:800;margin-top:10px;">Кіт-астронавт</div>
-            </div>
-
-            <div class="shop-tabs">
-                <button class="shop-tab active" data-tab="avatars" onclick="App.switchShopTab('avatars')">🐾 Аватари</button>
-                <button class="shop-tab" data-tab="accessories" onclick="App.switchShopTab('accessories')">🎩 Аксесуари</button>
-                <button class="shop-tab" data-tab="themes" onclick="App.switchShopTab('themes')">🎨 Теми</button>
-            </div>
-
-            <div id="shopGrid"></div>
+            <div class="panel-title">📊 Таблиця оцінок</div>
+            <div id="diaryTableWrap"></div>
         </div>
 
         <div class="panel panel-narrow">
             <div class="button-grid two-col">
-                <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
-                <button class="primary" onclick="App.saveProfile()">💾 Зберегти</button>
+                <button class="ghost" onclick="App.go('screen-dashboard')">← Назад</button>
+                <button class="gold" onclick="App.go('screen-homework')">📝 ДЗ</button>
             </div>
         </div>
     </div>
 
-    <!-- ЕКРАН 4: ВЧИТЕЛЬ -->
-    <div id="screen-teacher-setup" class="screen">
-        <h1>👩‍🏫 Панель Організатора</h1>
-        <p class="subtitle">Налаштуй гру та створи кімнату</p>
+    <!-- ЕКРАН 5: РОЗКЛАД -->
+    <div id="screen-schedule" class="screen">
+        <h1>🗓️ Розклад занять</h1>
+        <p class="subtitle">Тижневий розклад уроків</p>
 
         <div class="panel panel-narrow">
-            <div class="panel-title">🎨 Стиль інтерфейсу</div>
-            <div class="theme-switcher" id="teacherThemeSwitcher"></div>
-        </div>
-
-        <div class="panel panel-narrow">
-            <div class="panel-title">📚 Шаблон питань</div>
-            <div class="template-grid">
-                <button class="template-card" data-template="math" onclick="App.selectTemplate('math', this)">
-                    <div class="icon">➗</div><div class="info"><h4>Математика</h4><p>10 питань</p></div>
-                </button>
-                <button class="template-card" data-template="ukrainian" onclick="App.selectTemplate('ukrainian', this)">
-                    <div class="icon">📖</div><div class="info"><h4>Українська мова</h4><p>10 питань</p></div>
-                </button>
-                <button class="template-card" data-template="history" onclick="App.selectTemplate('history', this)">
-                    <div class="icon">🏛️</div><div class="info"><h4>Історія України</h4><p>10 питань</p></div>
-                </button>
-                <button class="template-card" data-template="nature" onclick="App.selectTemplate('nature', this)">
-                    <div class="icon">🌿</div><div class="info"><h4>Природознавство</h4><p>10 питань</p></div>
-                </button>
-            </div>
-        </div>
-
-        <div class="panel panel-narrow">
-            <div class="panel-title">🎮 Ігровий режим</div>
-            <div class="mode-grid">
-                <button class="mode-card selected" data-mode="arcade" onclick="App.selectMode('arcade', this)">
-                    <div class="icon">🕹️</div><div class="info"><h4>Аркада</h4><p>20 сек/питання</p></div>
-                </button>
-                <button class="mode-card" data-mode="survival" onclick="App.selectMode('survival', this)">
-                    <div class="icon">🔥</div><div class="info"><h4>Виживання</h4><p>3 помилки — виліт</p></div>
-                </button>
-                <button class="mode-card" data-mode="treasure" onclick="App.selectMode('treasure', this)">
-                    <div class="icon">💎</div><div class="info"><h4>Скарби</h4><p>Бонус за швидкість</p></div>
-                </button>
-            </div>
-        </div>
-
-        <div class="panel panel-narrow">
-            <div class="panel-title">🤖 Кількість ботів</div>
-            <input type="number" id="botCount" min="0" max="200" value="5">
-            <div class="button-row">
-                <button class="ghost small" onclick="document.getElementById('botCount').value=0">0</button>
-                <button class="ghost small" onclick="document.getElementById('botCount').value=5">5</button>
-                <button class="ghost small" onclick="document.getElementById('botCount').value=10">10</button>
-                <button class="ghost small" onclick="document.getElementById('botCount').value=25">25</button>
-                <button class="ghost small" onclick="document.getElementById('botCount').value=50">50</button>
-            </div>
-            <label style="display:flex;align-items:center;gap:8px;margin-top:10px;cursor:pointer;">
-                <input type="checkbox" id="chatBotsEnabled" checked style="width:auto;margin:0;">
-                💬 Увімкнути ботів у чаті
-            </label>
-        </div>
-
-        <div class="panel panel-narrow">
-            <div class="panel-title">⏱️ Час на питання</div>
-            <input type="number" id="timePerQuestion" min="5" max="60" value="20">
-        </div>
-
-        <div class="panel panel-narrow">
-            <div class="panel-title">✏️ Конструктор питань</div>
-            <div id="questionsEditor"></div>
-            <div class="button-row">
-                <button class="ghost small" onclick="App.addQuestion()">➕ Додати</button>
-                <button class="ghost small" onclick="App.clearQuestions()">🗑️ Очистити</button>
-            </div>
+            <div id="scheduleWrap"></div>
         </div>
 
         <div class="panel panel-narrow">
             <div class="button-grid two-col">
-                <button class="primary" onclick="App.createRoom()">🚀 Створити кімнату</button>
-                <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
+                <button class="ghost" onclick="App.go('screen-dashboard')">← Назад</button>
+                <button class="gold" onclick="App.go('screen-homework')">📝 ДЗ</button>
             </div>
         </div>
     </div>
 
-    <!-- ЕКРАН 5: ЛОБІ -->
-    <div id="screen-teacher-lobby" class="screen">
-        <h1>🎯 Кімната створена!</h1>
-        <p class="subtitle">Покажи PIN учням</p>
+    <!-- ЕКРАН 6: ДОМАШНЄ ЗАВДАННЯ -->
+    <div id="screen-homework" class="screen">
+        <h1>📝 Домашнє завдання</h1>
+        <p class="subtitle">Завдання на найближчі дні</p>
 
-        <div class="panel panel-narrow center">
-            <div class="panel-title" style="justify-content:center;">🔑 PIN-код</div>
-            <div class="pin-display" id="roomPin">------</div>
-            <div class="status-row">
-                <span class="badge live">Кімната активна</span>
-                <span class="badge waiting" id="lobbyCount">Гравців: 0</span>
-            </div>
-        </div>
-
-        <div class="panel panel-narrow center">
-            <div class="panel-title" style="justify-content:center;">📱 QR-код</div>
-            <div class="qr-container" id="qrBox"></div>
-            <div class="link-box">
-                <input type="text" id="joinLink" readonly onclick="this.select()">
-                <button class="ghost small" onclick="App.copyLink()">📋</button>
-            </div>
+        <div class="panel panel-narrow">
+            <div id="homeworkWrap"></div>
         </div>
 
         <div class="panel panel-narrow">
-            <div class="panel-title">👥 Гравці (<span id="lobbyCountInline">0</span>)</div>
-            <div id="lobbyPlayerList" class="player-list"></div>
+            <div class="button-grid two-col">
+                <button class="ghost" onclick="App.go('screen-dashboard')">← Назад</button>
+                <button class="gold" onclick="App.go('screen-schedule')">🗓️ Розклад</button>
+            </div>
         </div>
+    </div>
+
+    <!-- ЕКРАН 7: ШКІЛЬНИЙ ЧАТ -->
+    <div id="screen-class-chat" class="screen">
+        <h1>💬 Шкільний чат</h1>
+        <p class="subtitle" id="classChatSubtitle">Чат класу • AI-однокласники</p>
 
         <div class="panel panel-narrow">
-            <div class="panel-title">💬 Чат кімнати</div>
             <div class="chat-panel">
                 <div class="chat-header">
-                    <div class="title">
-                        <span class="online-dot"></span>
-                        Загальний чат
-                    </div>
-                    <div class="count" id="chatCount">0 повідомлень</div>
+                    <div class="title"><span class="online-dot"></span>Чат класу</div>
+                    <div class="count" id="classChatCount">0</div>
                 </div>
-                <div class="chat-messages" id="lobbyChatMessages"></div>
+                <div class="chat-messages" id="classChatMessages" style="max-height:55vh;"></div>
                 <div class="chat-input-row">
-                    <input type="text" id="lobbyChatInput" placeholder="Повідомлення..." maxlength="400">
-                    <button class="gold small" onclick="App.sendChatFrom('lobby')">📨</button>
+                    <input type="text" id="classChatInput" placeholder="Напиши повідомлення..." maxlength="400">
+                    <button class="gold small" onclick="App.sendClassChat()">📨</button>
                 </div>
             </div>
         </div>
 
         <div class="panel panel-narrow">
             <div class="button-grid two-col">
-                <button class="primary" onclick="App.startGame()">▶️ Почати гру</button>
-                <button class="danger" onclick="App.closeRoom()">✖️ Закрити</button>
+                <button class="ghost" onclick="App.go('screen-dashboard')">← Назад</button>
+                <button class="primary" onclick="App.startClassChatBots()">🤖 Запустити ботів у чаті</button>
             </div>
         </div>
     </div>
 
-    <!-- ЕКРАН 6: ГРА ВЧИТЕЛЯ -->
-    <div id="screen-teacher-game" class="screen">
-        <h1>🎮 Гра триває</h1>
-        <div class="panel">
-            <div class="progress-info">
-                <span>Питання <b id="tqIndex">1</b> / <b id="tqTotal">10</b></span>
-                <span id="tqAnswered">Відповіли: 0</span>
-            </div>
-            <div class="timer-wrap">
-                <div class="timer-bar"><div class="timer-fill" id="tqTimerFill" style="width:100%"></div></div>
-                <div class="timer-text" id="tqTimerText">20</div>
-            </div>
-            <div class="question-text" id="tqText">Питання з'явиться тут</div>
-            <div class="answers-grid" id="tqAnswers"></div>
-        </div>
-        <div class="panel">
-            <div class="panel-title">📊 Рейтинг</div>
-            <div id="tqLeaderboard" class="player-list"></div>
-        </div>
-        <div class="panel">
-            <div class="panel-title">💬 Чат</div>
-            <div class="chat-panel">
-                <div class="chat-header">
-                    <div class="title"><span class="online-dot"></span>Загальний чат</div>
-                    <div class="count" id="chatCountGame">0</div>
-                </div>
-                <div class="chat-messages" id="gameChatMessages"></div>
-                <div class="chat-input-row">
-                    <input type="text" id="gameChatInput" placeholder="Повідомлення..." maxlength="400">
-                    <button class="gold small" onclick="App.sendChatFrom('game')">📨</button>
-                </div>
-            </div>
-        </div>
-        <div class="panel">
-            <div class="button-grid two-col">
-                <button class="primary" id="btnNext" onclick="App.nextQuestion()">⏭️ Продовжити</button>
-                <button class="danger" onclick="App.finishGame()">🏁 Завершити</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ЕКРАН 7: ВХІД УЧНЯ -->
-    <div id="screen-student-join" class="screen">
-        <h1>🎒 Вхід учня</h1>
-        <p class="subtitle">Введи PIN та налаштуй профіль</p>
+    <!-- ЕКРАН 8: ВІКТОРИНА — ВХІД УЧНЯ -->
+    <div id="screen-quiz-join" class="screen">
+        <h1>🎮 Вікторина</h1>
+        <p class="subtitle">Введи PIN від вчителя, щоб приєднатися</p>
 
         <div class="panel panel-narrow">
             <div class="balance-bar">
-                <span>🪙 <span id="joinCoins">0</span></span>
-                <span class="xp-badge">⭐ XP: <span id="joinXp">0</span></span>
+                <span>🪙 <span id="quizJoinCoins">0</span></span>
+                <span class="xp-badge">⭐ XP: <span id="quizJoinXp">0</span></span>
             </div>
-        </div>
-
-        <div class="panel panel-narrow">
-            <div class="panel-title">🎨 Тема</div>
-            <div class="theme-switcher" id="studentThemeSwitcher"></div>
         </div>
 
         <div class="panel panel-narrow">
             <div class="panel-title">🔑 PIN кімнати</div>
-            <input type="text" id="studentPin" class="pin-input" maxlength="6" inputmode="numeric" placeholder="000000" autocomplete="off">
+            <input type="text" id="quizPinInput" class="pin-input" maxlength="6" inputmode="numeric" placeholder="000000" autocomplete="off">
+            <div class="button-grid two-col">
+                <button class="success" onclick="App.studentJoinQuiz()">✅ Увійти у гру</button>
+                <button class="ghost" onclick="App.go('screen-dashboard')">← Назад</button>
+            </div>
         </div>
 
         <div class="panel panel-narrow">
-            <div class="panel-title">👤 Твоє ім'я</div>
-            <input type="text" id="studentName" maxlength="24" placeholder="Наприклад, Софійка" autocomplete="off">
-        </div>
-
-        <div class="panel panel-narrow">
-            <div class="panel-title">🐾 Твій аватар</div>
+            <div class="panel-title">🐾 Твій вигляд</div>
             <div class="shop-avatar-preview">
-                <div class="big-avatar" id="joinPreviewAvatar">
-                    🐱
+                <div class="big-avatar" id="joinPreviewAvatar">🐱
                     <span class="big-accessory" id="joinPreviewHead" style="display:none;"></span>
-                    <span class="big-accessory" id="joinPreviewEyes" style="display:none;top:0;right:-20px;font-size:28px;"></span>
                     <span class="big-effect" id="joinPreviewEffect" style="display:none;"></span>
                 </div>
                 <div id="joinPreviewName" style="font-size:14px;font-weight:800;margin-top:10px;">Кіт-астронавт</div>
             </div>
-            <div class="button-row">
-                <button class="gold small" onclick="App.go('screen-shop')">🛒 Змінити</button>
-            </div>
-        </div>
-
-        <div class="panel panel-narrow">
-            <div class="button-grid two-col">
-                <button class="success" onclick="App.studentJoin()">✅ Увійти</button>
-                <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
-            </div>
+            <button class="gold small" onclick="App.go('screen-shop')">🛒 Змінити в гардеробі</button>
         </div>
     </div>
 
-    <!-- ЕКРАН 8: ОЧІКУВАННЯ -->
+    <!-- ЕКРАН 9: ОЧІКУВАННЯ ГРИ -->
     <div id="screen-student-waiting" class="screen">
         <div class="panel panel-narrow waiting-card">
             <div class="avatar-big">
                 <span id="swAvatar">🐱</span>
                 <span class="big-accessory" id="swHead" style="display:none;"></span>
-                <span class="big-accessory" id="swEyes" style="display:none;top:0;right:-20px;font-size:28px;"></span>
                 <span class="big-effect" id="swEffect" style="display:none;"></span>
             </div>
             <h2 id="swName">Учень</h2>
@@ -1216,13 +711,13 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
 
         <div class="panel panel-narrow">
             <div class="button-grid two-col">
-                <button class="ghost" onclick="App.leaveStudent()">🚪 Вийти</button>
+                <button class="ghost" onclick="App.leaveStudentQuiz()">🚪 Вийти</button>
                 <button class="gold" onclick="App.go('screen-shop')">🛒 Магазин</button>
             </div>
         </div>
     </div>
 
-    <!-- ЕКРАН 9: ГРА УЧНЯ -->
+    <!-- ЕКРАН 10: ГРА УЧНЯ -->
     <div id="screen-student-game" class="screen">
         <div class="panel">
             <div class="progress-info">
@@ -1274,7 +769,258 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ЕКРАН 10: ФІНАЛ -->
+    <!-- ЕКРАН 11: ВЧИТЕЛЬ — КАБІНЕТ АКАУНТІВ -->
+    <div id="screen-teacher-accounts" class="screen">
+        <h1>📇 Кабінет акаунтів</h1>
+        <p class="subtitle">Створи учнівські акаунти та роздрукуй «папірці»</p>
+
+        <div class="panel panel-narrow">
+            <div class="panel-title">👩‍🏫 Авторизація вчителя</div>
+            <label>Логін вчителя</label>
+            <input type="text" id="accTeacherLogin" value="teacher" autocomplete="username">
+            <label>Пароль вчителя</label>
+            <input type="text" id="accTeacherPassword" value="teacher123" autocomplete="current-password">
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="panel-title">👤 Клас</div>
+            <input type="text" id="accClassId" value="5-А" placeholder="5-А">
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="panel-title">➕ Один учень</div>
+            <label>Ім'я учня</label>
+            <input type="text" id="accStudentName" placeholder="Наприклад, Софія Шевченко">
+            <button class="primary" onclick="App.createStudentAccount()">✨ Створити акаунт</button>
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="panel-title">📋 Список учнів (по одному в рядку)</div>
+            <textarea id="accBulkNames" rows="6" placeholder="Софія Шевченко&#10;Артем Коваленко&#10;Мілана Бондаренко"></textarea>
+            <div class="button-grid two-col">
+                <button class="primary" onclick="App.createStudentsBulk()">🚀 Створити всі</button>
+                <button class="gold" onclick="App.printAllStudentCards()">🖨️ Друк папірців</button>
+            </div>
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="panel-title">📇 Створені акаунти</div>
+            <div id="createdAccountsWrap">
+                <p style="color:var(--text-dim);text-align:center;padding:10px;">Ще немає створених акаунтів.</p>
+            </div>
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="panel-title">📝 Виставити оцінку</div>
+            <label>Логін учня</label>
+            <input type="text" id="gradeStudentLogin" placeholder="sofiiashevchenko">
+            <label>Предмет</label>
+            <input type="text" id="gradeSubject" placeholder="Математика">
+            <label>Оцінка (1–12)</label>
+            <input type="number" id="gradeValue" min="1" max="12" value="10">
+            <button class="success" onclick="App.setStudentGrade()">✅ Виставити</button>
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="panel-title">📝 Додати ДЗ усім учням</div>
+            <label>Предмет</label>
+            <input type="text" id="hwSubject" placeholder="Математика">
+            <label>Завдання</label>
+            <input type="text" id="hwTask" placeholder="С. 42, №5–8">
+            <label>Термін</label>
+            <input type="text" id="hwDue" placeholder="завтра">
+            <button class="primary" onclick="App.setClassHomework()">📨 Розіслати ДЗ</button>
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="button-grid two-col">
+                <button class="ghost" onclick="App.go('screen-welcome')">← На головну</button>
+                <button class="primary" onclick="App.go('screen-teacher-setup')">🎮 Створити вікторину</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЕКРАН 12: ВЧИТЕЛЬ — НАЛАШТУВАННЯ ВІКТОРИНИ -->
+    <div id="screen-teacher-setup" class="screen">
+        <h1>👩‍🏫 Панель Організатора</h1>
+        <p class="subtitle">Налаштуй вікторину та створи кімнату</p>
+
+        <div class="panel panel-narrow">
+            <div class="button-grid two-col">
+                <button class="gold" onclick="App.go('screen-teacher-accounts')">📇 Акаунти</button>
+                <button class="ghost" onclick="App.go('screen-welcome')">← На головну</button>
+            </div>
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="panel-title">🎨 Стиль інтерфейсу</div>
+            <div class="theme-switcher" id="teacherThemeSwitcher"></div>
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="panel-title">📚 Шаблон питань</div>
+            <div class="template-grid">
+                <button class="template-card" data-template="math" onclick="App.selectTemplate('math', this)">
+                    <div class="icon">➗</div><div class="info"><h4>Математика</h4><p>10 питань</p></div>
+                </button>
+                <button class="template-card" data-template="ukrainian" onclick="App.selectTemplate('ukrainian', this)">
+                    <div class="icon">📖</div><div class="info"><h4>Українська мова</h4><p>10 питань</p></div>
+                </button>
+                <button class="template-card" data-template="history" onclick="App.selectTemplate('history', this)">
+                    <div class="icon">🏛️</div><div class="info"><h4>Історія України</h4><p>10 питань</p></div>
+                </button>
+                <button class="template-card" data-template="nature" onclick="App.selectTemplate('nature', this)">
+                    <div class="icon">🌿</div><div class="info"><h4>Природознавство</h4><p>10 питань</p></div>
+                </button>
+            </div>
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="panel-title">🎮 Ігровий режим</div>
+            <div class="mode-grid">
+                <button class="mode-card selected" data-mode="arcade" onclick="App.selectMode('arcade', this)">
+                    <div class="icon">🕹️</div><div class="info"><h4>Аркада</h4><p>20 сек/питання</p></div>
+                </button>
+                <button class="mode-card" data-mode="survival" onclick="App.selectMode('survival', this)">
+                    <div class="icon">🔥</div><div class="info"><h4>Виживання</h4><p>3 помилки — виліт</p></div>
+                </button>
+                <button class="mode-card" data-mode="treasure" onclick="App.selectMode('treasure', this)">
+                    <div class="icon">💎</div><div class="info"><h4>Скарби</h4><p>Бонус за швидкість</p></div>
+                </button>
+            </div>
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="panel-title">🤖 Кількість ботів</div>
+            <input type="number" id="botCount" min="0" max="200" value="5">
+            <div class="button-row">
+                <button class="ghost small" onclick="document.getElementById('botCount').value=0">0</button>
+                <button class="ghost small" onclick="document.getElementById('botCount').value=5">5</button>
+                <button class="ghost small" onclick="document.getElementById('botCount').value=10">10</button>
+                <button class="ghost small" onclick="document.getElementById('botCount').value=25">25</button>
+                <button class="ghost small" onclick="document.getElementById('botCount').value=50">50</button>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;margin-top:10px;cursor:pointer;">
+                <input type="checkbox" id="chatBotsEnabled" checked style="width:auto;margin:0;">
+                💬 Увімкнути AI-ботів у чаті (Gemini)
+            </label>
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="panel-title">⏱️ Час на питання</div>
+            <input type="number" id="timePerQuestion" min="5" max="60" value="20">
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="panel-title">✏️ Конструктор питань</div>
+            <div id="questionsEditor"></div>
+            <div class="button-row">
+                <button class="ghost small" onclick="App.addQuestion()">➕ Додати</button>
+                <button class="ghost small" onclick="App.clearQuestions()">🗑️ Очистити</button>
+            </div>
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="button-grid two-col">
+                <button class="primary" onclick="App.createRoom()">🚀 Створити кімнату</button>
+                <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЕКРАН 13: ЛОБІ ВЧИТЕЛЯ -->
+    <div id="screen-teacher-lobby" class="screen">
+        <h1>🎯 Кімната створена!</h1>
+        <p class="subtitle">Покажи PIN учням</p>
+
+        <div class="panel panel-narrow center">
+            <div class="panel-title" style="justify-content:center;">🔑 PIN-код</div>
+            <div class="pin-display" id="roomPin">------</div>
+            <div class="status-row">
+                <span class="badge live">Кімната активна</span>
+                <span class="badge waiting" id="lobbyCount">Гравців: 0</span>
+            </div>
+        </div>
+
+        <div class="panel panel-narrow center">
+            <div class="panel-title" style="justify-content:center;">📱 QR-код</div>
+            <div class="qr-container" id="qrBox"></div>
+            <div class="link-box">
+                <input type="text" id="joinLink" readonly onclick="this.select()">
+                <button class="ghost small" onclick="App.copyLink()">📋</button>
+            </div>
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="panel-title">👥 Гравці (<span id="lobbyCountInline">0</span>)</div>
+            <div id="lobbyPlayerList" class="player-list"></div>
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="panel-title">💬 Чат кімнати</div>
+            <div class="chat-panel">
+                <div class="chat-header">
+                    <div class="title"><span class="online-dot"></span>Загальний чат</div>
+                    <div class="count" id="chatCount">0 повідомлень</div>
+                </div>
+                <div class="chat-messages" id="lobbyChatMessages"></div>
+                <div class="chat-input-row">
+                    <input type="text" id="lobbyChatInput" placeholder="Повідомлення..." maxlength="400">
+                    <button class="gold small" onclick="App.sendChatFrom('lobby')">📨</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="button-grid two-col">
+                <button class="primary" onclick="App.startGame()">▶️ Почати гру</button>
+                <button class="danger" onclick="App.closeRoom()">✖️ Закрити</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЕКРАН 14: ГРА ВЧИТЕЛЯ -->
+    <div id="screen-teacher-game" class="screen">
+        <h1>🎮 Гра триває</h1>
+        <div class="panel">
+            <div class="progress-info">
+                <span>Питання <b id="tqIndex">1</b> / <b id="tqTotal">10</b></span>
+                <span id="tqAnswered">Відповіли: 0</span>
+            </div>
+            <div class="timer-wrap">
+                <div class="timer-bar"><div class="timer-fill" id="tqTimerFill" style="width:100%"></div></div>
+                <div class="timer-text" id="tqTimerText">20</div>
+            </div>
+            <div class="question-text" id="tqText">Питання з'явиться тут</div>
+            <div class="answers-grid" id="tqAnswers"></div>
+        </div>
+        <div class="panel">
+            <div class="panel-title">📊 Рейтинг</div>
+            <div id="tqLeaderboard" class="player-list"></div>
+        </div>
+        <div class="panel">
+            <div class="panel-title">💬 Чат</div>
+            <div class="chat-panel">
+                <div class="chat-header">
+                    <div class="title"><span class="online-dot"></span>Загальний чат</div>
+                    <div class="count" id="chatCountGame">0</div>
+                </div>
+                <div class="chat-messages" id="gameChatMessages"></div>
+                <div class="chat-input-row">
+                    <input type="text" id="gameChatInput" placeholder="Повідомлення..." maxlength="400">
+                    <button class="gold small" onclick="App.sendChatFrom('game')">📨</button>
+                </div>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="button-grid two-col">
+                <button class="primary" id="btnNext" onclick="App.nextQuestion()">⏭️ Продовжити</button>
+                <button class="danger" onclick="App.finishGame()">🏁 Завершити</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЕКРАН 15: ФІНАЛ -->
     <div id="screen-results" class="screen">
         <h1>🏆 Результати</h1>
         <div class="panel"><div class="podium" id="podium"></div></div>
@@ -1294,10 +1040,71 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         <div class="panel" id="resultsButtonsPanel">
             <div class="button-grid two-col">
                 <button class="primary" onclick="App.printCertificate()">🖨️ Друк грамоти</button>
-                <button class="gold" onclick="App.go('screen-shop')">🛒 Гардероб</button>
+                <button class="gold" onclick="App.go('screen-dashboard')">🏠 У кабінет</button>
             </div>
             <div class="button-row">
-                <button class="ghost" onclick="App.go('screen-welcome')">🔄 Нова гра</button>
+                <button class="ghost" onclick="App.logout()">🔄 Нова гра</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЕКРАН 16: МАГАЗИН -->
+    <div id="screen-shop" class="screen">
+        <h1>🛒 Гардероб</h1>
+        <p class="subtitle">Колекції, аксесуари та теми за СанКоїни</p>
+
+        <div class="panel panel-narrow">
+            <div class="balance-bar">
+                <span>🪙 <span id="shopCoins">0</span></span>
+                <span class="xp-badge">⭐ XP: <span id="shopXp">0</span></span>
+            </div>
+
+            <div class="shop-avatar-preview">
+                <div style="font-size:14px;color:var(--text-dim);margin-bottom:8px;">Твій вигляд:</div>
+                <div class="big-avatar" id="shopPreviewAvatar">
+                    🐱
+                    <span class="big-accessory" id="shopPreviewHead" style="display:none;"></span>
+                    <span class="big-effect" id="shopPreviewEffect" style="display:none;"></span>
+                </div>
+                <div id="shopPreviewName" style="font-size:14px;font-weight:800;margin-top:10px;">Кіт-астронавт</div>
+            </div>
+
+            <div class="shop-tabs">
+                <button class="shop-tab active" data-tab="avatars" onclick="App.switchShopTab('avatars')">🐾 Аватари</button>
+                <button class="shop-tab" data-tab="accessories" onclick="App.switchShopTab('accessories')">🎩 Аксесуари</button>
+                <button class="shop-tab" data-tab="themes" onclick="App.switchShopTab('themes')">🎨 Теми</button>
+            </div>
+
+            <div id="shopGrid"></div>
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="button-grid two-col">
+                <button class="ghost" onclick="App.backFromShop()">← Назад</button>
+                <button class="primary" onclick="App.saveProfile()">💾 Зберегти</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЕКРАН 17: КВЕСТИ -->
+    <div id="screen-quests" class="screen">
+        <h1>🏆 Завдання</h1>
+        <p class="subtitle">Виконуй завдання — нагорода після гри</p>
+
+        <div class="panel panel-narrow">
+            <div class="balance-bar">
+                <span>🪙 <span id="questsCoins">0</span></span>
+                <span class="xp-badge">⭐ XP: <span id="questsXp">0</span></span>
+            </div>
+            <div id="questsList" class="quest-list">
+                <p style="color:var(--text-dim);text-align:center;padding:14px;">Завдання завантажуються...</p>
+            </div>
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="button-grid two-col">
+                <button class="ghost" onclick="App.go('screen-dashboard')">← Назад</button>
+                <button class="gold" onclick="App.go('screen-shop')">🛒 Магазин</button>
             </div>
         </div>
     </div>
@@ -1306,7 +1113,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-box">
             <h2 id="modalTitle">Заголовок</h2>
-            <p id="modalBody" style="margin:10px 0;">Текст</p>
+            <div id="modalBody" style="margin:10px 0;">Текст</div>
             <div class="button-row">
                 <button class="primary" id="modalOk">Гаразд</button>
             </div>
@@ -1408,11 +1215,11 @@ const App = (function () {
         role: null,
         pin: null,
         playerId: null,
-        playerName: null,
+        user: null,
         profile: {
             coins: 0,
             xp: 0,
-            ownedAvatars: ['a_cat'],
+            ownedAvatars: ['a_cat', 'a_dog', 'a_fox'],
             ownedAccessories: ['x_none'],
             ownedThemes: ['neon', 'pastel'],
             equippedAvatar: 'a_cat',
@@ -1421,6 +1228,9 @@ const App = (function () {
             equippedEffect: '',
             completedQuests: {}
         },
+        grades: null,
+        schedule: null,
+        homework: null,
         mode: 'arcade',
         timePerQuestion: 20,
         questions: [],
@@ -1441,7 +1251,8 @@ const App = (function () {
         lastReactionTime: 0,
         _prizeApplied: false,
         chatBotsEnabled: true,
-        lastChatMsgId: null
+        classChatBotTimer: null,
+        classChatCount: 0
     };
 
     const Storage = {
@@ -1486,9 +1297,12 @@ const App = (function () {
         const el = $(screenId);
         if (el) { el.classList.add('active'); el.scrollTop = 0; }
         if (screenId === 'screen-shop') renderShop();
-        else if (screenId === 'screen-student-join') renderJoinPreview();
-        else if (screenId === 'screen-welcome') updateCoinsDisplays();
+        else if (screenId === 'screen-dashboard') renderDashboard();
+        else if (screenId === 'screen-diary') renderDiary();
+        else if (screenId === 'screen-schedule') renderSchedule();
+        else if (screenId === 'screen-homework') renderHomework();
         else if (screenId === 'screen-quests') renderQuests();
+        else if (screenId === 'screen-quiz-join') renderJoinPreview();
         renderAllChats();
     }
 
@@ -1551,7 +1365,7 @@ const App = (function () {
         const saved = Storage.get('sunlorem_profile');
         if (saved && typeof saved === 'object') {
             State.profile = Object.assign(State.profile, saved);
-            if (!Array.isArray(State.profile.ownedAvatars)) State.profile.ownedAvatars = ['a_cat'];
+            if (!Array.isArray(State.profile.ownedAvatars)) State.profile.ownedAvatars = ['a_cat', 'a_dog', 'a_fox'];
             if (!Array.isArray(State.profile.ownedAccessories)) State.profile.ownedAccessories = ['x_none'];
             if (!Array.isArray(State.profile.ownedThemes)) State.profile.ownedThemes = ['neon', 'pastel'];
             if (!State.profile.equippedAvatar) State.profile.equippedAvatar = 'a_cat';
@@ -1559,6 +1373,8 @@ const App = (function () {
             if (typeof State.profile.xp !== 'number') State.profile.xp = 0;
             if (!State.profile.completedQuests) State.profile.completedQuests = {};
             if (!State.profile.ownedAvatars.includes('a_cat')) State.profile.ownedAvatars.push('a_cat');
+            if (!State.profile.ownedAvatars.includes('a_dog')) State.profile.ownedAvatars.push('a_dog');
+            if (!State.profile.ownedAvatars.includes('a_fox')) State.profile.ownedAvatars.push('a_fox');
             if (!State.profile.ownedAccessories.includes('x_none')) State.profile.ownedAccessories.push('x_none');
         }
     }
@@ -1579,18 +1395,32 @@ const App = (function () {
                 xp: State.profile.xp
             });
         }
+        if (State.user && State.socket && State.connected) {
+            State.socket.emit('updateProfile', {
+                playerId: State.user.login,
+                avatarId: State.profile.equippedAvatar,
+                accessories: {
+                    head: State.profile.equippedHead,
+                    eyes: State.profile.equippedEyes,
+                    effect: State.profile.equippedEffect
+                },
+                xp: State.profile.xp
+            });
+        }
     }
 
     function updateCoinsDisplays() {
         const pairs = [
             ['welcomeCoins', State.profile.coins],
             ['shopCoins', State.profile.coins],
-            ['joinCoins', State.profile.coins],
+            ['quizJoinCoins', State.profile.coins],
             ['questsCoins', State.profile.coins],
+            ['dashCoins', State.profile.coins],
             ['welcomeXp', State.profile.xp],
             ['shopXp', State.profile.xp],
-            ['joinXp', State.profile.xp],
-            ['questsXp', State.profile.xp]
+            ['quizJoinXp', State.profile.xp],
+            ['questsXp', State.profile.xp],
+            ['dashXp', State.profile.xp]
         ];
         pairs.forEach(pair => {
             const el = $(pair[0]);
@@ -1630,7 +1460,6 @@ const App = (function () {
             if (first && first.nodeType === 3) first.nodeValue = getAvatarEmoji(State.profile.equippedAvatar);
         }
         set('joinPreviewHead', getAccEmoji(State.profile.equippedHead), !!State.profile.equippedHead);
-        set('joinPreviewEyes', getAccEmoji(State.profile.equippedEyes), !!State.profile.equippedEyes);
         set('joinPreviewEffect', getAccEmoji(State.profile.equippedEffect), !!State.profile.equippedEffect);
         const nm = $('joinPreviewName');
         if (nm) nm.textContent = getAvatarName(State.profile.equippedAvatar);
@@ -1650,10 +1479,103 @@ const App = (function () {
             if (first && first.nodeType === 3) first.nodeValue = getAvatarEmoji(State.profile.equippedAvatar);
         }
         set('shopPreviewHead', getAccEmoji(State.profile.equippedHead), !!State.profile.equippedHead);
-        set('shopPreviewEyes', getAccEmoji(State.profile.equippedEyes), !!State.profile.equippedEyes);
         set('shopPreviewEffect', getAccEmoji(State.profile.equippedEffect), !!State.profile.equippedEffect);
         const nm = $('shopPreviewName');
         if (nm) nm.textContent = getAvatarName(State.profile.equippedAvatar);
+    }
+
+    function renderDashboard() {
+        if (State.user) {
+            $('dashboardHello').textContent = 'Вітаємо, ' + State.user.name + '!';
+        }
+        const av = $('dashBigAvatar');
+        if (av) av.textContent = getAvatarEmoji(State.profile.equippedAvatar);
+        const nm = $('dashAvatarName');
+        if (nm) nm.textContent = getAvatarName(State.profile.equippedAvatar);
+        updateCoinsDisplays();
+    }
+
+    function renderDiary() {
+        const wrap = $('diaryTableWrap');
+        if (!wrap) return;
+        const grades = State.grades || { subjects: [], rows: [] };
+        const subjects = grades.subjects && grades.subjects.length
+            ? grades.subjects
+            : ['Математика', 'Українська мова', 'Історія', 'Природознавство', 'Англійська мова', 'Мистецтво'];
+
+        if (!grades.rows || grades.rows.length === 0) {
+            wrap.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:14px;">Оцінок поки немає. Вчитель ще не виставив.</p>';
+            return;
+        }
+
+        const dates = Array.from(new Set(grades.rows.map(r => r.date))).sort().slice(-6);
+        let html = '<div style="overflow-x:auto;"><table class="grades-table"><thead><tr><th>Предмет</th>';
+        dates.forEach(d => {
+            const parts = d.split('-');
+            html += '<th>' + parts[2] + '.' + parts[1] + '</th>';
+        });
+        html += '<th>Сер.</th></tr></thead><tbody>';
+
+        subjects.forEach(sub => {
+            html += '<tr><td class="subject-cell">' + escapeHtml(sub) + '</td>';
+            let sum = 0, cnt = 0;
+            dates.forEach(d => {
+                const row = grades.rows.find(r => r.subject === sub && r.date === d);
+                if (row) {
+                    sum += row.grade; cnt++;
+                    const cls = row.grade >= 10 ? 'g5' : row.grade >= 7 ? 'g4' : row.grade >= 4 ? 'g3' : 'g2';
+                    html += '<td><span class="grade-badge ' + cls + '">' + row.grade + '</span></td>';
+                } else {
+                    html += '<td>—</td>';
+                }
+            });
+            html += '<td><b>' + (cnt ? (sum / cnt).toFixed(1) : '—') + '</b></td></tr>';
+        });
+        html += '</tbody></table></div>';
+        wrap.innerHTML = html;
+    }
+
+    function renderSchedule() {
+        const wrap = $('scheduleWrap');
+        if (!wrap) return;
+        const sched = State.schedule || { days: [], lessons: [] };
+        const days = sched.days && sched.days.length ? sched.days : ['Понеділок', 'Вівторок', 'Середа', 'Четвер', 'П’ятниця'];
+        const lessons = sched.lessons && sched.lessons.length ? sched.lessons : [];
+
+        let html = '<div style="overflow-x:auto;"><table class="schedule-table"><thead><tr><th>#</th>';
+        days.forEach(d => { html += '<th>' + escapeHtml(d) + '</th>'; });
+        html += '</tr></thead><tbody>';
+
+        for (let i = 0; i < 6; i++) {
+            html += '<tr><td><b>' + (i + 1) + '</b></td>';
+            for (let j = 0; j < days.length; j++) {
+                const dayLessons = lessons[j] || [];
+                html += '<td>' + escapeHtml(dayLessons[i] || '—') + '</td>';
+            }
+            html += '</tr>';
+        }
+        html += '</tbody></table></div>';
+        wrap.innerHTML = html;
+    }
+
+    function renderHomework() {
+        const wrap = $('homeworkWrap');
+        if (!wrap) return;
+        const hw = State.homework || [];
+        if (hw.length === 0) {
+            wrap.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:14px;">Домашніх завдань немає 🎉</p>';
+            return;
+        }
+        wrap.innerHTML = '';
+        hw.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'hw-item';
+            div.innerHTML =
+                '<div class="hw-subject">📖 ' + escapeHtml(item.subject) + '</div>' +
+                '<div class="hw-task">' + escapeHtml(item.task) + '</div>' +
+                '<div class="hw-due">⏰ ' + escapeHtml(item.due || '') + '</div>';
+            wrap.appendChild(div);
+        });
     }
 
     function renderQuests() {
@@ -1789,6 +1711,7 @@ const App = (function () {
             saveProfile();
             renderShop();
             renderJoinPreview();
+            renderDashboard();
         } else {
             if (State.profile.coins < a.price) {
                 toast('Недостатньо монет. Потрібно ще ' + (a.price - State.profile.coins));
@@ -1802,6 +1725,7 @@ const App = (function () {
             updateCoinsDisplays();
             renderShop();
             renderJoinPreview();
+            renderDashboard();
             toast('🎉 Куплено: ' + a.name);
             const col = State.shop.collections.find(c => c.id === a.col);
             if (col) checkCollectionBonus(col);
@@ -1908,14 +1832,15 @@ const App = (function () {
     }
 
     /* ========================================================
-       ЧАТ — КЛІЄНТ
+       ЧАТ
        ======================================================== */
     function getChatContainer(id) {
         const containers = {
             lobby: $('lobbyChatMessages'),
             game: $('gameChatMessages'),
             waiting: $('waitingChatMessages'),
-            studentGame: $('studentGameChatMessages')
+            studentGame: $('studentGameChatMessages'),
+            classChat: $('classChatMessages')
         };
         return containers[id] || null;
     }
@@ -1925,7 +1850,8 @@ const App = (function () {
             lobby: $('lobbyChatInput'),
             game: $('gameChatInput'),
             waiting: $('waitingChatInput'),
-            studentGame: $('studentGameChatInput')
+            studentGame: $('studentGameChatInput'),
+            classChat: $('classChatInput')
         };
         return inputs[id] || null;
     }
@@ -1934,9 +1860,6 @@ const App = (function () {
         const wrap = document.createElement('div');
         wrap.className = 'chat-message';
         if (msg.from === State.playerId) wrap.classList.add('self');
-        if (!msg.isBot && msg.from !== State.playerId) {
-            /* повідомлення інших людей */
-        }
         const av = document.createElement('div');
         av.className = 'msg-avatar';
         av.textContent = msg.avatar || '😊';
@@ -1951,7 +1874,7 @@ const App = (function () {
         body.className = 'msg-body';
         const nm = document.createElement('div');
         nm.className = 'msg-name';
-        nm.textContent = msg.name + (msg.isBot ? '' : '');
+        nm.textContent = msg.name;
         body.appendChild(nm);
         const txt = document.createElement('div');
         txt.className = 'msg-text';
@@ -1965,30 +1888,35 @@ const App = (function () {
         return wrap;
     }
 
-    function appendChatMessageTo(containerId, msg, autoScroll) {
+    function appendChatMessageTo(containerId, msg) {
         const c = getChatContainer(containerId);
         if (!c) return;
         const el = renderChatMessage(msg);
         c.appendChild(el);
-        /* Обмеження DOM */
         while (c.children.length > 80) c.removeChild(c.firstChild);
-        if (autoScroll !== false) c.scrollTop = c.scrollHeight;
+        c.scrollTop = c.scrollHeight;
     }
 
     function renderChatHistory(containerId) {
         const c = getChatContainer(containerId);
-        if (!c || !State.room) return;
+        if (!c) return;
+        if (containerId === 'classChat') {
+            const history = State.classChatHistory || [];
+            c.innerHTML = '';
+            history.forEach(msg => c.appendChild(renderChatMessage(msg)));
+            c.scrollTop = c.scrollHeight;
+            return;
+        }
+        if (!State.room) return;
         c.innerHTML = '';
         const history = State.room.chat || [];
-        history.forEach(msg => {
-            const el = renderChatMessage(msg);
-            c.appendChild(el);
-        });
+        history.forEach(msg => c.appendChild(renderChatMessage(msg)));
         c.scrollTop = c.scrollHeight;
     }
 
     function renderAllChats() {
         ['lobby', 'game', 'waiting', 'studentGame'].forEach(renderChatHistory);
+        renderChatHistory('classChat');
         updateChatCounts();
     }
 
@@ -2000,6 +1928,8 @@ const App = (function () {
             const el = $(id);
             if (el) el.textContent = n + ' повідомлень';
         });
+        const cc = $('classChatCount');
+        if (cc) cc.textContent = (State.classChatHistory || []).length + ' повідомлень';
     }
 
     function sendChatFrom(which) {
@@ -2026,10 +1956,7 @@ const App = (function () {
     }
 
     function onChatMessage(msg) {
-        /* Додаємо в усі активні чати */
-        ['lobby', 'game', 'waiting', 'studentGame'].forEach(cid => {
-            appendChatMessageTo(cid, msg, true);
-        });
+        ['lobby', 'game', 'waiting', 'studentGame'].forEach(cid => appendChatMessageTo(cid, msg));
         if (State.room && State.room.chat) {
             State.room.chat.push(msg);
             if (State.room.chat.length > 120) State.room.chat.splice(0, State.room.chat.length - 120);
@@ -2037,6 +1964,259 @@ const App = (function () {
         updateChatCounts();
     }
 
+    /* ========================================================
+       ШКІЛЬНИЙ ЧАТ (локальний AI через сервер)
+       ======================================================== */
+    function sendClassChat() {
+        if (!State.socket || !State.connected) {
+            toast('Немає з\'єднання');
+            return;
+        }
+        const input = $('classChatInput');
+        if (!input) return;
+        const text = input.value.trim();
+        if (!text) return;
+
+        const msg = {
+            id: 'cmsg_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+            from: (State.user && State.user.login) || 'me',
+            name: (State.user && State.user.name) || 'Я',
+            avatar: getAvatarEmoji(State.profile.equippedAvatar),
+            accessories: {
+                head: State.profile.equippedHead,
+                eyes: State.profile.equippedEyes,
+                effect: State.profile.equippedEffect
+            },
+            text: text.slice(0, 400),
+            isBot: false,
+            t: Date.now()
+        };
+        State.classChatHistory = State.classChatHistory || [];
+        State.classChatHistory.push(msg);
+        appendChatMessageTo('classChat', msg);
+        input.value = '';
+
+        /* Запит до сервера, щоб AI-бот відповів */
+        State.socket.emit('classChatMessage', { text: msg.text }, (res) => {
+            if (!res || !res.ok) return;
+            const botMsgs = res.replies || [];
+            botMsgs.forEach((b, i) => {
+                setTimeout(() => {
+                    const botMsg = {
+                        id: 'cmsg_bot_' + Date.now() + '_' + i,
+                        from: 'bot_' + i,
+                        name: b.name || 'Однокласник',
+                        avatar: b.avatar || '😊',
+                        accessories: { head: '', eyes: '', effect: '' },
+                        text: b.text,
+                        isBot: true,
+                        t: Date.now()
+                    };
+                    State.classChatHistory.push(botMsg);
+                    appendChatMessageTo('classChat', botMsg);
+                    updateChatCounts();
+                }, 800 + i * 900);
+            });
+        });
+    }
+
+    function startClassChatBots() {
+        toast('🤖 AI-ботів активовано. Просто напиши щось у чат!');
+    }
+
+    /* ========================================================
+       ВЧИТЕЛЬ: АКАУНТИ
+       ======================================================== */
+    function teacherAuthHeaders() {
+        return {
+            teacherLogin: ($('accTeacherLogin').value || '').trim().toLowerCase(),
+            teacherPassword: $('accTeacherPassword').value || ''
+        };
+    }
+
+    async function createStudentAccount() {
+        const name = ($('accStudentName').value || '').trim();
+        const classId = ($('accClassId').value || '5-А').trim();
+        if (name.length < 2) { toast('Введи ім\'я учня'); return; }
+        const h = teacherAuthHeaders();
+        try {
+            const r = await fetch('/api/teacher/create-student', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...h, studentName: name, classId })
+            });
+            const data = await r.json();
+            if (!data.ok) { toast(data.error || 'Помилка'); return; }
+            addAccountCard(data.student);
+            $('accStudentName').value = '';
+            toast('✅ Акаунт створено: ' + data.student.login);
+        } catch (e) {
+            toast('Помилка мережі');
+        }
+    }
+
+    async function createStudentsBulk() {
+        const names = ($('accBulkNames').value || '').trim();
+        const classId = ($('accClassId').value || '5-А').trim();
+        if (!names) { toast('Введи імена'); return; }
+        const h = teacherAuthHeaders();
+        try {
+            const r = await fetch('/api/teacher/create-students-bulk', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...h, names, classId })
+            });
+            const data = await r.json();
+            if (!data.ok) { toast(data.error || 'Помилка'); return; }
+            data.students.forEach(s => addAccountCard(s));
+            $('accBulkNames').value = '';
+            toast('✅ Створено: ' + data.students.length + ' акаунтів');
+        } catch (e) {
+            toast('Помилка мережі');
+        }
+    }
+
+    const createdAccounts = [];
+
+    function addAccountCard(s) {
+        createdAccounts.push(s);
+        renderAccountsList();
+    }
+
+    function renderAccountsList() {
+        const wrap = $('createdAccountsWrap');
+        if (!wrap) return;
+        if (createdAccounts.length === 0) {
+            wrap.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:10px;">Ще немає створених акаунтів.</p>';
+            return;
+        }
+        wrap.innerHTML = '';
+        createdAccounts.forEach(s => {
+            const div = document.createElement('div');
+            div.className = 'hw-item';
+            div.style.display = 'flex';
+            div.style.justifyContent = 'space-between';
+            div.style.alignItems = 'center';
+            div.style.gap = '10px';
+            div.innerHTML =
+                '<div><b>' + escapeHtml(s.name) + '</b><br>' +
+                '<span style="font-size:13px;">Логін: <code>' + escapeHtml(s.login) + '</code> • Пароль: <code>' + escapeHtml(s.password) + '</code></span></div>';
+            const btn = document.createElement('button');
+            btn.className = 'ghost small';
+            btn.textContent = '📋';
+            btn.title = 'Скопіювати';
+            btn.addEventListener('click', () => {
+                navigator.clipboard && navigator.clipboard.writeText(s.login + ' / ' + s.password);
+                toast('Скопійовано');
+            });
+            div.appendChild(btn);
+            wrap.appendChild(div);
+        });
+    }
+
+    function printAllStudentCards() {
+        if (createdAccounts.length === 0) { toast('Немає акаунтів для друку'); return; }
+        const win = window.open('', '_blank');
+        if (!win) { toast('Дозволь спливаючі вікна'); return; }
+        let html = '<html><head><meta charset="UTF-8"><title>Папірці з логінами</title>';
+        html += '<style>body{font-family:Arial,sans-serif;padding:20px;} .card{border:2px dashed #333;border-radius:12px;padding:16px;margin:10px 0;page-break-inside:avoid;} .name{font-size:20px;font-weight:900;margin-bottom:8px;} .row{font-size:16px;margin:4px 0;} code{background:#f0f0f0;padding:2px 6px;border-radius:4px;font-size:18px;} h1{text-align:center;} @media print{.no-print{display:none;}}</style>';
+        html += '</head><body>';
+        html += '<h1>🎒 SunLorem — доступи учнів</h1>';
+        html += '<p style="text-align:center;">Клас: ' + escapeHtml(($('accClassId') && $('accClassId').value) || '5-А') + '</p>';
+        createdAccounts.forEach(s => {
+            html += '<div class="card">';
+            html += '<div class="name">' + escapeHtml(s.name) + '</div>';
+            html += '<div class="row">Логін: <code>' + escapeHtml(s.login) + '</code></div>';
+            html += '<div class="row">Пароль: <code>' + escapeHtml(s.password) + '</code></div>';
+            html += '<div class="row" style="font-size:13px;color:#666;margin-top:10px;">Сайт: ' + window.location.origin + '</div>';
+            html += '</div>';
+        });
+        html += '<div class="no-print" style="text-align:center;margin-top:20px;"><button onclick="window.print()" style="padding:12px 24px;font-size:16px;">🖨️ Друк</button></div>';
+        html += '</body></html>';
+        win.document.write(html);
+        win.document.close();
+    }
+
+    async function setStudentGrade() {
+        const h = teacherAuthHeaders();
+        const studentLogin = ($('gradeStudentLogin').value || '').trim().toLowerCase();
+        const subject = ($('gradeSubject').value || '').trim();
+        const grade = parseInt($('gradeValue').value, 10);
+        try {
+            const r = await fetch('/api/teacher/set-grade', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...h, studentLogin, subject, grade })
+            });
+            const data = await r.json();
+            if (!data.ok) { toast(data.error || 'Помилка'); return; }
+            toast('✅ Оцінку виставлено');
+            $('gradeStudentLogin').value = '';
+            $('gradeSubject').value = '';
+        } catch (e) { toast('Помилка мережі'); }
+    }
+
+    async function setClassHomework() {
+        const h = teacherAuthHeaders();
+        const subject = ($('hwSubject').value || '').trim();
+        const task = ($('hwTask').value || '').trim();
+        const due = ($('hwDue').value || '').trim();
+        try {
+            const r = await fetch('/api/teacher/set-homework', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...h, subject, task, due })
+            });
+            const data = await r.json();
+            if (!data.ok) { toast(data.error || 'Помилка'); return; }
+            toast('✅ ДЗ розіслано всім учням');
+            $('hwSubject').value = ''; $('hwTask').value = ''; $('hwDue').value = '';
+        } catch (e) { toast('Помилка мережі'); }
+    }
+
+    /* ========================================================
+       АВТОРИЗАЦІЯ
+       ======================================================== */
+    async function loginUser() {
+        const login = ($('loginInput').value || '').trim().toLowerCase();
+        const password = $('passwordInput').value || '';
+        if (!login || !password) { toast('Введи логін і пароль'); return; }
+        try {
+            const r = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ login, password })
+            });
+            const data = await r.json();
+            if (!data.ok) { toast(data.error || 'Помилка входу'); return; }
+            State.user = data.user;
+            if (data.user.profile) State.profile = Object.assign(State.profile, data.user.profile);
+            State.grades = data.user.grades;
+            State.schedule = data.user.schedule;
+            State.homework = data.user.homework;
+            Storage.set('sunlorem_user', { login, password });
+            Storage.set('sunlorem_profile', State.profile);
+            if (data.user.role === 'teacher') {
+                go('screen-teacher-accounts');
+                toast('👩‍🏫 Вітаємо, вчителю!');
+            } else {
+                go('screen-dashboard');
+                toast('🎒 Вітаємо, ' + data.user.name + '!');
+            }
+        } catch (e) {
+            toast('Помилка мережі');
+        }
+    }
+
+    function logout() {
+        State.user = null;
+        Storage.remove('sunlorem_user');
+        go('screen-welcome');
+    }
+
+    /* ========================================================
+       ВІКТОРИНА
+       ======================================================== */
     function renderQuestionsEditor() {
         const wrap = $('questionsEditor');
         if (!wrap) return;
@@ -2149,48 +2329,26 @@ const App = (function () {
                 }
             });
 
-            const sess = Storage.get('sunlorem_session');
-            if (sess && sess.pin && sess.role) {
-                if (sess.role === 'teacher') {
-                    socket.emit('reconnectTeacher', { pin: sess.pin }, res => {
-                        if (res && res.ok) {
-                            State.role = 'teacher';
-                            State.pin = sess.pin;
-                            State.room = res.state;
-                            updateTeacherLobbyUI();
-                            go('screen-teacher-lobby');
-                            renderAllChats();
-                            toast('Відновлено кімнату ' + sess.pin);
-                        } else {
-                            Storage.remove('sunlorem_session');
-                        }
-                    });
-                } else if (sess.role === 'student' && sess.playerId && sess.name) {
-                    socket.emit('joinRoom', {
-                        pin: sess.pin,
-                        name: sess.name,
-                        avatarId: State.profile.equippedAvatar,
-                        accessories: {
-                            head: State.profile.equippedHead,
-                            eyes: State.profile.equippedEyes,
-                            effect: State.profile.equippedEffect
-                        },
-                        xp: State.profile.xp
-                    }, res => {
-                        if (res && res.ok) {
-                            State.role = 'student';
-                            State.pin = sess.pin;
-                            State.playerId = res.playerId;
-                            State.playerName = sess.name;
-                            State.room = res.state;
-                            State._prizeApplied = false;
-                            onStudentState(res.state);
-                            renderAllChats();
-                        } else {
-                            Storage.remove('sunlorem_session');
-                        }
-                    });
-                }
+            /* Автоматичний вхід з локального сховища */
+            const user = Storage.get('sunlorem_user');
+            if (user && user.login && user.password) {
+                fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(user)
+                }).then(r => r.json()).then(data => {
+                    if (data && data.ok) {
+                        State.user = data.user;
+                        if (data.user.profile) State.profile = Object.assign(State.profile, data.user.profile);
+                        State.grades = data.user.grades;
+                        State.schedule = data.user.schedule;
+                        State.homework = data.user.homework;
+                        if (data.user.role === 'teacher') go('screen-teacher-accounts');
+                        else go('screen-dashboard');
+                    } else {
+                        Storage.remove('sunlorem_user');
+                    }
+                }).catch(() => {});
             }
         });
 
@@ -2227,17 +2385,11 @@ const App = (function () {
                     }
                 }
             }
-            /* Перемалювання чату з серверної історії (перший раз і при оновленні) */
-            if (!State.lastChatMsgId && state.chat && state.chat.length > 0) {
-                State.lastChatMsgId = state.chat[state.chat.length - 1].id;
-                renderAllChats();
-            }
             if (State.role === 'teacher') onTeacherState(state);
             else if (State.role === 'student') onStudentState(state);
         });
 
         socket.on('chatMessage', (msg) => {
-            State.lastChatMsgId = msg.id;
             onChatMessage(msg);
         });
 
@@ -2250,9 +2402,8 @@ const App = (function () {
         socket.on('gameOver', () => { if (State.role === 'student') toast('🏁 Гру завершено!'); });
         socket.on('roomClosed', () => {
             openModal('Кімнату закрито', 'Вчитель закрив кімнату.', () => {
-                Storage.remove('sunlorem_session');
                 State.role = null; State.pin = null; State.room = null;
-                go('screen-welcome');
+                go(State.user ? 'screen-dashboard' : 'screen-welcome');
             });
         });
 
@@ -2305,7 +2456,6 @@ const App = (function () {
             State.pin = res.pin;
             State.room = res.state;
             State.playerId = 'teacher_' + res.pin;
-            Storage.set('sunlorem_session', { role: 'teacher', pin: res.pin });
             $('roomPin').textContent = res.pin;
             const link = buildJoinLink(res.pin);
             $('joinLink').value = link;
@@ -2450,15 +2600,13 @@ const App = (function () {
 
     function closeRoom() {
         if (!State.socket || !State.connected) {
-            Storage.remove('sunlorem_session');
             go('screen-welcome');
             return;
         }
         if (!confirm('Закрити кімнату?')) return;
         State.socket.emit('closeRoom', () => {
-            Storage.remove('sunlorem_session');
             State.role = null; State.pin = null; State.room = null;
-            go('screen-welcome');
+            go(State.user ? 'screen-dashboard' : 'screen-welcome');
             toast('Кімнату закрито');
         });
     }
@@ -2568,7 +2716,6 @@ const App = (function () {
         const swAv = $('swAvatar');
         if (swAv) swAv.textContent = getAvatarEmoji(State.profile.equippedAvatar);
         set('swHead', getAccEmoji(State.profile.equippedHead), !!State.profile.equippedHead);
-        set('swEyes', getAccEmoji(State.profile.equippedEyes), !!State.profile.equippedEyes);
         set('swEffect', getAccEmoji(State.profile.equippedEffect), !!State.profile.equippedEffect);
         const swC = $('swCoinsBadge');
         if (swC) swC.textContent = '🪙 ' + State.profile.coins;
@@ -2654,7 +2801,7 @@ const App = (function () {
         }, (res) => {
             if (res && res.ok) {
                 if (typeof res.coins === 'number') {
-                    State.profile.coins += res.coins;
+                    State.profile.coins = res.coins;
                     Storage.set('sunlorem_profile', State.profile);
                 }
                 if (typeof res.xp === 'number') {
@@ -2703,25 +2850,27 @@ const App = (function () {
         });
     }
 
-    function studentJoin() {
+    function studentJoinQuiz() {
         if (!State.socket || !State.connected) { toast('Немає з\'єднання'); return; }
-        const pin = ($('studentPin').value || '').trim();
-        const name = ($('studentName').value || '').trim();
+        if (!State.user) { toast('Спочатку увійди в систему'); return; }
+        const pin = ($('quizPinInput').value || '').trim();
         if (!/^\d{6}$/.test(pin)) { toast('Введи 6-значний PIN'); return; }
-        if (name.length < 2) { toast('Ім\'я закоротке'); return; }
-        State.playerName = name;
         State._prizeApplied = false;
         toast('Підключаємось...');
+
+        const user = Storage.get('sunlorem_user');
+        if (!user) { toast('Потрібна авторизація'); return; }
+
         State.socket.emit('joinRoom', {
             pin: pin,
-            name: name,
+            login: user.login,
+            password: user.password,
             avatarId: State.profile.equippedAvatar,
             accessories: {
                 head: State.profile.equippedHead,
                 eyes: State.profile.equippedEyes,
                 effect: State.profile.equippedEffect
-            },
-            xp: State.profile.xp
+            }
         }, (res) => {
             if (!res || !res.ok) { toast((res && res.error) || 'Помилка'); return; }
             State.role = 'student';
@@ -2729,11 +2878,10 @@ const App = (function () {
             State.playerId = res.playerId;
             State.room = res.state;
             State._prizeApplied = false;
-            Storage.set('sunlorem_session', { role: 'student', pin: pin, playerId: res.playerId, name: name });
             const swAv = $('swAvatar');
             if (swAv) swAv.textContent = getAvatarEmoji(State.profile.equippedAvatar);
             const swN = $('swName');
-            if (swN) swN.textContent = name;
+            if (swN) swN.textContent = State.user.name;
             const swP = $('swPinBadge');
             if (swP) swP.textContent = 'PIN: ' + pin;
             go('screen-student-waiting');
@@ -2743,10 +2891,9 @@ const App = (function () {
         });
     }
 
-    function leaveStudent() {
-        Storage.remove('sunlorem_session');
+    function leaveStudentQuiz() {
         State.role = null; State.pin = null; State.playerId = null; State.room = null;
-        go('screen-welcome');
+        go('screen-dashboard');
     }
 
     function getFinalPrizeClient(rank) {
@@ -2822,19 +2969,26 @@ const App = (function () {
 
     function printCertificate() { setTimeout(() => window.print(), 120); }
 
+    function backFromShop() {
+        if (State.role === 'student' && State.room) {
+            if (State.room.status === 'lobby') go('screen-student-waiting');
+            else if (State.room.status === 'running') go('screen-student-game');
+            else go('screen-results');
+        } else if (State.user) {
+            go('screen-dashboard');
+        } else {
+            go('screen-welcome');
+        }
+    }
+
     function autoJoinFromUrl() {
         const params = new URLSearchParams(window.location.search);
         const pin = params.get('pin');
         if (pin && /^\d{6}$/.test(pin)) {
-            go('screen-student-join');
-            const inp = $('studentPin');
+            if (State.user) go('screen-quiz-join');
+            else go('screen-welcome');
+            const inp = $('quizPinInput');
             if (inp) inp.value = pin;
-            const sess = Storage.get('sunlorem_session');
-            if (sess && sess.pin === pin && sess.role === 'student' && sess.name) {
-                State.playerName = sess.name;
-                const n = $('studentName');
-                if (n) n.value = sess.name;
-            }
         }
     }
 
@@ -2843,7 +2997,8 @@ const App = (function () {
             ['lobbyChatInput', 'lobby'],
             ['gameChatInput', 'game'],
             ['waitingChatInput', 'waiting'],
-            ['studentGameChatInput', 'studentGame']
+            ['studentGameChatInput', 'studentGame'],
+            ['classChatInput', 'classChat']
         ];
         mappings.forEach(m => {
             const el = $(m[0]);
@@ -2851,7 +3006,8 @@ const App = (function () {
             el.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
-                    sendChatFrom(m[1]);
+                    if (m[1] === 'classChat') sendClassChat();
+                    else sendChatFrom(m[1]);
                 }
             });
         });
@@ -2861,6 +3017,7 @@ const App = (function () {
         if (State.initDone) return;
         State.initDone = true;
         loadProfile();
+        State.classChatHistory = [];
         const savedTheme = Storage.get('sunlorem_theme', 'neon');
         State.theme = State.profile.ownedThemes.includes(savedTheme) ? savedTheme : 'neon';
         document.body.className = 'theme-' + State.theme;
@@ -2870,22 +3027,23 @@ const App = (function () {
         buildReactionsBars();
         renderQuests();
         bindChatEnterKeys();
+        renderQuestionsEditor();
 
-        const pinInput = $('studentPin');
+        const pinInput = $('quizPinInput');
         if (pinInput) {
             pinInput.addEventListener('input', () => {
                 pinInput.value = pinInput.value.replace(/\D/g, '').slice(0, 6);
             });
-            pinInput.addEventListener('keydown', e => {
-                if (e.key === 'Enter') {
-                    const n = $('studentName');
-                    if (n) n.focus();
-                }
+        }
+        const loginInput = $('loginInput');
+        if (loginInput) {
+            loginInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') { const p = $('passwordInput'); if (p) p.focus(); }
             });
         }
-        const nameInput = $('studentName');
-        if (nameInput) {
-            nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') studentJoin(); });
+        const passwordInput = $('passwordInput');
+        if (passwordInput) {
+            passwordInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') loginUser(); });
         }
         $('modalOverlay').addEventListener('click', e => {
             if (e.target === $('modalOverlay')) closeModal();
@@ -2909,8 +3067,17 @@ const App = (function () {
         nextQuestion,
         finishGame,
         closeRoom,
-        studentJoin,
-        leaveStudent,
+        studentJoinQuiz,
+        leaveStudentQuiz,
+        loginUser,
+        logout,
+        createStudentAccount,
+        createStudentsBulk,
+        printAllStudentCards,
+        setStudentGrade,
+        setClassHomework,
+        sendClassChat,
+        startClassChatBots,
         closeModal,
         openModal,
         toast,
@@ -2919,6 +3086,7 @@ const App = (function () {
         saveProfile,
         activatePower,
         sendChatFrom,
+        backFromShop,
         init,
         get theme() { return State.theme; }
     };
