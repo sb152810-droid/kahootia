@@ -13,8 +13,7 @@ html { height: 100%; width: 100%; overflow: hidden; }
 body {
     height: 100%; width: 100%;
     font-family: 'Segoe UI', 'Trebuchet MS', 'Comic Sans MS', Tahoma, sans-serif;
-    overflow: hidden;
-    transition: background 0.45s ease, color 0.35s ease;
+    overflow: hidden; transition: background 0.45s ease, color 0.35s ease;
     position: relative;
 }
 :root {
@@ -163,8 +162,7 @@ body.theme-ocean {
 }
 body.theme-candy {
     --bg-1: #fff0f5; --bg-2: #ffe0f0; --bg-3: #ffd0e8;
-    --panel-bg: #ffffff;
-    --panel-border: #ffb0d8;
+    --panel-bg: #ffffff; --panel-border: #ffb0d8;
     --panel-shadow: 0 6px 22px rgba(255, 150, 200, 0.25);
     --text-main: #5a2a4a; --text-dim: #a06a8a;
     --accent-1: #ff9fd0; --accent-2: #ff6fa8; --accent-3: #b0a0ff;
@@ -177,6 +175,26 @@ body.theme-candy {
     background:
         radial-gradient(circle at 15% 10%, #ffe0f0, transparent 40%),
         radial-gradient(circle at 88% 85%, #e0d8ff, transparent 42%),
+        linear-gradient(160deg, var(--bg-1), var(--bg-2) 55%, var(--bg-3));
+    color: var(--text-main);
+}
+body.theme-autumn {
+    --bg-1: #2a1208; --bg-2: #3a1a10; --bg-3: #4a2215;
+    --panel-bg: rgba(50, 22, 12, 0.72);
+    --panel-border: rgba(255, 150, 70, 0.5);
+    --panel-shadow: 0 8px 32px rgba(200, 100, 40, 0.5), 0 0 80px rgba(255, 180, 90, 0.15) inset;
+    --text-main: #ffeedd; --text-dim: #d8a878;
+    --accent-1: #ff8040; --accent-2: #ffb347; --accent-3: #ffd75f;
+    --accent-4: #ffd75f; --accent-5: #a8df88;
+    --button-bg: linear-gradient(135deg, rgba(255, 128, 64, 0.45), rgba(255, 179, 71, 0.3));
+    --button-border: rgba(255, 128, 64, 0.8);
+    --button-shadow: 0 0 22px rgba(255, 128, 64, 0.7), 0 0 48px rgba(255, 215, 95, 0.3);
+    --input-bg: rgba(50, 22, 12, 0.9);
+    --input-border: rgba(255, 150, 70, 0.5);
+    --glow-text: 0 0 10px rgba(255, 215, 95, 1), 0 0 30px rgba(255, 128, 64, 0.7);
+    background:
+        radial-gradient(circle at 15% 15%, rgba(255, 128, 64, 0.3), transparent 42%),
+        radial-gradient(circle at 85% 85%, rgba(255, 215, 95, 0.22), transparent 45%),
         linear-gradient(160deg, var(--bg-1), var(--bg-2) 55%, var(--bg-3));
     color: var(--text-main);
 }
@@ -196,7 +214,6 @@ body.theme-candy {
 @keyframes screenFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 h1, h2, h3, h4 { font-weight: 800; letter-spacing: 0.5px; line-height: 1.2; color: var(--text-main); }
 h1 { font-size: clamp(26px, 6.5vw, 46px); text-align: center; margin-bottom: 10px; }
-body.theme-neon h1, body.theme-space h1, body.theme-cyber h1, body.theme-forest h1, body.theme-sunset h1, body.theme-ocean h1 { text-shadow: var(--glow-text); }
 h2 { font-size: clamp(20px, 4.6vw, 30px); margin-bottom: 8px; }
 h3 { font-size: clamp(17px, 3.8vw, 23px); margin-bottom: 6px; }
 p { font-size: clamp(14px, 3.2vw, 17px); line-height: 1.55; color: var(--text-main); }
@@ -258,7 +275,6 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
     letter-spacing: clamp(6px, 3.2vw, 18px);
     color: var(--accent-2); padding: 12px 4px; margin: 8px 0;
 }
-body.theme-neon .pin-display, body.theme-space .pin-display, body.theme-cyber .pin-display { text-shadow: 0 0 14px rgba(255, 95, 240, 0.95); }
 .pin-input { text-align: center; font-size: clamp(28px, 8vw, 46px) !important; font-weight: 900; letter-spacing: 10px; padding: 16px !important; }
 
 /* ============================================================
@@ -275,31 +291,16 @@ body.theme-neon .pin-display, body.theme-space .pin-display, body.theme-cyber .p
     border: 3px solid var(--panel-border);
     display: flex; align-items: center; justify-content: center;
     font-size: clamp(26px, 7.5vw, 42px);
-    cursor: pointer;
-    transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
+    cursor: pointer; transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
     user-select: none; -webkit-user-select: none;
-    touch-action: manipulation;
-    position: relative; padding: 0;
+    touch-action: manipulation; position: relative; padding: 0;
 }
 .avatar-option:hover { transform: scale(1.09); border-color: var(--accent-1); }
-.avatar-option:active { transform: scale(0.94); }
 .avatar-option.selected {
     border-color: var(--accent-2);
     background: linear-gradient(135deg, rgba(181, 107, 255, 0.55), rgba(255, 95, 240, 0.45));
     transform: scale(1.14); z-index: 3;
-}
-body.theme-space .avatar-option.selected,
-body.theme-cyber .avatar-option.selected,
-body.theme-forest .avatar-option.selected,
-body.theme-sunset .avatar-option.selected,
-body.theme-ocean .avatar-option.selected {
-    box-shadow: 0 0 0 4px rgba(255, 95, 240, 0.4), 0 0 26px rgba(255, 95, 240, 0.95), 0 0 50px rgba(181, 107, 255, 0.6);
-}
-body.theme-pastel .avatar-option.selected,
-body.theme-candy .avatar-option.selected {
-    background: linear-gradient(135deg, #e6d9ff, #d8f0ec);
-    border-color: #b19cd9;
-    box-shadow: 0 0 0 4px rgba(177, 156, 217, 0.3), 0 8px 20px rgba(160, 130, 200, 0.5);
+    box-shadow: 0 0 0 4px rgba(255, 95, 240, 0.35), 0 0 26px rgba(255, 95, 240, 0.95);
 }
 .avatar-option.selected::after {
     content: "✓"; position: absolute;
@@ -314,7 +315,7 @@ body.theme-candy .avatar-option.selected {
 .avatar-big { font-size: clamp(60px, 18vw, 120px); text-align: center; margin: 10px 0; display: block; position: relative; }
 
 /* ============================================================
-   ГАРДЕРОБ / МАГАЗИН
+   МАГАЗИН / ГАРДЕРОБ
    ============================================================ */
 .shop-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
 .shop-tab {
@@ -330,6 +331,32 @@ body.theme-candy .avatar-option.selected {
     border-color: var(--accent-2);
     background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
     color: #fff;
+}
+.collection-header {
+    margin: 18px 0 10px 0;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, rgba(255, 215, 95, 0.16), rgba(255, 95, 240, 0.08));
+    border: 1.5px solid var(--accent-4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.collection-header .col-title {
+    font-size: clamp(15px, 3.4vw, 18px);
+    font-weight: 900;
+    color: var(--accent-4);
+}
+.collection-header .col-bonus {
+    font-size: clamp(12px, 2.8vw, 14px);
+    font-weight: 800;
+    color: var(--accent-5);
+}
+.collection-header.complete .col-bonus {
+    color: var(--accent-5);
+    text-shadow: 0 0 10px var(--accent-5);
 }
 .shop-grid {
     display: grid;
@@ -353,20 +380,13 @@ body.theme-candy .avatar-option.selected {
 .shop-card:hover { transform: translateY(-3px); border-color: var(--accent-1); }
 .shop-card.locked { opacity: 0.75; }
 .shop-card.locked::after {
-    content: "🔒";
-    position: absolute;
-    top: 6px; right: 6px;
-    font-size: 20px;
-    filter: drop-shadow(0 0 6px rgba(0,0,0,0.5));
+    content: "🔒"; position: absolute; top: 6px; right: 6px;
+    font-size: 20px; filter: drop-shadow(0 0 6px rgba(0,0,0,0.5));
 }
 .shop-card.owned::before {
-    content: "✓";
-    position: absolute;
-    top: 6px; left: 6px;
-    width: 22px; height: 22px;
-    border-radius: 50%;
-    background: var(--accent-5);
-    color: #10261a;
+    content: "✓"; position: absolute; top: 6px; left: 6px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--accent-5); color: #10261a;
     font-size: 14px; font-weight: 900;
     display: flex; align-items: center; justify-content: center;
 }
@@ -374,53 +394,24 @@ body.theme-candy .avatar-option.selected {
     border-color: var(--accent-4);
     box-shadow: 0 0 18px rgba(255, 215, 95, 0.65);
 }
-.shop-card .preview {
-    font-size: clamp(36px, 9vw, 52px);
-    margin: 6px 0;
-    display: block;
-    line-height: 1;
-}
-.shop-card .preview-wrap { position: relative; display: inline-block; }
-.shop-card .preview-accessory {
-    position: absolute; top: -6px; right: -10px;
-    font-size: 22px;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
-}
-.shop-card .name {
-    font-size: clamp(12px, 2.9vw, 14px);
-    font-weight: 800;
-    margin-bottom: 3px;
-    color: var(--text-main);
-}
-.shop-card .price {
-    font-size: clamp(11px, 2.7vw, 13px);
-    font-weight: 800;
-    color: var(--accent-4);
-}
+.shop-card .preview { font-size: clamp(36px, 9vw, 52px); margin: 6px 0; display: block; line-height: 1; }
+.shop-card .name { font-size: clamp(12px, 2.9vw, 14px); font-weight: 800; margin-bottom: 3px; color: var(--text-main); }
+.shop-card .price { font-size: clamp(11px, 2.7vw, 13px); font-weight: 800; color: var(--accent-4); }
 .shop-card .price.owned { color: var(--accent-5); }
 .shop-card .price.cant { color: #ff6b8b; }
-.shop-card .buy-hint {
-    margin-top: 6px;
-    font-size: 11px;
-    color: var(--text-dim);
-}
+.shop-card .buy-hint { margin-top: 6px; font-size: 11px; color: var(--text-dim); }
 .shop-avatar-preview {
-    text-align: center;
-    padding: 16px;
+    text-align: center; padding: 16px;
     background: var(--input-bg);
     border: 2px dashed var(--panel-border);
-    border-radius: var(--radius);
-    margin: 10px 0;
+    border-radius: var(--radius); margin: 10px 0;
 }
 .shop-avatar-preview .big-avatar {
     font-size: clamp(72px, 20vw, 130px);
-    position: relative;
-    display: inline-block;
-    line-height: 1;
+    position: relative; display: inline-block; line-height: 1;
 }
 .shop-avatar-preview .big-accessory {
-    position: absolute;
-    font-size: clamp(36px, 10vw, 60px);
+    position: absolute; font-size: clamp(36px, 10vw, 60px);
     top: -12px; right: -24px;
     filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
     animation: floatAccessory 3s ease-in-out infinite;
@@ -430,8 +421,7 @@ body.theme-candy .avatar-option.selected {
     50% { transform: translateY(-6px) rotate(5deg); }
 }
 .shop-avatar-preview .big-effect {
-    position: absolute;
-    font-size: clamp(28px, 8vw, 44px);
+    position: absolute; font-size: clamp(28px, 8vw, 44px);
     bottom: -6px; left: -14px;
     filter: drop-shadow(0 0 12px currentColor);
     animation: pulseEffect 2s ease-in-out infinite;
@@ -442,15 +432,95 @@ body.theme-candy .avatar-option.selected {
 }
 .balance-bar {
     display: flex; align-items: center; justify-content: center;
-    gap: 10px;
-    padding: 10px 16px;
+    gap: 12px; padding: 10px 16px;
     background: linear-gradient(135deg, rgba(255, 215, 95, 0.22), rgba(255, 170, 0, 0.12));
     border: 1.5px solid var(--accent-4);
-    border-radius: 30px;
-    margin-bottom: 14px;
+    border-radius: 30px; margin-bottom: 14px;
     font-size: clamp(14px, 3.4vw, 18px);
+    font-weight: 900; color: var(--accent-4);
+    flex-wrap: wrap;
+}
+.balance-bar .xp-badge {
+    color: var(--accent-3);
+    font-size: 0.85em;
+}
+
+/* ============================================================
+   КВЕСТИ
+   ============================================================ */
+.quest-list { display: grid; gap: 10px; margin-top: 10px; }
+.quest-item {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--input-bg);
+    border: 2px solid var(--panel-border);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    transition: var(--transition);
+    position: relative;
+}
+.quest-item.done {
+    border-color: var(--accent-5);
+    background: linear-gradient(135deg, rgba(95, 255, 155, 0.14), rgba(95, 240, 255, 0.08));
+}
+.quest-item .q-icon { font-size: 30px; flex-shrink: 0; }
+.quest-item .q-info { flex: 1; min-width: 0; }
+.quest-item .q-title {
+    font-size: clamp(14px, 3.2vw, 16px);
+    font-weight: 800;
+    margin-bottom: 3px;
+}
+.quest-item .q-desc {
+    font-size: clamp(12px, 2.8vw, 14px);
+    color: var(--text-dim);
+}
+.quest-item .q-reward {
+    font-size: clamp(12px, 2.9vw, 14px);
     font-weight: 900;
     color: var(--accent-4);
+    flex-shrink: 0;
+}
+.quest-item.done .q-reward { color: var(--accent-5); }
+
+/* ============================================================
+   ЕМОДЗІ-РЕАКЦІЇ
+   ============================================================ */
+.reactions-bar {
+    display: flex; gap: 6px;
+    flex-wrap: wrap; justify-content: center;
+    margin-top: 10px;
+}
+.reaction-btn {
+    width: auto;
+    min-width: 48px;
+    padding: 8px 10px;
+    font-size: 24px;
+    background: var(--input-bg);
+    border: 2px solid var(--panel-border);
+    border-radius: 12px;
+    box-shadow: none;
+    min-height: 48px;
+    transition: transform 0.15s ease, background 0.15s ease;
+    cursor: pointer;
+}
+.reaction-btn:hover {
+    transform: scale(1.15) translateY(-3px);
+    background: linear-gradient(135deg, rgba(255, 215, 95, 0.3), rgba(255, 95, 240, 0.2));
+    border-color: var(--accent-4);
+}
+.reaction-btn:active { transform: scale(0.9); }
+/* поплавкова анімація реакцій */
+.float-emoji {
+    position: fixed;
+    font-size: 44px;
+    pointer-events: none;
+    z-index: 9999;
+    animation: floatAway 2.4s ease-out forwards;
+    filter: drop-shadow(0 0 10px rgba(255, 215, 95, 0.9));
+}
+@keyframes floatAway {
+    0% { transform: translateY(0) scale(0.6); opacity: 0; }
+    15% { transform: translateY(-20px) scale(1.3); opacity: 1; }
+    100% { transform: translateY(-220px) scale(0.8); opacity: 0; }
 }
 
 /* ============================================================
@@ -484,6 +554,18 @@ body.theme-candy .avatar-option.selected {
     position: absolute; top: 4px; right: 6px;
     font-size: 14px;
     animation: pulseEffect 1.2s ease-in-out infinite;
+}
+.player-card .reaction-bubble {
+    position: absolute; top: -6px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 22px;
+    animation: bubblePop 0.6s ease;
+    filter: drop-shadow(0 0 8px rgba(255, 215, 95, 0.9));
+}
+@keyframes bubblePop {
+    0% { transform: translateX(-50%) scale(0); opacity: 0; }
+    50% { transform: translateX(-50%) scale(1.4); opacity: 1; }
+    100% { transform: translateX(-50%) scale(1); opacity: 1; }
 }
 .question-text {
     font-size: clamp(18px, 4.4vw, 26px);
@@ -523,8 +605,7 @@ body.theme-candy .avatar-option.selected {
 .theme-btn {
     flex: 1 1 100px; padding: 12px;
     font-size: clamp(14px, 3.2vw, 16px); font-weight: 800;
-    border-radius: var(--radius-sm);
-    border: 2px solid var(--panel-border);
+    border-radius: var(--radius-sm); border: 2px solid var(--panel-border);
     background: var(--input-bg); color: var(--text-main);
     cursor: pointer; transition: var(--transition);
     display: flex; align-items: center; justify-content: center;
@@ -540,8 +621,8 @@ body.theme-candy .avatar-option.selected {
 }
 .badge.live { color: var(--accent-5); border-color: var(--accent-5); }
 .badge.waiting { color: var(--accent-4); border-color: var(--accent-4); }
-.badge.error { color: #ff6b8b; border-color: #ff3d6e; }
 .badge.gold { color: var(--accent-4); border-color: var(--accent-4); }
+.badge.xp { color: var(--accent-3); border-color: var(--accent-3); }
 .status-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; margin-bottom: 12px; }
 .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
 .particle { position: absolute; border-radius: 50%; opacity: 0.55; animation: floatUp linear infinite; }
@@ -573,20 +654,16 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
 .podium-place.p2 .pedestal { height: 95px; }
 .podium-place.p3 .pedestal { height: 70px; }
 .certificate {
-    background: var(--panel-bg);
-    border: 3px double var(--accent-4);
-    border-radius: var(--radius);
-    padding: 22px 16px;
+    background: var(--panel-bg); border: 3px double var(--accent-4);
+    border-radius: var(--radius); padding: 22px 16px;
     text-align: center; margin: 14px 0;
     box-shadow: var(--panel-shadow);
 }
 .certificate h2 { color: var(--accent-4); margin-bottom: 10px; }
 .certificate .recipient { font-size: clamp(22px, 5vw, 32px); font-weight: 900; color: var(--accent-2); margin: 12px 0; }
 .question-item {
-    background: var(--input-bg);
-    border: 1.5px solid var(--panel-border);
-    border-radius: var(--radius-sm);
-    padding: 12px; margin-bottom: 10px;
+    background: var(--input-bg); border: 1.5px solid var(--panel-border);
+    border-radius: var(--radius-sm); padding: 12px; margin-bottom: 10px;
     transition: var(--transition);
 }
 .question-item .q-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
@@ -632,26 +709,19 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
 }
 .modal-overlay.active { display: flex; }
 .modal-box {
-    background: var(--panel-bg);
-    border: 2px solid var(--panel-border);
-    border-radius: var(--radius);
-    padding: 20px; max-width: 520px; width: 100%;
-    max-height: 90vh; overflow-y: auto;
-    box-shadow: var(--panel-shadow);
+    background: var(--panel-bg); border: 2px solid var(--panel-border);
+    border-radius: var(--radius); padding: 20px; max-width: 520px; width: 100%;
+    max-height: 90vh; overflow-y: auto; box-shadow: var(--panel-shadow);
     animation: modalIn 0.3s ease;
 }
 @keyframes modalIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
 .toast {
     position: fixed; bottom: 20px; left: 50%;
     transform: translateX(-50%) translateY(140px);
-    background: var(--panel-bg);
-    border: 1.5px solid var(--accent-2);
-    color: var(--text-main);
-    padding: 12px 22px; border-radius: 30px;
-    font-weight: 700;
-    font-size: clamp(13px, 3vw, 15px);
-    z-index: 1000;
-    box-shadow: var(--panel-shadow);
+    background: var(--panel-bg); border: 1.5px solid var(--accent-2);
+    color: var(--text-main); padding: 12px 22px; border-radius: 30px;
+    font-weight: 700; font-size: clamp(13px, 3vw, 15px);
+    z-index: 1000; box-shadow: var(--panel-shadow);
     transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
     max-width: 90vw; text-align: center;
     backdrop-filter: blur(12px);
@@ -660,7 +730,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
 .spacer { height: 20px; }
 .center { text-align: center; }
 .hidden { display: none !important; }
-.progress-info { display: flex; justify-content: space-between; font-size: clamp(13px, 3vw, 15px); color: var(--text-dim); font-weight: 700; margin-bottom: 6px; }
+.progress-info { display: flex; justify-content: space-between; font-size: clamp(13px, 3vw, 15px); color: var(--text-dim); font-weight: 700; margin-bottom: 6px; flex-wrap: wrap; gap: 6px; }
 .event-feed {
     max-height: 180px; overflow-y: auto;
     font-size: clamp(12px, 2.8vw, 14px);
@@ -744,6 +814,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         font-style: italic !important; letter-spacing: 1pt !important;
     }
     #certScore { display: block !important; color: #8b0000 !important; font-size: 20pt !important; font-weight: 900 !important; margin: 18pt 0 !important; }
+    #certCoins { display: block !important; color: #8b6914 !important; font-size: 16pt !important; font-weight: 800 !important; }
     #certDate { display: block !important; color: #555 !important; font-size: 12pt !important; margin-top: 28pt !important; font-style: italic !important; }
 }
 </style>
@@ -751,6 +822,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
 <body class="theme-neon">
 <div id="particles" class="particles"></div>
 <div class="connection-status" id="connStatus">З'єднання...</div>
+<div id="floatLayer"></div>
 
 <div id="app">
 
@@ -759,12 +831,12 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
          ============================================================ -->
     <div id="screen-welcome" class="screen active">
         <h1 class="glow">🌟 SunLorem 🌟</h1>
-        <p class="subtitle">Школа-Табір для 5 класу • Реальний час • Гейміфікація</p>
+        <p class="subtitle">Школа-Табір для 5 класу • Гейміфікація</p>
 
         <div class="panel panel-narrow">
             <div class="balance-bar">
-                <span>🪙 Твої СанКоїни:</span>
-                <span id="welcomeCoins">0</span>
+                <span>🪙 <span id="welcomeCoins">0</span></span>
+                <span class="xp-badge">⭐ XP: <span id="welcomeXp">0</span></span>
             </div>
         </div>
 
@@ -775,6 +847,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
             </div>
             <div class="button-row">
                 <button class="gold" onclick="App.go('screen-shop')">🛒 Гардероб / Магазин</button>
+                <button class="ghost" onclick="App.go('screen-quests')">🏆 Квести</button>
             </div>
         </div>
 
@@ -783,29 +856,54 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
             <p style="font-size:14px;line-height:1.6;">
                 1. Вчитель створює кімнату, отримує <b>PIN</b> та QR.<br>
                 2. Учні вводять PIN, обирають аватар та аксесуари.<br>
-                3. Вчитель натискає <b>«Почати»</b>, потім керує кнопкою <b>«Продовжити»</b>.<br>
-                4. За правильні відповіді — бали та <b>СанКоїни</b>.<br>
-                5. Серія з 3 правильних — активація <b>суперсили</b>!<br>
-                6. Витрачай СанКоїни в <b>Гардеробі</b> на аватари, аксесуари й теми.
+                3. За правильні відповіді — бали та <b>СанКоїни</b>.<br>
+                4. <b>Серія 3+ правильних</b> множить бали й монети.<br>
+                5. Виконуй <b>квести</b> — отримуй великі нагороди.<br>
+                6. Витрачай СанКоїни в <b>Гардеробі</b>.
             </p>
         </div>
     </div>
 
     <!-- ============================================================
-         ЕКРАН 2: ГАРДЕРОБ / МАГАЗИН
+         ЕКРАН 2: КВЕСТИ
          ============================================================ -->
-    <div id="screen-shop" class="screen">
-        <h1>🛒 Гардероб / Магазин</h1>
-        <p class="subtitle">Витрачай СанКоїни, розблоковуй аватари, аксесуари та теми</p>
+    <div id="screen-quests" class="screen">
+        <h1>🏆 Квести</h1>
+        <p class="subtitle">Виконуй завдання — отримуй СанКоїни</p>
 
         <div class="panel panel-narrow">
             <div class="balance-bar">
-                <span>🪙 СанКоїни:</span>
-                <span id="shopCoins">0</span>
+                <span>🪙 <span id="questsCoins">0</span></span>
+                <span class="xp-badge">⭐ XP: <span id="questsXp">0</span></span>
+            </div>
+            <div id="questsList" class="quest-list">
+                <p style="color:var(--text-dim);text-align:center;padding:14px;">Квести завантажуються...</p>
+            </div>
+        </div>
+
+        <div class="panel panel-narrow">
+            <div class="button-grid two-col">
+                <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
+                <button class="gold" onclick="App.go('screen-shop')">🛒 Магазин</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         ЕКРАН 3: ГАРДЕРОБ / МАГАЗИН
+         ============================================================ -->
+    <div id="screen-shop" class="screen">
+        <h1>🛒 Гардероб</h1>
+        <p class="subtitle">Колекції, аксесуари та теми за СанКоїни</p>
+
+        <div class="panel panel-narrow">
+            <div class="balance-bar">
+                <span>🪙 <span id="shopCoins">0</span></span>
+                <span class="xp-badge">⭐ XP: <span id="shopXp">0</span></span>
             </div>
 
             <div class="shop-avatar-preview">
-                <div style="font-size:14px;color:var(--text-dim);margin-bottom:8px;">Твій поточний вигляд:</div>
+                <div style="font-size:14px;color:var(--text-dim);margin-bottom:8px;">Твій вигляд:</div>
                 <div class="big-avatar" id="shopPreviewAvatar">
                     🐱
                     <span class="big-accessory" id="shopPreviewHead" style="display:none;"></span>
@@ -821,7 +919,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
                 <button class="shop-tab" data-tab="themes" onclick="App.switchShopTab('themes')">🎨 Теми</button>
             </div>
 
-            <div id="shopGrid" class="shop-grid"></div>
+            <div id="shopGrid"></div>
         </div>
 
         <div class="panel panel-narrow">
@@ -833,11 +931,11 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
     </div>
 
     <!-- ============================================================
-         ЕКРАН 3: НАЛАШТУВАННЯ ВЧИТЕЛЯ
+         ЕКРАН 4: НАЛАШТУВАННЯ ВЧИТЕЛЯ
          ============================================================ -->
     <div id="screen-teacher-setup" class="screen">
         <h1>👩‍🏫 Панель Організатора</h1>
-        <p class="subtitle">Налаштуй гру, додай ботів та створи кімнату</p>
+        <p class="subtitle">Налаштуй гру та створи кімнату</p>
 
         <div class="panel panel-narrow">
             <div class="panel-title">🎨 Стиль інтерфейсу</div>
@@ -869,10 +967,10 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
                     <div class="icon">🕹️</div><div class="info"><h4>Аркада</h4><p>20 сек/питання</p></div>
                 </button>
                 <button class="mode-card" data-mode="survival" onclick="App.selectMode('survival', this)">
-                    <div class="icon">🔥</div><div class="info"><h4>Виживання</h4><p>15 сек, 3 помилки — виліт</p></div>
+                    <div class="icon">🔥</div><div class="info"><h4>Виживання</h4><p>3 помилки — виліт</p></div>
                 </button>
                 <button class="mode-card" data-mode="treasure" onclick="App.selectMode('treasure', this)">
-                    <div class="icon">💎</div><div class="info"><h4>Полювання на скарби</h4><p>25 сек, бонус за швидкість</p></div>
+                    <div class="icon">💎</div><div class="info"><h4>Скарби</h4><p>Бонус за швидкість</p></div>
                 </button>
             </div>
         </div>
@@ -891,7 +989,6 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
 
         <div class="panel panel-narrow">
             <div class="panel-title">⏱️ Час на питання</div>
-            <label for="timePerQuestion">Секунд (5–60)</label>
             <input type="number" id="timePerQuestion" min="5" max="60" value="20">
         </div>
 
@@ -913,27 +1010,27 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
     </div>
 
     <!-- ============================================================
-         ЕКРАН 4: ЛОБІ ВЧИТЕЛЯ
+         ЕКРАН 5: ЛОБІ
          ============================================================ -->
     <div id="screen-teacher-lobby" class="screen">
         <h1>🎯 Кімната створена!</h1>
-        <p class="subtitle">Покажи PIN учням або дай відсканувати QR</p>
+        <p class="subtitle">Покажи PIN учням</p>
 
         <div class="panel panel-narrow center">
             <div class="panel-title" style="justify-content:center;">🔑 PIN-код</div>
             <div class="pin-display" id="roomPin">------</div>
             <div class="status-row">
-                <span class="badge live" id="lobbyStatusBadge">Кімната активна</span>
+                <span class="badge live">Кімната активна</span>
                 <span class="badge waiting" id="lobbyCount">Гравців: 0</span>
             </div>
         </div>
 
         <div class="panel panel-narrow center">
-            <div class="panel-title" style="justify-content:center;">📱 QR-код для входу</div>
+            <div class="panel-title" style="justify-content:center;">📱 QR-код</div>
             <div class="qr-container" id="qrBox"></div>
             <div class="link-box">
                 <input type="text" id="joinLink" readonly onclick="this.select()">
-                <button class="ghost small" onclick="App.copyLink()">📋 Копіювати</button>
+                <button class="ghost small" onclick="App.copyLink()">📋</button>
             </div>
         </div>
 
@@ -951,13 +1048,13 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
     </div>
 
     <!-- ============================================================
-         ЕКРАН 5: ГРА ВЧИТЕЛЯ
+         ЕКРАН 6: ГРА ВЧИТЕЛЯ
          ============================================================ -->
     <div id="screen-teacher-game" class="screen">
         <h1>🎮 Гра триває</h1>
         <div class="panel">
             <div class="progress-info">
-                <span>Питання <b id="tqIndex">1</b> з <b id="tqTotal">10</b></span>
+                <span>Питання <b id="tqIndex">1</b> / <b id="tqTotal">10</b></span>
                 <span id="tqAnswered">Відповіли: 0</span>
             </div>
             <div class="timer-wrap">
@@ -984,7 +1081,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
     </div>
 
     <!-- ============================================================
-         ЕКРАН 6: ВХІД УЧНЯ
+         ЕКРАН 7: ВХІД УЧНЯ
          ============================================================ -->
     <div id="screen-student-join" class="screen">
         <h1>🎒 Вхід учня</h1>
@@ -992,8 +1089,8 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
 
         <div class="panel panel-narrow">
             <div class="balance-bar">
-                <span>🪙 СанКоїни:</span>
-                <span id="joinCoins">0</span>
+                <span>🪙 <span id="joinCoins">0</span></span>
+                <span class="xp-badge">⭐ XP: <span id="joinXp">0</span></span>
             </div>
         </div>
 
@@ -1024,24 +1121,24 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
                 <div id="joinPreviewName" style="font-size:14px;font-weight:800;margin-top:10px;">Кіт-астронавт</div>
             </div>
             <div class="button-row">
-                <button class="gold small" onclick="App.go('screen-shop')">🛒 Змінити в магазині</button>
+                <button class="gold small" onclick="App.go('screen-shop')">🛒 Змінити</button>
             </div>
         </div>
 
         <div class="panel panel-narrow">
             <div class="button-grid two-col">
-                <button class="success" onclick="App.studentJoin()">✅ Увійти в кімнату</button>
+                <button class="success" onclick="App.studentJoin()">✅ Увійти</button>
                 <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
             </div>
         </div>
     </div>
 
     <!-- ============================================================
-         ЕКРАН 7: ОЧІКУВАННЯ УЧНЯ
+         ЕКРАН 8: ОЧІКУВАННЯ
          ============================================================ -->
     <div id="screen-student-waiting" class="screen">
         <div class="panel panel-narrow waiting-card">
-            <div class="avatar-big" id="swAvatarWrap">
+            <div class="avatar-big">
                 <span id="swAvatar">🐱</span>
                 <span class="big-accessory" id="swHead" style="display:none;"></span>
                 <span class="big-accessory" id="swEyes" style="display:none;top:0;right:-20px;font-size:28px;"></span>
@@ -1049,11 +1146,15 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
             </div>
             <h2 id="swName">Учень</h2>
             <div class="status-row">
-                <span class="badge waiting"><span class="pulse"></span> Очікування старту</span>
+                <span class="badge waiting"><span class="pulse"></span> Очікування</span>
                 <span class="badge live" id="swPinBadge">PIN: ------</span>
                 <span class="badge gold" id="swCoinsBadge">🪙 0</span>
             </div>
-            <p class="waiting-text">Ти в кімнаті! Зачекай, поки вчитель запустить гру.</p>
+            <p class="waiting-text">Ти в кімнаті! Зачекай старту.</p>
+
+            <div class="panel-title" style="justify-content:center;margin-top:14px;">🎉 Емодзі-реакції</div>
+            <div class="reactions-bar" id="waitingReactions"></div>
+
             <div class="spacer"></div>
             <div class="panel-title" style="justify-content:center;">👥 Разом з тобою грають</div>
             <div id="swPlayers" class="player-list"></div>
@@ -1067,7 +1168,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
     </div>
 
     <!-- ============================================================
-         ЕКРАН 8: ГРА УЧНЯ
+         ЕКРАН 9: ГРА УЧНЯ
          ============================================================ -->
     <div id="screen-student-game" class="screen">
         <div class="panel">
@@ -1084,17 +1185,24 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
             <p id="sqFeedback" style="text-align:center;margin-top:12px;font-weight:800;font-size:16px;min-height:24px;"></p>
             <div class="progress-info" style="margin-top:10px;">
                 <span id="sqStreak">🔥 Серія: 0</span>
-                <span id="sqCoins">🪙 СанКоїни: 0</span>
+                <span id="sqCoins">🪙 0</span>
+                <span id="sqXp">⭐ XP: 0</span>
             </div>
             <div class="button-row" id="powerButtons" style="margin-top:10px;">
-                <button class="gold small" id="btnPowerDouble" onclick="App.activatePower('double')" disabled>⚡ Подвійні бали</button>
-                <button class="gold small" id="btnPowerShield" onclick="App.activatePower('shield')" disabled>🛡️ Щит часу</button>
+                <button class="gold small" id="btnPowerDouble" onclick="App.activatePower('double')" disabled>⚡ Подвійні</button>
+                <button class="gold small" id="btnPowerShield" onclick="App.activatePower('shield')" disabled>🛡️ Щит</button>
                 <button class="gold small" id="btnPowerReveal" onclick="App.activatePower('reveal')" disabled>🔍 Підказка</button>
             </div>
             <p style="font-size:12px;color:var(--text-dim);text-align:center;margin-top:6px;">
-                Суперсила активується після 3 правильних відповідей поспіль
+                Суперсила після 3 правильних поспіль
             </p>
         </div>
+
+        <div class="panel">
+            <div class="panel-title">🎉 Реакції</div>
+            <div class="reactions-bar" id="gameReactions"></div>
+        </div>
+
         <div class="panel">
             <div class="panel-title">🏆 Топ гравців</div>
             <div id="sqLeaderboard" class="player-list"></div>
@@ -1102,13 +1210,13 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
     </div>
 
     <!-- ============================================================
-         ЕКРАН 9: ФІНАЛ
+         ЕКРАН 10: ФІНАЛ
          ============================================================ -->
     <div id="screen-results" class="screen">
-        <h1>🏆 Фінальні результати</h1>
+        <h1>🏆 Результати</h1>
         <div class="panel"><div class="podium" id="podium"></div></div>
         <div class="panel">
-            <div class="panel-title">🎖️ Повний рейтинг</div>
+            <div class="panel-title">🎖️ Рейтинг</div>
             <div id="finalLeaderboard" class="player-list"></div>
         </div>
         <div class="certificate" id="certificateBox">
@@ -1122,7 +1230,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
         <div class="panel" id="resultsButtonsPanel">
             <div class="button-grid two-col">
-                <button class="primary" onclick="App.printCertificate()">🖨️ Роздрукувати грамоту</button>
+                <button class="primary" onclick="App.printCertificate()">🖨️ Друк грамоти</button>
                 <button class="gold" onclick="App.go('screen-shop')">🛒 Гардероб</button>
             </div>
             <div class="button-row">
@@ -1131,7 +1239,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- МОДАЛЬНЕ ВІКНО -->
+    <!-- МОДАЛКА -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-box">
             <h2 id="modalTitle">Заголовок</h2>
@@ -1148,7 +1256,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
 <script src="/socket.io/socket.io.js"></script>
 <script>
 /* ============================================================
-   SUNLOREM CLIENT — гейміфікація
+   SUNLOREM CLIENT
    ============================================================ */
 "use strict";
 
@@ -1165,7 +1273,8 @@ const App = (function () {
         { id: 'forest', name: 'Магічний ліс',  emoji: '🌲' },
         { id: 'sunset', name: 'Захід сонця',   emoji: '🌅' },
         { id: 'ocean',  name: 'Океан',         emoji: '🌊' },
-        { id: 'candy',  name: 'Цукеркова',     emoji: '🍭' }
+        { id: 'candy',  name: 'Цукеркова',     emoji: '🍭' },
+        { id: 'autumn', name: 'Осінній табір', emoji: '🍂' }
     ];
 
     const TEMPLATES = {
@@ -1246,18 +1355,18 @@ const App = (function () {
         pin: null,
         playerId: null,
         playerName: null,
-        // Профіль
         profile: {
             coins: 0,
+            xp: 0,
             ownedAvatars: ['a_cat'],
             ownedAccessories: ['x_none'],
             ownedThemes: ['neon', 'pastel'],
             equippedAvatar: 'a_cat',
             equippedHead: '',
             equippedEyes: '',
-            equippedEffect: ''
+            equippedEffect: '',
+            completedQuests: {}
         },
-        // Ігрова логіка
         mode: 'arcade',
         timePerQuestion: 20,
         questions: [],
@@ -1269,12 +1378,13 @@ const App = (function () {
         socket: null,
         connected: false,
         initDone: false,
-        // Магазин
         shop: null,
+        economy: null,
+        questDefs: null,
+        reactionEmojis: ['🎉', '🔥', '👏', '🤔', '🚀', '😂', '😮', '💪', '❓', '💯'],
         shopTab: 'avatars',
-        shopReturnScreen: 'screen-welcome',
-        // Суперсили
-        currentStreak: 0
+        currentStreak: 0,
+        lastReactionTime: 0
     };
 
     /* ========================================================
@@ -1296,7 +1406,7 @@ const App = (function () {
     }
 
     let toastTimer = null;
-    function toast(msg, ms = 2200) {
+    function toast(msg, ms = 2400) {
         const t = $('toast');
         if (!t) return;
         t.textContent = msg;
@@ -1324,38 +1434,42 @@ const App = (function () {
         qsa('.screen').forEach(s => s.classList.remove('active'));
         const el = $(screenId);
         if (el) { el.classList.add('active'); el.scrollTop = 0; }
-        if (screenId === 'screen-shop') {
-            renderShop();
-        } else if (screenId === 'screen-student-join') {
-            renderJoinPreview();
-        } else if (screenId === 'screen-welcome') {
-            updateCoinsDisplays();
-        }
+        if (screenId === 'screen-shop') renderShop();
+        else if (screenId === 'screen-student-join') renderJoinPreview();
+        else if (screenId === 'screen-welcome') updateCoinsDisplays();
+        else if (screenId === 'screen-quests') renderQuests();
     }
 
     /* ========================================================
        ТЕМИ
        ======================================================== */
     function setTheme(themeId) {
-        // Дозволяємо лише розблоковані теми
         if (!State.profile.ownedThemes.includes(themeId)) {
-            toast('Ця тема ще не розблокована. Купи її в магазині!');
+            toast('Ця тема ще не розблокована');
             return;
         }
         State.theme = themeId;
         document.body.className = 'theme-' + themeId;
         Storage.set('sunlorem_theme', themeId);
         renderThemeSwitchers();
-        if (['pastel','candy'].includes(themeId)) {
+        if (['pastel', 'candy'].includes(themeId)) {
             const p = $('particles'); if (p) p.innerHTML = '';
         } else {
             spawnParticles();
         }
+        // Трекінг квесту "змінити тему"
+        if (!State.profile.completedQuests.change_theme) {
+            State.profile.completedQuests.change_theme = true;
+            addCoins(0);
+            toast('🎨 Квест «Стиліст» виконано! +25 🪙');
+            State.profile.coins += 25;
+            Storage.set('sunlorem_profile', State.profile);
+            updateCoinsDisplays();
+        }
     }
 
     function renderThemeSwitchers() {
-        const containers = ['teacherThemeSwitcher', 'studentThemeSwitcher'];
-        containers.forEach(cid => {
+        ['teacherThemeSwitcher', 'studentThemeSwitcher'].forEach(cid => {
             const el = $(cid);
             if (!el) return;
             el.innerHTML = '';
@@ -1394,18 +1508,19 @@ const App = (function () {
     }
 
     /* ========================================================
-       ПРОФІЛЬ — збереження / завантаження
+       ПРОФІЛЬ
        ======================================================== */
     function loadProfile() {
         const saved = Storage.get('sunlorem_profile');
         if (saved && typeof saved === 'object') {
             State.profile = Object.assign(State.profile, saved);
-            // Гарантуємо базові значення
             if (!Array.isArray(State.profile.ownedAvatars)) State.profile.ownedAvatars = ['a_cat'];
             if (!Array.isArray(State.profile.ownedAccessories)) State.profile.ownedAccessories = ['x_none'];
             if (!Array.isArray(State.profile.ownedThemes)) State.profile.ownedThemes = ['neon', 'pastel'];
             if (!State.profile.equippedAvatar) State.profile.equippedAvatar = 'a_cat';
             if (typeof State.profile.coins !== 'number') State.profile.coins = 0;
+            if (typeof State.profile.xp !== 'number') State.profile.xp = 0;
+            if (!State.profile.completedQuests) State.profile.completedQuests = {};
             if (!State.profile.ownedAvatars.includes('a_cat')) State.profile.ownedAvatars.push('a_cat');
             if (!State.profile.ownedAccessories.includes('x_none')) State.profile.ownedAccessories.push('x_none');
         }
@@ -1414,7 +1529,7 @@ const App = (function () {
     function saveProfile() {
         Storage.set('sunlorem_profile', State.profile);
         updateCoinsDisplays();
-        toast('Профіль збережено!');
+        toast('💾 Профіль збережено!');
         if (State.socket && State.connected && State.room && State.playerId) {
             State.socket.emit('updateProfile', {
                 playerId: State.playerId,
@@ -1424,18 +1539,27 @@ const App = (function () {
                     eyes: State.profile.equippedEyes,
                     effect: State.profile.equippedEffect
                 },
-                coins: State.profile.coins
+                coins: State.profile.coins,
+                xp: State.profile.xp
             });
         }
     }
 
     function updateCoinsDisplays() {
-        const ids = ['welcomeCoins', 'shopCoins', 'joinCoins'];
-        ids.forEach(id => {
+        const pairs = [
+            ['welcomeCoins', State.profile.coins],
+            ['shopCoins', State.profile.coins],
+            ['joinCoins', State.profile.coins],
+            ['questsCoins', State.profile.coins],
+            ['welcomeXp', State.profile.xp],
+            ['shopXp', State.profile.xp],
+            ['joinXp', State.profile.xp],
+            ['questsXp', State.profile.xp]
+        ];
+        pairs.forEach(([id, val]) => {
             const el = $(id);
-            if (el) el.textContent = State.profile.coins;
+            if (el) el.textContent = val;
         });
-        // бейдж на екрані очікування
         const sw = $('swCoinsBadge');
         if (sw) sw.textContent = '🪙 ' + State.profile.coins;
     }
@@ -1447,8 +1571,15 @@ const App = (function () {
         updateCoinsDisplays();
     }
 
+    function addXp(amount) {
+        State.profile.xp += amount;
+        if (State.profile.xp < 0) State.profile.xp = 0;
+        Storage.set('sunlorem_profile', State.profile);
+        updateCoinsDisplays();
+    }
+
     /* ========================================================
-       ОНОВЛЕННЯ ПРЕВ'Ю АВАТАРА
+       АВАТАРИ
        ======================================================== */
     function getAvatarEmoji(avatarId) {
         if (!State.shop) return '🐱';
@@ -1461,17 +1592,13 @@ const App = (function () {
         return a ? a.emoji : '';
     }
     function getAvatarName(avatarId) {
-        if (!State.shop) return 'Невідомий';
+        if (!State.shop) return 'Аватар';
         const a = State.shop.avatars.find(x => x.id === avatarId);
-        return a ? a.name : 'Невідомий';
+        return a ? a.name : 'Аватар';
     }
 
     function renderJoinPreview() {
         if (!State.shop) return;
-        const avatarEmoji = getAvatarEmoji(State.profile.equippedAvatar);
-        const headEmoji = getAccEmoji(State.profile.equippedHead);
-        const eyesEmoji = getAccEmoji(State.profile.equippedEyes);
-        const effectEmoji = getAccEmoji(State.profile.equippedEffect);
         const set = (id, txt, show) => {
             const el = $(id);
             if (!el) return;
@@ -1480,23 +1607,18 @@ const App = (function () {
         };
         const pv = $('joinPreviewAvatar');
         if (pv) {
-            // перший текстовий вузол — емодзі аватара
             const first = pv.childNodes[0];
-            if (first && first.nodeType === 3) first.nodeValue = avatarEmoji;
+            if (first && first.nodeType === 3) first.nodeValue = getAvatarEmoji(State.profile.equippedAvatar);
         }
-        set('joinPreviewHead', headEmoji, !!headEmoji);
-        set('joinPreviewEyes', eyesEmoji, !!eyesEmoji);
-        set('joinPreviewEffect', effectEmoji, !!effectEmoji);
+        set('joinPreviewHead', getAccEmoji(State.profile.equippedHead), !!State.profile.equippedHead);
+        set('joinPreviewEyes', getAccEmoji(State.profile.equippedEyes), !!State.profile.equippedEyes);
+        set('joinPreviewEffect', getAccEmoji(State.profile.equippedEffect), !!State.profile.equippedEffect);
         const nm = $('joinPreviewName');
         if (nm) nm.textContent = getAvatarName(State.profile.equippedAvatar);
     }
 
     function renderShopPreview() {
         if (!State.shop) return;
-        const avatarEmoji = getAvatarEmoji(State.profile.equippedAvatar);
-        const headEmoji = getAccEmoji(State.profile.equippedHead);
-        const eyesEmoji = getAccEmoji(State.profile.equippedEyes);
-        const effectEmoji = getAccEmoji(State.profile.equippedEffect);
         const set = (id, txt, show) => {
             const el = $(id);
             if (!el) return;
@@ -1506,13 +1628,59 @@ const App = (function () {
         const pv = $('shopPreviewAvatar');
         if (pv) {
             const first = pv.childNodes[0];
-            if (first && first.nodeType === 3) first.nodeValue = avatarEmoji;
+            if (first && first.nodeType === 3) first.nodeValue = getAvatarEmoji(State.profile.equippedAvatar);
         }
-        set('shopPreviewHead', headEmoji, !!headEmoji);
-        set('shopPreviewEyes', eyesEmoji, !!eyesEmoji);
-        set('shopPreviewEffect', effectEmoji, !!effectEmoji);
+        set('shopPreviewHead', getAccEmoji(State.profile.equippedHead), !!State.profile.equippedHead);
+        set('shopPreviewEyes', getAccEmoji(State.profile.equippedEyes), !!State.profile.equippedEyes);
+        set('shopPreviewEffect', getAccEmoji(State.profile.equippedEffect), !!State.profile.equippedEffect);
         const nm = $('shopPreviewName');
         if (nm) nm.textContent = getAvatarName(State.profile.equippedAvatar);
+    }
+
+    /* ========================================================
+       КВЕСТИ
+       ======================================================== */
+    function renderQuests() {
+        const wrap = $('questsList');
+        if (!wrap || !State.questDefs) return;
+        wrap.innerHTML = '';
+
+        const defs = Object.values(State.questDefs);
+        defs.forEach(def => {
+            const done = !!State.profile.completedQuests[def.id];
+            const item = document.createElement('div');
+            item.className = 'quest-item' + (done ? ' done' : '');
+            item.innerHTML =
+                '<div class="q-icon">' + def.icon + '</div>' +
+                '<div class="q-info">' +
+                    '<div class="q-title">' + escapeHtml(def.title) + (done ? ' ✓' : '') + '</div>' +
+                    '<div class="q-desc">' + escapeHtml(def.desc) + '</div>' +
+                '</div>' +
+                '<div class="q-reward">' + (done ? '✅' : '+' + def.reward + ' 🪙') + '</div>';
+
+            if (!done && State.socket && State.connected && State.room && State.playerId) {
+                // Кнопка "претендувати" — на випадок, якщо гра вже йде
+                item.addEventListener('click', () => {
+                    State.socket.emit('completeQuest', {
+                        playerId: State.playerId,
+                        questId: def.id
+                    }, (res) => {
+                        if (res && res.ok) {
+                            State.profile.completedQuests[def.id] = true;
+                            State.profile.coins = res.coins;
+                            Storage.set('sunlorem_profile', State.profile);
+                            updateCoinsDisplays();
+                            renderQuests();
+                            toast('🏆 Квест виконано! +' + res.reward + ' 🪙');
+                        } else {
+                            toast('Квест ще не виконано');
+                        }
+                    });
+                });
+            }
+
+            wrap.appendChild(item);
+        });
     }
 
     /* ========================================================
@@ -1534,23 +1702,46 @@ const App = (function () {
         wrap.innerHTML = '';
 
         if (State.shopTab === 'avatars') {
-            State.shop.avatars.forEach(a => {
-                const owned = State.profile.ownedAvatars.includes(a.id);
-                const equipped = State.profile.equippedAvatar === a.id;
-                const card = document.createElement('div');
-                card.className = 'shop-card' + (!owned ? ' locked' : '') + (owned ? ' owned' : '') + (equipped ? ' equipped' : '');
-                card.innerHTML = `
-                    <span class="preview">${a.emoji}</span>
-                    <div class="name">${escapeHtml(a.name)}</div>
-                    <div class="price ${owned ? 'owned' : (State.profile.coins < a.price ? 'cant' : '')}">
-                        ${owned ? '✓ Куплено' : '🪙 ' + a.price}
-                    </div>
-                    <div class="buy-hint">${equipped ? 'Одягнуто' : (owned ? 'Натисни — одягнути' : 'Натисни — купити')}</div>
-                `;
-                card.addEventListener('click', () => onAvatarClick(a));
-                wrap.appendChild(card);
+            // Групуємо за колекціями
+            const collections = State.shop.collections || [];
+            collections.forEach(col => {
+                const items = State.shop.avatars.filter(a => a.col === col.id);
+                if (items.length === 0) return;
+
+                const ownedCount = items.filter(a => State.profile.ownedAvatars.includes(a.id)).length;
+                const isComplete = ownedCount === items.length;
+
+                const header = document.createElement('div');
+                header.className = 'collection-header' + (isComplete ? ' complete' : '');
+                header.innerHTML =
+                    '<div class="col-title">' + col.emoji + ' ' + escapeHtml(col.name) + '</div>' +
+                    '<div class="col-bonus">' + ownedCount + '/' + items.length +
+                        (isComplete ? ' ✅ +' + col.bonus + ' 🪙 бонус' : '') + '</div>';
+                wrap.appendChild(header);
+
+                const grid = document.createElement('div');
+                grid.className = 'shop-grid';
+                items.forEach(a => {
+                    const owned = State.profile.ownedAvatars.includes(a.id);
+                    const equipped = State.profile.equippedAvatar === a.id;
+                    const card = document.createElement('div');
+                    card.className = 'shop-card' + (!owned ? ' locked' : '') + (owned ? ' owned' : '') + (equipped ? ' equipped' : '');
+                    card.innerHTML =
+                        '<span class="preview">' + a.emoji + '</span>' +
+                        '<div class="name">' + escapeHtml(a.name) + '</div>' +
+                        '<div class="price ' + (owned ? 'owned' : (State.profile.coins < a.price ? 'cant' : '')) + '">' +
+                            (owned ? '✓ Куплено' : '🪙 ' + a.price) +
+                        '</div>' +
+                        '<div class="buy-hint">' + (equipped ? 'Одягнуто' : (owned ? 'Одягнути' : 'Купити')) + '</div>';
+                    card.addEventListener('click', () => onAvatarClick(a));
+                    grid.appendChild(card);
+                });
+                wrap.appendChild(grid);
             });
+
         } else if (State.shopTab === 'accessories') {
+            const grid = document.createElement('div');
+            grid.className = 'shop-grid';
             State.shop.accessories.forEach(a => {
                 const owned = State.profile.ownedAccessories.includes(a.id);
                 const equipped = (a.slot === 'head' && State.profile.equippedHead === a.id) ||
@@ -1560,37 +1751,55 @@ const App = (function () {
                 const card = document.createElement('div');
                 card.className = 'shop-card' + (!owned ? ' locked' : '') + (owned ? ' owned' : '') + (equipped ? ' equipped' : '');
                 const emoji = a.emoji || '∅';
-                card.innerHTML = `
-                    <span class="preview">${emoji}</span>
-                    <div class="name">${escapeHtml(a.name)}</div>
-                    <div style="font-size:11px;color:var(--text-dim);">слот: ${a.slot === 'head' ? 'голова' : a.slot === 'eyes' ? 'очі' : 'ефект'}</div>
-                    <div class="price ${owned ? 'owned' : (State.profile.coins < a.price ? 'cant' : '')}">
-                        ${owned ? '✓ Куплено' : '🪙 ' + a.price}
-                    </div>
-                    <div class="buy-hint">${equipped ? 'Одягнуто' : (owned ? 'Натисни — одягнути' : 'Натисни — купити')}</div>
-                `;
+                card.innerHTML =
+                    '<span class="preview">' + emoji + '</span>' +
+                    '<div class="name">' + escapeHtml(a.name) + '</div>' +
+                    '<div style="font-size:11px;color:var(--text-dim);">' + (a.slot === 'head' ? 'голова' : a.slot === 'eyes' ? 'очі' : 'ефект') + '</div>' +
+                    '<div class="price ' + (owned ? 'owned' : (State.profile.coins < a.price ? 'cant' : '')) + '">' +
+                        (owned ? '✓ Куплено' : '🪙 ' + a.price) +
+                    '</div>' +
+                    '<div class="buy-hint">' + (equipped ? 'Одягнуто' : (owned ? 'Одягнути' : 'Купити')) + '</div>';
                 card.addEventListener('click', () => onAccessoryClick(a));
-                wrap.appendChild(card);
+                grid.appendChild(card);
             });
+            wrap.appendChild(grid);
+
         } else if (State.shopTab === 'themes') {
+            const grid = document.createElement('div');
+            grid.className = 'shop-grid';
             State.shop.themes.forEach(t => {
                 const owned = State.profile.ownedThemes.includes(t.id);
                 const equipped = State.theme === t.id;
                 const card = document.createElement('div');
                 card.className = 'shop-card' + (!owned ? ' locked' : '') + (owned ? ' owned' : '') + (equipped ? ' equipped' : '');
                 const themeEmoji = (THEMES.find(x => x.id === t.id) || {}).emoji || '🎨';
-                card.innerHTML = `
-                    <span class="preview">${themeEmoji}</span>
-                    <div class="name">${escapeHtml(t.name)}</div>
-                    <div style="font-size:11px;color:var(--text-dim);">${escapeHtml(t.desc)}</div>
-                    <div class="price ${owned ? 'owned' : (State.profile.coins < t.price ? 'cant' : '')}">
-                        ${owned ? '✓ Куплено' : '🪙 ' + t.price}
-                    </div>
-                    <div class="buy-hint">${equipped ? 'Активна' : (owned ? 'Натисни — застосувати' : 'Натисни — купити')}</div>
-                `;
+                card.innerHTML =
+                    '<span class="preview">' + themeEmoji + '</span>' +
+                    '<div class="name">' + escapeHtml(t.name) + '</div>' +
+                    '<div style="font-size:11px;color:var(--text-dim);">' + escapeHtml(t.desc) + '</div>' +
+                    '<div class="price ' + (owned ? 'owned' : (State.profile.coins < t.price ? 'cant' : '')) + '">' +
+                        (owned ? '✓ Куплено' : '🪙 ' + t.price) +
+                    '</div>' +
+                    '<div class="buy-hint">' + (equipped ? 'Активна' : (owned ? 'Застосувати' : 'Купити')) + '</div>';
                 card.addEventListener('click', () => onThemeClick(t));
-                wrap.appendChild(card);
+                grid.appendChild(card);
             });
+            wrap.appendChild(grid);
+        }
+    }
+
+    function checkCollectionBonus(col) {
+        const items = State.shop.avatars.filter(a => a.col === col.id);
+        const ownedCount = items.filter(a => State.profile.ownedAvatars.includes(a.id)).length;
+        if (ownedCount === items.length && col.bonus > 0) {
+            const key = 'colbonus_' + col.id;
+            if (!State.profile.completedQuests[key]) {
+                State.profile.completedQuests[key] = true;
+                State.profile.coins += col.bonus;
+                Storage.set('sunlorem_profile', State.profile);
+                updateCoinsDisplays();
+                toast('🎁 Колекція «' + col.name + '» завершена! +' + col.bonus + ' 🪙');
+            }
         }
     }
 
@@ -1609,10 +1818,15 @@ const App = (function () {
             State.profile.coins -= a.price;
             State.profile.ownedAvatars.push(a.id);
             State.profile.equippedAvatar = a.id;
-            saveProfile();
+            Storage.set('sunlorem_profile', State.profile);
+            updateCoinsDisplays();
             renderShop();
             renderJoinPreview();
             toast('🎉 Куплено: ' + a.name);
+
+            // Перевірка бонусу колекції
+            const col = State.shop.collections.find(c => c.id === a.col);
+            if (col) checkCollectionBonus(col);
         }
     }
 
@@ -1627,7 +1841,6 @@ const App = (function () {
             return;
         }
         if (State.profile.ownedAccessories.includes(a.id)) {
-            // Одягаємо в потрібний слот
             if (a.slot === 'head') State.profile.equippedHead = (State.profile.equippedHead === a.id ? '' : a.id);
             if (a.slot === 'eyes') State.profile.equippedEyes = (State.profile.equippedEyes === a.id ? '' : a.id);
             if (a.slot === 'effect') State.profile.equippedEffect = (State.profile.equippedEffect === a.id ? '' : a.id);
@@ -1642,11 +1855,11 @@ const App = (function () {
             if (!confirm('Купити "' + a.name + '" за ' + a.price + ' 🪙?')) return;
             State.profile.coins -= a.price;
             State.profile.ownedAccessories.push(a.id);
-            // Автоматично одягаємо
             if (a.slot === 'head') State.profile.equippedHead = a.id;
             if (a.slot === 'eyes') State.profile.equippedEyes = a.id;
             if (a.slot === 'effect') State.profile.equippedEffect = a.id;
-            saveProfile();
+            Storage.set('sunlorem_profile', State.profile);
+            updateCoinsDisplays();
             renderShop();
             renderJoinPreview();
             toast('🎉 Куплено: ' + a.name);
@@ -1663,14 +1876,63 @@ const App = (function () {
                 toast('Недостатньо СанКоїнів. Потрібно ще ' + (t.price - State.profile.coins));
                 return;
             }
-            if (!confirm('Розблокувати тему "' + t.name + '" за ' + t.price + ' 🪙?')) return;
+            if (!confirm('Розблокувати "' + t.name + '" за ' + t.price + ' 🪙?')) return;
             State.profile.coins -= t.price;
             State.profile.ownedThemes.push(t.id);
-            saveProfile();
+            Storage.set('sunlorem_profile', State.profile);
+            updateCoinsDisplays();
             setTheme(t.id);
             renderShop();
             toast('🎉 Тема розблокована: ' + t.name);
         }
+    }
+
+    /* ========================================================
+       РЕАКЦІЇ
+       ======================================================== */
+    function buildReactionsBars() {
+        ['waitingReactions', 'gameReactions'].forEach(id => {
+            const bar = $(id);
+            if (!bar) return;
+            bar.innerHTML = '';
+            State.reactionEmojis.forEach(e => {
+                const btn = document.createElement('button');
+                btn.className = 'reaction-btn';
+                btn.textContent = e;
+                btn.addEventListener('click', () => sendReaction(e));
+                bar.appendChild(btn);
+            });
+        });
+    }
+
+    function sendReaction(emoji) {
+        if (!State.socket || !State.connected || !State.playerId) {
+            toast('Приєднайся до кімнати, щоб надсилати реакції');
+            return;
+        }
+        const now = Date.now();
+        if (now - State.lastReactionTime < 700) return;
+        State.lastReactionTime = now;
+
+        State.socket.emit('sendReaction', {
+            playerId: State.playerId,
+            emoji: emoji
+        }, (res) => {
+            if (res && res.ok) {
+                spawnFloatEmoji(emoji);
+            }
+        });
+    }
+
+    function spawnFloatEmoji(emoji) {
+        const layer = $('floatLayer') || document.body;
+        const el = document.createElement('div');
+        el.className = 'float-emoji';
+        el.textContent = emoji;
+        el.style.left = (20 + Math.random() * 60) + 'vw';
+        el.style.bottom = (10 + Math.random() * 20) + 'vh';
+        layer.appendChild(el);
+        setTimeout(() => el.remove(), 2600);
     }
 
     /* ========================================================
@@ -1681,7 +1943,7 @@ const App = (function () {
         if (!wrap) return;
         wrap.innerHTML = '';
         if (State.questions.length === 0) {
-            wrap.innerHTML = '<p style="color:var(--text-dim);font-size:14px;text-align:center;padding:12px;">Питань поки немає.</p>';
+            wrap.innerHTML = '<p style="color:var(--text-dim);font-size:14px;text-align:center;padding:12px;">Питань немає.</p>';
             return;
         }
         State.questions.forEach((q, qi) => {
@@ -1772,30 +2034,30 @@ const App = (function () {
     }
 
     /* ========================================================
-       SOCKET.IO
+       SOCKET
        ======================================================== */
     function initSocket() {
-        // Підключення через io() без аргументів — працює на Railway/Render
         const socket = io();
         State.socket = socket;
 
         socket.on('connect', () => {
             State.connected = true;
             showConn(true, '🟢 Онлайн');
-            console.log('[socket] connected id =', socket.id, '| transport =', socket.io.engine.transport.name);
 
-            // Завантажуємо магазин
             socket.emit('getShop', (res) => {
                 if (res && res.ok) {
                     State.shop = res.shop;
-                    // Якщо є збережений вибір — перемалюємо
+                    State.economy = res.economy;
+                    State.questDefs = res.quests;
+                    State.reactionEmojis = res.reactions || State.reactionEmojis;
+                    buildReactionsBars();
                     renderThemeSwitchers();
                     renderShop();
                     renderJoinPreview();
+                    renderQuests();
                 }
             });
 
-            // Відновлення сесії
             const sess = Storage.get('sunlorem_session');
             if (sess && sess.pin && sess.role) {
                 if (sess.role === 'teacher') {
@@ -1821,7 +2083,8 @@ const App = (function () {
                             eyes: State.profile.equippedEyes,
                             effect: State.profile.equippedEffect
                         },
-                        coins: State.profile.coins
+                        coins: State.profile.coins,
+                        xp: State.profile.xp
                     }, res => {
                         if (res && res.ok) {
                             State.role = 'student';
@@ -1841,27 +2104,29 @@ const App = (function () {
         socket.on('disconnect', (reason) => {
             State.connected = false;
             showConn(false, '🔴 Офлайн');
-            console.log('[socket] disconnected:', reason);
         });
 
         socket.on('connect_error', (err) => {
             State.connected = false;
             showConn(false, '🔴 Помилка');
-            console.warn('[socket] connect_error:', err && err.message);
         });
 
         socket.io.on('reconnect_attempt', (n) => showConn(false, '🟡 Реконект ' + n));
-        socket.io.on('reconnect', () => { State.connected = true; showConn(true, '🟢 Відновлено'); });
-        socket.io.on('reconnect_failed', () => showConn(false, '🔴 Не вдалося'));
+        socket.io.on('reconnect', () => { State.connected = true; showConn(true, '🟢 Онлайн'); });
+        socket.io.on('reconnect_failed', () => showConn(false, '🔴 Fail'));
 
         socket.on('state', (state) => {
             State.room = state;
-            // Синхронізуємо локальні СанКоїни з сервером, якщо ми в грі
             if (State.role === 'student' && State.playerId) {
                 const me = state.players.find(p => p.id === State.playerId);
-                if (me && typeof me.coins === 'number') {
-                    if (me.coins > State.profile.coins) {
+                if (me) {
+                    if (typeof me.coins === 'number' && me.coins > State.profile.coins) {
                         State.profile.coins = me.coins;
+                        Storage.set('sunlorem_profile', State.profile);
+                        updateCoinsDisplays();
+                    }
+                    if (typeof me.xp === 'number' && me.xp > State.profile.xp) {
+                        State.profile.xp = me.xp;
                         Storage.set('sunlorem_profile', State.profile);
                         updateCoinsDisplays();
                     }
@@ -1877,13 +2142,33 @@ const App = (function () {
                 revealCorrectAnswer();
             }
         });
-        socket.on('gameOver', () => { if (State.role === 'student') toast('Гру завершено!'); });
+        socket.on('gameOver', () => { if (State.role === 'student') toast('🏁 Гру завершено!'); });
         socket.on('roomClosed', () => {
-            openModal('Кімнату закрито', 'Вчитель закрив кімнату. Дякуємо за гру!', () => {
+            openModal('Кімнату закрито', 'Вчитель закрив кімнату.', () => {
                 Storage.remove('sunlorem_session');
                 State.role = null; State.pin = null; State.room = null;
                 go('screen-welcome');
             });
+        });
+
+        socket.on('playerReaction', (data) => {
+            spawnFloatEmoji(data.emoji);
+            // Якщо є картка гравця — додати бульбашку
+            const cards = qsa('.player-card');
+            // Показуємо бульбашку біля відповідного гравця на всіх екранах
+            setTimeout(() => {
+                // Знайдемо картку гравця за іменем
+                cards.forEach(card => {
+                    const nameEl = card.querySelector('.name');
+                    if (nameEl && data.playerName && nameEl.textContent.indexOf(data.playerName) !== -1) {
+                        const bubble = document.createElement('div');
+                        bubble.className = 'reaction-bubble';
+                        bubble.textContent = data.emoji;
+                        card.appendChild(bubble);
+                        setTimeout(() => bubble.remove(), 2000);
+                    }
+                });
+            }, 60);
         });
     }
 
@@ -1903,7 +2188,7 @@ const App = (function () {
        ======================================================== */
     function createRoom() {
         if (!State.socket || !State.connected) { toast('Немає з\'єднання'); return; }
-        if (State.questions.length === 0) { openModal('Мало питань', 'Додай хоча б одне питання.'); return; }
+        if (State.questions.length === 0) { openModal('Мало питань', 'Додай хоча б одне.'); return; }
         const botCount = Math.max(0, Math.min(200, parseInt($('botCount').value || '0', 10)));
         const tPerQ = Math.max(5, Math.min(60, parseInt($('timePerQuestion').value || '20', 10)));
 
@@ -1914,7 +2199,7 @@ const App = (function () {
             timePerQuestion: tPerQ,
             botCount
         }, (res) => {
-            if (!res || !res.ok) { openModal('Помилка', (res && res.error) || 'Не вдалося'); return; }
+            if (!res || !res.ok) { openModal('Помилка', (res && res.error) || 'Помилка'); return; }
             State.role = 'teacher';
             State.pin = res.pin;
             State.room = res.state;
@@ -1926,7 +2211,7 @@ const App = (function () {
             renderQR(link);
             updateTeacherLobbyUI();
             go('screen-teacher-lobby');
-            toast('Кімнату створено! PIN: ' + res.pin);
+            toast('PIN: ' + res.pin);
         });
     }
 
@@ -1945,7 +2230,7 @@ const App = (function () {
         img.loading = 'eager'; img.referrerPolicy = 'no-referrer';
         img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(link);
         img.onerror = () => {
-            box.innerHTML = '<p style="color:#333;font-size:13px;padding:14px;text-align:center;">QR недоступний.<br>PIN: <b>' + State.pin + '</b></p>';
+            box.innerHTML = '<p style="color:#333;padding:14px;text-align:center;">PIN: <b>' + State.pin + '</b></p>';
         };
         box.appendChild(img);
     }
@@ -1954,7 +2239,7 @@ const App = (function () {
         const inp = $('joinLink');
         if (!inp) return;
         inp.select();
-        try { document.execCommand('copy'); toast('Посилання скопійовано!'); }
+        try { document.execCommand('copy'); toast('Скопійовано!'); }
         catch (e) { toast('Скопіюй вручну'); }
     }
 
@@ -1971,7 +2256,7 @@ const App = (function () {
         const wrap = $('lobbyPlayerList');
         wrap.innerHTML = '';
         if (total === 0) {
-            wrap.innerHTML = '<p style="color:var(--text-dim);font-size:14px;text-align:center;padding:14px;">Очікуємо на учнів...</p>';
+            wrap.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:14px;">Очікуємо...</p>';
             return;
         }
         room.players.slice().sort((a, b) => b.score - a.score).forEach(p => {
@@ -1988,7 +2273,6 @@ const App = (function () {
 
         const wrap = document.createElement('div');
         wrap.className = 'avatar-wrap';
-
         const av = document.createElement('span');
         av.className = 'avatar';
         av.textContent = p.avatar || '🐱';
@@ -2033,14 +2317,21 @@ const App = (function () {
             card.appendChild(pb);
         }
 
+        if (p.reaction && p.reaction.emoji) {
+            const bubble = document.createElement('div');
+            bubble.className = 'reaction-bubble';
+            bubble.textContent = p.reaction.emoji;
+            card.appendChild(bubble);
+        }
+
         return card;
     }
 
     /* ========================================================
-       СТАРТ / КЕРУВАННЯ ГРОЮ
+       КЕРУВАННЯ ГРОЮ
        ======================================================== */
     function startGame() {
-        if (!State.socket || !State.connected) { toast('Немає з\'єднання'); return; }
+        if (!State.socket || !State.connected) return;
         State.socket.emit('startGame', (res) => {
             if (!res || !res.ok) { toast((res && res.error) || 'Помилка'); return; }
             go('screen-teacher-game');
@@ -2136,7 +2427,7 @@ const App = (function () {
         wrap.innerHTML = '';
         const sorted = state.players.slice().sort((a, b) => b.score - a.score).slice(0, 15);
         if (sorted.length === 0) {
-            wrap.innerHTML = '<p style="color:var(--text-dim);font-size:13px;text-align:center;padding:8px;">Немає гравців</p>';
+            wrap.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:8px;">Немає гравців</p>';
             return;
         }
         sorted.forEach((p, i) => {
@@ -2173,7 +2464,8 @@ const App = (function () {
         if (state.status === 'lobby') {
             if (!$('screen-student-waiting').classList.contains('active') &&
                 !$('screen-student-game').classList.contains('active') &&
-                !$('screen-shop').classList.contains('active')) {
+                !$('screen-shop').classList.contains('active') &&
+                !$('screen-quests').classList.contains('active')) {
                 go('screen-student-waiting');
             }
             renderStudentWaiting(state);
@@ -2181,7 +2473,8 @@ const App = (function () {
         }
         if (state.status === 'running') {
             if (!$('screen-student-game').classList.contains('active') &&
-                !$('screen-shop').classList.contains('active')) {
+                !$('screen-shop').classList.contains('active') &&
+                !$('screen-quests').classList.contains('active')) {
                 go('screen-student-game');
             }
             renderStudentGame(state, me);
@@ -2201,22 +2494,17 @@ const App = (function () {
         state.players.slice().sort((a, b) => b.score - a.score).forEach(p => {
             wrap.appendChild(buildPlayerCard(p, true));
         });
-        // Оновлення великого аватара (профіль)
         const set = (id, txt, show) => {
             const el = $(id);
             if (!el) return;
             el.textContent = txt;
             el.style.display = show ? '' : 'none';
         };
-        const avatarEmoji = getAvatarEmoji(State.profile.equippedAvatar);
         const swAv = $('swAvatar');
-        if (swAv) swAv.textContent = avatarEmoji;
-        const headEmoji = getAccEmoji(State.profile.equippedHead);
-        const eyesEmoji = getAccEmoji(State.profile.equippedEyes);
-        const effectEmoji = getAccEmoji(State.profile.equippedEffect);
-        set('swHead', headEmoji, !!headEmoji);
-        set('swEyes', eyesEmoji, !!eyesEmoji);
-        set('swEffect', effectEmoji, !!effectEmoji);
+        if (swAv) swAv.textContent = getAvatarEmoji(State.profile.equippedAvatar);
+        set('swHead', getAccEmoji(State.profile.equippedHead), !!State.profile.equippedHead);
+        set('swEyes', getAccEmoji(State.profile.equippedEyes), !!State.profile.equippedEyes);
+        set('swEffect', getAccEmoji(State.profile.equippedEffect), !!State.profile.equippedEffect);
         const swC = $('swCoinsBadge');
         if (swC) swC.textContent = '🪙 ' + State.profile.coins;
     }
@@ -2235,7 +2523,6 @@ const App = (function () {
             State.answeredCurrent = false;
             const fb = $('sqFeedback');
             if (fb) fb.textContent = '';
-            // Знімаємо підказку
             qsa('#sqAnswers .answer-btn').forEach(b => b.classList.remove('hint-hidden'));
         }
 
@@ -2245,7 +2532,8 @@ const App = (function () {
         if (me) {
             $('sqScore').textContent = 'Бали: ' + me.score;
             $('sqStreak').textContent = '🔥 Серія: ' + (me.streak || 0);
-            $('sqCoins').textContent = '🪙 СанКоїни: ' + (me.coins || 0);
+            $('sqCoins').textContent = '🪙 ' + (me.coins || 0);
+            $('sqXp').textContent = '⭐ XP: ' + (me.xp || 0);
         }
 
         const wrap = $('sqAnswers');
@@ -2269,7 +2557,6 @@ const App = (function () {
             });
         }
 
-        // Кнопки суперсил
         const streak = me ? (me.streak || 0) : 0;
         const hasPower = me && me.powerActive;
         const canActivate = streak >= 3 && !hasPower;
@@ -2314,9 +2601,21 @@ const App = (function () {
                 if (typeof res.coins === 'number') {
                     State.profile.coins = res.coins;
                     Storage.set('sunlorem_profile', State.profile);
-                    updateCoinsDisplays();
                 }
+                if (typeof res.xp === 'number') {
+                    State.profile.xp = res.xp;
+                    Storage.set('sunlorem_profile', State.profile);
+                }
+                updateCoinsDisplays();
                 State.currentStreak = res.streak || 0;
+                if (res.completedQuests && res.completedQuests.length) {
+                    res.completedQuests.forEach(qid => {
+                        State.profile.completedQuests[qid] = true;
+                        const def = State.questDefs ? State.questDefs[qid] : null;
+                        if (def) toast('🏆 Квест «' + def.title + '» виконано! +' + def.reward + ' 🪙');
+                    });
+                    Storage.set('sunlorem_profile', State.profile);
+                }
             }
         });
     }
@@ -2327,20 +2626,13 @@ const App = (function () {
             playerId: State.playerId,
             type
         }, (res) => {
-            if (!res || !res.ok) {
-                toast((res && res.error) || 'Помилка активації');
-                return;
-            }
+            if (!res || !res.ok) { toast((res && res.error) || 'Помилка'); return; }
             const names = { double: '⚡ Подвійні бали', shield: '🛡️ Щит часу', reveal: '🔍 Підказка' };
             toast('Активовано: ' + names[type]);
-            // Якщо це підказка — ховаємо 2 неправильні
             if (type === 'reveal' && Array.isArray(res.hintIndexes)) {
                 const btns = qsa('#sqAnswers .answer-btn');
-                res.hintIndexes.forEach(i => {
-                    if (btns[i]) btns[i].classList.add('hint-hidden');
-                });
+                res.hintIndexes.forEach(i => { if (btns[i]) btns[i].classList.add('hint-hidden'); });
             }
-            // Блокуємо всі кнопки сил
             ['btnPowerDouble', 'btnPowerShield', 'btnPowerReveal'].forEach(id => {
                 const b = $(id);
                 if (b) b.disabled = true;
@@ -2389,20 +2681,15 @@ const App = (function () {
                 eyes: State.profile.equippedEyes,
                 effect: State.profile.equippedEffect
             },
-            coins: State.profile.coins
+            coins: State.profile.coins,
+            xp: State.profile.xp
         }, (res) => {
-            if (!res || !res.ok) { toast((res && res.error) || 'Помилка входу'); return; }
+            if (!res || !res.ok) { toast((res && res.error) || 'Помилка'); return; }
             State.role = 'student';
             State.pin = pin;
             State.playerId = res.playerId;
             State.room = res.state;
-
-            Storage.set('sunlorem_session', {
-                role: 'student',
-                pin,
-                playerId: res.playerId,
-                name
-            });
+            Storage.set('sunlorem_session', { role: 'student', pin, playerId: res.playerId, name });
 
             const swAv = $('swAvatar');
             if (swAv) swAv.textContent = getAvatarEmoji(State.profile.equippedAvatar);
@@ -2514,15 +2801,13 @@ const App = (function () {
 
         loadProfile();
         const savedTheme = Storage.get('sunlorem_theme', 'neon');
-        if (State.profile.ownedThemes.includes(savedTheme)) {
-            State.theme = savedTheme;
-        } else {
-            State.theme = 'neon';
-        }
+        State.theme = State.profile.ownedThemes.includes(savedTheme) ? savedTheme : 'neon';
         document.body.className = 'theme-' + State.theme;
         spawnParticles();
         renderThemeSwitchers();
         updateCoinsDisplays();
+        buildReactionsBars();
+        renderQuests();
 
         const pinInput = $('studentPin');
         if (pinInput) {
