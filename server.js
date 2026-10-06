@@ -1,7 +1,7 @@
 /* ============================================================
    SunLorem: Школа-Табір 5 Клас — сервер (Railway / Render)
    Node.js + Express + Socket.io
-   Збалансована економіка + Квести + Колекції + Емодзі-реакції
+   Збалансована економіка: cap 30 🪙/гра + призові 70/60/50
    ============================================================ */
 
 'use strict';
@@ -33,20 +33,25 @@ app.use(express.static(path.join(__dirname, 'public'), {
 }));
 
 /* ============================================================
-   ЕКОНОМІКА
+   ЕКОНОМІКА (жорстко обмежена)
+   ------------------------------------------------------------
+   • За гру (відповіді) учень отримує МАКСИМУМ 30 🪙
+   • Правильна відповідь = 1 🪙, швидка (<25% часу) = +1 🪙
+   • Фінальні призові:
+       1 місце → 70 🪙
+       2 місце → 60 🪙
+       3 місце → 50 🪙
+       4–5     → 25 🪙
+       6–10    → 18 🪙
+       11+     → 10 🪙
+   • Максимум за гру: 30 + 70 = 100 🪙 (переможець)
    ============================================================ */
 const ECONOMY = {
-    baseCoins: 12,
+    coinsCorrect: 1,
+    coinsSpeedBonus: 1,
+    coinsPerGameCap: 30,
     baseScore: 100,
     timeBonusMax: 50,
-    speedBonusMultiplier: 0.5,
-    streakBonuses: {
-        3: 5,
-        5: 10,
-        7: 18,
-        10: 30,
-        15: 50
-    },
     streakScoreMultiplier: {
         3: 1.1,
         5: 1.2,
@@ -54,12 +59,24 @@ const ECONOMY = {
         10: 1.5,
         15: 1.75
     },
-    perfectQuestionBonus: 3,
-    survivalSurvivedBonus: 8
+    finalPrizes: { 1: 70, 2: 60, 3: 50 },
+    finalTiers: [
+        { minRank: 4,  maxRank: 5,  prize: 25 },
+        { minRank: 6,  maxRank: 10, prize: 18 },
+        { minRank: 11, maxRank: 9999, prize: 10 }
+    ]
 };
 
+function getFinalPrize(rank) {
+    if (ECONOMY.finalPrizes[rank] !== undefined) return ECONOMY.finalPrizes[rank];
+    for (const tier of ECONOMY.finalTiers) {
+        if (rank >= tier.minRank && rank <= tier.maxRank) return tier.prize;
+    }
+    return 0;
+}
+
 /* ============================================================
-   КВЕСТИ (щоденні та ігрові)
+   КВЕСТИ
    ============================================================ */
 const QUEST_DEFS = {
     first_correct: {
@@ -121,48 +138,48 @@ const QUEST_DEFS = {
 };
 
 /* ============================================================
-   МАГАЗИН: аватари, аксесуари, теми + КОЛЕКЦІЇ
+   МАГАЗИН: колекції, аватари, аксесуари, теми
    ============================================================ */
 const SHOP = {
     collections: [
-        { id: 'col_base', name: 'Базова', emoji: '🎒', desc: 'Стартовий набір', bonus: 0 },
-        { id: 'col_autumn', name: 'Осінній табір', emoji: '🍂', desc: 'Атмосфера осені та багаття', bonus: 50 },
-        { id: 'col_space', name: 'Космічна експедиція', emoji: '🚀', desc: 'Підкорювачі зірок', bonus: 70 },
-        { id: 'col_cyber', name: 'Кібер-табір', emoji: '🤖', desc: 'Технології майбутнього', bonus: 70 },
-        { id: 'col_magic', name: 'Магічний табір', emoji: '🔮', desc: 'Чарівні створіння', bonus: 80 },
-        { id: 'col_super', name: 'Супергерої', emoji: '🦸', desc: 'Захисники табору', bonus: 90 }
+        { id: 'col_base',   name: 'Базова',              emoji: '🎒', desc: 'Стартовий набір', bonus: 0 },
+        { id: 'col_autumn', name: 'Осінній табір',       emoji: '🍂', desc: 'Атмосфера осені та багаття', bonus: 50 },
+        { id: 'col_space',  name: 'Космічна експедиція', emoji: '🚀', desc: 'Підкорювачі зірок', bonus: 70 },
+        { id: 'col_cyber',  name: 'Кібер-табір',         emoji: '🤖', desc: 'Технології майбутнього', bonus: 70 },
+        { id: 'col_magic',  name: 'Магічний табір',      emoji: '🔮', desc: 'Чарівні створіння', bonus: 80 },
+        { id: 'col_super',  name: 'Супергерої',          emoji: '🦸', desc: 'Захисники табору', bonus: 90 }
     ],
     avatars: [
-        { id: 'a_cat',      emoji: '🐱',  name: 'Кіт-астронавт', price: 0,   col: 'col_base',   desc: 'Базовий кіт-космонавт' },
-        { id: 'a_dog',      emoji: '🐶',  name: 'Песик-пілот',   price: 0,   col: 'col_base',   desc: 'Вірний друг' },
-        { id: 'a_fox',      emoji: '🦊',  name: 'Лисичка-хакер', price: 0,   col: 'col_base',   desc: 'Хитра і швидка' },
-        { id: 'a_owl',      emoji: '🦉',  name: 'Мудра сова',    price: 25,  col: 'col_autumn', desc: 'Символ знань' },
-        { id: 'a_hedgehog', emoji: '🦔',  name: 'Їжачок',        price: 30,  col: 'col_autumn', desc: 'Маленький колючий друг' },
-        { id: 'a_squirrel', emoji: '🐿️', name: 'Білочка',       price: 35,  col: 'col_autumn', desc: 'Збирач горіхів' },
-        { id: 'a_deer',     emoji: '🦌',  name: 'Олень',         price: 45,  col: 'col_autumn', desc: 'Лісовий володар' },
+        { id: 'a_cat',      emoji: '🐱',  name: 'Кіт-астронавт',  price: 0,   col: 'col_base',   desc: 'Базовий кіт-космонавт' },
+        { id: 'a_dog',      emoji: '🐶',  name: 'Песик-пілот',    price: 0,   col: 'col_base',   desc: 'Вірний друг' },
+        { id: 'a_fox',      emoji: '🦊',  name: 'Лисичка-хакер',  price: 0,   col: 'col_base',   desc: 'Хитра і швидка' },
+        { id: 'a_owl',      emoji: '🦉',  name: 'Мудра сова',     price: 25,  col: 'col_autumn', desc: 'Символ знань' },
+        { id: 'a_hedgehog', emoji: '🦔',  name: 'Їжачок',         price: 30,  col: 'col_autumn', desc: 'Маленький колючий друг' },
+        { id: 'a_squirrel', emoji: '🐿️', name: 'Білочка',        price: 35,  col: 'col_autumn', desc: 'Збирач горіхів' },
+        { id: 'a_deer',     emoji: '🦌',  name: 'Олень',          price: 45,  col: 'col_autumn', desc: 'Лісовий володар' },
         { id: 'a_bear',     emoji: '🐻',  name: 'Ведмідь-таборянин', price: 55, col: 'col_autumn', desc: 'Господар лісу' },
-        { id: 'a_astronaut',emoji: '👨‍🚀', name: 'Астронавт',    price: 60,  col: 'col_space',  desc: 'Підкорювач космосу' },
-        { id: 'a_alien',    emoji: '👽',  name: 'Прибулець',     price: 55,  col: 'col_space',  desc: 'Гість із зірок' },
-        { id: 'a_rocket',   emoji: '🚀',  name: 'Ракета',        price: 40,  col: 'col_space',  desc: 'Символ швидкості' },
-        { id: 'a_comet',    emoji: '☄️',  name: 'Комета',        price: 65,  col: 'col_space',  desc: 'Космічний мандрівник' },
-        { id: 'a_ufo',      emoji: '🛸',  name: 'НЛО',           price: 75,  col: 'col_space',  desc: 'Таємничий корабель' },
-        { id: 'a_saturn',   emoji: '🪐',  name: 'Сатурн',        price: 85,  col: 'col_space',  desc: 'Планета з кільцями' },
-        { id: 'a_robot',    emoji: '🤖',  name: 'Робот-геній',   price: 60,  col: 'col_cyber',  desc: 'Штучний інтелект' },
-        { id: 'a_cyborg',   emoji: '🦾',  name: 'Кіборг',        price: 80,  col: 'col_cyber',  desc: 'Механічна рука' },
-        { id: 'a_ninja',    emoji: '🥷',  name: 'Ніндзя',        price: 70,  col: 'col_cyber',  desc: 'Тінь серед тіней' },
-        { id: 'a_dragon',   emoji: '🐉',  name: 'Кібер-дракон',  price: 110, col: 'col_cyber',  desc: 'Легендарний захисник' },
-        { id: 'a_chip',     emoji: '💠',  name: 'Кристал-чип',   price: 90,  col: 'col_cyber',  desc: 'Джерело енергії' },
-        { id: 'a_wizard',   emoji: '🧙',  name: 'Маг',           price: 80,  col: 'col_magic',  desc: 'Володар заклять' },
-        { id: 'a_unicorn',  emoji: '🦄',  name: 'Єдиноріг',      price: 85,  col: 'col_magic',  desc: 'Магія та легенди' },
-        { id: 'a_fairy',    emoji: '🧚',  name: 'Фея',           price: 95,  col: 'col_magic',  desc: 'Дух природи' },
-        { id: 'a_genie',    emoji: '🧞',  name: 'Джин',          price: 105, col: 'col_magic',  desc: 'Виконавець бажань' },
-        { id: 'a_phoenix',  emoji: '🔥',  name: 'Фенікс',        price: 130, col: 'col_magic',  desc: 'Вічно відроджується' },
-        { id: 'a_super',    emoji: '🦸',  name: 'Супергерой',    price: 100, col: 'col_super',  desc: 'Захисник міста' },
-        { id: 'a_hero_f',   emoji: '🦸‍♀️', name: 'Супергероїня', price: 100, col: 'col_super',  desc: 'Смілива й сильна' },
-        { id: 'a_bat',      emoji: '🦇',  name: 'Бетмен',        price: 120, col: 'col_super',  desc: 'Тіньовий лицар' },
-        { id: 'a_spider',   emoji: '🕷️', name: 'Людина-павук',  price: 115, col: 'col_super',  desc: 'Дружній сусід' },
-        { id: 'a_shield',   emoji: '🛡️', name: 'Капітан',       price: 110, col: 'col_super',  desc: 'Щит справедливості' },
-        { id: 'a_lightning',emoji: '⚡',  name: 'Громовержець',  price: 140, col: 'col_super',  desc: 'Володар блискавок' }
+        { id: 'a_astronaut',emoji: '👨‍🚀', name: 'Астронавт',      price: 60,  col: 'col_space',  desc: 'Підкорювач космосу' },
+        { id: 'a_alien',    emoji: '👽',  name: 'Прибулець',      price: 55,  col: 'col_space',  desc: 'Гість із зірок' },
+        { id: 'a_rocket',   emoji: '🚀',  name: 'Ракета',         price: 40,  col: 'col_space',  desc: 'Символ швидкості' },
+        { id: 'a_comet',    emoji: '☄️',  name: 'Комета',         price: 65,  col: 'col_space',  desc: 'Космічний мандрівник' },
+        { id: 'a_ufo',      emoji: '🛸',  name: 'НЛО',            price: 75,  col: 'col_space',  desc: 'Таємничий корабель' },
+        { id: 'a_saturn',   emoji: '🪐',  name: 'Сатурн',         price: 85,  col: 'col_space',  desc: 'Планета з кільцями' },
+        { id: 'a_robot',    emoji: '🤖',  name: 'Робот-геній',    price: 60,  col: 'col_cyber',  desc: 'Штучний інтелект' },
+        { id: 'a_cyborg',   emoji: '🦾',  name: 'Кіборг',         price: 80,  col: 'col_cyber',  desc: 'Механічна рука' },
+        { id: 'a_ninja',    emoji: '🥷',  name: 'Ніндзя',         price: 70,  col: 'col_cyber',  desc: 'Тінь серед тіней' },
+        { id: 'a_dragon',   emoji: '🐉',  name: 'Кібер-дракон',   price: 110, col: 'col_cyber',  desc: 'Легендарний захисник' },
+        { id: 'a_chip',     emoji: '💠',  name: 'Кристал-чип',    price: 90,  col: 'col_cyber',  desc: 'Джерело енергії' },
+        { id: 'a_wizard',   emoji: '🧙',  name: 'Маг',            price: 80,  col: 'col_magic',  desc: 'Володар заклять' },
+        { id: 'a_unicorn',  emoji: '🦄',  name: 'Єдиноріг',       price: 85,  col: 'col_magic',  desc: 'Магія та легенди' },
+        { id: 'a_fairy',    emoji: '🧚',  name: 'Фея',            price: 95,  col: 'col_magic',  desc: 'Дух природи' },
+        { id: 'a_genie',    emoji: '🧞',  name: 'Джин',           price: 105, col: 'col_magic',  desc: 'Виконавець бажань' },
+        { id: 'a_phoenix',  emoji: '🔥',  name: 'Фенікс',         price: 130, col: 'col_magic',  desc: 'Вічно відроджується' },
+        { id: 'a_super',    emoji: '🦸',  name: 'Супергерой',     price: 100, col: 'col_super',  desc: 'Захисник міста' },
+        { id: 'a_hero_f',   emoji: '🦸‍♀️', name: 'Супергероїня',  price: 100, col: 'col_super',  desc: 'Смілива й сильна' },
+        { id: 'a_bat',      emoji: '🦇',  name: 'Бетмен',         price: 120, col: 'col_super',  desc: 'Тіньовий лицар' },
+        { id: 'a_spider',   emoji: '🕷️', name: 'Людина-павук',   price: 115, col: 'col_super',  desc: 'Дружній сусід' },
+        { id: 'a_shield',   emoji: '🛡️', name: 'Капітан',        price: 110, col: 'col_super',  desc: 'Щит справедливості' },
+        { id: 'a_lightning',emoji: '⚡',  name: 'Громовержець',   price: 140, col: 'col_super',  desc: 'Володар блискавок' }
     ],
     accessories: [
         { id: 'x_none',      emoji: '',   name: 'Немає',             price: 0,   slot: 'head' },
@@ -184,7 +201,7 @@ const SHOP = {
         { id: 'x_lightning', emoji: '⚡', name: 'Блискавка',         price: 65,  slot: 'effect' },
         { id: 'x_heart',     emoji: '💖', name: 'Сердечка',          price: 40,  slot: 'effect' },
         { id: 'x_leaf',      emoji: '🍁', name: 'Осіннє листя',      price: 30,  slot: 'effect' },
-        { id: 'x_snow',      emoji: '❄️', name: 'Сніжинки',         price: 35,  slot: 'effect' }
+        { id: 'x_snow',      emoji: '❄️', name: 'Сніжинки',          price: 35,  slot: 'effect' }
     ],
     themes: [
         { id: 't_neon',    name: 'Неон',          price: 0,   desc: 'Базовий неон' },
@@ -286,6 +303,9 @@ function generateBots(count) {
             accessories: { head: '', eyes: '', effect: '' },
             score: 0,
             coins: 0,
+            coinsEarnedThisGame: 0,
+            finalPrize: 0,
+            finalRank: 0,
             xp: 0,
             isBot: true,
             correctCount: 0,
@@ -297,7 +317,8 @@ function generateBots(count) {
             streak: 0,
             bestStreak: 0,
             powerActive: null,
-            reaction: null
+            reaction: null,
+            quests: {}
         });
     }
     return bots;
@@ -327,6 +348,9 @@ function getPublicState(room) {
             accessories: p.accessories,
             score: p.score,
             coins: p.coins,
+            coinsEarnedThisGame: p.coinsEarnedThisGame || 0,
+            finalPrize: p.finalPrize || 0,
+            finalRank: p.finalRank || 0,
             xp: p.xp || 0,
             isBot: p.isBot,
             correctCount: p.correctCount,
@@ -382,84 +406,68 @@ function startTimer(room) {
 }
 
 /* ============================================================
-   РОЗРАХУНОК НАГОРОД ЗІ STREAK-БОНУСАМИ
+   РОЗРАХУНОК НАГОРОД ПІД ЧАС ГРИ
+   ------------------------------------------------------------
+   Монети строго обмежені: 1 монета за правильну відповідь,
+   +1 якщо відповів дуже швидко. Стеля — ECONOMY.coinsPerGameCap.
+   Бали (score) рахуються окремо для рейтингу.
    ============================================================ */
 function calculateRewards(opts) {
-    const {
-        elapsed,
-        timePerQuestion,
-        mode,
-        streak,
-        powerActive
-    } = opts;
+    const elapsed = opts.elapsed;
+    const timePerQuestion = opts.timePerQuestion;
+    const mode = opts.mode;
+    const streak = opts.streak;
+    const powerActive = opts.powerActive;
+    const coinsEarnedThisGame = opts.coinsEarnedThisGame || 0;
 
-    // Базові бали
-    let basePoints = ECONOMY.baseScore;
+    // ---------- БАЛИ ----------
     const timeBonus = Math.round(
         Math.max(0, 1 - elapsed / timePerQuestion) * ECONOMY.timeBonusMax
     );
-
-    // Множник режиму
     const modeMult = MODES[mode] ? MODES[mode].multiplier : 1.0;
 
-    // Множник streak для балів
     let streakMultScore = 1.0;
-    const streakKeys = Object.keys(ECONOMY.streakScoreMultiplier).map(Number).sort((a, b) => b - a);
-    for (const k of streakKeys) {
-        if (streak >= k) {
-            streakMultScore = ECONOMY.streakScoreMultiplier[k];
+    const scoreKeys = Object.keys(ECONOMY.streakScoreMultiplier).map(Number).sort((a, b) => b - a);
+    for (let i = 0; i < scoreKeys.length; i++) {
+        if (streak >= scoreKeys[i]) {
+            streakMultScore = ECONOMY.streakScoreMultiplier[scoreKeys[i]];
             break;
         }
     }
 
-    // Множник сили (подвійні бали)
     const powerMult = (powerActive && powerActive.type === 'double') ? 2 : 1;
-
     const gainedScore = Math.round(
-        (basePoints + timeBonus) * modeMult * streakMultScore * powerMult
+        (ECONOMY.baseScore + timeBonus) * modeMult * streakMultScore * powerMult
     );
 
-    // Базові монети — тепер значно менші
-    let baseCoins = ECONOMY.baseCoins;
-
-    // Бонус за швидкість (додаткові монети)
-    const speedBonus = Math.round(
-        Math.max(0, 1 - elapsed / timePerQuestion) * ECONOMY.baseCoins * ECONOMY.speedBonusMultiplier
-    );
-
-    // Бонус за streak
-    let streakCoinBonus = 0;
-    const streakCoinKeys = Object.keys(ECONOMY.streakBonuses).map(Number).sort((a, b) => b - a);
-    for (const k of streakCoinKeys) {
-        if (streak >= k) {
-            streakCoinBonus = ECONOMY.streakBonuses[k];
-            break;
-        }
+    // ---------- МОНЕТИ ----------
+    let coins = ECONOMY.coinsCorrect;
+    let speedBonus = 0;
+    const speedRatio = elapsed / timePerQuestion;
+    if (speedRatio <= 0.25) {
+        speedBonus = ECONOMY.coinsSpeedBonus;
+        coins += speedBonus;
     }
 
-    let totalCoins = baseCoins + speedBonus + streakCoinBonus;
+    const cap = ECONOMY.coinsPerGameCap;
+    const remaining = Math.max(0, cap - coinsEarnedThisGame);
+    if (coins > remaining) coins = remaining;
 
-    // Множник режиму на монети (легкий)
-    totalCoins = Math.round(totalCoins * modeMult);
-
-    // Множник сили
-    totalCoins = Math.round(totalCoins * powerMult);
-
-    // XP — просто сума балів за цим множником
     const gainedXp = Math.round(gainedScore / 10);
 
     return {
         score: gainedScore,
-        coins: totalCoins,
+        coins: coins,
         xp: gainedXp,
         breakdown: {
-            basePoints,
-            timeBonus,
-            modeMult,
-            streakMultScore,
-            speedBonus,
-            streakCoinBonus,
-            powerMult
+            timeBonus: timeBonus,
+            modeMult: modeMult,
+            streakMultScore: streakMultScore,
+            speedBonus: speedBonus,
+            powerMult: powerMult,
+            cap: cap,
+            alreadyEarned: coinsEarnedThisGame,
+            remaining: remaining
         }
     };
 }
@@ -494,15 +502,17 @@ function scheduleBotAnswers(room) {
 
                 const elapsed = (Date.now() - room.questionStartedAt) / 1000;
                 const rewards = calculateRewards({
-                    elapsed,
+                    elapsed: elapsed,
                     timePerQuestion: room.timePerQuestion,
                     mode: room.mode,
                     streak: p.streak,
-                    powerActive: p.powerActive
+                    powerActive: p.powerActive,
+                    coinsEarnedThisGame: p.coinsEarnedThisGame || 0
                 });
 
                 p.score += rewards.score;
                 p.coins = (p.coins || 0) + rewards.coins;
+                p.coinsEarnedThisGame = (p.coinsEarnedThisGame || 0) + rewards.coins;
                 p.xp = (p.xp || 0) + rewards.xp;
 
                 addFeed(room, '🤖 ' + p.name + ' правильно (+' + rewards.score + ' балів, +' + rewards.coins + ' 🪙)');
@@ -664,7 +674,6 @@ io.on('connection', (socket) => {
             const name = String((payload && payload.name) || '').trim().slice(0, 24);
             const avatarId = String((payload && payload.avatarId) || 'a_cat');
             const accessories = (payload && payload.accessories) || { head: '', eyes: '', effect: '' };
-            const coins = Math.max(0, parseInt(payload && payload.coins, 10) || 0);
             const xp = Math.max(0, parseInt(payload && payload.xp, 10) || 0);
 
             if (!/^\d{6}$/.test(pin)) {
@@ -697,7 +706,6 @@ io.on('connection', (socket) => {
                 existing.avatarId = avatarId;
                 existing.avatar = avatarEmoji;
                 existing.accessories = accessories;
-                existing.coins = Math.max(existing.coins || 0, coins);
                 existing.xp = Math.max(existing.xp || 0, xp);
                 existing.socketId = socket.id;
                 player = existing;
@@ -710,7 +718,10 @@ io.on('connection', (socket) => {
                     avatarId: avatarId,
                     accessories: accessories,
                     score: 0,
-                    coins: coins,
+                    coins: 0,
+                    coinsEarnedThisGame: 0,
+                    finalPrize: 0,
+                    finalRank: 0,
                     xp: xp,
                     isBot: false,
                     correctCount: 0,
@@ -763,9 +774,6 @@ io.on('connection', (socket) => {
                 player.avatar = found.emoji;
             }
             if (payload.accessories) player.accessories = payload.accessories;
-            if (typeof payload.coins === 'number') {
-                player.coins = Math.max(player.coins || 0, payload.coins);
-            }
             if (typeof payload.xp === 'number') {
                 player.xp = Math.max(player.xp || 0, payload.xp);
             }
@@ -858,7 +866,6 @@ io.on('connection', (socket) => {
 
             player.reaction = { emoji: emoji, t: Date.now() };
 
-            // Broadcast окремої події для анімації на всіх екранах
             io.to('room_' + room.pin).emit('playerReaction', {
                 playerId: player.id,
                 playerName: player.name,
@@ -868,7 +875,6 @@ io.on('connection', (socket) => {
 
             if (cb) cb({ ok: true });
 
-            // Авто-скидання через 3 секунди
             setTimeout(() => {
                 const r = rooms.get(room.pin);
                 if (!r) return;
@@ -883,7 +889,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- ВИКОНАННЯ КВЕСТУ (клієнт повідомляє сервер) ---------- */
+    /* ---------- КВЕСТИ (нагороди видаються після гри) ---------- */
     socket.on('completeQuest', (payload, cb) => {
         try {
             const room = rooms.get(currentRoomPin);
@@ -908,11 +914,14 @@ io.on('connection', (socket) => {
                 return;
             }
 
-            player.quests[questId] = { completed: true, t: Date.now() };
-            player.coins = (player.coins || 0) + def.reward;
-            addFeed(room, '🏆 ' + player.name + ' виконав квест «' + def.title + '» (+' + def.reward + ' 🪙)');
+            player.quests[questId] = {
+                completed: true,
+                t: Date.now(),
+                pendingReward: def.reward
+            };
+            addFeed(room, '🏆 ' + player.name + ' виконав квест «' + def.title + '» (нагорода після гри)');
 
-            if (cb) cb({ ok: true, reward: def.reward, coins: player.coins });
+            if (cb) cb({ ok: true, pendingReward: def.reward });
             broadcastState(room);
         } catch (err) {
             console.error('completeQuest error', err);
@@ -953,6 +962,9 @@ io.on('connection', (socket) => {
                 p.powerActive = null;
                 p.reaction = null;
                 p.quests = {};
+                p.coinsEarnedThisGame = 0;
+                p.finalPrize = 0;
+                p.finalRank = 0;
             });
             addFeed(room, '🚀 Гру розпочато! Питання 1');
 
@@ -1048,15 +1060,9 @@ io.on('connection', (socket) => {
 
             const elapsed = (Date.now() - room.questionStartedAt) / 1000;
 
-            // Трекінг першої відповіді
             if (!room.firstAnswer) {
                 room.firstAnswer = player.id;
-                if (isCorrect && !player.isBot) {
-                    player._firstAnswerCorrect = true;
-                }
             }
-
-            const completedQuests = [];
 
             if (isCorrect) {
                 player.correctCount++;
@@ -1064,20 +1070,25 @@ io.on('connection', (socket) => {
                 if (player.streak > (player.bestStreak || 0)) player.bestStreak = player.streak;
 
                 const rewards = calculateRewards({
-                    elapsed,
+                    elapsed: elapsed,
                     timePerQuestion: room.timePerQuestion,
                     mode: room.mode,
                     streak: player.streak,
-                    powerActive: player.powerActive
+                    powerActive: player.powerActive,
+                    coinsEarnedThisGame: player.coinsEarnedThisGame || 0
                 });
 
                 player.score += rewards.score;
                 player.coins = (player.coins || 0) + rewards.coins;
+                player.coinsEarnedThisGame = (player.coinsEarnedThisGame || 0) + rewards.coins;
                 player.xp = (player.xp || 0) + rewards.xp;
 
                 let feedText = '✅ ' + player.name + ' правильно (+' + rewards.score + ' балів, +' + rewards.coins + ' 🪙)';
-                if (rewards.breakdown.streakCoinBonus > 0) {
-                    feedText += ' [серія ' + player.streak + ': +' + rewards.breakdown.streakCoinBonus + ' 🪙]';
+                if (rewards.breakdown.speedBonus > 0) {
+                    feedText += ' ⚡ швидкість';
+                }
+                if (rewards.breakdown.remaining === 0 && rewards.coins === 0) {
+                    feedText += ' [ліміт монет за гру]';
                 }
                 addFeed(room, feedText);
 
@@ -1085,42 +1096,28 @@ io.on('connection', (socket) => {
                     addFeed(room, '⚡ Подвійні бали для ' + player.name);
                 }
 
-                // Перевірка квестів
                 if (!player.isBot) {
+                    if (!player.quests) player.quests = {};
                     if (!player.quests.first_correct && player.correctCount >= 1) {
-                        player.quests.first_correct = { completed: true, t: Date.now() };
-                        player.coins += QUEST_DEFS.first_correct.reward;
-                        completedQuests.push('first_correct');
+                        player.quests.first_correct = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.first_correct.reward };
                     }
                     if (!player.quests.correct_3_streak && player.streak >= 3) {
-                        player.quests.correct_3_streak = { completed: true, t: Date.now() };
-                        player.coins += QUEST_DEFS.correct_3_streak.reward;
-                        completedQuests.push('correct_3_streak');
+                        player.quests.correct_3_streak = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.correct_3_streak.reward };
                     }
                     if (!player.quests.correct_5_streak && player.streak >= 5) {
-                        player.quests.correct_5_streak = { completed: true, t: Date.now() };
-                        player.coins += QUEST_DEFS.correct_5_streak.reward;
-                        completedQuests.push('correct_5_streak');
+                        player.quests.correct_5_streak = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.correct_5_streak.reward };
                     }
                     if (!player.quests.correct_10_total && player.correctCount >= 10) {
-                        player.quests.correct_10_total = { completed: true, t: Date.now() };
-                        player.coins += QUEST_DEFS.correct_10_total.reward;
-                        completedQuests.push('correct_10_total');
+                        player.quests.correct_10_total = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.correct_10_total.reward };
                     }
                     if (!player.quests.first_answer && room.firstAnswer === player.id) {
-                        player.quests.first_answer = { completed: true, t: Date.now() };
-                        player.coins += QUEST_DEFS.first_answer.reward;
-                        completedQuests.push('first_answer');
+                        player.quests.first_answer = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.first_answer.reward };
                     }
                     if (!player.quests.speed_demon && elapsed <= 3) {
-                        player.quests.speed_demon = { completed: true, t: Date.now() };
-                        player.coins += QUEST_DEFS.speed_demon.reward;
-                        completedQuests.push('speed_demon');
+                        player.quests.speed_demon = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.speed_demon.reward };
                     }
                     if (!player.quests.survivor && room.mode === 'survival') {
-                        player.quests.survivor = { completed: true, t: Date.now() };
-                        player.coins += QUEST_DEFS.survivor.reward;
-                        completedQuests.push('survivor');
+                        player.quests.survivor = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.survivor.reward };
                     }
                 }
 
@@ -1140,9 +1137,10 @@ io.on('connection', (socket) => {
                 isCorrect: isCorrect,
                 score: player.score,
                 coins: player.coins,
+                coinsEarnedThisGame: player.coinsEarnedThisGame || 0,
+                coinsRemaining: Math.max(0, ECONOMY.coinsPerGameCap - (player.coinsEarnedThisGame || 0)),
                 xp: player.xp,
-                streak: player.streak,
-                completedQuests: completedQuests
+                streak: player.streak
             });
             broadcastState(room);
         } catch (err) {
@@ -1151,7 +1149,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    /* ---------- ЗАВЕРШЕННЯ ГРИ ---------- */
+    /* ---------- ЗАВЕРШЕННЯ ГРИ (з фінальними призовими) ---------- */
     socket.on('finishGame', (cb) => {
         try {
             const room = rooms.get(currentRoomPin);
@@ -1162,9 +1160,31 @@ io.on('connection', (socket) => {
             stopTimer(room);
             room.status = 'finished';
             room.finishedAt = Date.now();
-            addFeed(room, '🏁 Гру завершено!');
 
-            if (cb) cb({ ok: true });
+            const ranked = room.players.slice().sort((a, b) => b.score - a.score);
+
+            ranked.forEach((p, idx) => {
+                const rank = idx + 1;
+                const prize = getFinalPrize(rank);
+                p.finalRank = rank;
+                p.finalPrize = prize;
+                p.coins = (p.coins || 0) + prize;
+            });
+
+            addFeed(room, '🏁 Гру завершено!');
+            if (ranked[0]) addFeed(room, '🥇 ' + ranked[0].name + ' — 1 місце (+' + getFinalPrize(1) + ' 🪙)');
+            if (ranked[1]) addFeed(room, '🥈 ' + ranked[1].name + ' — 2 місце (+' + getFinalPrize(2) + ' 🪙)');
+            if (ranked[2]) addFeed(room, '🥉 ' + ranked[2].name + ' — 3 місце (+' + getFinalPrize(3) + ' 🪙)');
+
+            if (cb) cb({
+                ok: true,
+                finalPrizes: ranked.map(p => ({
+                    id: p.id,
+                    name: p.name,
+                    rank: p.finalRank,
+                    prize: p.finalPrize
+                }))
+            });
             broadcastState(room);
             io.to('room_' + room.pin).emit('gameOver');
 
@@ -1294,7 +1314,7 @@ setInterval(() => {
 }, 5 * 60 * 1000);
 
 /* ============================================================
-   СТАРТ СЕРВЕРА — ДИНАМІЧНИЙ ПОРТ (Railway / Render)
+   СТАРТ СЕРВЕРА
    ============================================================ */
 const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0';
@@ -1306,8 +1326,8 @@ httpServer.listen(PORT, HOST, () => {
     console.log('🌐 NODE_ENV =', process.env.NODE_ENV || 'development');
     console.log('🔌 Socket.io path = /socket.io/');
     console.log('🛒 Магазин: /api/shop');
-    console.log('⚙️  Економіка: ' + ECONOMY.baseCoins + ' базових монет + streak-бонуси');
-    console.log('🏆 Квестів у наборі: ' + Object.keys(QUEST_DEFS).length);
+    console.log('⚙️  Економіка: cap ' + ECONOMY.coinsPerGameCap + ' 🪙/гра + призові 70/60/50');
+    console.log('🏆 Квестів: ' + Object.keys(QUEST_DEFS).length);
     console.log('🎭 Емодзі-реакцій: ' + REACTION_EMOJIS.length);
     console.log('==============================================');
 });
