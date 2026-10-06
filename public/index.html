@@ -508,7 +508,6 @@ label { display: block; font-size: clamp(13px, 3vw, 15px); font-weight: 700; col
     border-color: var(--accent-4);
 }
 .reaction-btn:active { transform: scale(0.9); }
-/* поплавкова анімація реакцій */
 .float-emoji {
     position: fixed;
     font-size: 44px;
@@ -640,10 +639,11 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
 }
 @keyframes pulseDot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.6; } }
 .waiting-text { font-size: clamp(15px, 3.4vw, 18px); color: var(--text-dim); margin-top: 8px; }
-.podium { display: flex; align-items: flex-end; justify-content: center; gap: 8px; margin: 20px 0; min-height: 200px; }
+.podium { display: flex; align-items: flex-end; justify-content: center; gap: 8px; margin: 20px 0; min-height: 220px; }
 .podium-place { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; max-width: 130px; }
 .podium-place .avatar { font-size: clamp(34px, 9vw, 56px); }
 .podium-place .name { font-weight: 800; font-size: clamp(12px, 2.9vw, 15px); text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; }
+.podium-place .prize-line { font-size: clamp(11px, 2.7vw, 14px); font-weight: 900; color: var(--accent-4); }
 .podium-place .pedestal {
     width: 100%; border-radius: 10px 10px 0 0;
     background: linear-gradient(180deg, var(--accent-4), var(--accent-1));
@@ -766,7 +766,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         width: 100% !important; margin: 0 !important; padding: 0 !important;
     }
     body * { visibility: hidden !important; }
-    #particles, #particles *, #toast, .modal-overlay, .confetti, .connection-status {
+    #particles, #particles *, #toast, .modal-overlay, .confetti, .connection-status, #floatLayer, #floatLayer * {
         display: none !important; visibility: hidden !important;
     }
     .screen {
@@ -826,9 +826,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
 
 <div id="app">
 
-    <!-- ============================================================
-         ЕКРАН 1: ПРИВІТАННЯ
-         ============================================================ -->
+    <!-- ЕКРАН 1: ПРИВІТАННЯ -->
     <div id="screen-welcome" class="screen active">
         <h1 class="glow">🌟 SunLorem 🌟</h1>
         <p class="subtitle">Школа-Табір для 5 класу • Гейміфікація</p>
@@ -856,20 +854,18 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
             <p style="font-size:14px;line-height:1.6;">
                 1. Вчитель створює кімнату, отримує <b>PIN</b> та QR.<br>
                 2. Учні вводять PIN, обирають аватар та аксесуари.<br>
-                3. За правильні відповіді — бали та <b>СанКоїни</b>.<br>
-                4. <b>Серія 3+ правильних</b> множить бали й монети.<br>
-                5. Виконуй <b>квести</b> — отримуй великі нагороди.<br>
-                6. Витрачай СанКоїни в <b>Гардеробі</b>.
+                3. За гру (відповіді) — до <b>30 🪙</b>.<br>
+                4. У фіналі: 1 місце — <b>70 🪙</b>, 2 місце — <b>60 🪙</b>, 3 місце — <b>50 🪙</b>.<br>
+                5. Серія 3+ правильних множить бали (для рейтингу).<br>
+                6. Виконуй <b>квести</b> та відкривай нові теми.
             </p>
         </div>
     </div>
 
-    <!-- ============================================================
-         ЕКРАН 2: КВЕСТИ
-         ============================================================ -->
+    <!-- ЕКРАН 2: КВЕСТИ -->
     <div id="screen-quests" class="screen">
         <h1>🏆 Квести</h1>
-        <p class="subtitle">Виконуй завдання — отримуй СанКоїни</p>
+        <p class="subtitle">Виконуй завдання — нагорода після гри</p>
 
         <div class="panel panel-narrow">
             <div class="balance-bar">
@@ -889,9 +885,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ============================================================
-         ЕКРАН 3: ГАРДЕРОБ / МАГАЗИН
-         ============================================================ -->
+    <!-- ЕКРАН 3: ГАРДЕРОБ / МАГАЗИН -->
     <div id="screen-shop" class="screen">
         <h1>🛒 Гардероб</h1>
         <p class="subtitle">Колекції, аксесуари та теми за СанКоїни</p>
@@ -930,9 +924,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ============================================================
-         ЕКРАН 4: НАЛАШТУВАННЯ ВЧИТЕЛЯ
-         ============================================================ -->
+    <!-- ЕКРАН 4: НАЛАШТУВАННЯ ВЧИТЕЛЯ -->
     <div id="screen-teacher-setup" class="screen">
         <h1>👩‍🏫 Панель Організатора</h1>
         <p class="subtitle">Налаштуй гру та створи кімнату</p>
@@ -1009,9 +1001,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ============================================================
-         ЕКРАН 5: ЛОБІ
-         ============================================================ -->
+    <!-- ЕКРАН 5: ЛОБІ -->
     <div id="screen-teacher-lobby" class="screen">
         <h1>🎯 Кімната створена!</h1>
         <p class="subtitle">Покажи PIN учням</p>
@@ -1047,9 +1037,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ============================================================
-         ЕКРАН 6: ГРА ВЧИТЕЛЯ
-         ============================================================ -->
+    <!-- ЕКРАН 6: ГРА ВЧИТЕЛЯ -->
     <div id="screen-teacher-game" class="screen">
         <h1>🎮 Гра триває</h1>
         <div class="panel">
@@ -1080,9 +1068,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ============================================================
-         ЕКРАН 7: ВХІД УЧНЯ
-         ============================================================ -->
+    <!-- ЕКРАН 7: ВХІД УЧНЯ -->
     <div id="screen-student-join" class="screen">
         <h1>🎒 Вхід учня</h1>
         <p class="subtitle">Введи PIN та налаштуй профіль</p>
@@ -1133,9 +1119,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ============================================================
-         ЕКРАН 8: ОЧІКУВАННЯ
-         ============================================================ -->
+    <!-- ЕКРАН 8: ОЧІКУВАННЯ -->
     <div id="screen-student-waiting" class="screen">
         <div class="panel panel-narrow waiting-card">
             <div class="avatar-big">
@@ -1167,9 +1151,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ============================================================
-         ЕКРАН 9: ГРА УЧНЯ
-         ============================================================ -->
+    <!-- ЕКРАН 9: ГРА УЧНЯ -->
     <div id="screen-student-game" class="screen">
         <div class="panel">
             <div class="progress-info">
@@ -1185,7 +1167,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
             <p id="sqFeedback" style="text-align:center;margin-top:12px;font-weight:800;font-size:16px;min-height:24px;"></p>
             <div class="progress-info" style="margin-top:10px;">
                 <span id="sqStreak">🔥 Серія: 0</span>
-                <span id="sqCoins">🪙 0</span>
+                <span id="sqCoins">🪙 0/30</span>
                 <span id="sqXp">⭐ XP: 0</span>
             </div>
             <div class="button-row" id="powerButtons" style="margin-top:10px;">
@@ -1209,9 +1191,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
         </div>
     </div>
 
-    <!-- ============================================================
-         ЕКРАН 10: ФІНАЛ
-         ============================================================ -->
+    <!-- ЕКРАН 10: ФІНАЛ -->
     <div id="screen-results" class="screen">
         <h1>🏆 Результати</h1>
         <div class="panel"><div class="podium" id="podium"></div></div>
@@ -1225,7 +1205,7 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
             <div class="recipient" id="certName">Переможцю</div>
             <p style="font-size:15px;">за перемогу у вікторині SunLorem<br>«Школа-Табір 5 Клас»</p>
             <p style="font-size:20px;margin-top:10px;" id="certScore">Балів: 0</p>
-            <p style="font-size:14px;margin-top:6px;" id="certCoins">🪙 СанКоїни: 0</p>
+            <p style="font-size:14px;margin-top:6px;" id="certCoins">🪙 Разом: 0</p>
             <p style="font-size:13px;color:var(--text-dim);margin-top:12px;" id="certDate"></p>
         </div>
         <div class="panel" id="resultsButtonsPanel">
@@ -1255,16 +1235,10 @@ body.theme-pastel .particles, body.theme-candy .particles { display: none; }
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-/* ============================================================
-   SUNLOREM CLIENT
-   ============================================================ */
 "use strict";
 
 const App = (function () {
 
-    /* ========================================================
-       КОНСТАНТИ
-       ======================================================== */
     const THEMES = [
         { id: 'neon',   name: 'Неон',          emoji: '🌌' },
         { id: 'pastel', name: 'Пастель',       emoji: '🍑' },
@@ -1346,9 +1320,6 @@ const App = (function () {
         treasure: { name: 'Полювання на скарби', multiplier: 1.2, defaultTime: 25 }
     };
 
-    /* ========================================================
-       СТАН
-       ======================================================== */
     const State = {
         theme: 'neon',
         role: null,
@@ -1384,21 +1355,16 @@ const App = (function () {
         reactionEmojis: ['🎉', '🔥', '👏', '🤔', '🚀', '😂', '😮', '💪', '❓', '💯'],
         shopTab: 'avatars',
         currentStreak: 0,
-        lastReactionTime: 0
+        lastReactionTime: 0,
+        _prizeApplied: false
     };
 
-    /* ========================================================
-       СХОВИЩЕ
-       ======================================================== */
     const Storage = {
         set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
         get(k, d = null) { try { const r = localStorage.getItem(k); return r === null ? d : JSON.parse(r); } catch (e) { return d; } },
         remove(k) { try { localStorage.removeItem(k); } catch (e) {} }
     };
 
-    /* ========================================================
-       ДОМ-ХЕЛПЕРИ
-       ======================================================== */
     function $(id) { return document.getElementById(id); }
     function qsa(sel, root = document) { return Array.from(root.querySelectorAll(sel)); }
     function escapeHtml(s) {
@@ -1440,9 +1406,6 @@ const App = (function () {
         else if (screenId === 'screen-quests') renderQuests();
     }
 
-    /* ========================================================
-       ТЕМИ
-       ======================================================== */
     function setTheme(themeId) {
         if (!State.profile.ownedThemes.includes(themeId)) {
             toast('Ця тема ще не розблокована');
@@ -1456,15 +1419,6 @@ const App = (function () {
             const p = $('particles'); if (p) p.innerHTML = '';
         } else {
             spawnParticles();
-        }
-        // Трекінг квесту "змінити тему"
-        if (!State.profile.completedQuests.change_theme) {
-            State.profile.completedQuests.change_theme = true;
-            addCoins(0);
-            toast('🎨 Квест «Стиліст» виконано! +25 🪙');
-            State.profile.coins += 25;
-            Storage.set('sunlorem_profile', State.profile);
-            updateCoinsDisplays();
         }
     }
 
@@ -1507,9 +1461,6 @@ const App = (function () {
         }
     }
 
-    /* ========================================================
-       ПРОФІЛЬ
-       ======================================================== */
     function loadProfile() {
         const saved = Storage.get('sunlorem_profile');
         if (saved && typeof saved === 'object') {
@@ -1539,7 +1490,6 @@ const App = (function () {
                     eyes: State.profile.equippedEyes,
                     effect: State.profile.equippedEffect
                 },
-                coins: State.profile.coins,
                 xp: State.profile.xp
             });
         }
@@ -1556,31 +1506,14 @@ const App = (function () {
             ['joinXp', State.profile.xp],
             ['questsXp', State.profile.xp]
         ];
-        pairs.forEach(([id, val]) => {
-            const el = $(id);
-            if (el) el.textContent = val;
+        pairs.forEach(pair => {
+            const el = $(pair[0]);
+            if (el) el.textContent = pair[1];
         });
         const sw = $('swCoinsBadge');
         if (sw) sw.textContent = '🪙 ' + State.profile.coins;
     }
 
-    function addCoins(amount) {
-        State.profile.coins += amount;
-        if (State.profile.coins < 0) State.profile.coins = 0;
-        Storage.set('sunlorem_profile', State.profile);
-        updateCoinsDisplays();
-    }
-
-    function addXp(amount) {
-        State.profile.xp += amount;
-        if (State.profile.xp < 0) State.profile.xp = 0;
-        Storage.set('sunlorem_profile', State.profile);
-        updateCoinsDisplays();
-    }
-
-    /* ========================================================
-       АВАТАРИ
-       ======================================================== */
     function getAvatarEmoji(avatarId) {
         if (!State.shop) return '🐱';
         const a = State.shop.avatars.find(x => x.id === avatarId);
@@ -1637,9 +1570,6 @@ const App = (function () {
         if (nm) nm.textContent = getAvatarName(State.profile.equippedAvatar);
     }
 
-    /* ========================================================
-       КВЕСТИ
-       ======================================================== */
     function renderQuests() {
         const wrap = $('questsList');
         if (!wrap || !State.questDefs) return;
@@ -1657,35 +1587,10 @@ const App = (function () {
                     '<div class="q-desc">' + escapeHtml(def.desc) + '</div>' +
                 '</div>' +
                 '<div class="q-reward">' + (done ? '✅' : '+' + def.reward + ' 🪙') + '</div>';
-
-            if (!done && State.socket && State.connected && State.room && State.playerId) {
-                // Кнопка "претендувати" — на випадок, якщо гра вже йде
-                item.addEventListener('click', () => {
-                    State.socket.emit('completeQuest', {
-                        playerId: State.playerId,
-                        questId: def.id
-                    }, (res) => {
-                        if (res && res.ok) {
-                            State.profile.completedQuests[def.id] = true;
-                            State.profile.coins = res.coins;
-                            Storage.set('sunlorem_profile', State.profile);
-                            updateCoinsDisplays();
-                            renderQuests();
-                            toast('🏆 Квест виконано! +' + res.reward + ' 🪙');
-                        } else {
-                            toast('Квест ще не виконано');
-                        }
-                    });
-                });
-            }
-
             wrap.appendChild(item);
         });
     }
 
-    /* ========================================================
-       МАГАЗИН
-       ======================================================== */
     function switchShopTab(tab) {
         State.shopTab = tab;
         qsa('.shop-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
@@ -1702,7 +1607,6 @@ const App = (function () {
         wrap.innerHTML = '';
 
         if (State.shopTab === 'avatars') {
-            // Групуємо за колекціями
             const collections = State.shop.collections || [];
             collections.forEach(col => {
                 const items = State.shop.avatars.filter(a => a.col === col.id);
@@ -1738,7 +1642,6 @@ const App = (function () {
                 });
                 wrap.appendChild(grid);
             });
-
         } else if (State.shopTab === 'accessories') {
             const grid = document.createElement('div');
             grid.className = 'shop-grid';
@@ -1763,7 +1666,6 @@ const App = (function () {
                 grid.appendChild(card);
             });
             wrap.appendChild(grid);
-
         } else if (State.shopTab === 'themes') {
             const grid = document.createElement('div');
             grid.className = 'shop-grid';
@@ -1824,7 +1726,6 @@ const App = (function () {
             renderJoinPreview();
             toast('🎉 Куплено: ' + a.name);
 
-            // Перевірка бонусу колекції
             const col = State.shop.collections.find(c => c.id === a.col);
             if (col) checkCollectionBonus(col);
         }
@@ -1887,9 +1788,6 @@ const App = (function () {
         }
     }
 
-    /* ========================================================
-       РЕАКЦІЇ
-       ======================================================== */
     function buildReactionsBars() {
         ['waitingReactions', 'gameReactions'].forEach(id => {
             const bar = $(id);
@@ -1935,9 +1833,6 @@ const App = (function () {
         setTimeout(() => el.remove(), 2600);
     }
 
-    /* ========================================================
-       РЕДАКТОР ПИТАНЬ
-       ======================================================== */
     function renderQuestionsEditor() {
         const wrap = $('questionsEditor');
         if (!wrap) return;
@@ -2033,9 +1928,6 @@ const App = (function () {
         }
     }
 
-    /* ========================================================
-       SOCKET
-       ======================================================== */
     function initSocket() {
         const socket = io();
         State.socket = socket;
@@ -2083,7 +1975,6 @@ const App = (function () {
                             eyes: State.profile.equippedEyes,
                             effect: State.profile.equippedEffect
                         },
-                        coins: State.profile.coins,
                         xp: State.profile.xp
                     }, res => {
                         if (res && res.ok) {
@@ -2092,6 +1983,7 @@ const App = (function () {
                             State.playerId = res.playerId;
                             State.playerName = sess.name;
                             State.room = res.state;
+                            State._prizeApplied = false;
                             onStudentState(res.state);
                         } else {
                             Storage.remove('sunlorem_session');
@@ -2101,12 +1993,12 @@ const App = (function () {
             }
         });
 
-        socket.on('disconnect', (reason) => {
+        socket.on('disconnect', () => {
             State.connected = false;
             showConn(false, '🔴 Офлайн');
         });
 
-        socket.on('connect_error', (err) => {
+        socket.on('connect_error', () => {
             State.connected = false;
             showConn(false, '🔴 Помилка');
         });
@@ -2120,10 +2012,12 @@ const App = (function () {
             if (State.role === 'student' && State.playerId) {
                 const me = state.players.find(p => p.id === State.playerId);
                 if (me) {
-                    if (typeof me.coins === 'number' && me.coins > State.profile.coins) {
-                        State.profile.coins = me.coins;
+                    if (state.status === 'finished' && me.finalPrize && !State._prizeApplied) {
+                        State._prizeApplied = true;
+                        State.profile.coins += me.finalPrize;
                         Storage.set('sunlorem_profile', State.profile);
                         updateCoinsDisplays();
+                        toast('🏆 Фінальна нагорода: +' + me.finalPrize + ' 🪙 за ' + me.finalRank + ' місце!');
                     }
                     if (typeof me.xp === 'number' && me.xp > State.profile.xp) {
                         State.profile.xp = me.xp;
@@ -2153,11 +2047,8 @@ const App = (function () {
 
         socket.on('playerReaction', (data) => {
             spawnFloatEmoji(data.emoji);
-            // Якщо є картка гравця — додати бульбашку
             const cards = qsa('.player-card');
-            // Показуємо бульбашку біля відповідного гравця на всіх екранах
             setTimeout(() => {
-                // Знайдемо картку гравця за іменем
                 cards.forEach(card => {
                     const nameEl = card.querySelector('.name');
                     if (nameEl && data.playerName && nameEl.textContent.indexOf(data.playerName) !== -1) {
@@ -2183,9 +2074,6 @@ const App = (function () {
         }
     }
 
-    /* ========================================================
-       СТВОРЕННЯ КІМНАТИ
-       ======================================================== */
     function createRoom() {
         if (!State.socket || !State.connected) { toast('Немає з\'єднання'); return; }
         if (State.questions.length === 0) { openModal('Мало питань', 'Додай хоча б одне.'); return; }
@@ -2197,7 +2085,7 @@ const App = (function () {
             questions: State.questions,
             mode: State.mode,
             timePerQuestion: tPerQ,
-            botCount
+            botCount: botCount
         }, (res) => {
             if (!res || !res.ok) { openModal('Помилка', (res && res.error) || 'Помилка'); return; }
             State.role = 'teacher';
@@ -2243,9 +2131,6 @@ const App = (function () {
         catch (e) { toast('Скопіюй вручну'); }
     }
 
-    /* ========================================================
-       ЛОБІ
-       ======================================================== */
     function updateTeacherLobbyUI() {
         const room = State.room;
         if (!room) return;
@@ -2327,9 +2212,6 @@ const App = (function () {
         return card;
     }
 
-    /* ========================================================
-       КЕРУВАННЯ ГРОЮ
-       ======================================================== */
     function startGame() {
         if (!State.socket || !State.connected) return;
         State.socket.emit('startGame', (res) => {
@@ -2368,9 +2250,6 @@ const App = (function () {
         });
     }
 
-    /* ========================================================
-       РЕНДЕР ВЧИТЕЛЯ
-       ======================================================== */
     function onTeacherState(state) {
         if (!state) return;
         if (state.status === 'lobby') {
@@ -2454,9 +2333,6 @@ const App = (function () {
         });
     }
 
-    /* ========================================================
-       РЕНДЕР УЧНЯ
-       ======================================================== */
     function onStudentState(state) {
         if (!state) return;
         const me = state.players.find(p => p.id === State.playerId);
@@ -2532,7 +2408,8 @@ const App = (function () {
         if (me) {
             $('sqScore').textContent = 'Бали: ' + me.score;
             $('sqStreak').textContent = '🔥 Серія: ' + (me.streak || 0);
-            $('sqCoins').textContent = '🪙 ' + (me.coins || 0);
+            const earnedThisGame = me.coinsEarnedThisGame || 0;
+            $('sqCoins').textContent = '🪙 ' + earnedThisGame + '/30';
             $('sqXp').textContent = '⭐ XP: ' + (me.xp || 0);
         }
 
@@ -2599,7 +2476,7 @@ const App = (function () {
         }, (res) => {
             if (res && res.ok) {
                 if (typeof res.coins === 'number') {
-                    State.profile.coins = res.coins;
+                    State.profile.coins += res.coins;
                     Storage.set('sunlorem_profile', State.profile);
                 }
                 if (typeof res.xp === 'number') {
@@ -2608,14 +2485,6 @@ const App = (function () {
                 }
                 updateCoinsDisplays();
                 State.currentStreak = res.streak || 0;
-                if (res.completedQuests && res.completedQuests.length) {
-                    res.completedQuests.forEach(qid => {
-                        State.profile.completedQuests[qid] = true;
-                        const def = State.questDefs ? State.questDefs[qid] : null;
-                        if (def) toast('🏆 Квест «' + def.title + '» виконано! +' + def.reward + ' 🪙');
-                    });
-                    Storage.set('sunlorem_profile', State.profile);
-                }
             }
         });
     }
@@ -2624,7 +2493,7 @@ const App = (function () {
         if (!State.socket || !State.connected) return;
         State.socket.emit('activatePower', {
             playerId: State.playerId,
-            type
+            type: type
         }, (res) => {
             if (!res || !res.ok) { toast((res && res.error) || 'Помилка'); return; }
             const names = { double: '⚡ Подвійні бали', shield: '🛡️ Щит часу', reveal: '🔍 Підказка' };
@@ -2640,9 +2509,6 @@ const App = (function () {
         });
     }
 
-    /* ========================================================
-       ТАЙМЕРИ
-       ======================================================== */
     function updateTimers(timeLeft, total) {
         const pct = Math.max(0, (timeLeft / (total || 1)) * 100);
         ['tqTimerFill', 'sqTimerFill'].forEach(id => { const e = $(id); if (e) e.style.width = pct + '%'; });
@@ -2659,9 +2525,6 @@ const App = (function () {
         });
     }
 
-    /* ========================================================
-       ВХІД УЧНЯ
-       ======================================================== */
     function studentJoin() {
         if (!State.socket || !State.connected) { toast('Немає з\'єднання'); return; }
         const pin = ($('studentPin').value || '').trim();
@@ -2670,18 +2533,18 @@ const App = (function () {
         if (name.length < 2) { toast('Ім\'я закоротке'); return; }
 
         State.playerName = name;
+        State._prizeApplied = false;
 
         toast('Підключаємось...');
         State.socket.emit('joinRoom', {
-            pin,
-            name,
+            pin: pin,
+            name: name,
             avatarId: State.profile.equippedAvatar,
             accessories: {
                 head: State.profile.equippedHead,
                 eyes: State.profile.equippedEyes,
                 effect: State.profile.equippedEffect
             },
-            coins: State.profile.coins,
             xp: State.profile.xp
         }, (res) => {
             if (!res || !res.ok) { toast((res && res.error) || 'Помилка'); return; }
@@ -2689,7 +2552,8 @@ const App = (function () {
             State.pin = pin;
             State.playerId = res.playerId;
             State.room = res.state;
-            Storage.set('sunlorem_session', { role: 'student', pin, playerId: res.playerId, name });
+            State._prizeApplied = false;
+            Storage.set('sunlorem_session', { role: 'student', pin: pin, playerId: res.playerId, name: name });
 
             const swAv = $('swAvatar');
             if (swAv) swAv.textContent = getAvatarEmoji(State.profile.equippedAvatar);
@@ -2710,9 +2574,15 @@ const App = (function () {
         go('screen-welcome');
     }
 
-    /* ========================================================
-       РЕЗУЛЬТАТИ
-       ======================================================== */
+    function getFinalPrizeClient(rank) {
+        if (rank === 1) return 70;
+        if (rank === 2) return 60;
+        if (rank === 3) return 50;
+        if (rank === 4 || rank === 5) return 25;
+        if (rank >= 6 && rank <= 10) return 18;
+        return 10;
+    }
+
     function renderResults(state) {
         if (!state) return;
         const sorted = state.players.slice().sort((a, b) => b.score - a.score);
@@ -2722,6 +2592,7 @@ const App = (function () {
         const top3 = [sorted[1], sorted[0], sorted[2]];
         const labels = ['p2', 'p1', 'p3'];
         const medals = ['🥈', '🥇', '🥉'];
+        const prizes = [60, 70, 50];
         for (let i = 0; i < 3; i++) {
             const p = top3[i];
             const place = document.createElement('div');
@@ -2729,8 +2600,10 @@ const App = (function () {
             if (!p) {
                 place.innerHTML = '<div class="avatar">—</div><div class="name">—</div><div class="pedestal">—</div>';
             } else {
-                place.innerHTML = '<div class="avatar">' + (p.avatar || '🐱') + '</div>' +
+                place.innerHTML =
+                    '<div class="avatar">' + (p.avatar || '🐱') + '</div>' +
                     '<div class="name">' + escapeHtml(p.name) + '</div>' +
+                    '<div class="prize-line">+' + prizes[i] + ' 🪙</div>' +
                     '<div class="pedestal">' + medals[i] + '</div>';
             }
             podium.appendChild(place);
@@ -2741,6 +2614,10 @@ const App = (function () {
         sorted.slice(0, 50).forEach((p, i) => {
             const card = buildPlayerCard(p, false);
             if (i === 0) card.classList.add('leader');
+            const prizeEl = document.createElement('div');
+            prizeEl.style.cssText = 'font-size:11px;color:var(--accent-4);font-weight:900;margin-left:6px;';
+            prizeEl.textContent = '+ ' + getFinalPrizeClient(i + 1) + ' 🪙';
+            card.appendChild(prizeEl);
             finalLb.appendChild(card);
         });
 
@@ -2748,7 +2625,7 @@ const App = (function () {
         if (winner) {
             $('certName').textContent = winner.name;
             $('certScore').textContent = 'Балів: ' + winner.score;
-            $('certCoins').textContent = '🪙 СанКоїни: ' + (winner.coins || 0);
+            $('certCoins').textContent = '🪙 Разом: ' + (winner.coins || 0) + ' (у т.ч. призове +' + getFinalPrizeClient(1) + ')';
         } else {
             $('certName').textContent = 'Немає учасників';
             $('certScore').textContent = '';
@@ -2773,9 +2650,6 @@ const App = (function () {
 
     function printCertificate() { setTimeout(() => window.print(), 120); }
 
-    /* ========================================================
-       АВТОПРИЄДНАННЯ ЗА PIN
-       ======================================================== */
     function autoJoinFromUrl() {
         const params = new URLSearchParams(window.location.search);
         const pin = params.get('pin');
@@ -2792,9 +2666,6 @@ const App = (function () {
         }
     }
 
-    /* ========================================================
-       ІНІЦІАЛІЗАЦІЯ
-       ======================================================== */
     function init() {
         if (State.initDone) return;
         State.initDone = true;
@@ -2834,9 +2705,6 @@ const App = (function () {
         initSocket();
     }
 
-    /* ========================================================
-       ПУБЛІЧНИЙ API
-       ======================================================== */
     return {
         State,
         go,
@@ -2867,9 +2735,6 @@ const App = (function () {
 
 })();
 
-/* ============================================================
-   СТАРТ
-   ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
     if (!document.body.className.startsWith('theme-')) {
         document.body.classList.add('theme-neon');
