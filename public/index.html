@@ -84,6 +84,7 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
 .badge.gold{color:var(--accent-4);border-color:var(--accent-4)}
 .badge.live{color:var(--accent-5);border-color:var(--accent-5)}
 .badge.waiting{color:var(--accent-4);border-color:var(--accent-4)}
+.badge.danger{color:#ff3d6e;border-color:#ff3d6e}
 .status-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:10px}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .tab{flex:1 1 auto;padding:9px 14px;font-size:clamp(12px,2.9vw,14px);font-weight:800;border-radius:var(--radius-sm);border:2px solid var(--panel-border);background:var(--input-bg);color:var(--text-main);cursor:pointer;transition:var(--transition);text-align:center}
@@ -154,19 +155,35 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
 .certificate{background:var(--panel-bg);border:3px double var(--accent-4);border-radius:var(--radius);padding:22px 16px;text-align:center;margin:14px 0;box-shadow:var(--panel-shadow)}
 .certificate h2{color:var(--accent-4);margin-bottom:10px}
 .certificate .recipient{font-size:clamp(22px,5vw,32px);font-weight:900;color:var(--accent-2);margin:12px 0}
+.grade-badge{display:inline-flex;align-items:center;justify-content:center;min-width:48px;height:48px;border-radius:50%;font-weight:900;font-size:20px;color:#fff;padding:0 6px}
+.grade-12,.grade-11{background:linear-gradient(135deg,#5fff9b,#5ff0ff);color:#10261a}
+.grade-10,.grade-9,.grade-8{background:linear-gradient(135deg,#ffd75f,#ffaa00);color:#3a2400}
+.grade-7,.grade-6,.grade-5,.grade-4{background:linear-gradient(135deg,#ff8c42,#ff5ff0);color:#fff}
+.grade-3,.grade-2,.grade-1{background:linear-gradient(135deg,#ff6b8b,#ff3d6e);color:#fff}
+.hw-row{display:flex;align-items:center;gap:10px;background:var(--input-bg);border:2px solid var(--panel-border);border-radius:var(--radius-sm);padding:10px;margin-bottom:8px;cursor:pointer;transition:var(--transition)}
+.hw-row:hover{border-color:var(--accent-1)}
+.hw-row.done{border-color:var(--accent-5)}
+.hw-row.late{border-color:#ff3d6e}
+.hw-row .hw-info{flex:1}
+.hw-row .hw-title{font-weight:800;font-size:clamp(13px,3.2vw,15px)}
+.hw-row .hw-meta{font-size:11px;color:var(--text-dim);margin-top:2px}
+.analytics-q{background:var(--input-bg);border:1.5px solid var(--panel-border);border-radius:var(--radius-sm);padding:10px;margin-bottom:6px}
+.analytics-q .aq-text{font-weight:700;font-size:13px;margin-bottom:4px}
+.analytics-q .aq-bar{height:6px;background:rgba(0,0,0,.3);border-radius:4px;overflow:hidden;margin:4px 0}
+.analytics-q .aq-fill{height:100%;background:linear-gradient(90deg,#ff6b8b,#ff3d6e)}
 @media print{
     @page{size:A4 portrait;margin:15mm}
     html,body{background:#fff!important;color:#000!important;height:auto!important;overflow:visible!important;width:100%!important;margin:0!important;padding:0!important}
     body *{visibility:hidden!important}
-    #particles,#toast,.modal-overlay,.confetti,.conn-status{display:none!important;visibility:hidden!important}
+    #toast,.modal-overlay,.conn-status{display:none!important}
     .screen{display:none!important;position:static!important;overflow:visible!important;padding:0!important;margin:0!important;background:#fff!important}
     #screen-results{display:block!important;position:static!important;overflow:visible!important;padding:0!important;margin:0!important;background:#fff!important;height:auto!important;width:100%!important;inset:auto!important}
     #screen-results>*{display:none!important;visibility:hidden!important}
     #certificateBox{display:block!important;visibility:visible!important;position:static!important;width:100%!important;max-width:100%!important;margin:0 auto!important;padding:40px 30px!important;background:#fff!important;color:#1a1a1a!important;border:5px double #b8860b!important;border-radius:6px!important;box-shadow:none!important;text-align:center!important;page-break-inside:avoid!important;font-family:'Georgia','Times New Roman',serif!important}
     #certificateBox,#certificateBox *{visibility:visible!important;text-shadow:none!important}
     #certificateBox h2{display:block!important;color:#8b6914!important;font-size:34pt!important;font-weight:900!important;margin:0 0 24pt 0!important;letter-spacing:2pt!important;text-transform:uppercase!important;border-bottom:2pt solid #b8860b!important;padding-bottom:12pt!important}
-    #certificateBox p{display:block!important;color:#2b2b2b!important;font-size:14pt!important;line-height:1.6!important;margin:6pt 0!important;font-family:'Georgia','Times New Roman',serif!important}
-    #certificateBox .recipient{display:block!important;color:#4b0082!important;font-size:30pt!important;font-weight:900!important;margin:22pt 0!important;padding:12pt 0!important;border-top:1pt dashed #999!important;border-bottom:1pt dashed #999!important;font-style:italic!important;letter-spacing:1pt!important}
+    #certificateBox p{display:block!important;color:#2b2b2b!important;font-size:14pt!important;line-height:1.6!important;margin:6pt 0!important}
+    #certificateBox .recipient{display:block!important;color:#4b0082!important;font-size:30pt!important;font-weight:900!important;margin:22pt 0!important;padding:12pt 0!important;border-top:1pt dashed #999!important;border-bottom:1pt dashed #999!important;font-style:italic!important}
     #certScore{display:block!important;color:#8b0000!important;font-size:20pt!important;font-weight:900!important;margin:18pt 0!important}
     #certCoins{display:block!important;color:#8b6914!important;font-size:16pt!important;font-weight:800!important}
     #certDate{display:block!important;color:#555!important;font-size:12pt!important;margin-top:28pt!important;font-style:italic!important}
@@ -178,7 +195,6 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
 <div id="floatLayer"></div>
 <div id="app">
 
-<!-- ВІТАЛЬНЯ -->
 <div id="screen-welcome" class="screen active">
     <h1>🌟 SunLorem 🌟</h1>
     <p class="subtitle">Каталог квізів • 5 клас</p>
@@ -196,31 +212,31 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
         </div>
         <div id="welcomeGuestBox">
             <div class="button-grid two-col">
-                <button class="primary" onclick="App.go('screen-login')">🔑 Ввійти в систему</button>
+                <button class="primary" onclick="App.go('screen-login')">🔑 Ввійти</button>
                 <button class="ghost" onclick="App.continueAsGuest()">👤 Гість</button>
             </div>
         </div>
     </div>
     <div class="panel panel-narrow">
         <div class="button-grid two-col">
-            <button class="success" onclick="App.go('screen-catalog')">📚 Каталог квізів</button>
+            <button class="success" onclick="App.go('screen-catalog')">📚 Каталог</button>
             <button class="ghost" onclick="App.go('screen-join')">🎮 За PIN</button>
         </div>
         <div class="button-row">
             <button class="gold" onclick="App.go('screen-shop')">🛒 Магазин</button>
             <button class="ghost" onclick="App.go('screen-quests')">🏆 Квести</button>
-            <button class="ghost" id="btnTeacherPanel" onclick="App.go('screen-teacher')">👩‍🏫 Панель вчителя</button>
+            <button class="ghost hidden" id="btnHW" onclick="App.go('screen-homework')">📝 ДЗ</button>
+            <button class="ghost" id="btnTeacherPanel" onclick="App.go('screen-teacher')">👩‍🏫 Вчитель</button>
         </div>
     </div>
     <div class="panel panel-narrow">
         <div class="panel-title">🎮 Як грати</div>
-        <p style="font-size:13px;line-height:1.6">1. Обери квіз у <b>каталозі</b>.<br>2. Натисни <b>«Грати»</b> — соло або з людьми.<br>3. Або приєднайся до кімнати вчителя за <b>PIN</b>.<br>4. За правильні відповіді — бали, монети, XP.<br>5. Серія 3+ правильних множить бали.</p>
+        <p style="font-size:13px;line-height:1.6">1. Обери квіз у каталозі.<br>2. Соло / з людьми / кімната.<br>3. Або приєднайся за PIN.<br>4. За правильні — монети, XP.<br>5. Серія 3+ множить бали.</p>
     </div>
 </div>
 
-<!-- ВХІД -->
 <div id="screen-login" class="screen">
-    <h1>🔑 Вхід у систему</h1>
+    <h1>🔑 Вхід</h1>
     <p class="subtitle">Введи логін та пароль</p>
     <div class="panel panel-narrow">
         <label>Логін</label>
@@ -235,10 +251,9 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
     </div>
 </div>
 
-<!-- КАТАЛОГ -->
 <div id="screen-catalog" class="screen">
-    <h1>📚 Каталог квізів</h1>
-    <p class="subtitle">Обери квіз і грай</p>
+    <h1>📚 Каталог</h1>
+    <p class="subtitle">Обери квіз</p>
     <div class="panel panel-narrow">
         <div class="balance-bar">
             <span>🪙 <span id="catalogCoins">0</span></span>
@@ -262,28 +277,26 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
     </div>
 </div>
 
-<!-- ВИБІР РЕЖИМУ -->
 <div id="screen-quiz-mode" class="screen">
     <h1 id="qmTitle">Квіз</h1>
     <p class="subtitle" id="qmSubtitle">Обери режим</p>
     <div class="panel panel-narrow">
         <div class="button-grid">
-            <button class="success" onclick="App.playSolo()">🎯 Тренування (соло)</button>
-            <button class="primary" onclick="App.playPublic()">🌐 Грати з людьми</button>
-            <button class="gold" onclick="App.playRoom()">🎮 Створити кімнату (PIN)</button>
+            <button class="success" onclick="App.playSolo()">🎯 Соло</button>
+            <button class="primary" onclick="App.playPublic()">🌐 З людьми</button>
+            <button class="gold" onclick="App.playRoom()">🎮 Кімната (PIN)</button>
             <button class="ghost" onclick="App.go('screen-catalog')">← Назад</button>
         </div>
     </div>
 </div>
 
-<!-- ЗА PIN -->
 <div id="screen-join" class="screen">
     <h1>🎮 За PIN</h1>
     <p class="subtitle">Введи PIN кімнати</p>
     <div class="panel panel-narrow">
         <input type="text" id="joinPin" class="pin-input" maxlength="6" inputmode="numeric" placeholder="000000">
         <label>Твоє ім'я</label>
-        <input type="text" id="joinName" maxlength="24" placeholder="Наприклад, Софійка">
+        <input type="text" id="joinName" maxlength="24" placeholder="Ім'я">
         <div class="button-grid two-col">
             <button class="success" onclick="App.joinByPin()">✅ Увійти</button>
             <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
@@ -291,7 +304,6 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
     </div>
 </div>
 
-<!-- ЛОБІ (PIN) -->
 <div id="screen-lobby" class="screen">
     <h1>🎯 Кімната</h1>
     <p class="subtitle">Покажи PIN учням</p>
@@ -319,9 +331,8 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
     </div>
 </div>
 
-<!-- ГРА -->
 <div id="screen-game" class="screen">
-    <h1>🎮 Гра</h1>
+    <h1 id="gameTitle">🎮 Гра</h1>
     <div class="panel">
         <div style="display:flex;justify-content:space-between;font-size:clamp(12px,2.9vw,14px);color:var(--text-dim);font-weight:700;flex-wrap:wrap;gap:6px;margin-bottom:6px">
             <span>Питання <b id="gIndex">1</b>/<b id="gTotal">10</b></span>
@@ -366,7 +377,6 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
     </div>
 </div>
 
-<!-- РЕЗУЛЬТАТИ -->
 <div id="screen-results" class="screen">
     <h1>🏆 Результати</h1>
     <div class="panel"><div class="podium" id="podium"></div></div>
@@ -394,25 +404,46 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
     </div>
 </div>
 
-<!-- ПАНЕЛЬ ВЧИТЕЛЯ -->
+<div id="screen-homework" class="screen">
+    <h1>📝 ДЗ</h1>
+    <p class="subtitle">Твої домашні завдання</p>
+    <div class="panel panel-narrow">
+        <div class="balance-bar">
+            <span>🪙 <span id="hwCoins">0</span></span>
+            <span class="xp">⭐ XP: <span id="hwXp">0</span></span>
+        </div>
+        <div class="tabs">
+            <div class="tab active" data-hwtab="hw" onclick="App.hwTab('hw')">📝 ДЗ</div>
+            <div class="tab" data-hwtab="grades" onclick="App.hwTab('grades')">🎓 Оцінки</div>
+        </div>
+        <div id="hwList"></div>
+        <div id="gradesList" class="hidden"></div>
+    </div>
+    <div class="panel panel-narrow">
+        <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
+    </div>
+</div>
+
 <div id="screen-teacher" class="screen">
     <h1>👩‍🏫 Панель вчителя</h1>
-    <p class="subtitle">Керуй класом та квізами</p>
+    <p class="subtitle">Клас, квізи, ДЗ, аналітика</p>
     <div class="panel panel-narrow">
         <div class="tabs">
             <div class="tab active" data-tab="class" onclick="App.teacherTab('class')">👥 Клас</div>
-            <div class="tab" data-tab="create" onclick="App.teacherTab('create')">✏️ Створити квіз</div>
-            <div class="tab" data-tab="mine" onclick="App.teacherTab('mine')">📚 Мої квізи</div>
+            <div class="tab" data-tab="create" onclick="App.teacherTab('create')">✏️ Квіз</div>
+            <div class="tab" data-tab="mine" onclick="App.teacherTab('mine')">📚 Мої</div>
+            <div class="tab" data-tab="hw" onclick="App.teacherTab('hw')">📝 ДЗ</div>
+            <div class="tab" data-tab="analytics" onclick="App.teacherTab('analytics')">📊 Аналітика</div>
         </div>
         <div id="teacherClassTab">
-            <div class="panel-title">➕ Створити учня</div>
-            <input type="text" id="newStudentName" placeholder="Ім'я (напр. Софійка)">
+            <div class="panel-title">➕ Учень</div>
+            <input type="text" id="newStudentName" placeholder="Ім'я">
             <input type="text" id="newStudentLogin" placeholder="Логін (латиниця)">
             <input type="text" id="newStudentPassword" placeholder="Пароль">
-            <button class="success" onclick="App.createStudent()">➕ Додати учня</button>
+            <button class="success" onclick="App.createStudent()">➕ Додати</button>
             <div class="spacer"></div>
-            <div class="panel-title">🤖 Додати ботів (по одному з нового рядка)</div>
-            <textarea id="botsNames" placeholder="Марко Шевченко&#10;Аліна Коваль&#10;Богдан Ткаченко"></textarea>
+            <div class="panel-title">🤖 Боти (по одному з рядка)</div>
+            <textarea id="botsNames" placeholder="Марко Шевченко&#10;Аліна Коваль"></textarea>
             <button class="gold" onclick="App.addBots()">🤖 Додати ботів</button>
             <div class="spacer"></div>
             <div class="panel-title">👥 Мій клас</div>
@@ -421,7 +452,7 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
         <div id="teacherCreateTab" class="hidden">
             <div class="panel-title">✏️ Новий квіз</div>
             <label>Назва</label>
-            <input type="text" id="quizTitle" placeholder="Наприклад: Математика 5 клас">
+            <input type="text" id="quizTitle" placeholder="Математика 5 клас">
             <label>Предмет</label>
             <select id="quizSubject">
                 <option>Математика</option>
@@ -446,11 +477,31 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
                 <button class="ghost small" onclick="App.loadTemplate('nature')">🌿 Природа</button>
             </div>
             <div class="spacer"></div>
-            <button class="primary" onclick="App.createQuiz()">💾 Зберегти квіз</button>
+            <button class="primary" onclick="App.createQuiz()">💾 Зберегти</button>
         </div>
         <div id="teacherMineTab" class="hidden">
             <div class="panel-title">📚 Мої квізи</div>
             <div id="myQuizzes"></div>
+        </div>
+        <div id="teacherHwTab" class="hidden">
+            <div class="panel-title">📝 Створити ДЗ</div>
+            <select id="hwQuizSelect"></select>
+            <input type="text" id="hwTitle" placeholder="Назва ДЗ">
+            <label>Дедлайн</label>
+            <input type="datetime-local" id="hwDeadline">
+            <button class="success" onclick="App.createHomework()">📝 Створити</button>
+            <div class="spacer"></div>
+            <div class="panel-title">📋 Мої ДЗ</div>
+            <div id="myHomework"></div>
+        </div>
+        <div id="teacherAnalyticsTab" class="hidden">
+            <div class="panel-title">📊 Загальна</div>
+            <div id="generalAnalytics"></div>
+            <div class="spacer"></div>
+            <div class="panel-title">📚 По квізу</div>
+            <select id="analyticsQuizSelect"></select>
+            <button class="primary small" onclick="App.loadQuizAnalytics()">Показати</button>
+            <div id="quizAnalytics"></div>
         </div>
     </div>
     <div class="panel panel-narrow">
@@ -458,7 +509,28 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
     </div>
 </div>
 
-<!-- МАГАЗИН -->
+<div id="screen-hw-detail" class="screen">
+    <h1 id="hwdTitle">ДЗ</h1>
+    <p class="subtitle" id="hwdSubtitle">Деталі</p>
+    <div class="panel panel-narrow">
+        <div class="button-grid">
+            <button class="primary" onclick="App.startHomework()">▶️ Почати</button>
+            <button class="ghost" onclick="App.go('screen-homework')">← Назад</button>
+        </div>
+    </div>
+</div>
+
+<div id="screen-hw-grades" class="screen">
+    <h1 id="hwgTitle">Оцінки</h1>
+    <p class="subtitle">Хто скільки набрав</p>
+    <div class="panel panel-narrow">
+        <div id="hwGradesList"></div>
+    </div>
+    <div class="panel panel-narrow">
+        <button class="ghost" onclick="App.go('screen-teacher')">← Назад</button>
+    </div>
+</div>
+
 <div id="screen-shop" class="screen">
     <h1>🛒 Магазин</h1>
     <p class="subtitle">Аватари, аксесуари, теми</p>
@@ -486,7 +558,6 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
     </div>
 </div>
 
-<!-- КВЕСТИ -->
 <div id="screen-quests" class="screen">
     <h1>🏆 Квести</h1>
     <p class="subtitle">Виконуй — отримуй монети</p>
@@ -502,7 +573,6 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
     </div>
 </div>
 
-<!-- МОДАЛКА -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal-box">
         <h2 id="modalTitle">Заголовок</h2>
@@ -517,866 +587,401 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
 <script src="/socket.io/socket.io.js"></script>
 <script>
 "use strict";
-const App = (function(){
-    const State = {
-        theme:'neon', role:null, pin:null, playerId:null, playerName:null,
-        user:null, token:null, isGuest:true,
-        profile:{coins:0,xp:0,ownedAvatars:['a_cat'],ownedAccessories:[],ownedThemes:['t_neon','t_pastel'],equippedAvatar:'a_cat',equippedHead:'',equippedEyes:'',equippedEffect:'',completedQuests:{}},
-        catalog:[], currentQuiz:null, shop:null, economy:null, questDefs:null,
-        reactionEmojis:['🎉','🔥','👏','🤔','🚀','😂','😮','💪','❓','💯'],
-        room:null, socket:null, connected:false, initDone:false,
-        shopTabName:'avatars', answeredCurrent:false,
-        lastQIndex:-1, lastQStart:0, questionStart:0, _localTimer:null, _prizeApplied:false,
-        questionsDraft:[]
-    };
-    function $(id){return document.getElementById(id)}
-    function qsa(s,r=document){return Array.from(r.querySelectorAll(s))}
-    function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-    const Storage={
-        set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},
-        get(k,d=null){try{const r=localStorage.getItem(k);return r===null?d:JSON.parse(r)}catch(e){return d}},
-        remove(k){try{localStorage.removeItem(k)}catch(e){}}
-    };
-    let toastTimer=null;
-    function toast(msg,ms=2400){const t=$('toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),ms)}
-    function openModal(title,body){$('modalTitle').textContent=title;$('modalBody').innerHTML=body;$('modalOverlay').classList.add('active')}
-    function closeModal(){$('modalOverlay').classList.remove('active')}
-    function go(id){qsa('.screen').forEach(s=>s.classList.remove('active'));const el=$(id);if(el){el.classList.add('active');el.scrollTop=0}
-        if(id==='screen-catalog')loadCatalog();
-        else if(id==='screen-shop')renderShop();
-        else if(id==='screen-quests')renderQuests();
-        else if(id==='screen-teacher')renderTeacher();
-        updateAllBalances();
-    }
-    function updateAllBalances(){
-        const p=State.profile;
-        const pairs=[['welcomeCoins',p.coins],['catalogCoins',p.coins],['shopCoins',p.coins],['questsCoins',p.coins],
-                     ['welcomeXp',p.xp],['catalogXp',p.xp],['shopXp',p.xp],['questsXp',p.xp],
-                     ['welcomeLevel',Math.floor(p.xp/100)+1]];
-        pairs.forEach(([id,v])=>{const el=$(id);if(el)el.textContent=v});
-    }
-    function applyTheme(themeId){
-        const all=['neon','pastel','space','cyber','forest','sunset','ocean','candy','autumn'].map(t=>'theme-'+t);
-        document.body.classList.remove(...all);
-        document.body.classList.add('theme-'+themeId);
-        State.theme=themeId;
-        Storage.set('sunlorem_theme',themeId);
-    }
-    function loadProfile(){
-        const saved=Storage.get('sunlorem_profile');
-        if(saved&&typeof saved==='object')State.profile=Object.assign(State.profile,saved);
-        if(!Array.isArray(State.profile.ownedAvatars))State.profile.ownedAvatars=['a_cat'];
-        if(!Array.isArray(State.profile.ownedAccessories))State.profile.ownedAccessories=[];
-        if(!Array.isArray(State.profile.ownedThemes))State.profile.ownedThemes=['t_neon','t_pastel'];
-        if(!State.profile.completedQuests)State.profile.completedQuests={};
-    }
-    function saveProfile(){
-        Storage.set('sunlorem_profile',State.profile);
-        toast('💾 Збережено!');
-        if(State.socket&&State.connected&&State.room&&State.playerId){
-            State.socket.emit('updateProfile',{
-                playerId:State.playerId,
-                avatarId:State.profile.equippedAvatar,
-                accessories:{head:State.profile.equippedHead,eyes:State.profile.equippedEyes,effect:State.profile.equippedEffect},
-                xp:State.profile.xp
-            });
-        }
-    }
-    function syncFromUser(u){
-        if(!u)return;
-        State.user=u;
-        State.profile.coins=u.coins||0;
-        State.profile.xp=u.xp||0;
-        State.profile.ownedAvatars=u.ownedAvatars||['a_cat'];
-        State.profile.ownedAccessories=u.ownedAccessories||[];
-        State.profile.ownedThemes=u.ownedThemes||['t_neon','t_pastel'];
-        State.profile.equippedAvatar=u.avatarId||'a_cat';
-        State.profile.equippedHead=u.equippedHead||'';
-        State.profile.equippedEyes=u.equippedEyes||'';
-        State.profile.equippedEffect=u.equippedEffect||'';
-        State.profile.completedQuests=u.completedQuests||{};
-        saveProfile();
-        updateAllBalances();
-        if(u.theme)applyTheme(u.theme);
-    }
-    function showUserUI(){
-        const isT=State.user&&State.user.role==='teacher';
-        $('btnTeacherPanel').classList.toggle('hidden',!isT);
-        $('welcomeGuestBox').classList.toggle('hidden',!!State.user);
-        $('welcomeUserBox').classList.toggle('hidden',!State.user);
-        if(State.user)$('welcomeUserName').textContent=(State.user.role==='teacher'?'👩‍🏫 ':'🎒 ')+State.user.name;
-    }
-    async function api(path,body){
-        const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})});
-        return r.json();
-    }
-    async function doLogin(){
-        const login=$('loginInput').value.trim();
-        const password=$('passwordInput').value;
-        if(!login||!password){toast('Введи логін і пароль');return}
-        const res=await api('/api/auth/login',{login,password});
-        if(!res.ok){toast(res.error||'Помилка');return}
-        State.token=res.token;
-        Storage.set('sunlorem_token',res.token);
-        syncFromUser(res.user);
-        State.isGuest=false;
-        showUserUI();
-        toast('👋 Вітаю, '+(res.user.name||res.user.login)+'!');
-        go('screen-welcome');
-    }
-    async function tryAutoLogin(){
-        const t=Storage.get('sunlorem_token');
-        if(!t)return false;
-        const res=await api('/api/auth/me',{token:t});
-        if(!res.ok)return false;
-        State.token=t;
-        syncFromUser(res.user);
-        State.isGuest=false;
-        showUserUI();
-        return true;
-    }
-    function logout(){
-        State.user=null;State.token=null;State.isGuest=true;
-        Storage.remove('sunlorem_token');
-        showUserUI();
-        go('screen-welcome');
-        toast('Вийшли з системи');
-    }
-    function continueAsGuest(){
-        State.isGuest=true;State.user=null;
-        showUserUI();
-        go('screen-catalog');
-    }
-    /* ---------- КАТАЛОГ ---------- */
-    async function loadCatalog(){
-        try{
-            const r=await fetch('/api/quizzes');
-            const j=await r.json();
-            if(j.ok)State.catalog=j.quizzes||[];
-            renderCatalog();
-        }catch(e){console.error(e)}
-    }
-    function renderCatalog(){
-        const wrap=$('catalogList');
-        if(!wrap)return;
-        const q=$('searchQuiz')?$('searchQuiz').value.toLowerCase():'';
-        const s=$('filterSubject')?$('filterSubject').value:'';
-        const list=State.catalog.filter(x=>{
-            if(q&&!x.title.toLowerCase().includes(q))return false;
-            if(s&&x.subject!==s)return false;
-            return true;
-        });
-        wrap.innerHTML='';
-        if(list.length===0){
-            wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:20px">Квізів немає. Нехай вчитель створить перший.</p>';
-            return;
-        }
-        const subjEmoji={'Математика':'➗','Українська мова':'📖','Історія':'🏛️','Природознавство':'🌿','Інше':'📚'};
-        list.forEach(x=>{
-            const card=document.createElement('div');
-            card.className='quiz-card';
-            card.innerHTML='<span class="q-emoji">'+(subjEmoji[x.subject]||'📚')+'</span>'+
-                '<div class="q-title">'+esc(x.title)+'</div>'+
-                '<div class="q-author">Автор: '+esc(x.author)+'</div>'+
-                '<div class="q-meta"><span>'+esc(x.subject)+'</span><span>📝 '+x.questionsCount+'</span><span>🎮 '+x.plays+'</span><span>❤️ '+x.likes+'</span></div>';
-            card.onclick=()=>openQuiz(x);
-            wrap.appendChild(card);
-        });
-    }
-    function filterCatalog(){renderCatalog()}
-    async function openQuiz(x){
-        State.currentQuiz=x;
-        $('qmTitle').textContent=x.title;
-        $('qmSubtitle').textContent=x.subject+' • '+x.questionsCount+' питань';
-        go('screen-quiz-mode');
-    }
-    /* ---------- ГРА ---------- */
-    function playerInfo(){
-        if(State.user)return{name:State.user.name,login:State.user.login};
-        return{name:State.playerName||'Гість',login:'guest'};
-    }
-    function playSolo(){
-        if(!State.currentQuiz)return;
-        if(!State.socket||!State.connected){toast('Немає з\'єднання');return}
-        const p=playerInfo();
-        State.socket.emit('startSoloGame',{
-            quizId:State.currentQuiz.id,mode:'arcade',name:p.name,login:p.login
-        },res=>{
-            if(!res.ok){toast(res.error||'Помилка');return}
-            State.role='student';State.pin=res.pin;State.playerId=res.playerId;State.room=res.state;
-            State.answeredCurrent=false;State.lastQIndex=-1;
-            go('screen-game');
-            renderGame(res.state,true);
-        });
-    }
-    function playPublic(){
-        if(!State.currentQuiz)return;
-        if(!State.socket||!State.connected){toast('Немає з\'єднання');return}
-        const p=playerInfo();
-        State.socket.emit('startPublicGame',{
-            quizId:State.currentQuiz.id,mode:'arcade',targetCount:5,
-            name:p.name,login:p.login
-        },res=>{
-            if(!res.ok){toast(res.error||'Помилка');return}
-            State.role='student';State.pin=res.pin;State.playerId=res.playerId;State.room=res.state;
-            State.answeredCurrent=false;State.lastQIndex=-1;
-            go('screen-game');
-            renderGame(res.state,true);
-        });
-    }
-    function playRoom(){
-        if(!State.currentQuiz)return;
-        if(!State.socket||!State.connected){toast('Немає з\'єднання');return}
-        State.socket.emit('createRoomFromQuiz',{
-            quizId:State.currentQuiz.id,mode:'arcade',timePerQuestion:20,botCount:0
-        },res=>{
-            if(!res.ok){toast(res.error||'Помилка');return}
-            State.role='teacher';State.pin=res.pin;State.room=res.state;
-            $('roomPin').textContent=res.pin;
-            renderQR(res.pin);
-            updateLobby(res.state);
-            go('screen-lobby');
-        });
-    }
-    function renderQR(pin){
-        const box=$('qrBox');if(!box)return;
-        box.innerHTML='';
-        const link=window.location.origin+window.location.pathname+'?pin='+pin;
-        const img=document.createElement('img');
-        img.width=200;img.height=200;img.alt='QR';
-        img.src='https://api.qrserver.com/v1/create-qr-code/?size=220x220&data='+encodeURIComponent(link);
-        img.onerror=()=>{box.innerHTML='<div class="qr-fallback"><div style="font-size:15px">PIN:</div><div class="pin-big">'+pin+'</div></div>'};
-        box.appendChild(img);
-    }
-    function joinByPin(){
-        const pin=$('joinPin').value.trim();
-        const name=$('joinName').value.trim();
-        if(!/^\d{6}$/.test(pin)){toast('6-значний PIN');return}
-        if(name.length<2){toast('Ім\'я закоротке');return}
-        State.playerName=name;
-        if(!State.socket||!State.connected){toast('Немає з\'єднання');return}
-        State.socket.emit('joinRoom',{
-            pin,name,
-            avatarId:State.profile.equippedAvatar,
-            accessories:{head:State.profile.equippedHead,eyes:State.profile.equippedEyes,effect:State.profile.equippedEffect},
-            xp:State.profile.xp
-        },res=>{
-            if(!res.ok){toast(res.error||'Помилка');return}
-            State.role='student';State.pin=pin;State.playerId=res.playerId;State.room=res.state;
-            State.answeredCurrent=false;State.lastQIndex=-1;
-            if(res.state.status==='lobby'){go('screen-lobby')}
-            else{go('screen-game')}
-        });
-    }
-    function startGame(){
-        if(!State.socket)return;
-        State.socket.emit('startGame',res=>{
-            if(!res.ok){toast(res.error||'Помилка');return}
-            toast('Гра почалася!');
-        });
-    }
-    function nextQuestion(){
-        if(!State.socket)return;
-        State.socket.emit('nextQuestion',res=>{
-            if(!res.ok)toast(res.error||'Помилка');
-        });
-    }
-    function finishGame(){
-        if(!State.socket)return;
-        State.socket.emit('finishGame',res=>{
-            if(!res.ok)toast(res.error||'Помилка');
-        });
-    }
-    function closeRoom(){
-        if(!confirm('Закрити кімнату?'))return;
-        if(!State.socket){go('screen-welcome');return}
-        State.socket.emit('closeRoom',()=>{State.room=null;go('screen-welcome')});
-    }
-    function renderGame(state,isSelf){
-        if(!state)return;
-        const q=state.questions[state.currentQuestion];
-        if(!q)return;
-        const me=state.players.find(p=>p.id===State.playerId);
-        const qChanged=(state.currentQuestion!==State.lastQIndex)||(state.questionStartedAt!==State.lastQStart);
-        if(qChanged){
-            State.lastQIndex=state.currentQuestion;
-            State.lastQStart=state.questionStartedAt;
-            State.questionStart=Date.now();
-            State.answeredCurrent=false;
-            $('gFeedback').textContent='';
-            const wrap=$('gAnswers');wrap.innerHTML='';
-            q.answers.forEach((a,i)=>{
-                const btn=document.createElement('button');
-                btn.className='answer-btn';
-                btn.innerHTML='<span style="display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent-1),var(--accent-2));color:#fff;font-weight:900;margin-right:10px">'+String.fromCharCode(65+i)+'</span>'+esc(a);
-                btn.onclick=()=>sendAnswer(i);
-                wrap.appendChild(btn);
-            });
-            startLocalTimer(state.timePerQuestion);
-        }
-        $('gIndex').textContent=state.currentQuestion+1;
-        $('gTotal').textContent=state.questions.length;
-        $('gText').textContent=q.text;
-        if(me){
-            $('gScore').textContent='Бали: '+me.score;
-            $('gStreak').textContent='🔥 Серія: '+(me.streak||0);
-            $('gCoins').textContent='🪙 '+(me.coinsEarnedThisGame||0)+'/30';
-            $('gXp').textContent='⭐ XP: '+(me.xp||0);
-        }
-        const answered=state.players.filter(p=>p.answeredThisRound).length;
-        $('gAnswered').textContent='Відповіли: '+answered+'/'+state.players.length;
-        if(State.answeredCurrent||!me||!me.alive){
-            qsa('#gAnswers .answer-btn').forEach((b,i)=>{
-                b.disabled=true;
-                if(i===q.correct)b.classList.add('correct');
-            });
-        }
-        const canPower=me&&(me.streak||0)>=3&&!me.powerActive;
-        ['btnPowDouble','btnPowShield','btnPowReveal'].forEach(id=>{const b=$(id);if(b)b.disabled=!canPower});
-        const isTeacher=State.role==='teacher';
-        $('teacherGameBtns').classList.toggle('hidden',!isTeacher);
-        if(isTeacher){
-            const btn=$('btnNext');
-            if(btn)btn.textContent=(state.currentQuestion>=state.questions.length-1)?'🏁 Завершити':'⏭️ Далі';
-        }
-        renderLeaderboard(state,'gLeaderboard');
-        renderFeed(state,'gFeed');
-    }
-    function sendAnswer(i){
-        if(State.answeredCurrent)return;
-        if(!State.socket||!State.room)return;
-        State.answeredCurrent=true;
-        const q=State.room.questions[State.room.currentQuestion];
-        if(!q)return;
-        qsa('#gAnswers .answer-btn').forEach((b,idx)=>{
-            b.disabled=true;
-            if(idx===q.correct)b.classList.add('correct');
-            if(idx===i&&idx!==q.correct)b.classList.add('wrong');
-        });
-        const ok=i===q.correct;
-        $('gFeedback').textContent=ok?'✅ Правильно!':'❌ Неправильно';
-        $('gFeedback').style.color=ok?'var(--accent-5)':'#ff3d6e';
-        State.socket.emit('answer',{playerId:State.playerId,q:State.room.currentQuestion,a:i},res=>{
-            if(res&&res.ok){
-                if(typeof res.xp==='number'&&State.user){
-                    State.user.xp=res.xp;
-                    State.profile.xp=res.xp;
-                    Storage.set('sunlorem_profile',State.profile);
-                    updateAllBalances();
-                }
-            }
-        });
-    }
-    function activatePower(type){
-        if(!State.socket)return;
-        State.socket.emit('activatePower',{playerId:State.playerId,type},res=>{
-            if(!res.ok){toast(res.error||'Помилка');return}
-            const names={double:'⚡ Подвійні',shield:'🛡️ Щит',reveal:'🔍 Підказка'};
-            toast('Активовано: '+names[type]);
-            if(type==='reveal'&&Array.isArray(res.hintIndexes)){
-                const btns=qsa('#gAnswers .answer-btn');
-                res.hintIndexes.forEach(i=>{if(btns[i])btns[i].style.opacity=.25});
-            }
-            ['btnPowDouble','btnPowShield','btnPowReveal'].forEach(id=>{const b=$(id);if(b)b.disabled=true});
-        });
-    }
-    function renderLeaderboard(state,targetId){
-        const wrap=$(targetId);if(!wrap)return;
-        wrap.innerHTML='';
-        const sorted=state.players.slice().sort((a,b)=>b.score-a.score).slice(0,15);
-        sorted.forEach((p,i)=>{
-            const c=document.createElement('div');
-            c.className='player-card';
-            if(i===0)c.classList.add('leader');
-            if(p.id===State.playerId)c.classList.add('self');
-            if(!p.alive)c.classList.add('dead');
-            const acc=p.accessories||{};
-            let av=p.avatar||'🐱';
-            c.innerHTML='<span class="avatar">'+av+'</span>'+
-                '<span class="name">'+esc(p.name)+'</span>'+
-                '<span class="score">'+(p.score||0)+' 🏅 '+ (p.coins||0) +' 🪙</span>';
-            wrap.appendChild(c);
-        });
-    }
-    function renderFeed(state,targetId){
-        const wrap=$(targetId);if(!wrap)return;
-        wrap.innerHTML='';
-        const feed=state.feed||[];
-        if(feed.length===0){wrap.innerHTML='<div class="event-line" style="opacity:.5">Подій поки немає...</div>';return}
-        feed.slice(0,15).forEach(ev=>{
-            const d=document.createElement('div');
-            d.className='event-line';
-            d.textContent=ev.text;
-            wrap.appendChild(d);
-        });
-    }
-    function updateLobby(state){
-        if(!state)return;
-        $('lobbyCount').textContent='Гравців: '+state.players.length;
-        $('lobbyCountInline').textContent=state.players.length;
-        const wrap=$('lobbyPlayerList');
-        wrap.innerHTML='';
-        if(state.players.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:14px">Очікуємо...</p>';return}
-        state.players.slice().sort((a,b)=>b.score-a.score).forEach(p=>{
-            const c=document.createElement('div');
-            c.className='player-card';
-            if(p.isBot)c.classList.add('bot');
-            if(p.id===State.playerId)c.classList.add('self');
-            c.innerHTML='<span class="avatar">'+(p.avatar||'🐱')+'</span><span class="name">'+esc(p.name)+'</span><span class="score">'+(p.score||0)+' 🏅</span>';
-            wrap.appendChild(c);
-        });
-    }
-    function renderResults(state){
-        if(!state)return;
-        const sorted=state.players.slice().sort((a,b)=>b.score-a.score);
-        const podium=$('podium');podium.innerHTML='';
-        const top3=[sorted[1],sorted[0],sorted[2]];
-        const labels=['p2','p1','p3'];
-        const medals=['🥈','🥇','🥉'];
-        for(let i=0;i<3;i++){
-            const p=top3[i];
-            const pl=document.createElement('div');
-            pl.className='podium-place '+labels[i];
-            if(!p)pl.innerHTML='<div class="avatar">—</div><div class="name">—</div><div class="pedestal">—</div>';
-            else pl.innerHTML='<div class="avatar">'+(p.avatar||'🐱')+'</div><div class="name">'+esc(p.name)+'</div><div style="font-size:11px;color:var(--accent-4);font-weight:900">+'+(p.finalPrize||0)+' 🪙</div><div class="pedestal">'+medals[i]+'</div>';
-            podium.appendChild(pl);
-        }
-        const lb=$('finalLeaderboard');lb.innerHTML='';
-        sorted.slice(0,50).forEach((p,i)=>{
-            const c=document.createElement('div');
-            c.className='player-card';
-            if(i===0)c.classList.add('leader');
-            c.innerHTML='<span class="avatar">'+(p.avatar||'🐱')+'</span><span class="name">'+esc(p.name)+'</span><span class="score">'+(p.score||0)+' 🏅 +'+(p.finalPrize||0)+' 🪙</span>';
-            lb.appendChild(c);
-        });
-        const w=sorted[0];
-        if(w){
-            $('certName').textContent=w.name;
-            $('certScore').textContent='Балів: '+w.score;
-            $('certCoins').textContent='🪙 Разом: '+(w.coins||0);
-        }
-        $('certDate').textContent=new Date().toLocaleDateString('uk-UA',{day:'numeric',month:'long',year:'numeric'});
-    }
-    function startLocalTimer(duration){
-        stopLocalTimer();
-        State.questionStart=Date.now();
-        State._localTimer=setInterval(()=>{
-            const elapsed=(Date.now()-State.questionStart)/1000;
-            const left=Math.max(0,duration-elapsed);
-            updateTimer(Math.ceil(left),duration);
-            if(left<=0)stopLocalTimer();
-        },100);
-    }
-    function stopLocalTimer(){if(State._localTimer){clearInterval(State._localTimer);State._localTimer=null}}
-    function updateTimer(left,total){
-        const pct=Math.max(0,(left/(total||1))*100);
-        const f=$('gTimerFill');if(f)f.style.width=pct+'%';
-        const t=$('gTimerText');if(t)t.textContent=left;
-    }
-    /* ---------- SOCKET ---------- */
-    function initSocket(){
-        const socket=io();
-        State.socket=socket;
-        socket.on('connect',()=>{
-            State.connected=true;showConn(true,'🟢 Онлайн');
-            socket.emit('getShop',res=>{
-                if(res&&res.ok){
-                    State.shop=res.shop;State.economy=res.economy;
-                    State.questDefs=res.quests;State.reactionEmojis=res.reactions||State.reactionEmojis;
-                    buildReactions();renderQuests();renderShop();
-                }
-            });
-        });
-        socket.on('disconnect',()=>{State.connected=false;showConn(false,'🔴 Офлайн')});
-        socket.on('connect_error',()=>showConn(false,'🔴 Помилка'));
-        socket.on('state',state=>{
-            State.room=state;
-            if(State.role==='teacher'){
-                if(state.status==='lobby'){updateLobby(state);if(!$('screen-lobby').classList.contains('active'))go('screen-lobby')}
-                else if(state.status==='running'){if(!$('screen-game').classList.contains('active'))go('screen-game');renderGame(state,false)}
-                else if(state.status==='finished'){renderResults(state);go('screen-results')}
-            }else if(State.role==='student'){
-                const me=state.players.find(p=>p.id===State.playerId);
-                if(state.status==='finished'){
-                    if(me&&me.finalPrize&&!State._prizeApplied){
-                        State._prizeApplied=true;
-                        if(State.user){State.user.coins=(State.user.coins||0)+me.finalPrize;syncFromUser(State.user)}
-                        toast('🏆 +'+me.finalPrize+' 🪙 за '+me.finalRank+' місце!');
-                    }
-                    renderResults(state);go('screen-results');
-                }else if(state.status==='running'){
-                    if(!$('screen-game').classList.contains('active'))go('screen-game');
-                    renderGame(state,true);
-                }else if(state.status==='lobby'){
-                    if(!$('screen-lobby').classList.contains('active'))go('screen-lobby');
-                    updateLobby(state);
-                }
-            }
-        });
-        socket.on('tick',d=>updateTimer(d.timeLeft,d.total));
-        socket.on('playerReaction',d=>spawnFloatEmoji(d.emoji));
-        socket.on('roomClosed',()=>openModal('Кімнату закрито','Вчитель закрив кімнату.'));
-    }
-    function showConn(ok,text){
-        const el=$('connStatus');if(!el)return;
-        el.textContent=text;el.className='conn-status show '+(ok?'ok':'err');
-        if(ok){clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2000)}
-    }
-    function spawnFloatEmoji(emoji){
-        const layer=$('floatLayer')||document.body;
-        const el=document.createElement('div');
-        el.className='float-emoji';el.textContent=emoji;
-        el.style.left=(20+Math.random()*60)+'vw';
-        el.style.bottom=(10+Math.random()*20)+'vh';
-        layer.appendChild(el);
-        setTimeout(()=>el.remove(),2600);
-    }
-    function buildReactions(){
-        ['gameReactions'].forEach(id=>{
-            const bar=$(id);if(!bar)return;
-            bar.innerHTML='';
-            State.reactionEmojis.forEach(e=>{
-                const btn=document.createElement('button');
-                btn.className='reaction-btn';btn.textContent=e;
-                btn.onclick=()=>sendReaction(e);
-                bar.appendChild(btn);
-            });
-        });
-    }
-    function sendReaction(e){
-        if(!State.socket||!State.playerId)return;
-        State.socket.emit('sendReaction',{playerId:State.playerId,emoji:e},res=>{
-            if(res&&res.ok)spawnFloatEmoji(e);
-        });
-    }
-    /* ---------- МАГАЗИН ---------- */
-    function shopTab(t){
-        State.shopTabName=t;
-        qsa('#screen-shop .tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===t));
-        renderShop();
-    }
-    function renderShop(){
-        if(!State.shop)return;
-        const wrap=$('shopGrid');if(!wrap)return;
-        wrap.innerHTML='';
-        const preview=$('shopPreview');
-        if(preview){
-            const av=State.shop.avatars.find(a=>a.id===State.profile.equippedAvatar);
-            preview.textContent=av?av.emoji:'🐱';
-        }
-        const pn=$('shopPreviewName');
-        if(pn){const av=State.shop.avatars.find(a=>a.id===State.profile.equippedAvatar);pn.textContent=av?av.name:'Аватар'}
-        if(State.shopTabName==='avatars'){
-            State.shop.avatars.forEach(a=>{
-                const owned=State.profile.ownedAvatars.includes(a.id);
-                const eq=State.profile.equippedAvatar===a.id;
-                const card=document.createElement('div');
-                card.className='shop-card'+(eq?' equipped':'');
-                card.innerHTML='<span class="preview">'+a.emoji+'</span>'+
-                    '<div class="name">'+esc(a.name)+'</div>'+
-                    '<div class="price '+(owned?'owned':(State.profile.coins<a.price?'cant':''))+'">'+(owned?'✓':(a.price+' 🪙'))+'</div>';
-                card.onclick=()=>buyOrEquipAvatar(a);
-                wrap.appendChild(card);
-            });
-        }else if(State.shopTabName==='accessories'){
-            State.shop.accessories.forEach(a=>{
-                const owned=State.profile.ownedAccessories.includes(a.id);
-                const eq=(a.slot==='head'&&State.profile.equippedHead===a.id)||(a.slot==='eyes'&&State.profile.equippedEyes===a.id)||(a.slot==='effect'&&State.profile.equippedEffect===a.id);
-                const card=document.createElement('div');
-                card.className='shop-card'+(eq?' equipped':'');
-                card.innerHTML='<span class="preview">'+a.emoji+'</span>'+
-                    '<div class="name">'+esc(a.name)+'</div>'+
-                    '<div style="font-size:11px;color:var(--text-dim)">'+(a.slot==='head'?'голова':a.slot==='eyes'?'очі':'ефект')+'</div>'+
-                    '<div class="price '+(owned?'owned':(State.profile.coins<a.price?'cant':''))+'">'+(owned?'✓':(a.price+' 🪙'))+'</div>';
-                card.onclick=()=>buyOrEquipAcc(a);
-                wrap.appendChild(card);
-            });
-            const clr=document.createElement('div');
-            clr.className='shop-card';
-            clr.innerHTML='<span class="preview">∅</span><div class="name">Зняти все</div>';
-            clr.onclick=()=>{
-                State.profile.equippedHead='';State.profile.equippedEyes='';State.profile.equippedEffect='';
-                saveProfile();renderShop();
-            };
-            wrap.appendChild(clr);
-        }else if(State.shopTabName==='themes'){
-            const emojis={t_neon:'🌌',t_pastel:'🍑',t_space:'🌠',t_cyber:'⚡',t_forest:'🌲',t_sunset:'🌅',t_ocean:'🌊',t_candy:'🍭',t_autumn:'🍂'};
-            State.shop.themes.forEach(t=>{
-                const owned=State.profile.ownedThemes.includes(t.id);
-                const eq=State.theme===t.id.replace('t_','');
-                const card=document.createElement('div');
-                card.className='shop-card'+(eq?' equipped':'');
-                card.innerHTML='<span class="preview">'+(emojis[t.id]||'🎨')+'</span>'+
-                    '<div class="name">'+esc(t.name)+'</div>'+
-                    '<div class="price '+(owned?'owned':(State.profile.coins<t.price?'cant':''))+'">'+(owned?'✓':(t.price+' 🪙'))+'</div>';
-                card.onclick=()=>buyOrEquipTheme(t);
-                wrap.appendChild(card);
-            });
-        }
-        updateAllBalances();
-    }
-    function buyOrEquipAvatar(a){
-        if(State.profile.ownedAvatars.includes(a.id)){
-            State.profile.equippedAvatar=a.id;saveProfile();renderShop();return;
-        }
-        if(State.profile.coins<a.price){toast('Треба ще '+(a.price-State.profile.coins)+' 🪙');return}
-        if(!confirm('Купити "'+a.name+'" за '+a.price+' 🪙?'))return;
-        State.profile.coins-=a.price;
-        State.profile.ownedAvatars.push(a.id);
-        State.profile.equippedAvatar=a.id;
-        saveProfile();renderShop();toast('🎉 Куплено!');
-    }
-    function buyOrEquipAcc(a){
-        if(State.profile.ownedAccessories.includes(a.id)){
-            if(a.slot==='head')State.profile.equippedHead=State.profile.equippedHead===a.id?'':a.id;
-            if(a.slot==='eyes')State.profile.equippedEyes=State.profile.equippedEyes===a.id?'':a.id;
-            if(a.slot==='effect')State.profile.equippedEffect=State.profile.equippedEffect===a.id?'':a.id;
-            saveProfile();renderShop();return;
-        }
-        if(State.profile.coins<a.price){toast('Треба ще '+(a.price-State.profile.coins)+' 🪙');return}
-        if(!confirm('Купити "'+a.name+'" за '+a.price+' 🪙?'))return;
-        State.profile.coins-=a.price;
-        State.profile.ownedAccessories.push(a.id);
-        if(a.slot==='head')State.profile.equippedHead=a.id;
-        if(a.slot==='eyes')State.profile.equippedEyes=a.id;
-        if(a.slot==='effect')State.profile.equippedEffect=a.id;
-        saveProfile();renderShop();toast('🎉 Куплено!');
-    }
-    function buyOrEquipTheme(t){
-        if(State.profile.ownedThemes.includes(t.id)){
-            applyTheme(t.id.replace('t_',''));
-            renderShop();return;
-        }
-        if(State.profile.coins<t.price){toast('Треба ще '+(t.price-State.profile.coins)+' 🪙');return}
-        if(!confirm('Розблокувати "'+t.name+'" за '+t.price+' 🪙?'))return;
-        State.profile.coins-=t.price;
-        State.profile.ownedThemes.push(t.id);
-        applyTheme(t.id.replace('t_',''));
-        saveProfile();renderShop();toast('🎉 Розблоковано!');
-    }
-    /* ---------- КВЕСТИ ---------- */
-    function renderQuests(){
-        const wrap=$('questsList');if(!wrap||!State.questDefs)return;
-        wrap.innerHTML='';
-        Object.values(State.questDefs).forEach(def=>{
-            const done=!!State.profile.completedQuests[def.id];
-            const item=document.createElement('div');
-            item.className='quest-item'+(done?' done':'');
-            item.innerHTML='<div class="q-icon">'+def.icon+'</div>'+
-                '<div class="q-info"><div class="q-title">'+esc(def.title)+(done?' ✓':'')+'</div><div class="q-desc">'+esc(def.desc)+'</div></div>'+
-                '<div class="q-reward">'+(done?'✅':'+'+def.reward+' 🪙')+'</div>';
-            wrap.appendChild(item);
-        });
-    }
-    /* ---------- ПАНЕЛЬ ВЧИТЕЛЯ ---------- */
-    function teacherTab(t){
-        qsa('#screen-teacher .tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===t));
-        ['class','create','mine'].forEach(name=>{
-            const el=$('teacher'+name.charAt(0).toUpperCase()+name.slice(1)+'Tab');
-            if(el)el.classList.toggle('hidden',name!==t);
-        });
-        if(t==='mine')loadMyQuizzes();
-    }
-    function renderTeacher(){
-        if(!State.user||State.user.role!=='teacher'){toast('Тільки для вчителя');go('screen-welcome');return}
-        loadClass();
-    }
-    async function loadClass(){
-        if(!State.token)return;
-        const res=await api('/api/teacher/class',{token:State.token});
-        if(!res.ok)return;
-        const wrap=$('classList');wrap.innerHTML='';
-        if(res.students.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:10px">Порожньо</p>';return}
-        res.students.forEach(s=>{
-            const row=document.createElement('div');
-            row.className='student-row';
-            row.innerHTML='<div style="flex:1"><div class="s-name">'+esc(s.name)+'</div><div class="s-login">'+esc(s.login)+' • 🪙 '+s.coins+' • ⭐ '+s.xp+'</div></div>'+
-                (s.isBot?'<span class="s-bot-tag">бот</span>':'')+
-                '<button class="danger small" onclick="App.removeStudent(\''+esc(s.login)+'\')">🗑️</button>';
-            wrap.appendChild(row);
-        });
-    }
-    async function createStudent(){
-        if(!State.token)return;
-        const name=$('newStudentName').value.trim();
-        const login=$('newStudentLogin').value.trim().toLowerCase();
-        const password=$('newStudentPassword').value.trim();
-        if(!name||!login||!password){toast('Заповни всі поля');return}
-        const res=await api('/api/teacher/create-student',{token:State.token,login,password,name});
-        if(!res.ok){toast(res.error||'Помилка');return}
-        toast('✅ Учня створено');
-        $('newStudentName').value='';$('newStudentLogin').value='';$('newStudentPassword').value='';
-        loadClass();
-    }
-    async function addBots(){
-        if(!State.token)return;
-        const text=$('botsNames').value;
-        if(!text.trim()){toast('Введи імена');return}
-        const res=await api('/api/teacher/add-bots',{token:State.token,namesText:text});
-        if(!res.ok){toast(res.error||'Помилка');return}
-        toast('🤖 Додано: '+res.added.length);
-        $('botsNames').value='';
-        loadClass();
-    }
-    async function removeStudent(login){
-        if(!confirm('Видалити '+login+'?'))return;
-        if(!State.token)return;
-        await api('/api/teacher/remove-student',{token:State.token,login});
-        toast('Видалено');
-        loadClass();
-    }
-    /* ---------- СТВОРЕННЯ КВІЗУ ---------- */
-    function addQuestion(){
-        State.questionsDraft.push({text:'Нове питання',answers:['Варіант 1','Варіант 2','Варіант 3','Варіант 4'],correct:0});
-        renderQuestionsEditor();
-    }
-    function renderQuestionsEditor(){
-        const wrap=$('questionsEditor');if(!wrap)return;
-        wrap.innerHTML='';
-        if(State.questionsDraft.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:10px">Питань немає</p>';return}
-        State.questionsDraft.forEach((q,qi)=>{
-            const item=document.createElement('div');
-            item.className='question-item';
-            const header=document.createElement('div');
-            header.className='q-header';
-            header.innerHTML='<span class="q-index">#'+(qi+1)+'</span>';
-            const del=document.createElement('button');
-            del.className='danger small';del.textContent='🗑️';
-            del.onclick=()=>{State.questionsDraft.splice(qi,1);renderQuestionsEditor()};
-            header.appendChild(del);
-            item.appendChild(header);
-            const t=document.createElement('input');
-            t.type='text';t.value=q.text;t.placeholder='Текст';
-            t.oninput=()=>{State.questionsDraft[qi].text=t.value};
-            item.appendChild(t);
-            q.answers.forEach((ans,ai)=>{
-                const row=document.createElement('div');
-                row.className='answer-input-row';
-                const r=document.createElement('input');
-                r.type='radio';r.name='c_'+qi;r.checked=q.correct===ai;
-                r.onchange=()=>{State.questionsDraft[qi].correct=ai};
-                row.appendChild(r);
-                const inp=document.createElement('input');
-                inp.type='text';inp.value=ans;inp.placeholder='Варіант '+(ai+1);
-                inp.oninput=()=>{State.questionsDraft[qi].answers[ai]=inp.value};
-                row.appendChild(inp);
-                item.appendChild(row);
-            });
-            wrap.appendChild(item);
-        });
-    }
-    function loadTemplate(key){
-        const templates={
-            math:[
-                {text:'Скільки буде 7 × 8?',answers:['54','56','48','64'],correct:1},
-                {text:'Яке число просте?',answers:['9','15','17','21'],correct:2},
-                {text:'144 : 12 = ?',answers:['10','11','12','14'],correct:2},
-                {text:'Скільки хвилин у 2,5 год?',answers:['120','135','150','180'],correct:2},
-                {text:'Площа квадрата зі стороною 9 см?',answers:['18','36','81','90'],correct:2}
-            ],
-            ukrainian:[
-                {text:'Скільки букв в алфавіті?',answers:['32','33','34','35'],correct:1},
-                {text:'Іменник означає:',answers:['дію','предмет','ознаку','кількість'],correct:1},
-                {text:'Голосних звуків:',answers:['5','6','7','8'],correct:1},
-                {text:'Дієслово:',answers:['швидкий','швидкість','швидко','швидшати'],correct:3},
-                {text:'Апостроф у слові:',answers:['св..ято','п..ять','б..юро','цв..ях'],correct:1}
-            ],
-            history:[
-                {text:'Хто князь Русі 980–1015?',answers:['Ярослав','Володимир','Святослав','Олег'],correct:1},
-                {text:'Хрещення Русі?',answers:['862','988','1054','1240'],correct:1},
-                {text:'Столиця України?',answers:['Харків','Одеса','Київ','Львів'],correct:2},
-                {text:'«Кобзар» написав:',answers:['Франко','Шевченко','Леся','Сковорода'],correct:1},
-                {text:'Незалежність у:',answers:['1989','1990','1991','1992'],correct:2}
-            ],
-            nature:[
-                {text:'Рослини вбирають:',answers:['Кисень','CO₂','Азот','Водень'],correct:1},
-                {text:'Планет у Сонячній системі?',answers:['7','8','9','10'],correct:1},
-                {text:'Найбільший океан?',answers:['Атлантичний','Індійський','Тихий','Північний'],correct:2},
-                {text:'Ссавець:',answers:['Дельфін','Акула','Окунь','Кит'],correct:3},
-                {text:'Ніг у комахи?',answers:['4','6','8','10'],correct:1}
-            ]
-        };
-        const t=templates[key];
-        if(!t)return;
-        State.questionsDraft=t.map(q=>({text:q.text,answers:q.answers.slice(),correct:q.correct}));
-        renderQuestionsEditor();
-        toast('Завантажено шаблон');
-    }
-    async function createQuiz(){
-        if(!State.token)return;
-        const title=$('quizTitle').value.trim();
-        const subject=$('quizSubject').value;
-        const difficulty=$('quizDifficulty').value;
-        if(!title){toast('Введи назву');return}
-        if(State.questionsDraft.length===0){toast('Додай питання');return}
-        const res=await api('/api/quizzes/create',{
-            token:State.token,title,subject,difficulty,
-            questions:State.questionsDraft,isPublic:true
-        });
-        if(!res.ok){
-            if(res.details)openModal('Помилки у питаннях','<ul style="padding-left:18px">'+res.details.map(e=>'<li>'+esc(e)+'</li>').join('')+'</ul>');
-            else toast(res.error||'Помилка');
-            return;
-        }
-        toast('✅ Квіз створено!');
-        State.questionsDraft=[];
-        $('quizTitle').value='';
-        renderQuestionsEditor();
-        loadCatalog();
-    }
-    async function loadMyQuizzes(){
-        if(!State.token)return;
-        const res=await api('/api/quizzes/mine',{token:State.token});
-        if(!res.ok)return;
-        const wrap=$('myQuizzes');wrap.innerHTML='';
-        if(res.quizzes.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:10px">Порожньо</p>';return}
-        res.quizzes.forEach(q=>{
-            const row=document.createElement('div');
-            row.className='student-row';
-            row.innerHTML='<div style="flex:1"><div class="s-name">'+esc(q.title)+'</div><div class="s-login">'+esc(q.subject)+' • '+q.questionsCount+' питань • 🎮 '+q.plays+'</div></div>'+
-                '<button class="danger small" onclick="App.deleteQuiz(\''+q.id+'\')">🗑️</button>';
-            wrap.appendChild(row);
-        });
-    }
-    async function deleteQuiz(id){
-        if(!confirm('Видалити квіз?'))return;
-        if(!State.token)return;
-        await api('/api/quizzes/'+id+'/delete',{token:State.token});
-        toast('Видалено');
-        loadMyQuizzes();loadCatalog();
-    }
-    /* ---------- ІНІЦІАЛІЗАЦІЯ ---------- */
-    async function init(){
-        if(State.initDone)return;
-        State.initDone=true;
-        loadProfile();
-        const savedTheme=Storage.get('sunlorem_theme','neon');
-        applyTheme(State.profile.ownedThemes.includes('t_'+savedTheme)?savedTheme:'neon');
-        updateAllBalances();
-        $('modalOverlay').addEventListener('click',e=>{if(e.target===$('modalOverlay'))closeModal()});
-        $('joinPin').addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,6)});
-        const params=new URLSearchParams(window.location.search);
-        const pinParam=params.get('pin');
-        if(pinParam&&/^\d{6}$/.test(pinParam)){$('joinPin').value=pinParam;go('screen-join')}
-        await tryAutoLogin();
-        showUserUI();
-        initSocket();
-        loadCatalog();
-    }
-    return {
-        go,doLogin,logout,continueAsGuest,
-        filterCatalog,playSolo,playPublic,playRoom,joinByPin,
-        startGame,nextQuestion,finishGame,closeRoom,
-        activatePower,saveProfile,
-        shopTab,teacherTab,createStudent,addBots,removeStudent,
-        addQuestion,loadTemplate,createQuiz,deleteQuiz,
-        closeModal,init
-    };
+const App=(function(){
+const State={
+theme:'neon',role:null,pin:null,playerId:null,playerName:null,
+user:null,token:null,isGuest:true,
+profile:{coins:0,xp:0,ownedAvatars:['a_cat'],ownedAccessories:[],ownedThemes:['t_neon','t_pastel'],equippedAvatar:'a_cat',equippedHead:'',equippedEyes:'',equippedEffect:'',completedQuests:{}},
+catalog:[],currentQuiz:null,shop:null,economy:null,questDefs:null,
+reactionEmojis:['🎉','🔥','👏','🤔','🚀','😂','😮','💪','❓','💯'],
+room:null,socket:null,connected:false,initDone:false,
+shopTabName:'avatars',hwTabName:'hw',answeredCurrent:false,
+lastQIndex:-1,lastQStart:0,questionStart:0,_localTimer:null,_prizeApplied:false,
+questionsDraft:[],currentHomework:null,allMyQuizzes:[],
+activeMode:'solo'
+};
+function $(id){return document.getElementById(id)}
+function qsa(s,r=document){return Array.from(r.querySelectorAll(s))}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+const Storage={set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},get(k,d=null){try{const r=localStorage.getItem(k);return r===null?d:JSON.parse(r)}catch(e){return d}},remove(k){try{localStorage.removeItem(k)}catch(e){}}};
+let toastTimer=null;
+function toast(msg,ms=2400){const t=$('toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),ms)}
+function openModal(title,body){$('modalTitle').textContent=title;$('modalBody').innerHTML=body;$('modalOverlay').classList.add('active')}
+function closeModal(){$('modalOverlay').classList.remove('active')}
+function go(id){qsa('.screen').forEach(s=>s.classList.remove('active'));const el=$(id);if(el){el.classList.add('active');el.scrollTop=0}
+if(id==='screen-catalog')loadCatalog();
+else if(id==='screen-shop')renderShop();
+else if(id==='screen-quests')renderQuests();
+else if(id==='screen-teacher')renderTeacher();
+else if(id==='screen-homework')loadHomework();
+updateAllBalances();
+}
+function updateAllBalances(){const p=State.profile;
+const pairs=[['welcomeCoins',p.coins],['catalogCoins',p.coins],['shopCoins',p.coins],['questsCoins',p.coins],['hwCoins',p.coins],
+['welcomeXp',p.xp],['catalogXp',p.xp],['shopXp',p.xp],['questsXp',p.xp],['hwXp',p.xp],
+['welcomeLevel',Math.floor(p.xp/100)+1]];
+pairs.forEach(([id,v])=>{const el=$(id);if(el)el.textContent=v});}
+function applyTheme(themeId){const all=['neon','pastel','space','cyber','forest','sunset','ocean','candy','autumn'].map(t=>'theme-'+t);document.body.classList.remove(...all);document.body.classList.add('theme-'+themeId);State.theme=themeId;Storage.set('sunlorem_theme',themeId);}
+function loadProfile(){const saved=Storage.get('sunlorem_profile');if(saved&&typeof saved==='object')State.profile=Object.assign(State.profile,saved);
+if(!Array.isArray(State.profile.ownedAvatars))State.profile.ownedAvatars=['a_cat'];
+if(!Array.isArray(State.profile.ownedAccessories))State.profile.ownedAccessories=[];
+if(!Array.isArray(State.profile.ownedThemes))State.profile.ownedThemes=['t_neon','t_pastel'];
+if(!State.profile.completedQuests)State.profile.completedQuests={};}
+function saveProfile(){Storage.set('sunlorem_profile',State.profile);toast('💾 Збережено!');
+if(State.socket&&State.connected&&State.room&&State.playerId){State.socket.emit('updateProfile',{playerId:State.playerId,avatarId:State.profile.equippedAvatar,accessories:{head:State.profile.equippedHead,eyes:State.profile.equippedEyes,effect:State.profile.equippedEffect},xp:State.profile.xp});}}
+function syncFromUser(u){if(!u)return;State.user=u;
+State.profile.coins=u.coins||0;State.profile.xp=u.xp||0;
+State.profile.ownedAvatars=u.ownedAvatars||['a_cat'];
+State.profile.ownedAccessories=u.ownedAccessories||[];
+State.profile.ownedThemes=u.ownedThemes||['t_neon','t_pastel'];
+State.profile.equippedAvatar=u.avatarId||'a_cat';
+State.profile.equippedHead=u.equippedHead||'';State.profile.equippedEyes=u.equippedEyes||'';State.profile.equippedEffect=u.equippedEffect||'';
+State.profile.completedQuests=u.completedQuests||{};
+saveProfile();updateAllBalances();if(u.theme)applyTheme(u.theme);}
+function showUserUI(){const isT=State.user&&State.user.role==='teacher';const isS=State.user&&State.user.role==='student';
+$('btnTeacherPanel').classList.toggle('hidden',!isT);
+$('btnHW').classList.toggle('hidden',!isS);
+$('welcomeGuestBox').classList.toggle('hidden',!!State.user);
+$('welcomeUserBox').classList.toggle('hidden',!State.user);
+if(State.user)$('welcomeUserName').textContent=(isT?'👩‍🏫 ':'🎒 ')+State.user.name;}
+async function api(path,body){const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})});return r.json();}
+async function doLogin(){const login=$('loginInput').value.trim();const password=$('passwordInput').value;
+if(!login||!password){toast('Введи логін і пароль');return}
+const res=await api('/api/auth/login',{login,password});
+if(!res.ok){toast(res.error||'Помилка');return}
+State.token=res.token;Storage.set('sunlorem_token',res.token);
+syncFromUser(res.user);State.isGuest=false;showUserUI();
+toast('👋 Вітаю, '+(res.user.name||res.user.login)+'!');go('screen-welcome');}
+async function tryAutoLogin(){const t=Storage.get('sunlorem_token');if(!t)return false;
+const res=await api('/api/auth/me',{token:t});if(!res.ok)return false;
+State.token=t;syncFromUser(res.user);State.isGuest=false;showUserUI();return true;}
+function logout(){State.user=null;State.token=null;State.isGuest=true;Storage.remove('sunlorem_token');showUserUI();go('screen-welcome');toast('Вийшли');}
+function continueAsGuest(){State.isGuest=true;State.user=null;showUserUI();go('screen-catalog');}
+async function loadCatalog(){try{const r=await fetch('/api/quizzes');const j=await r.json();if(j.ok)State.catalog=j.quizzes||[];renderCatalog();}catch(e){console.error(e)}}
+function renderCatalog(){const wrap=$('catalogList');if(!wrap)return;
+const q=$('searchQuiz')?$('searchQuiz').value.toLowerCase():'';
+const s=$('filterSubject')?$('filterSubject').value:'';
+const list=State.catalog.filter(x=>{if(q&&!x.title.toLowerCase().includes(q))return false;if(s&&x.subject!==s)return false;return true});
+wrap.innerHTML='';
+if(list.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:20px">Квізів немає. Нехай вчитель створить перший.</p>';return}
+const subjEmoji={'Математика':'➗','Українська мова':'📖','Історія':'🏛️','Природознавство':'🌿','Інше':'📚'};
+list.forEach(x=>{const card=document.createElement('div');card.className='quiz-card';
+card.innerHTML='<span class="q-emoji">'+(subjEmoji[x.subject]||'📚')+'</span><div class="q-title">'+esc(x.title)+'</div><div class="q-author">Автор: '+esc(x.author)+'</div><div class="q-meta"><span>'+esc(x.subject)+'</span><span>📝 '+x.questionsCount+'</span><span>🎮 '+x.plays+'</span><span>❤️ '+x.likes+'</span></div>';
+card.onclick=()=>openQuiz(x);wrap.appendChild(card);});}
+function filterCatalog(){renderCatalog()}
+async function openQuiz(x){State.currentQuiz=x;$('qmTitle').textContent=x.title;$('qmSubtitle').textContent=x.subject+' • '+x.questionsCount+' питань';go('screen-quiz-mode');}
+function playerInfo(){if(State.user)return{name:State.user.name,login:State.user.login};return{name:State.playerName||'Гість',login:'guest'};}
+function playSolo(){if(!State.currentQuiz)return;if(!State.socket||!State.connected){toast('Немає з\'єднання');return}
+const p=playerInfo();State.activeMode='solo';
+State.socket.emit('startSoloGame',{quizId:State.currentQuiz.id,mode:'arcade',name:p.name,login:p.login},res=>{
+if(!res.ok){toast(res.error||'Помилка');return}
+State.role='student';State.pin=res.pin;State.playerId=res.playerId;State.room=res.state;
+State.answeredCurrent=false;State.lastQIndex=-1;$('gameTitle').textContent='🎯 Соло';$('teacherGameBtns').classList.add('hidden');
+go('screen-game');renderGame(res.state);});}
+function playPublic(){if(!State.currentQuiz)return;if(!State.socket||!State.connected){toast('Немає з\'єднання');return}
+const p=playerInfo();State.activeMode='public';
+State.socket.emit('startPublicGame',{quizId:State.currentQuiz.id,mode:'arcade',targetCount:5,name:p.name,login:p.login},res=>{
+if(!res.ok){toast(res.error||'Помилка');return}
+State.role='student';State.pin=res.pin;State.playerId=res.playerId;State.room=res.state;
+State.answeredCurrent=false;State.lastQIndex=-1;$('gameTitle').textContent='🌐 З людьми';$('teacherGameBtns').classList.add('hidden');
+go('screen-game');renderGame(res.state);});}
+function playRoom(){if(!State.currentQuiz)return;if(!State.socket||!State.connected){toast('Немає з\'єднання');return}
+State.socket.emit('createRoomFromQuiz',{quizId:State.currentQuiz.id,mode:'arcade',timePerQuestion:20,botCount:0},res=>{
+if(!res.ok){toast(res.error||'Помилка');return}
+State.role='teacher';State.pin=res.pin;State.room=res.state;
+$('roomPin').textContent=res.pin;renderQR(res.pin);updateLobby(res.state);go('screen-lobby');});}
+function renderQR(pin){const box=$('qrBox');if(!box)return;box.innerHTML='';
+const link=window.location.origin+window.location.pathname+'?pin='+pin;
+const img=document.createElement('img');img.width=200;img.height=200;img.alt='QR';
+img.src='https://api.qrserver.com/v1/create-qr-code/?size=220x220&data='+encodeURIComponent(link);
+img.onerror=()=>{box.innerHTML='<div class="qr-fallback"><div style="font-size:15px">PIN:</div><div class="pin-big">'+pin+'</div></div>'};
+box.appendChild(img);}
+function joinByPin(){const pin=$('joinPin').value.trim();const name=$('joinName').value.trim();
+if(!/^\d{6}$/.test(pin)){toast('6-значний PIN');return}
+if(name.length<2){toast('Ім\'я закоротке');return}
+State.playerName=name;if(!State.socket||!State.connected){toast('Немає з\'єднання');return}
+State.socket.emit('joinRoom',{pin,name,avatarId:State.profile.equippedAvatar,accessories:{head:State.profile.equippedHead,eyes:State.profile.equippedEyes,effect:State.profile.equippedEffect},xp:State.profile.xp},res=>{
+if(!res.ok){toast(res.error||'Помилка');return}
+State.role='student';State.pin=pin;State.playerId=res.playerId;State.room=res.state;
+State.answeredCurrent=false;State.lastQIndex=-1;$('gameTitle').textContent='🎮 Гра';
+if(res.state.status==='lobby')go('screen-lobby');else{go('screen-game');renderGame(res.state);}});}
+function startGame(){if(!State.socket)return;State.socket.emit('startGame',res=>{if(!res.ok)toast(res.error||'Помилка');else toast('Гра почалася!');});}
+function nextQuestion(){if(!State.socket)return;State.socket.emit('nextQuestion',res=>{if(!res.ok)toast(res.error||'Помилка');});}
+function finishGame(){if(!State.socket)return;State.socket.emit('finishGame',res=>{if(!res.ok)toast(res.error||'Помилка');});}
+function closeRoom(){if(!confirm('Закрити?'))return;if(!State.socket){go('screen-welcome');return}State.socket.emit('closeRoom',()=>{State.room=null;go('screen-welcome');});}
+function renderGame(state){if(!state)return;const q=state.questions[state.currentQuestion];if(!q)return;
+const me=state.players.find(p=>p.id===State.playerId);
+const qChanged=(state.currentQuestion!==State.lastQIndex)||(state.questionStartedAt!==State.lastQStart);
+if(qChanged){State.lastQIndex=state.currentQuestion;State.lastQStart=state.questionStartedAt;State.questionStart=Date.now();State.answeredCurrent=false;
+$('gFeedback').textContent='';const wrap=$('gAnswers');wrap.innerHTML='';
+q.answers.forEach((a,i)=>{const btn=document.createElement('button');btn.className='answer-btn';
+btn.innerHTML='<span style="display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent-1),var(--accent-2));color:#fff;font-weight:900;margin-right:10px">'+String.fromCharCode(65+i)+'</span>'+esc(a);
+btn.onclick=()=>sendAnswer(i);wrap.appendChild(btn);});startLocalTimer(state.timePerQuestion);}
+$('gIndex').textContent=state.currentQuestion+1;$('gTotal').textContent=state.questions.length;$('gText').textContent=q.text;
+if(me){$('gScore').textContent='Бали: '+me.score;$('gStreak').textContent='🔥 Серія: '+(me.streak||0);$('gCoins').textContent='🪙 '+(me.coinsEarnedThisGame||0)+'/30';$('gXp').textContent='⭐ XP: '+(me.xp||0);}
+$('gAnswered').textContent='Відповіли: '+state.players.filter(p=>p.answeredThisRound).length+'/'+state.players.length;
+if(State.answeredCurrent||!me||!me.alive){qsa('#gAnswers .answer-btn').forEach((b,i)=>{b.disabled=true;if(i===q.correct)b.classList.add('correct');});}
+const canPower=me&&(me.streak||0)>=3&&!me.powerActive;
+['btnPowDouble','btnPowShield','btnPowReveal'].forEach(id=>{const b=$(id);if(b)b.disabled=!canPower});
+if(State.role==='teacher'){const btn=$('btnNext');if(btn)btn.textContent=(state.currentQuestion>=state.questions.length-1)?'🏁 Завершити':'⏭️ Далі';}
+renderLeaderboard(state,'gLeaderboard');renderFeed(state,'gFeed');}
+function sendAnswer(i){if(State.answeredCurrent)return;if(!State.socket||!State.room)return;State.answeredCurrent=true;
+const q=State.room.questions[State.room.currentQuestion];if(!q)return;
+qsa('#gAnswers .answer-btn').forEach((b,idx)=>{b.disabled=true;if(idx===q.correct)b.classList.add('correct');if(idx===i&&idx!==q.correct)b.classList.add('wrong');});
+const ok=i===q.correct;$('gFeedback').textContent=ok?'✅ Правильно!':'❌ Неправильно';$('gFeedback').style.color=ok?'var(--accent-5)':'#ff3d6e';
+State.socket.emit('answer',{playerId:State.playerId,q:State.room.currentQuestion,a:i},res=>{
+if(res&&res.ok&&typeof res.xp==='number'&&State.user){State.user.xp=res.xp;State.profile.xp=res.xp;Storage.set('sunlorem_profile',State.profile);updateAllBalances();}});}
+function activatePower(type){if(!State.socket)return;State.socket.emit('activatePower',{playerId:State.playerId,type},res=>{
+if(!res.ok){toast(res.error||'Помилка');return}
+const names={double:'⚡ Подвійні',shield:'🛡️ Щит',reveal:'🔍 Підказка'};toast('Активовано: '+names[type]);
+if(type==='reveal'&&Array.isArray(res.hintIndexes)){const btns=qsa('#gAnswers .answer-btn');res.hintIndexes.forEach(i=>{if(btns[i])btns[i].style.opacity=.25});}
+['btnPowDouble','btnPowShield','btnPowReveal'].forEach(id=>{const b=$(id);if(b)b.disabled=true});});}
+function renderLeaderboard(state,targetId){const wrap=$(targetId);if(!wrap)return;wrap.innerHTML='';
+state.players.slice().sort((a,b)=>b.score-a.score).slice(0,15).forEach((p,i)=>{
+const c=document.createElement('div');c.className='player-card';
+if(i===0)c.classList.add('leader');if(p.id===State.playerId)c.classList.add('self');if(!p.alive)c.classList.add('dead');
+c.innerHTML='<span class="avatar">'+(p.avatar||'🐱')+'</span><span class="name">'+esc(p.name)+'</span><span class="score">'+(p.score||0)+' 🏅 '+(p.coins||0)+' 🪙</span>';
+wrap.appendChild(c);});}
+function renderFeed(state,targetId){const wrap=$(targetId);if(!wrap)return;wrap.innerHTML='';
+const feed=state.feed||[];if(feed.length===0){wrap.innerHTML='<div class="event-line" style="opacity:.5">Подій немає...</div>';return}
+feed.slice(0,15).forEach(ev=>{const d=document.createElement('div');d.className='event-line';d.textContent=ev.text;wrap.appendChild(d);});}
+function updateLobby(state){if(!state)return;$('lobbyCount').textContent='Гравців: '+state.players.length;$('lobbyCountInline').textContent=state.players.length;
+const wrap=$('lobbyPlayerList');wrap.innerHTML='';
+if(state.players.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:14px">Очікуємо...</p>';return}
+state.players.slice().sort((a,b)=>b.score-a.score).forEach(p=>{
+const c=document.createElement('div');c.className='player-card';if(p.id===State.playerId)c.classList.add('self');
+c.innerHTML='<span class="avatar">'+(p.avatar||'🐱')+'</span><span class="name">'+esc(p.name)+'</span><span class="score">'+(p.score||0)+' 🏅</span>';
+wrap.appendChild(c);});}
+function renderResults(state){if(!state)return;const sorted=state.players.slice().sort((a,b)=>b.score-a.score);
+const podium=$('podium');podium.innerHTML='';
+const top3=[sorted[1],sorted[0],sorted[2]];const labels=['p2','p1','p3'];const medals=['🥈','🥇','🥉'];
+for(let i=0;i<3;i++){const p=top3[i];const pl=document.createElement('div');pl.className='podium-place '+labels[i];
+if(!p)pl.innerHTML='<div class="avatar">—</div><div class="name">—</div><div class="pedestal">—</div>';
+else pl.innerHTML='<div class="avatar">'+(p.avatar||'🐱')+'</div><div class="name">'+esc(p.name)+'</div><div style="font-size:11px;color:var(--accent-4);font-weight:900">+'+(p.finalPrize||0)+' 🪙</div><div class="pedestal">'+medals[i]+'</div>';
+podium.appendChild(pl);}
+const lb=$('finalLeaderboard');lb.innerHTML='';
+sorted.slice(0,50).forEach((p,i)=>{const c=document.createElement('div');c.className='player-card';if(i===0)c.classList.add('leader');
+c.innerHTML='<span class="avatar">'+(p.avatar||'🐱')+'</span><span class="name">'+esc(p.name)+'</span><span class="score">'+(p.score||0)+' 🏅 +'+(p.finalPrize||0)+' 🪙</span>';lb.appendChild(c);});
+const w=sorted[0];if(w){$('certName').textContent=w.name;$('certScore').textContent='Балів: '+w.score;$('certCoins').textContent='🪙 Разом: '+(w.coins||0);}
+$('certDate').textContent=new Date().toLocaleDateString('uk-UA',{day:'numeric',month:'long',year:'numeric'});}
+function startLocalTimer(duration){stopLocalTimer();State.questionStart=Date.now();
+State._localTimer=setInterval(()=>{const elapsed=(Date.now()-State.questionStart)/1000;const left=Math.max(0,duration-elapsed);updateTimer(Math.ceil(left),duration);if(left<=0)stopLocalTimer();},100);}
+function stopLocalTimer(){if(State._localTimer){clearInterval(State._localTimer);State._localTimer=null}}
+function updateTimer(left,total){const pct=Math.max(0,(left/(total||1))*100);const f=$('gTimerFill');if(f)f.style.width=pct+'%';const t=$('gTimerText');if(t)t.textContent=left;}
+function initSocket(){const socket=io();State.socket=socket;
+socket.on('connect',()=>{State.connected=true;showConn(true,'🟢 Онлайн');
+socket.emit('getShop',res=>{if(res&&res.ok){State.shop=res.shop;State.economy=res.economy;State.questDefs=res.quests;State.reactionEmojis=res.reactions||State.reactionEmojis;buildReactions();renderQuests();renderShop();}});});
+socket.on('disconnect',()=>{State.connected=false;showConn(false,'🔴 Офлайн')});
+socket.on('connect_error',()=>showConn(false,'🔴 Помилка'));
+socket.on('state',state=>{State.room=state;
+if(state.status==='finished'&&state.isHomework){renderHomeworkResult(state);return;}
+if(State.role==='teacher'){if(state.status==='lobby'){updateLobby(state);if(!$('screen-lobby').classList.contains('active'))go('screen-lobby');}
+else if(state.status==='running'){if(!$('screen-game').classList.contains('active'))go('screen-game');renderGame(state);}
+else if(state.status==='finished'){renderResults(state);go('screen-results');}}
+else if(State.role==='student'){const me=state.players.find(p=>p.id===State.playerId);
+if(state.status==='finished'){if(me&&me.finalPrize&&!State._prizeApplied){State._prizeApplied=true;if(State.user){State.user.coins=(State.user.coins||0)+me.finalPrize;syncFromUser(State.user);}toast('🏆 +'+me.finalPrize+' 🪙 за '+me.finalRank+' місце!');}
+renderResults(state);go('screen-results');}
+else if(state.status==='running'){if(!$('screen-game').classList.contains('active'))go('screen-game');renderGame(state);}
+else if(state.status==='lobby'){if(!$('screen-lobby').classList.contains('active'))go('screen-lobby');updateLobby(state);}}});
+socket.on('tick',d=>updateTimer(d.timeLeft,d.total));
+socket.on('playerReaction',d=>spawnFloatEmoji(d.emoji));
+socket.on('roomClosed',()=>openModal('Кімнату закрито','Вчитель закрив кімнату.'));}
+function showConn(ok,text){const el=$('connStatus');if(!el)return;el.textContent=text;el.className='conn-status show '+(ok?'ok':'err');if(ok){clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2000)}}
+function spawnFloatEmoji(emoji){const layer=$('floatLayer')||document.body;const el=document.createElement('div');el.className='float-emoji';el.textContent=emoji;el.style.left=(20+Math.random()*60)+'vw';el.style.bottom=(10+Math.random()*20)+'vh';layer.appendChild(el);setTimeout(()=>el.remove(),2600);}
+function buildReactions(){const bar=$('gameReactions');if(!bar)return;bar.innerHTML='';State.reactionEmojis.forEach(e=>{const btn=document.createElement('button');btn.className='reaction-btn';btn.textContent=e;btn.onclick=()=>sendReaction(e);bar.appendChild(btn);});}
+function sendReaction(e){if(!State.socket||!State.playerId)return;State.socket.emit('sendReaction',{playerId:State.playerId,emoji:e},res=>{if(res&&res.ok)spawnFloatEmoji(e);});}
+function shopTab(t){State.shopTabName=t;qsa('#screen-shop .tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===t));renderShop();}
+function renderShop(){if(!State.shop)return;const wrap=$('shopGrid');if(!wrap)return;wrap.innerHTML='';
+const preview=$('shopPreview');if(preview){const av=State.shop.avatars.find(a=>a.id===State.profile.equippedAvatar);preview.textContent=av?av.emoji:'🐱';}
+const pn=$('shopPreviewName');if(pn){const av=State.shop.avatars.find(a=>a.id===State.profile.equippedAvatar);pn.textContent=av?av.name:'Аватар';}
+if(State.shopTabName==='avatars'){State.shop.avatars.forEach(a=>{const owned=State.profile.ownedAvatars.includes(a.id);const eq=State.profile.equippedAvatar===a.id;
+const card=document.createElement('div');card.className='shop-card'+(eq?' equipped':'');
+card.innerHTML='<span class="preview">'+a.emoji+'</span><div class="name">'+esc(a.name)+'</div><div class="price '+(owned?'owned':(State.profile.coins<a.price?'cant':''))+'">'+(owned?'✓':(a.price+' 🪙'))+'</div>';
+card.onclick=()=>buyOrEquipAvatar(a);wrap.appendChild(card);});}
+else if(State.shopTabName==='accessories'){State.shop.accessories.forEach(a=>{const owned=State.profile.ownedAccessories.includes(a.id);
+const eq=(a.slot==='head'&&State.profile.equippedHead===a.id)||(a.slot==='eyes'&&State.profile.equippedEyes===a.id)||(a.slot==='effect'&&State.profile.equippedEffect===a.id);
+const card=document.createElement('div');card.className='shop-card'+(eq?' equipped':'');
+card.innerHTML='<span class="preview">'+a.emoji+'</span><div class="name">'+esc(a.name)+'</div><div style="font-size:11px;color:var(--text-dim)">'+(a.slot==='head'?'голова':a.slot==='eyes'?'очі':'ефект')+'</div><div class="price '+(owned?'owned':(State.profile.coins<a.price?'cant':''))+'">'+(owned?'✓':(a.price+' 🪙'))+'</div>';
+card.onclick=()=>buyOrEquipAcc(a);wrap.appendChild(card);});
+const clr=document.createElement('div');clr.className='shop-card';clr.innerHTML='<span class="preview">∅</span><div class="name">Зняти все</div>';
+clr.onclick=()=>{State.profile.equippedHead='';State.profile.equippedEyes='';State.profile.equippedEffect='';saveProfile();renderShop();};wrap.appendChild(clr);}
+else if(State.shopTabName==='themes'){const emojis={t_neon:'🌌',t_pastel:'🍑',t_space:'🌠',t_cyber:'⚡',t_forest:'🌲',t_sunset:'🌅',t_ocean:'🌊',t_candy:'🍭',t_autumn:'🍂'};
+State.shop.themes.forEach(t=>{const owned=State.profile.ownedThemes.includes(t.id);const eq=State.theme===t.id.replace('t_','');
+const card=document.createElement('div');card.className='shop-card'+(eq?' equipped':'');
+card.innerHTML='<span class="preview">'+(emojis[t.id]||'🎨')+'</span><div class="name">'+esc(t.name)+'</div><div class="price '+(owned?'owned':(State.profile.coins<t.price?'cant':''))+'">'+(owned?'✓':(t.price+' 🪙'))+'</div>';
+card.onclick=()=>buyOrEquipTheme(t);wrap.appendChild(card);});}
+updateAllBalances();}
+function buyOrEquipAvatar(a){if(State.profile.ownedAvatars.includes(a.id)){State.profile.equippedAvatar=a.id;saveProfile();renderShop();return}
+if(State.profile.coins<a.price){toast('Треба ще '+(a.price-State.profile.coins)+' 🪙');return}
+if(!confirm('Купити "'+a.name+'" за '+a.price+' 🪙?'))return;
+State.profile.coins-=a.price;State.profile.ownedAvatars.push(a.id);State.profile.equippedAvatar=a.id;saveProfile();renderShop();toast('🎉 Куплено!');}
+function buyOrEquipAcc(a){if(State.profile.ownedAccessories.includes(a.id)){if(a.slot==='head')State.profile.equippedHead=State.profile.equippedHead===a.id?'':a.id;if(a.slot==='eyes')State.profile.equippedEyes=State.profile.equippedEyes===a.id?'':a.id;if(a.slot==='effect')State.profile.equippedEffect=State.profile.equippedEffect===a.id?'':a.id;saveProfile();renderShop();return}
+if(State.profile.coins<a.price){toast('Треба ще '+(a.price-State.profile.coins)+' 🪙');return}
+if(!confirm('Купити "'+a.name+'" за '+a.price+' 🪙?'))return;
+State.profile.coins-=a.price;State.profile.ownedAccessories.push(a.id);
+if(a.slot==='head')State.profile.equippedHead=a.id;if(a.slot==='eyes')State.profile.equippedEyes=a.id;if(a.slot==='effect')State.profile.equippedEffect=a.id;
+saveProfile();renderShop();toast('🎉 Куплено!');}
+function buyOrEquipTheme(t){if(State.profile.ownedThemes.includes(t.id)){applyTheme(t.id.replace('t_',''));renderShop();return}
+if(State.profile.coins<t.price){toast('Треба ще '+(t.price-State.profile.coins)+' 🪙');return}
+if(!confirm('Розблокувати "'+t.name+'" за '+t.price+' 🪙?'))return;
+State.profile.coins-=t.price;State.profile.ownedThemes.push(t.id);applyTheme(t.id.replace('t_',''));saveProfile();renderShop();toast('🎉 Розблоковано!');}
+function renderQuests(){const wrap=$('questsList');if(!wrap||!State.questDefs)return;wrap.innerHTML='';
+Object.values(State.questDefs).forEach(def=>{const done=!!State.profile.completedQuests[def.id];
+const item=document.createElement('div');item.className='quest-item'+(done?' done':'');
+item.innerHTML='<div class="q-icon">'+def.icon+'</div><div class="q-info"><div class="q-title">'+esc(def.title)+(done?' ✓':'')+'</div><div class="q-desc">'+esc(def.desc)+'</div></div><div class="q-reward">'+(done?'✅':'+'+def.reward+' 🪙')+'</div>';
+wrap.appendChild(item);});}
+function teacherTab(t){qsa('#screen-teacher .tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===t));
+['class','create','mine','hw','analytics'].forEach(name=>{const el=$('teacher'+name.charAt(0).toUpperCase()+name.slice(1)+'Tab');if(el)el.classList.toggle('hidden',name!==t);});
+if(t==='mine')loadMyQuizzes();if(t==='hw')loadMyHomework();if(t==='analytics')loadGeneralAnalytics();}
+function renderTeacher(){if(!State.user||State.user.role!=='teacher'){toast('Тільки для вчителя');go('screen-welcome');return}loadClass();}
+async function loadClass(){if(!State.token)return;const res=await api('/api/teacher/class',{token:State.token});if(!res.ok)return;
+const wrap=$('classList');wrap.innerHTML='';
+if(res.students.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:10px">Порожньо</p>';return}
+res.students.forEach(s=>{const row=document.createElement('div');row.className='student-row';
+row.innerHTML='<div style="flex:1"><div class="s-name">'+esc(s.name)+'</div><div class="s-login">'+esc(s.login)+' • 🪙 '+s.coins+' • ⭐ '+s.xp+'</div></div>'+(s.isBot?'<span class="s-bot-tag">бот</span>':'')+'<button class="danger small" onclick="App.removeStudent(\''+esc(s.login)+'\')">🗑️</button>';
+wrap.appendChild(row);});}
+async function createStudent(){if(!State.token)return;const name=$('newStudentName').value.trim();const login=$('newStudentLogin').value.trim().toLowerCase();const password=$('newStudentPassword').value.trim();
+if(!name||!login||!password){toast('Заповни всі поля');return}
+const res=await api('/api/teacher/create-student',{token:State.token,login,password,name});
+if(!res.ok){toast(res.error||'Помилка');return}
+toast('✅ Учня створено');$('newStudentName').value='';$('newStudentLogin').value='';$('newStudentPassword').value='';loadClass();}
+async function addBots(){if(!State.token)return;const text=$('botsNames').value;if(!text.trim()){toast('Введи імена');return}
+const res=await api('/api/teacher/add-bots',{token:State.token,namesText:text});
+if(!res.ok){toast(res.error||'Помилка');return}
+toast('🤖 Додано: '+res.added.length);$('botsNames').value='';loadClass();}
+async function removeStudent(login){if(!confirm('Видалити '+login+'?'))return;if(!State.token)return;await api('/api/teacher/remove-student',{token:State.token,login});toast('Видалено');loadClass();}
+function addQuestion(){State.questionsDraft.push({text:'Нове питання',answers:['Варіант 1','Варіант 2','Варіант 3','Варіант 4'],correct:0});renderQuestionsEditor();}
+function renderQuestionsEditor(){const wrap=$('questionsEditor');if(!wrap)return;wrap.innerHTML='';
+if(State.questionsDraft.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:10px">Питань немає</p>';return}
+State.questionsDraft.forEach((q,qi)=>{const item=document.createElement('div');item.className='question-item';
+const header=document.createElement('div');header.className='q-header';header.innerHTML='<span class="q-index">#'+(qi+1)+'</span>';
+const del=document.createElement('button');del.className='danger small';del.textContent='🗑️';del.onclick=()=>{State.questionsDraft.splice(qi,1);renderQuestionsEditor()};header.appendChild(del);item.appendChild(header);
+const t=document.createElement('input');t.type='text';t.value=q.text;t.placeholder='Текст';t.oninput=()=>{State.questionsDraft[qi].text=t.value};item.appendChild(t);
+q.answers.forEach((ans,ai)=>{const row=document.createElement('div');row.className='answer-input-row';
+const r=document.createElement('input');r.type='radio';r.name='c_'+qi;r.checked=q.correct===ai;r.onchange=()=>{State.questionsDraft[qi].correct=ai};row.appendChild(r);
+const inp=document.createElement('input');inp.type='text';inp.value=ans;inp.placeholder='Варіант '+(ai+1);inp.oninput=()=>{State.questionsDraft[qi].answers[ai]=inp.value};row.appendChild(inp);item.appendChild(row);});
+wrap.appendChild(item);});}
+function loadTemplate(key){const templates={
+math:[{text:'7 × 8 = ?',answers:['54','56','48','64'],correct:1},{text:'Яке число просте?',answers:['9','15','17','21'],correct:2},{text:'144 : 12 = ?',answers:['10','11','12','14'],correct:2},{text:'Хвилин у 2,5 год?',answers:['120','135','150','180'],correct:2},{text:'Площа квадрата 9 см?',answers:['18','36','81','90'],correct:2}],
+ukrainian:[{text:'Букв в алфавіті?',answers:['32','33','34','35'],correct:1},{text:'Іменник означає:',answers:['дію','предмет','ознаку','кількість'],correct:1},{text:'Голосних:',answers:['5','6','7','8'],correct:1},{text:'Дієслово:',answers:['швидкий','швидкість','швидко','швидшати'],correct:3},{text:'Апостроф:',answers:['св..ято','п..ять','б..юро','цв..ях'],correct:1}],
+history:[{text:'Князь 980-1015?',answers:['Ярослав','Володимир','Святослав','Олег'],correct:1},{text:'Хрещення Русі?',answers:['862','988','1054','1240'],correct:1},{text:'Столиця України?',answers:['Харків','Одеса','Київ','Львів'],correct:2},{text:'«Кобзар»:',answers:['Франко','Шевченко','Леся','Сковорода'],correct:1},{text:'Незалежність у:',answers:['1989','1990','1991','1992'],correct:2}],
+nature:[{text:'Рослини вбирають:',answers:['Кисень','CO₂','Азот','Водень'],correct:1},{text:'Планет?',answers:['7','8','9','10'],correct:1},{text:'Океан найбільший?',answers:['Атлантичний','Індійський','Тихий','Північний'],correct:2},{text:'Ссавець:',answers:['Дельфін','Акула','Окунь','Кит'],correct:3},{text:'Ніг у комахи?',answers:['4','6','8','10'],correct:1}]};
+const t=templates[key];if(!t)return;State.questionsDraft=t.map(q=>({text:q.text,answers:q.answers.slice(),correct:q.correct}));renderQuestionsEditor();toast('Завантажено');}
+async function createQuiz(){if(!State.token)return;const title=$('quizTitle').value.trim();const subject=$('quizSubject').value;const difficulty=$('quizDifficulty').value;
+if(!title){toast('Введи назву');return}if(State.questionsDraft.length===0){toast('Додай питання');return}
+const res=await api('/api/quizzes/create',{token:State.token,title,subject,difficulty,questions:State.questionsDraft,isPublic:true});
+if(!res.ok){if(res.details)openModal('Помилки','<ul style="padding-left:18px">'+res.details.map(e=>'<li>'+esc(e)+'</li>').join('')+'</ul>');else toast(res.error||'Помилка');return}
+toast('✅ Квіз створено!');State.questionsDraft=[];$('quizTitle').value='';renderQuestionsEditor();loadCatalog();}
+async function loadMyQuizzes(){if(!State.token)return;const res=await api('/api/quizzes/mine',{token:State.token});if(!res.ok)return;
+State.allMyQuizzes=res.quizzes||[];const wrap=$('myQuizzes');wrap.innerHTML='';
+if(res.quizzes.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:10px">Порожньо</p>';}
+else res.quizzes.forEach(q=>{const row=document.createElement('div');row.className='student-row';
+row.innerHTML='<div style="flex:1"><div class="s-name">'+esc(q.title)+'</div><div class="s-login">'+esc(q.subject)+' • '+q.questionsCount+' • 🎮 '+q.plays+'</div></div><button class="danger small" onclick="App.deleteQuiz(\''+q.id+'\')">🗑️</button>';
+wrap.appendChild(row);});
+const sel=$('hwQuizSelect');if(sel){sel.innerHTML='';res.quizzes.forEach(q=>{const o=document.createElement('option');o.value=q.id;o.textContent=q.title;sel.appendChild(o);});}
+const asel=$('analyticsQuizSelect');if(asel){asel.innerHTML='';res.quizzes.forEach(q=>{const o=document.createElement('option');o.value=q.id;o.textContent=q.title;asel.appendChild(o);});}}
+async function deleteQuiz(id){if(!confirm('Видалити?'))return;if(!State.token)return;await api('/api/quizzes/'+id+'/delete',{token:State.token});toast('Видалено');loadMyQuizzes();loadCatalog();}
+async function createHomework(){if(!State.token)return;const quizId=$('hwQuizSelect').value;const title=$('hwTitle').value.trim();const dl=$('hwDeadline').value;
+if(!quizId){toast('Обери квіз');return}if(!dl){toast('Вкажи дедлайн');return}
+const deadline=new Date(dl).getTime();
+const res=await api('/api/homework/create',{token:State.token,quizId,title,deadline});
+if(!res.ok){toast(res.error||'Помилка');return}
+toast('📝 ДЗ створено');$('hwTitle').value='';$('hwDeadline').value='';loadMyHomework();}
+async function loadMyHomework(){if(!State.token)return;const res=await api('/api/homework/mine',{token:State.token});if(!res.ok)return;
+const wrap=$('myHomework');wrap.innerHTML='';
+if(res.homework.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:10px">Порожньо</p>';return}
+res.homework.forEach(h=>{const row=document.createElement('div');row.className='hw-row';
+const dl=new Date(h.deadline).toLocaleString('uk-UA');
+row.innerHTML='<div class="hw-info"><div class="hw-title">'+esc(h.title)+'</div><div class="hw-meta">'+esc(h.quizTitle)+' • до '+dl+' • здали: '+h.submissionsCount+'/'+h.classLogins.length+'</div></div>';
+row.onclick=()=>App.showHomeworkGrades(h.id);wrap.appendChild(row);});}
+async function showHomeworkGrades(hid){if(!State.token)return;const res=await api('/api/grades/for-homework',{token:State.token,homeworkId:hid});
+if(!res.ok){toast('Помилка');return}
+$('hwgTitle').textContent='Оцінки';
+const wrap=$('hwGradesList');wrap.innerHTML='';
+res.students.forEach(s=>{const row=document.createElement('div');row.className='hw-row';
+const g=s.submission?s.submission.grade:null;
+const gCls=g?('grade-'+g):'';
+row.innerHTML='<div class="hw-info"><div class="hw-title">'+esc(s.name)+(s.isBot?' 🤖':'')+'</div>'+
+(s.submitted?'<div class="hw-meta">'+s.submission.correct+'/'+s.submission.total+' ('+s.submission.percent+'%) '+(s.submission.isLate?'⚠️ запізно':'')+' • '+(s.submission.gradedBy==='auto'?'авто':'вручну')+'</div>':'<div class="hw-meta">Не здав</div>')+
+'</div>'+
+(s.submission?'<div class="grade-badge '+gCls+'">'+g+'</div><button class="small ghost" onclick="App.editGrade(\''+hid+'\',\''+esc(s.login)+'\','+g+')">✏️</button>':'<button class="small gold" onclick="App.editGrade(\''+hid+'\',\''+esc(s.login)+'\',0)">Виставити</button>');
+wrap.appendChild(row);});go('screen-hw-grades');}
+async function editGrade(hid,login,current){const val=prompt('Оцінка (1-12):',current||'');if(val===null)return;
+const g=parseInt(val,10);if(isNaN(g)||g<1||g>12){toast('1-12');return}
+const comment=prompt('Коментар (необов\'язково):')||'';
+const res=await api('/api/grades/set',{token:State.token,homeworkId:hid,studentLogin:login,grade:g,comment});
+if(!res.ok){toast(res.error||'Помилка');return}
+toast('Оцінку виставлено');showHomeworkGrades(hid);}
+async function loadGeneralAnalytics(){if(!State.token)return;const res=await api('/api/analytics/teacher',{token:State.token});if(!res.ok)return;
+const wrap=$('generalAnalytics');wrap.innerHTML='';
+wrap.innerHTML='<div class="student-row"><div class="s-name">📚 Квізів: '+res.quizzesCount+'</div></div><div class="student-row"><div class="s-name">🎮 Ігор: '+res.totalGames+'</div></div><div class="student-row"><div class="s-name">❤️ Лайків: '+res.totalLikes+'</div></div>';
+if(res.hardest.length>0){const h=document.createElement('div');h.style.marginTop='10px';h.innerHTML='<div class="panel-title">🔥 Найскладніші</div>';
+res.hardest.forEach(q=>{const d=document.createElement('div');d.className='analytics-q';
+d.innerHTML='<div class="aq-text">'+esc(q.text)+'</div><div class="aq-bar"><div class="aq-fill" style="width:'+q.wrongPercent+'%"></div></div><div style="font-size:11px;color:var(--text-dim)">'+esc(q.quizTitle)+' • '+q.wrongPercent+'% помилок</div>';
+h.appendChild(d);});wrap.appendChild(h);}}
+async function loadQuizAnalytics(){if(!State.token)return;const quizId=$('analyticsQuizSelect').value;if(!quizId){toast('Обери квіз');return}
+const res=await api('/api/analytics/quiz',{token:State.token,quizId});if(!res.ok){toast('Помилка');return}
+const wrap=$('quizAnalytics');wrap.innerHTML='';
+wrap.innerHTML='<div class="student-row"><div class="s-name">📝 '+esc(res.quizTitle)+' • Ігор: '+res.games+'</div></div>';
+const h1=document.createElement('div');h1.style.marginTop='10px';h1.innerHTML='<div class="panel-title">🔥 Питання</div>';
+res.questions.forEach(q=>{if(q.totalAttempts===0)return;const d=document.createElement('div');d.className='analytics-q';
+d.innerHTML='<div class="aq-text">'+esc(q.text)+'</div><div class="aq-bar"><div class="aq-fill" style="width:'+q.wrongPercent+'%"></div></div><div style="font-size:11px;color:var(--text-dim)">✅ '+q.correctCount+' • ❌ '+q.wrongCount+' • '+q.wrongPercent+'%</div>';
+h1.appendChild(d);});wrap.appendChild(h1);
+if(res.players.length>0){const h2=document.createElement('div');h2.style.marginTop='10px';h2.innerHTML='<div class="panel-title">🏆 Гравці</div>';
+res.players.forEach(p=>{const d=document.createElement('div');d.className='student-row';
+d.innerHTML='<div style="flex:1"><div class="s-name">'+esc(p.name)+(p.isBot?' 🤖':'')+'</div><div class="s-login">'+p.totalCorrect+'/'+p.totalQuestions+' • '+p.percent+'%</div></div>';
+h2.appendChild(d);});wrap.appendChild(h2);}}
+async function loadHomework(){if(!State.user||State.user.role!=='student'){toast('Треба увійти як учень');go('screen-welcome');return}
+if(!State.token)return;
+const r1=await api('/api/homework/for-student',{login:State.user.login});
+if(r1.ok)renderHomeworkList(r1.homework);
+const r2=await api('/api/grades/for-student',{login:State.user.login});
+if(r2.ok)renderGradesList(r2.grades);}
+function hwTab(t){State.hwTabName=t;qsa('#screen-homework .tab').forEach(x=>x.classList.toggle('active',x.dataset.hwtab===t));
+$('hwList').classList.toggle('hidden',t!=='hw');$('gradesList').classList.toggle('hidden',t!=='grades');}
+function renderHomeworkList(list){const wrap=$('hwList');wrap.innerHTML='';
+if(list.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:10px">ДЗ немає</p>';return}
+list.forEach(h=>{const row=document.createElement('div');
+row.className='hw-row'+(h.submitted?' done':'')+(h.deadline<Date.now()&&!h.submitted?' late':'');
+const dl=new Date(h.deadline).toLocaleString('uk-UA');
+row.innerHTML='<div class="hw-info"><div class="hw-title">'+esc(h.title)+'</div><div class="hw-meta">'+esc(h.quizTitle)+' • до '+dl+(h.submitted?' • ✅ '+h.submission.grade+'/12':'')+'</div></div>';
+row.onclick=()=>openHomework(h);wrap.appendChild(row);});}
+function renderGradesList(list){const wrap=$('gradesList');wrap.innerHTML='';
+if(list.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:10px">Оцінок немає</p>';return}
+list.forEach(g=>{const row=document.createElement('div');row.className='hw-row';
+const gCls='grade-'+g.grade;
+const dl=new Date(g.submittedAt).toLocaleString('uk-UA');
+row.innerHTML='<div class="hw-info"><div class="hw-title">'+esc(g.title)+'</div><div class="hw-meta">'+esc(g.quizTitle)+' • '+g.correct+'/'+g.total+' ('+g.percent+'%) • '+dl+(g.isLate?' ⚠️':'')+' • '+(g.gradedBy==='auto'?'авто':'вручну')+(g.comment?' • 💬 '+esc(g.comment):'')+'</div></div><div class="grade-badge '+gCls+'">'+g.grade+'</div>';
+wrap.appendChild(row);});}
+function openHomework(h){State.currentHomework=h;$('hwdTitle').textContent=h.title;$('hwdSubtitle').textContent=h.quizTitle;
+const btn=document.querySelector('#screen-hw-detail .primary');
+if(h.submitted){btn.textContent='✅ Вже здано ('+h.submission.grade+'/12)';btn.disabled=true}
+else{btn.textContent='▶️ Почати';btn.disabled=false}
+go('screen-hw-detail');}
+function startHomework(){if(!State.currentHomework)return;
+if(!State.socket||!State.connected){toast('Немає з\'єднання');return}
+State.socket.emit('startHomeworkGame',{homeworkId:State.currentHomework.id,login:State.user.login},res=>{
+if(!res.ok){toast(res.error||'Помилка');return}
+State.role='student';State.pin=res.pin;State.playerId=res.playerId;State.room=res.state;
+State.answeredCurrent=false;State.lastQIndex=-1;$('gameTitle').textContent='📝 ДЗ';$('teacherGameBtns').classList.add('hidden');
+go('screen-game');renderGame(res.state);});}
+function renderHomeworkResult(state){if(!state)return;const me=state.players[0];
+if(State.socket)State.socket.emit('finishHomeworkGame',{},res=>{
+if(!res.ok){toast('Помилка');return}
+const s=res.submission;
+openModal('📝 ДЗ завершено','<div style="text-align:center"><div class="grade-badge grade-'+s.grade+'" style="margin:10px auto">'+s.grade+'</div><p>Правильних: '+s.correct+'/'+s.total+' ('+s.percent+'%)</p>'+(s.isLate?'<p style="color:#ff3d6e">⚠️ Здано після дедлайну (−1 бал)</p>':'')+'</div>');
+loadHomework();});}
+function init(){
+if(State.initDone)return;State.initDone=true;
+loadProfile();const savedTheme=Storage.get('sunlorem_theme','neon');applyTheme(savedTheme);updateAllBalances();
+$('modalOverlay').addEventListener('click',e=>{if(e.target===$('modalOverlay'))closeModal()});
+$('joinPin').addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,6)});
+const params=new URLSearchParams(window.location.search);const pinParam=params.get('pin');
+if(pinParam&&/^\d{6}$/.test(pinParam)){$('joinPin').value=pinParam;go('screen-join')}
+tryAutoLogin().then(()=>{showUserUI();initSocket();loadCatalog();}).catch(()=>{showUserUI();initSocket();loadCatalog();});}
+return{go,doLogin,logout,continueAsGuest,filterCatalog,playSolo,playPublic,playRoom,joinByPin,startGame,nextQuestion,finishGame,closeRoom,activatePower,saveProfile,shopTab,teacherTab,createStudent,addBots,removeStudent,addQuestion,loadTemplate,createQuiz,deleteQuiz,closeModal,init,hwTab,loadHomework,openHomework,startHomework,createHomework,showHomeworkGrades,editGrade,loadQuizAnalytics,loadGeneralAnalytics};
 })();
-document.addEventListener('DOMContentLoaded',()=>{
-    if(!document.body.className.startsWith('theme-'))document.body.classList.add('theme-neon');
-    App.init().catch(e=>console.error('[init]',e));
-});
+document.addEventListener('DOMContentLoaded',()=>{if(!document.body.className.startsWith('theme-'))document.body.classList.add('theme-neon');App.init();});
 </script>
 </body>
 </html>
