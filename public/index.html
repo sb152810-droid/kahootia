@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-<title>SunLorem — Каталог квізів</title>
+<title>SunLorem</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;width:100%;overflow:hidden}
@@ -59,13 +59,15 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
 .player-list{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px}
 @media(min-width:560px){.player-list{grid-template-columns:1fr 1fr}}
 @media(min-width:900px){.player-list{grid-template-columns:repeat(3,1fr)}}
-.player-card{display:flex;align-items:center;gap:10px;background:var(--input-bg);border:1.5px solid var(--panel-border);border-radius:var(--radius-sm);padding:10px;transition:var(--transition)}
+.player-card{display:flex;align-items:center;gap:10px;background:var(--input-bg);border:1.5px solid var(--panel-border);border-radius:var(--radius-sm);padding:10px;transition:var(--transition);position:relative}
 .player-card.leader{border-color:var(--accent-4)}
 .player-card.self{border-color:var(--accent-5)}
-.player-card.dead{opacity:.5}
+.player-card.spectator{opacity:.6;filter:grayscale(.4)}
 .player-card .avatar{font-size:26px;flex-shrink:0}
 .player-card .name{flex:1;font-weight:700;font-size:clamp(13px,3vw,15px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .player-card .score{font-weight:900;color:var(--accent-4);font-size:clamp(13px,3vw,16px)}
+.player-card .chat-bubble{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--accent-2);color:#fff;padding:4px 10px;border-radius:14px;font-size:12px;font-weight:800;white-space:nowrap;animation:bubblePop .5s;box-shadow:0 4px 14px rgba(255,95,240,.6)}
+@keyframes bubblePop{0%{transform:translateX(-50%) scale(0);opacity:0}50%{transform:translateX(-50%) scale(1.15);opacity:1}100%{transform:translateX(-50%) scale(1);opacity:1}}
 .answer-btn{min-height:60px;font-size:clamp(15px,3.6vw,18px);font-weight:800;text-align:left;justify-content:flex-start;padding:14px 16px;background:var(--input-bg);border:2px solid var(--panel-border);color:var(--text-main)}
 .answer-btn.correct{border-color:var(--accent-5);background:linear-gradient(135deg,rgba(95,255,155,.25),rgba(95,240,255,.15))}
 .answer-btn.wrong{border-color:#ff3d6e;background:linear-gradient(135deg,rgba(255,61,110,.25),rgba(255,107,139,.15))}
@@ -102,6 +104,9 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
 .reactions-bar{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:8px}
 .reaction-btn{width:auto;min-width:46px;padding:6px 10px;font-size:22px;background:var(--input-bg);border:2px solid var(--panel-border);border-radius:12px;min-height:44px}
 .reaction-btn:hover{transform:scale(1.15)}
+.chat-bar{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+.chat-btn{width:auto;padding:6px 12px;font-size:clamp(12px,2.9vw,14px);font-weight:800;background:var(--input-bg);border:2px solid var(--panel-border);border-radius:14px;min-height:36px;color:var(--text-main)}
+.chat-btn:hover{transform:translateY(-2px);border-color:var(--accent-2)}
 .qr-container{background:#fff;border-radius:var(--radius-sm);padding:10px;display:inline-flex;align-items:center;justify-content:center;margin:8px auto;min-width:160px;min-height:160px}
 .qr-container img{display:block;width:180px;height:180px;border-radius:4px}
 @media(min-width:520px){.qr-container img{width:220px;height:220px}}
@@ -171,6 +176,15 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
 .analytics-q .aq-text{font-weight:700;font-size:13px;margin-bottom:4px}
 .analytics-q .aq-bar{height:6px;background:rgba(0,0,0,.3);border-radius:4px;overflow:hidden;margin:4px 0}
 .analytics-q .aq-fill{height:100%;background:linear-gradient(90deg,#ff6b8b,#ff3d6e)}
+.duel-row{display:flex;align-items:center;gap:10px;background:var(--input-bg);border:2px solid var(--panel-border);border-radius:var(--radius-sm);padding:10px;margin-bottom:8px}
+.duel-row .dr-avatar{font-size:32px}
+.duel-row .dr-info{flex:1}
+.duel-row .dr-name{font-weight:800;font-size:clamp(13px,3.2vw,15px)}
+.duel-row .dr-status{font-size:11px;color:var(--text-dim)}
+.duel-row .dr-online{color:var(--accent-5);font-weight:800}
+.duel-row .dr-offline{color:var(--text-dim)}
+.duel-row .dr-invite{padding:8px 14px;font-size:13px;min-height:38px;width:auto}
+.spectator-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(255,215,95,.15);border:1px solid var(--accent-4);color:var(--accent-4);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:800}
 @media print{
     @page{size:A4 portrait;margin:15mm}
     html,body{background:#fff!important;color:#000!important;height:auto!important;overflow:visible!important;width:100%!important;margin:0!important;padding:0!important}
@@ -223,15 +237,18 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
             <button class="ghost" onclick="App.go('screen-join')">🎮 За PIN</button>
         </div>
         <div class="button-row">
+            <button class="gold" onclick="App.go('screen-duel')">⚔️ Дуель</button>
             <button class="gold" onclick="App.go('screen-shop')">🛒 Магазин</button>
+        </div>
+        <div class="button-row">
             <button class="ghost" onclick="App.go('screen-quests')">🏆 Квести</button>
             <button class="ghost hidden" id="btnHW" onclick="App.go('screen-homework')">📝 ДЗ</button>
-            <button class="ghost" id="btnTeacherPanel" onclick="App.go('screen-teacher')">👩‍🏫 Вчитель</button>
+            <button class="ghost hidden" id="btnTeacherPanel" onclick="App.go('screen-teacher')">👩‍🏫 Вчитель</button>
         </div>
     </div>
     <div class="panel panel-narrow">
         <div class="panel-title">🎮 Як грати</div>
-        <p style="font-size:13px;line-height:1.6">1. Обери квіз у каталозі.<br>2. Соло / з людьми / кімната.<br>3. Або приєднайся за PIN.<br>4. За правильні — монети, XP.<br>5. Серія 3+ множить бали.</p>
+        <p style="font-size:13px;line-height:1.6">1. Обери квіз у каталозі.<br>2. Соло / з людьми / кімната.<br>3. Або приєднайся за PIN.<br>4. Виклич друга на дуель.<br>5. Серія 3+ множить бали.</p>
     </div>
 </div>
 
@@ -343,6 +360,9 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
             <div class="timer-bar"><div class="timer-fill" id="gTimerFill" style="width:100%"></div></div>
             <div class="timer-text" id="gTimerText">20</div>
         </div>
+        <div id="gSpectator" class="hidden" style="text-align:center;margin:8px 0">
+            <span class="spectator-badge">👀 Ти глядач — можеш тільки дивитись і реагувати</span>
+        </div>
         <div class="question-text" id="gText">Питання...</div>
         <div class="answers-grid" id="gAnswers"></div>
         <p id="gFeedback" style="text-align:center;margin-top:10px;font-weight:800;font-size:15px;min-height:22px"></p>
@@ -358,6 +378,10 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
         </div>
     </div>
     <div class="panel">
+        <div class="panel-title">💬 Чат</div>
+        <div class="chat-bar" id="chatBar"></div>
+    </div>
+    <div class="panel">
         <div class="panel-title">🎉 Реакції</div>
         <div class="reactions-bar" id="gameReactions"></div>
     </div>
@@ -369,7 +393,7 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
         <div class="panel-title">📡 Стрічка</div>
         <div class="event-feed" id="gFeed"></div>
     </div>
-    <div class="panel" id="teacherGameBtns">
+    <div class="panel hidden" id="teacherGameBtns">
         <div class="button-grid two-col">
             <button class="primary" id="btnNext" onclick="App.nextQuestion()">⏭️ Далі</button>
             <button class="danger" onclick="App.finishGame()">🏁 Завершити</button>
@@ -401,6 +425,20 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
         <div class="button-row">
             <button class="ghost" onclick="App.go('screen-welcome')">🔄 Нова гра</button>
         </div>
+    </div>
+</div>
+
+<div id="screen-duel" class="screen">
+    <h1>⚔️ Дуель</h1>
+    <p class="subtitle">Виклич однокласника на 1-на-1</p>
+    <div class="panel panel-narrow">
+        <div class="panel-title">📚 Обери квіз</div>
+        <select id="duelQuizSelect"></select>
+        <div class="panel-title" style="margin-top:14px">👥 Клас</div>
+        <div id="duelClassList"></div>
+    </div>
+    <div class="panel panel-narrow">
+        <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
     </div>
 </div>
 
@@ -500,7 +538,7 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
             <div class="spacer"></div>
             <div class="panel-title">📚 По квізу</div>
             <select id="analyticsQuizSelect"></select>
-            <button class="primary small" onclick="App.loadQuizAnalytics()">Показати</button>
+            <button class="primary small" onclick="App.loadQuizAnalytics()" style="margin-top:6px">Показати</button>
             <div id="quizAnalytics"></div>
         </div>
     </div>
@@ -514,7 +552,7 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
     <p class="subtitle" id="hwdSubtitle">Деталі</p>
     <div class="panel panel-narrow">
         <div class="button-grid">
-            <button class="primary" onclick="App.startHomework()">▶️ Почати</button>
+            <button class="primary" id="hwdStartBtn" onclick="App.startHomework()">▶️ Почати</button>
             <button class="ghost" onclick="App.go('screen-homework')">← Назад</button>
         </div>
     </div>
@@ -577,7 +615,7 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
     <div class="modal-box">
         <h2 id="modalTitle">Заголовок</h2>
         <div id="modalBody" style="margin:10px 0;font-size:15px">Текст</div>
-        <button class="primary" onclick="App.closeModal()">Гаразд</button>
+        <div id="modalActions"></div>
     </div>
 </div>
 
@@ -588,25 +626,24 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
 <script>
 "use strict";
 const App=(function(){
-const State={
-theme:'neon',role:null,pin:null,playerId:null,playerName:null,
-user:null,token:null,isGuest:true,
+const State={theme:'neon',role:null,pin:null,playerId:null,playerName:null,user:null,token:null,isGuest:true,
 profile:{coins:0,xp:0,ownedAvatars:['a_cat'],ownedAccessories:[],ownedThemes:['t_neon','t_pastel'],equippedAvatar:'a_cat',equippedHead:'',equippedEyes:'',equippedEffect:'',completedQuests:{}},
 catalog:[],currentQuiz:null,shop:null,economy:null,questDefs:null,
 reactionEmojis:['🎉','🔥','👏','🤔','🚀','😂','😮','💪','❓','💯'],
-room:null,socket:null,connected:false,initDone:false,
-shopTabName:'avatars',hwTabName:'hw',answeredCurrent:false,
+chatPhrases:['Вау!','Я знаю!','Дай шанс','Клас!','Ой…','Складно','Перемога!','Ще раз'],
+room:null,socket:null,connected:false,initDone:false,shopTabName:'avatars',hwTabName:'hw',answeredCurrent:false,
 lastQIndex:-1,lastQStart:0,questionStart:0,_localTimer:null,_prizeApplied:false,
-questionsDraft:[],currentHomework:null,allMyQuizzes:[],
-activeMode:'solo'
-};
+questionsDraft:[],currentHomework:null,allMyQuizzes:[],currentDuelInvite:null,isSpectator:false};
 function $(id){return document.getElementById(id)}
 function qsa(s,r=document){return Array.from(r.querySelectorAll(s))}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 const Storage={set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},get(k,d=null){try{const r=localStorage.getItem(k);return r===null?d:JSON.parse(r)}catch(e){return d}},remove(k){try{localStorage.removeItem(k)}catch(e){}}};
 let toastTimer=null;
 function toast(msg,ms=2400){const t=$('toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),ms)}
-function openModal(title,body){$('modalTitle').textContent=title;$('modalBody').innerHTML=body;$('modalOverlay').classList.add('active')}
+function openModal(title,body,actions){$('modalTitle').textContent=title;$('modalBody').innerHTML=body;const ac=$('modalActions');ac.innerHTML='';
+if(actions){actions.forEach(a=>{const b=document.createElement('button');b.className=a.cls||'primary';b.textContent=a.text;b.onclick=()=>{closeModal();a.fn&&a.fn()};ac.appendChild(b);});}
+else{const b=document.createElement('button');b.className='primary';b.textContent='Гаразд';b.onclick=closeModal;ac.appendChild(b);}
+$('modalOverlay').classList.add('active');}
 function closeModal(){$('modalOverlay').classList.remove('active')}
 function go(id){qsa('.screen').forEach(s=>s.classList.remove('active'));const el=$(id);if(el){el.classList.add('active');el.scrollTop=0}
 if(id==='screen-catalog')loadCatalog();
@@ -614,8 +651,8 @@ else if(id==='screen-shop')renderShop();
 else if(id==='screen-quests')renderQuests();
 else if(id==='screen-teacher')renderTeacher();
 else if(id==='screen-homework')loadHomework();
-updateAllBalances();
-}
+else if(id==='screen-duel')loadDuelScreen();
+updateAllBalances();}
 function updateAllBalances(){const p=State.profile;
 const pairs=[['welcomeCoins',p.coins],['catalogCoins',p.coins],['shopCoins',p.coins],['questsCoins',p.coins],['hwCoins',p.coins],
 ['welcomeXp',p.xp],['catalogXp',p.xp],['shopXp',p.xp],['questsXp',p.xp],['hwXp',p.xp],
@@ -643,7 +680,8 @@ $('btnTeacherPanel').classList.toggle('hidden',!isT);
 $('btnHW').classList.toggle('hidden',!isS);
 $('welcomeGuestBox').classList.toggle('hidden',!!State.user);
 $('welcomeUserBox').classList.toggle('hidden',!State.user);
-if(State.user)$('welcomeUserName').textContent=(isT?'👩‍🏫 ':'🎒 ')+State.user.name;}
+if(State.user)$('welcomeUserName').textContent=(isT?'👩‍🏫 ':'🎒 ')+State.user.name;
+if(State.socket&&State.socket.connected&&State.user&&!State.user.isBot)State.socket.emit('registerOnline',{login:State.user.login});}
 async function api(path,body){const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})});return r.json();}
 async function doLogin(){const login=$('loginInput').value.trim();const password=$('passwordInput').value;
 if(!login||!password){toast('Введи логін і пароль');return}
@@ -657,13 +695,13 @@ const res=await api('/api/auth/me',{token:t});if(!res.ok)return false;
 State.token=t;syncFromUser(res.user);State.isGuest=false;showUserUI();return true;}
 function logout(){State.user=null;State.token=null;State.isGuest=true;Storage.remove('sunlorem_token');showUserUI();go('screen-welcome');toast('Вийшли');}
 function continueAsGuest(){State.isGuest=true;State.user=null;showUserUI();go('screen-catalog');}
-async function loadCatalog(){try{const r=await fetch('/api/quizzes');const j=await r.json();if(j.ok)State.catalog=j.quizzes||[];renderCatalog();}catch(e){console.error(e)}}
+async function loadCatalog(){try{const r=await fetch('/api/quizzes');const j=await r.json();if(j.ok)State.catalog=j.quizzes||[];renderCatalog();}catch(e){}}
 function renderCatalog(){const wrap=$('catalogList');if(!wrap)return;
 const q=$('searchQuiz')?$('searchQuiz').value.toLowerCase():'';
 const s=$('filterSubject')?$('filterSubject').value:'';
 const list=State.catalog.filter(x=>{if(q&&!x.title.toLowerCase().includes(q))return false;if(s&&x.subject!==s)return false;return true});
 wrap.innerHTML='';
-if(list.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:20px">Квізів немає. Нехай вчитель створить перший.</p>';return}
+if(list.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:20px">Квізів немає.</p>';return}
 const subjEmoji={'Математика':'➗','Українська мова':'📖','Історія':'🏛️','Природознавство':'🌿','Інше':'📚'};
 list.forEach(x=>{const card=document.createElement('div');card.className='quiz-card';
 card.innerHTML='<span class="q-emoji">'+(subjEmoji[x.subject]||'📚')+'</span><div class="q-title">'+esc(x.title)+'</div><div class="q-author">Автор: '+esc(x.author)+'</div><div class="q-meta"><span>'+esc(x.subject)+'</span><span>📝 '+x.questionsCount+'</span><span>🎮 '+x.plays+'</span><span>❤️ '+x.likes+'</span></div>';
@@ -672,14 +710,14 @@ function filterCatalog(){renderCatalog()}
 async function openQuiz(x){State.currentQuiz=x;$('qmTitle').textContent=x.title;$('qmSubtitle').textContent=x.subject+' • '+x.questionsCount+' питань';go('screen-quiz-mode');}
 function playerInfo(){if(State.user)return{name:State.user.name,login:State.user.login};return{name:State.playerName||'Гість',login:'guest'};}
 function playSolo(){if(!State.currentQuiz)return;if(!State.socket||!State.connected){toast('Немає з\'єднання');return}
-const p=playerInfo();State.activeMode='solo';
+const p=playerInfo();
 State.socket.emit('startSoloGame',{quizId:State.currentQuiz.id,mode:'arcade',name:p.name,login:p.login},res=>{
 if(!res.ok){toast(res.error||'Помилка');return}
 State.role='student';State.pin=res.pin;State.playerId=res.playerId;State.room=res.state;
 State.answeredCurrent=false;State.lastQIndex=-1;$('gameTitle').textContent='🎯 Соло';$('teacherGameBtns').classList.add('hidden');
 go('screen-game');renderGame(res.state);});}
 function playPublic(){if(!State.currentQuiz)return;if(!State.socket||!State.connected){toast('Немає з\'єднання');return}
-const p=playerInfo();State.activeMode='public';
+const p=playerInfo();
 State.socket.emit('startPublicGame',{quizId:State.currentQuiz.id,mode:'arcade',targetCount:5,name:p.name,login:p.login},res=>{
 if(!res.ok){toast(res.error||'Помилка');return}
 State.role='student';State.pin=res.pin;State.playerId=res.playerId;State.room=res.state;
@@ -719,10 +757,14 @@ btn.innerHTML='<span style="display:inline-flex;align-items:center;justify-conte
 btn.onclick=()=>sendAnswer(i);wrap.appendChild(btn);});startLocalTimer(state.timePerQuestion);}
 $('gIndex').textContent=state.currentQuestion+1;$('gTotal').textContent=state.questions.length;$('gText').textContent=q.text;
 if(me){$('gScore').textContent='Бали: '+me.score;$('gStreak').textContent='🔥 Серія: '+(me.streak||0);$('gCoins').textContent='🪙 '+(me.coinsEarnedThisGame||0)+'/30';$('gXp').textContent='⭐ XP: '+(me.xp||0);}
+const spectator=me&&!me.alive&&state.mode==='survival';
+State.isSpectator=spectator;
+$('gSpectator').classList.toggle('hidden',!spectator);
 $('gAnswered').textContent='Відповіли: '+state.players.filter(p=>p.answeredThisRound).length+'/'+state.players.length;
 if(State.answeredCurrent||!me||!me.alive){qsa('#gAnswers .answer-btn').forEach((b,i)=>{b.disabled=true;if(i===q.correct)b.classList.add('correct');});}
-const canPower=me&&(me.streak||0)>=3&&!me.powerActive;
+const canPower=me&&(me.streak||0)>=3&&!me.powerActive&&me.alive;
 ['btnPowDouble','btnPowShield','btnPowReveal'].forEach(id=>{const b=$(id);if(b)b.disabled=!canPower});
+$('teacherGameBtns').classList.toggle('hidden',State.role!=='teacher');
 if(State.role==='teacher'){const btn=$('btnNext');if(btn)btn.textContent=(state.currentQuestion>=state.questions.length-1)?'🏁 Завершити':'⏭️ Далі';}
 renderLeaderboard(state,'gLeaderboard');renderFeed(state,'gFeed');}
 function sendAnswer(i){if(State.answeredCurrent)return;if(!State.socket||!State.room)return;State.answeredCurrent=true;
@@ -739,8 +781,9 @@ if(type==='reveal'&&Array.isArray(res.hintIndexes)){const btns=qsa('#gAnswers .a
 function renderLeaderboard(state,targetId){const wrap=$(targetId);if(!wrap)return;wrap.innerHTML='';
 state.players.slice().sort((a,b)=>b.score-a.score).slice(0,15).forEach((p,i)=>{
 const c=document.createElement('div');c.className='player-card';
-if(i===0)c.classList.add('leader');if(p.id===State.playerId)c.classList.add('self');if(!p.alive)c.classList.add('dead');
-c.innerHTML='<span class="avatar">'+(p.avatar||'🐱')+'</span><span class="name">'+esc(p.name)+'</span><span class="score">'+(p.score||0)+' 🏅 '+(p.coins||0)+' 🪙</span>';
+if(i===0)c.classList.add('leader');if(p.id===State.playerId)c.classList.add('self');
+if(state.mode==='survival'&&!p.alive)c.classList.add('spectator');
+c.innerHTML='<span class="avatar">'+(p.avatar||'🐱')+'</span><span class="name">'+esc(p.name)+(state.mode==='survival'&&!p.alive?' 👀':'')+'</span><span class="score">'+(p.score||0)+' 🏅 '+(p.coins||0)+' 🪙</span>';
 wrap.appendChild(c);});}
 function renderFeed(state,targetId){const wrap=$(targetId);if(!wrap)return;wrap.innerHTML='';
 const feed=state.feed||[];if(feed.length===0){wrap.innerHTML='<div class="event-line" style="opacity:.5">Подій немає...</div>';return}
@@ -770,7 +813,8 @@ function stopLocalTimer(){if(State._localTimer){clearInterval(State._localTimer)
 function updateTimer(left,total){const pct=Math.max(0,(left/(total||1))*100);const f=$('gTimerFill');if(f)f.style.width=pct+'%';const t=$('gTimerText');if(t)t.textContent=left;}
 function initSocket(){const socket=io();State.socket=socket;
 socket.on('connect',()=>{State.connected=true;showConn(true,'🟢 Онлайн');
-socket.emit('getShop',res=>{if(res&&res.ok){State.shop=res.shop;State.economy=res.economy;State.questDefs=res.quests;State.reactionEmojis=res.reactions||State.reactionEmojis;buildReactions();renderQuests();renderShop();}});});
+socket.emit('getShop',res=>{if(res&&res.ok){State.shop=res.shop;State.economy=res.economy;State.questDefs=res.quests;State.reactionEmojis=res.reactions||State.reactionEmojis;State.chatPhrases=res.chatPhrases||State.chatPhrases;buildReactions();buildChat();renderQuests();renderShop();}});
+if(State.user&&!State.user.isBot)socket.emit('registerOnline',{login:State.user.login});});
 socket.on('disconnect',()=>{State.connected=false;showConn(false,'🔴 Офлайн')});
 socket.on('connect_error',()=>showConn(false,'🔴 Помилка'));
 socket.on('state',state=>{State.room=state;
@@ -785,11 +829,32 @@ else if(state.status==='running'){if(!$('screen-game').classList.contains('activ
 else if(state.status==='lobby'){if(!$('screen-lobby').classList.contains('active'))go('screen-lobby');updateLobby(state);}}});
 socket.on('tick',d=>updateTimer(d.timeLeft,d.total));
 socket.on('playerReaction',d=>spawnFloatEmoji(d.emoji));
-socket.on('roomClosed',()=>openModal('Кімнату закрито','Вчитель закрив кімнату.'));}
+socket.on('playerChat',d=>{showChatBubble(d.playerId,d.playerName,d.phrase);spawnFloatEmoji('💬');});
+socket.on('roomClosed',()=>openModal('Кімнату закрито','Вчитель закрив кімнату.'));
+socket.on('duelInvite',d=>{State.currentDuelInvite=d;
+openModal('⚔️ Виклик на дуель','<div style="text-align:center"><div style="font-size:44px">'+d.fromAvatar+'</div><p><b>'+esc(d.fromName)+'</b> викликає тебе на дуель!</p></div>',[
+{text:'❌ Відхилити',cls:'danger',fn:()=>respondDuel(d.inviteId,false)},
+{text:'✅ Прийняти',cls:'success',fn:()=>respondDuel(d.inviteId,true)}
+]);});
+socket.on('duelResponse',d=>{if(d.accept)toast('✅ Виклик прийнято!');else toast('❌ Виклик відхилено');State.currentDuelInvite=null;});
+socket.on('duelStarted',d=>{State.role='student';State.pin=d.pin;State.playerId=d.playerId;State.room=d.state;
+State.answeredCurrent=false;State.lastQIndex=-1;$('gameTitle').textContent='⚔️ Дуель';$('teacherGameBtns').classList.add('hidden');
+go('screen-game');renderGame(d.state);toast('⚔️ Дуель почалася!');});}
 function showConn(ok,text){const el=$('connStatus');if(!el)return;el.textContent=text;el.className='conn-status show '+(ok?'ok':'err');if(ok){clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2000)}}
 function spawnFloatEmoji(emoji){const layer=$('floatLayer')||document.body;const el=document.createElement('div');el.className='float-emoji';el.textContent=emoji;el.style.left=(20+Math.random()*60)+'vw';el.style.bottom=(10+Math.random()*20)+'vh';layer.appendChild(el);setTimeout(()=>el.remove(),2600);}
+function showChatBubble(playerId,playerName,phrase){
+const cards=qsa('.player-card');
+cards.forEach(card=>{
+const nameEl=card.querySelector('.name');
+if(nameEl&&nameEl.textContent.indexOf(playerName)!==-1){
+const old=card.querySelector('.chat-bubble');if(old)old.remove();
+const b=document.createElement('div');b.className='chat-bubble';b.textContent=phrase;
+card.appendChild(b);setTimeout(()=>b.remove(),2500);
+}});}
 function buildReactions(){const bar=$('gameReactions');if(!bar)return;bar.innerHTML='';State.reactionEmojis.forEach(e=>{const btn=document.createElement('button');btn.className='reaction-btn';btn.textContent=e;btn.onclick=()=>sendReaction(e);bar.appendChild(btn);});}
+function buildChat(){const bar=$('chatBar');if(!bar)return;bar.innerHTML='';State.chatPhrases.forEach(p=>{const btn=document.createElement('button');btn.className='chat-btn';btn.textContent=p;btn.onclick=()=>sendChat(p);bar.appendChild(btn);});}
 function sendReaction(e){if(!State.socket||!State.playerId)return;State.socket.emit('sendReaction',{playerId:State.playerId,emoji:e},res=>{if(res&&res.ok)spawnFloatEmoji(e);});}
+function sendChat(p){if(!State.socket||!State.playerId)return;State.socket.emit('sendChatPhrase',{playerId:State.playerId,phrase:p},res=>{if(res&&res.ok)showChatBubble(State.playerId,State.playerName||(State.user&&State.user.name)||'',p);});}
 function shopTab(t){State.shopTabName=t;qsa('#screen-shop .tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===t));renderShop();}
 function renderShop(){if(!State.shop)return;const wrap=$('shopGrid');if(!wrap)return;wrap.innerHTML='';
 const preview=$('shopPreview');if(preview){const av=State.shop.avatars.find(a=>a.id===State.profile.equippedAvatar);preview.textContent=av?av.emoji:'🐱';}
@@ -830,6 +895,38 @@ Object.values(State.questDefs).forEach(def=>{const done=!!State.profile.complete
 const item=document.createElement('div');item.className='quest-item'+(done?' done':'');
 item.innerHTML='<div class="q-icon">'+def.icon+'</div><div class="q-info"><div class="q-title">'+esc(def.title)+(done?' ✓':'')+'</div><div class="q-desc">'+esc(def.desc)+'</div></div><div class="q-reward">'+(done?'✅':'+'+def.reward+' 🪙')+'</div>';
 wrap.appendChild(item);});}
+async function loadDuelScreen(){if(!State.user||State.user.role!=='student'){toast('Треба увійти як учень');go('screen-welcome');return}
+if(!State.token)return;
+const qres=await fetch('/api/quizzes');const qj=await qres.json();
+const sel=$('duelQuizSelect');sel.innerHTML='';
+if(qj.ok&&qj.quizzes)(qj.quizzes).forEach(q=>{const o=document.createElement('option');o.value=q.id;o.textContent=q.title;sel.appendChild(o);});
+const res=await api('/api/duel/class-online',{token:State.token});
+if(!res.ok){toast('Помилка');return}
+const wrap=$('duelClassList');wrap.innerHTML='';
+if(res.students.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:14px">Клас порожній</p>';return}
+res.students.forEach(s=>{const row=document.createElement('div');row.className='duel-row';
+row.innerHTML='<div class="dr-avatar">'+s.avatar+'</div><div class="dr-info"><div class="dr-name">'+esc(s.name)+'</div><div class="dr-status '+(s.online?'dr-online':'dr-offline')+'">'+(s.online?'🟢 онлайн':'⚫ офлайн')+' • 🎖️ рів. '+s.level+'</div></div>';
+if(s.online){const btn=document.createElement('button');btn.className='primary dr-invite';btn.textContent='⚔️ Виклик';btn.onclick=()=>App.inviteDuel(s.login);row.appendChild(btn);}
+wrap.appendChild(row);});}
+async function inviteDuel(opponentLogin){if(!State.token){toast('Треба увійти');return}
+const quizId=$('duelQuizSelect').value;
+if(!quizId){toast('Обери квіз');return}
+State.currentDuelQuizId=quizId;
+const res=await api('/api/duel/invite',{fromLogin:State.user.login,toLogin:opponentLogin});
+if(!res.ok){toast(res.error||'Помилка');return}
+toast('⚔️ Виклик надіслано!');}
+async function respondDuel(inviteId,accept){if(!State.token)return;
+const res=await api('/api/duel/respond',{inviteId,accept});
+if(!res.ok){toast(res.error||'Помилка');return}
+if(accept){const inv=State.currentDuelInvite;if(!inv)return;
+const quizId=State.currentDuelQuizId||(State.catalog[0]&&State.catalog[0].id);
+if(!quizId){toast('Немає квізу');return}
+State.socket.emit('startDuelRoom',{quizId,login:State.user.login,opponent:inv.fromLogin},r=>{
+if(!r.ok){toast(r.error||'Помилка');return}
+State.role='student';State.pin=r.pin;State.playerId=r.playerId;State.room=r.state;
+State.answeredCurrent=false;State.lastQIndex=-1;$('gameTitle').textContent='⚔️ Дуель';$('teacherGameBtns').classList.add('hidden');
+go('screen-game');renderGame(r.state);});}
+State.currentDuelInvite=null;}
 function teacherTab(t){qsa('#screen-teacher .tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===t));
 ['class','create','mine','hw','analytics'].forEach(name=>{const el=$('teacher'+name.charAt(0).toUpperCase()+name.slice(1)+'Tab');if(el)el.classList.toggle('hidden',name!==t);});
 if(t==='mine')loadMyQuizzes();if(t==='hw')loadMyHomework();if(t==='analytics')loadGeneralAnalytics();}
@@ -902,13 +999,13 @@ res.students.forEach(s=>{const row=document.createElement('div');row.className='
 const g=s.submission?s.submission.grade:null;
 const gCls=g?('grade-'+g):'';
 row.innerHTML='<div class="hw-info"><div class="hw-title">'+esc(s.name)+(s.isBot?' 🤖':'')+'</div>'+
-(s.submitted?'<div class="hw-meta">'+s.submission.correct+'/'+s.submission.total+' ('+s.submission.percent+'%) '+(s.submission.isLate?'⚠️ запізно':'')+' • '+(s.submission.gradedBy==='auto'?'авто':'вручну')+'</div>':'<div class="hw-meta">Не здав</div>')+
+(s.submitted?'<div class="hw-meta">'+s.submission.correct+'/'+s.submission.total+' ('+s.submission.percent+'%) '+(s.submission.isLate?'⚠️':'')+' • '+(s.submission.gradedBy==='auto'?'авто':'вручну')+'</div>':'<div class="hw-meta">Не здав</div>')+
 '</div>'+
 (s.submission?'<div class="grade-badge '+gCls+'">'+g+'</div><button class="small ghost" onclick="App.editGrade(\''+hid+'\',\''+esc(s.login)+'\','+g+')">✏️</button>':'<button class="small gold" onclick="App.editGrade(\''+hid+'\',\''+esc(s.login)+'\',0)">Виставити</button>');
 wrap.appendChild(row);});go('screen-hw-grades');}
 async function editGrade(hid,login,current){const val=prompt('Оцінка (1-12):',current||'');if(val===null)return;
 const g=parseInt(val,10);if(isNaN(g)||g<1||g>12){toast('1-12');return}
-const comment=prompt('Коментар (необов\'язково):')||'';
+const comment=prompt('Коментар:')||'';
 const res=await api('/api/grades/set',{token:State.token,homeworkId:hid,studentLogin:login,grade:g,comment});
 if(!res.ok){toast(res.error||'Помилка');return}
 toast('Оцінку виставлено');showHomeworkGrades(hid);}
@@ -917,7 +1014,7 @@ const wrap=$('generalAnalytics');wrap.innerHTML='';
 wrap.innerHTML='<div class="student-row"><div class="s-name">📚 Квізів: '+res.quizzesCount+'</div></div><div class="student-row"><div class="s-name">🎮 Ігор: '+res.totalGames+'</div></div><div class="student-row"><div class="s-name">❤️ Лайків: '+res.totalLikes+'</div></div>';
 if(res.hardest.length>0){const h=document.createElement('div');h.style.marginTop='10px';h.innerHTML='<div class="panel-title">🔥 Найскладніші</div>';
 res.hardest.forEach(q=>{const d=document.createElement('div');d.className='analytics-q';
-d.innerHTML='<div class="aq-text">'+esc(q.text)+'</div><div class="aq-bar"><div class="aq-fill" style="width:'+q.wrongPercent+'%"></div></div><div style="font-size:11px;color:var(--text-dim)">'+esc(q.quizTitle)+' • '+q.wrongPercent+'% помилок</div>';
+d.innerHTML='<div class="aq-text">'+esc(q.text)+'</div><div class="aq-bar"><div class="aq-fill" style="width:'+q.wrongPercent+'%"></div></div><div style="font-size:11px;color:var(--text-dim)">'+esc(q.quizTitle)+' • '+q.wrongPercent+'%</div>';
 h.appendChild(d);});wrap.appendChild(h);}}
 async function loadQuizAnalytics(){if(!State.token)return;const quizId=$('analyticsQuizSelect').value;if(!quizId){toast('Обери квіз');return}
 const res=await api('/api/analytics/quiz',{token:State.token,quizId});if(!res.ok){toast('Помилка');return}
@@ -954,7 +1051,7 @@ const dl=new Date(g.submittedAt).toLocaleString('uk-UA');
 row.innerHTML='<div class="hw-info"><div class="hw-title">'+esc(g.title)+'</div><div class="hw-meta">'+esc(g.quizTitle)+' • '+g.correct+'/'+g.total+' ('+g.percent+'%) • '+dl+(g.isLate?' ⚠️':'')+' • '+(g.gradedBy==='auto'?'авто':'вручну')+(g.comment?' • 💬 '+esc(g.comment):'')+'</div></div><div class="grade-badge '+gCls+'">'+g.grade+'</div>';
 wrap.appendChild(row);});}
 function openHomework(h){State.currentHomework=h;$('hwdTitle').textContent=h.title;$('hwdSubtitle').textContent=h.quizTitle;
-const btn=document.querySelector('#screen-hw-detail .primary');
+const btn=$('hwdStartBtn');
 if(h.submitted){btn.textContent='✅ Вже здано ('+h.submission.grade+'/12)';btn.disabled=true}
 else{btn.textContent='▶️ Почати';btn.disabled=false}
 go('screen-hw-detail');}
@@ -965,7 +1062,7 @@ if(!res.ok){toast(res.error||'Помилка');return}
 State.role='student';State.pin=res.pin;State.playerId=res.playerId;State.room=res.state;
 State.answeredCurrent=false;State.lastQIndex=-1;$('gameTitle').textContent='📝 ДЗ';$('teacherGameBtns').classList.add('hidden');
 go('screen-game');renderGame(res.state);});}
-function renderHomeworkResult(state){if(!state)return;const me=state.players[0];
+function renderHomeworkResult(state){if(!state)return;
 if(State.socket)State.socket.emit('finishHomeworkGame',{},res=>{
 if(!res.ok){toast('Помилка');return}
 const s=res.submission;
@@ -979,7 +1076,7 @@ $('joinPin').addEventListener('input',e=>{e.target.value=e.target.value.replace(
 const params=new URLSearchParams(window.location.search);const pinParam=params.get('pin');
 if(pinParam&&/^\d{6}$/.test(pinParam)){$('joinPin').value=pinParam;go('screen-join')}
 tryAutoLogin().then(()=>{showUserUI();initSocket();loadCatalog();}).catch(()=>{showUserUI();initSocket();loadCatalog();});}
-return{go,doLogin,logout,continueAsGuest,filterCatalog,playSolo,playPublic,playRoom,joinByPin,startGame,nextQuestion,finishGame,closeRoom,activatePower,saveProfile,shopTab,teacherTab,createStudent,addBots,removeStudent,addQuestion,loadTemplate,createQuiz,deleteQuiz,closeModal,init,hwTab,loadHomework,openHomework,startHomework,createHomework,showHomeworkGrades,editGrade,loadQuizAnalytics,loadGeneralAnalytics};
+return{go,doLogin,logout,continueAsGuest,filterCatalog,playSolo,playPublic,playRoom,joinByPin,startGame,nextQuestion,finishGame,closeRoom,activatePower,saveProfile,shopTab,teacherTab,createStudent,addBots,removeStudent,addQuestion,loadTemplate,createQuiz,deleteQuiz,closeModal,init,hwTab,loadHomework,openHomework,startHomework,createHomework,showHomeworkGrades,editGrade,loadQuizAnalytics,loadGeneralAnalytics,inviteDuel,respondDuel};
 })();
 document.addEventListener('DOMContentLoaded',()=>{if(!document.body.className.startsWith('theme-'))document.body.classList.add('theme-neon');App.init();});
 </script>
