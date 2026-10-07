@@ -137,10 +137,18 @@ const QUEST_DEFS = {
     survivor: {
         id: 'survivor',
         title: 'Вижити!',
-        desc: 'Правильно в режимі «Виживання»',
+        desc: 'Дожити до кінця в режимі «Виживання»',
         goal: 1,
         reward: 35,
         icon: '🛡️'
+    },
+    change_theme: {
+        id: 'change_theme',
+        title: 'Стиліст',
+        desc: 'Зміни тему оформлення',
+        goal: 1,
+        reward: 25,
+        icon: '🎨'
     }
 };
 
@@ -191,13 +199,13 @@ const SHOP = {
     accessories: [
         { id: 'x_none',      emoji: '',   name: 'Немає',              price: 0,   slot: 'head' },
         { id: 'x_crown',     emoji: '👑', name: 'Корона',             price: 50,  slot: 'head' },
-        { id: 'x_hat',       emoji: '🎩', name: 'Циліндр',            price: 30,  slot: 'head' },
+        { id: 'x_hat',       emoji: '👒', name: 'Капелюшок',          price: 30,  slot: 'head' },
         { id: 'x_partyhat',  emoji: '🎉', name: 'Святковий ковпак',   price: 20,  slot: 'head' },
         { id: 'x_cap',       emoji: '🧢', name: 'Кепка',              price: 15,  slot: 'head' },
         { id: 'x_grad',      emoji: '🎓', name: 'Академічна шапочка', price: 40,  slot: 'head' },
         { id: 'x_beanie',    emoji: '🧣', name: 'Осінній шарф',       price: 25,  slot: 'head' },
         { id: 'x_helmet',    emoji: '⛑️', name: 'Шолом',              price: 45,  slot: 'head' },
-        { id: 'x_top_hat',   emoji: '🎩', name: 'Магістерський',      price: 55,  slot: 'head' },
+        { id: 'x_top_hat',   emoji: '🎩', name: 'Циліндр',            price: 55,  slot: 'head' },
         { id: 'x_glasses',   emoji: '🕶️', name: 'Кібер-окуляри',      price: 25,  slot: 'eyes' },
         { id: 'x_goggles',   emoji: '🥽', name: 'Захисні окуляри',    price: 35,  slot: 'eyes' },
         { id: 'x_monocle',   emoji: '🧐', name: 'Монокль',            price: 40,  slot: 'eyes' },
@@ -323,7 +331,9 @@ function generateBots(count) {
             powerActive: null,
             reaction: null,
             finalRank: 0,
-            finalPrize: 0
+            finalPrize: 0,
+            quests: {},
+            socketId: null
         });
     }
     return bots;
@@ -381,6 +391,12 @@ function stopTimer(room) {
         clearInterval(room.timer);
         room.timer = null;
     }
+}
+
+function stopBotTimers(room) {
+    if (!room.botTimers) return;
+    room.botTimers.forEach(t => clearTimeout(t));
+    room.botTimers = [];
 }
 
 function startTimer(room) {
@@ -481,29 +497,37 @@ function scheduleBotAnswers(room) {
     const qIndex = room.currentQuestion;
     const qStart = room.questionStartedAt;
 
+    if (!room.botTimers) room.botTimers = [];
+
     room.players.forEach(p => {
         if (!p.isBot || !p.alive) return;
         const speed = p.botSpeed || 0.7;
         const delayMs = (0.2 + (1 - speed) * 0.7) * room.timePerQuestion * 1000;
 
-        setTimeout(() => {
+        const timer = setTimeout(() => {
             if (room.status !== 'running') return;
             if (room.currentQuestion !== qIndex) return;
             if (room.questionStartedAt !== qStart) return;
             if (p.answeredThisRound) return;
             if (!room.players.includes(p)) return;
+            if (!p.alive) return;
 
             p.answeredThisRound = true;
             const correctChance = 0.35 + speed * 0.5;
             const isCorrect = Math.random() < correctChance;
             p.lastCorrect = isCorrect;
 
+            const elapsed = (Date.now() - room.questionStartedAt) / 1000;
+
+            if (!room.firstAnswer) {
+                room.firstAnswer = p.id;
+            }
+
             if (isCorrect) {
                 p.correctCount++;
                 p.streak = (p.streak || 0) + 1;
                 if (p.streak > (p.bestStreak || 0)) p.bestStreak = p.streak;
 
-                const elapsed = (Date.now() - room.questionStartedAt) / 1000;
                 const rewards = calculateRewards({
                     elapsed,
                     timePerQuestion: room.timePerQuestion,
@@ -520,6 +544,26 @@ function scheduleBotAnswers(room) {
 
                 addFeed(room, '🤖 ' + p.name + ' правильно (+' + rewards.score + ' балів, +' + rewards.coins + ' 🪙)');
                 p.powerActive = null;
+
+                if (!p.quests) p.quests = {};
+                if (!p.quests.first_correct && p.correctCount >= 1) {
+                    p.quests.first_correct = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.first_correct.reward };
+                }
+                if (!p.quests.correct_3_streak && p.streak >= 3) {
+                    p.quests.correct_3_streak = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.correct_3_streak.reward };
+                }
+                if (!p.quests.correct_5_streak && p.streak >= 5) {
+                    p.quests.correct_5_streak = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.correct_5_streak.reward };
+                }
+                if (!p.quests.correct_10_total && p.correctCount >= 10) {
+                    p.quests.correct_10_total = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.correct_10_total.reward };
+                }
+                if (!p.quests.first_answer && room.firstAnswer === p.id) {
+                    p.quests.first_answer = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.first_answer.reward };
+                }
+                if (!p.quests.speed_demon && elapsed <= 3) {
+                    p.quests.speed_demon = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.speed_demon.reward };
+                }
             } else {
                 p.wrongCount++;
                 p.streak = 0;
@@ -530,11 +574,14 @@ function scheduleBotAnswers(room) {
             }
             broadcastState(room);
         }, delayMs);
+
+        room.botTimers.push(timer);
     });
 }
 
 function cleanupRoom(room) {
     stopTimer(room);
+    stopBotTimers(room);
     if (room.cleanupTimer) clearTimeout(room.cleanupTimer);
     if (room.teacherDisconnectTimer) clearTimeout(room.teacherDisconnectTimer);
 }
@@ -651,7 +698,8 @@ io.on('connection', (socket) => {
                 teacherPlayerId: 'teacher_' + pin,
                 timer: null,
                 cleanupTimer: null,
-                teacherDisconnectTimer: null
+                teacherDisconnectTimer: null,
+                botTimers: []
             };
 
             rooms.set(pin, room);
@@ -972,6 +1020,7 @@ io.on('connection', (socket) => {
             addFeed(room, '🚀 Гру розпочато! Питання 1');
 
             stopTimer(room);
+            stopBotTimers(room);
             startTimer(room);
             scheduleBotAnswers(room);
 
@@ -1009,6 +1058,7 @@ io.on('connection', (socket) => {
             addFeed(room, '➡️ Питання ' + (room.currentQuestion + 1));
 
             stopTimer(room);
+            stopBotTimers(room);
             startTimer(room);
             scheduleBotAnswers(room);
 
@@ -1054,6 +1104,10 @@ io.on('connection', (socket) => {
             const q = room.questions[room.currentQuestion];
             if (!q) {
                 if (cb) cb({ ok: false });
+                return;
+            }
+            if (isNaN(aIndex) || aIndex < 0 || aIndex >= q.answers.length) {
+                if (cb) cb({ ok: false, error: 'Невірний індекс відповіді' });
                 return;
             }
             const isCorrect = (aIndex === q.correct);
@@ -1127,10 +1181,6 @@ io.on('connection', (socket) => {
                         player.quests.speed_demon = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.speed_demon.reward };
                         completedQuests.push('speed_demon');
                     }
-                    if (!player.quests.survivor && room.mode === 'survival') {
-                        player.quests.survivor = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.survivor.reward };
-                        completedQuests.push('survivor');
-                    }
                 }
 
                 player.powerActive = null;
@@ -1171,6 +1221,7 @@ io.on('connection', (socket) => {
                 return;
             }
             stopTimer(room);
+            stopBotTimers(room);
             room.status = 'finished';
             room.finishedAt = Date.now();
 
@@ -1183,6 +1234,15 @@ io.on('connection', (socket) => {
                 p.finalPrize = prize;
                 p.coins = (p.coins || 0) + prize;
             });
+
+            if (room.mode === 'survival') {
+                room.players.forEach(p => {
+                    if (!p.alive) return;
+                    if (!p.quests) p.quests = {};
+                    if (p.quests.survivor && p.quests.survivor.completed) return;
+                    p.quests.survivor = { completed: true, t: Date.now(), pendingReward: QUEST_DEFS.survivor.reward };
+                });
+            }
 
             addFeed(room, '🏁 Гру завершено!');
             if (ranked[0]) addFeed(room, '🥇 ' + ranked[0].name + ' — 1 місце (+' + getFinalPrize(1) + ' 🪙)');
