@@ -25,19 +25,32 @@ app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1h', etag: tru
 const DATA_DIR = path.join(__dirname, 'data');
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
-const DB = { users: {}, quizzes: {}, games: [], homework: {}, grades: {}, analytics: {}, marks: {}, points: {} };
+const DB = {
+    users: {}, quizzes: {}, games: [],
+    homework: {}, grades: {}, analytics: {},
+    marks: {}, points: {}, coinsLog: {}
+};
 
-const DAILY_POINT_CAP = 100;
+const DAILY_COIN_CAP = 100;
+const DEFAULT_SUBJECTS = ['Математика', 'Українська мова', 'Історія', 'Природознавство', 'Інше'];
 
 function loadJSON(file, fallback) {
     const p = path.join(DATA_DIR, file);
-    try { if (!fs.existsSync(p)) return fallback; return JSON.parse(fs.readFileSync(p, 'utf8')); }
-    catch (e) { console.error('[db] load error', file, e.message); return fallback; }
+    try {
+        if (!fs.existsSync(p)) return fallback;
+        return JSON.parse(fs.readFileSync(p, 'utf8'));
+    } catch (e) {
+        console.error('[db] load error', file, e.message);
+        return fallback;
+    }
 }
 function saveJSON(file, data) {
     const p = path.join(DATA_DIR, file);
-    try { fs.writeFileSync(p, JSON.stringify(data, null, 2), 'utf8'); }
-    catch (e) { console.error('[db] save error', file, e.message); }
+    try {
+        fs.writeFileSync(p, JSON.stringify(data, null, 2), 'utf8');
+    } catch (e) {
+        console.error('[db] save error', file, e.message);
+    }
 }
 function loadDB() {
     DB.users = loadJSON('users.json', {});
@@ -48,14 +61,10 @@ function loadDB() {
     DB.analytics = loadJSON('analytics.json', {});
     DB.marks = loadJSON('marks.json', {});
     DB.points = loadJSON('points.json', {});
-    console.log('[db] users:', Object.keys(DB.users).length, '| quizzes:', Object.keys(DB.quizzes).length);
-    let cleaned = 0;
-    Object.keys(DB.points).forEach(login => {
-        const before = DB.points[login].length;
-        DB.points[login] = DB.points[login].filter(p => p.source === 'homework' || p.source === 'manual');
-        cleaned += before - DB.points[login].length;
-    });
-    if (cleaned > 0) { savePoints(); console.log('[db] cleaned', cleaned, 'old points'); }
+    DB.coinsLog = loadJSON('coins_log.json', {});
+    console.log('[db] users:', Object.keys(DB.users).length,
+        '| quizzes:', Object.keys(DB.quizzes).length,
+        '| homework:', Object.keys(DB.homework).length);
 }
 function saveUsers()     { saveJSON('users.json', DB.users); }
 function saveQuizzes()   { saveJSON('quizzes.json', DB.quizzes); }
@@ -65,22 +74,53 @@ function saveGrades()    { saveJSON('grades.json', DB.grades); }
 function saveAnalytics() { saveJSON('analytics.json', DB.analytics); }
 function saveMarks()     { saveJSON('marks.json', DB.marks); }
 function savePoints()    { saveJSON('points.json', DB.points); }
+function saveCoinsLog()  { saveJSON('coins_log.json', DB.coinsLog); }
 
 function todayKey() {
     const d = new Date();
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 }
-function getTodayPoints(login) {
-    const list = DB.points[login] || [];
-    const key = todayKey();
-    return list.filter(p => {
-        const d = new Date(p.at);
-        const k = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-        return k === key;
-    }).reduce((s, p) => s + (p.value > 0 ? p.value : 0), 0);
+function dateKey(ts) {
+    const d = new Date(ts);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 }
-
-const DEFAULT_SUBJECTS = ['Математика', 'Українська мова', 'Історія', 'Природознавство', 'Інше'];
+function getTodayCoins(login) {
+    const list = DB.coinsLog[login] || [];
+    const key = todayKey();
+    return list.filter(c => dateKey(c.at) === key).reduce((s, c) => s + (c.value > 0 ? c.value : 0), 0);
+}
+function logCoins(login, value, reason) {
+    if (!DB.coinsLog[login]) DB.coinsLog[login] = [];
+    DB.coinsLog[login].unshift({
+        id: makeId('cn'),
+        value: parseInt(value, 10) || 0,
+        reason: String(reason || '').slice(0, 200),
+        at: Date.now()
+    });
+    if (DB.coinsLog[login].length > 500) DB.coinsLog[login].length = 500;
+    saveCoinsLog();
+}
+function addCoinsWithCap(login, value, reason) {
+    const u = DB.users[login];
+    if (!u) return { ok: false };
+    if (value <= 0) {
+        u.coins = (u.coins || 0) + value;
+        saveUsers();
+        return { ok: true, added: value, todayCoins: getTodayCoins(login), cap: DAILY_COIN_CAP };
+    }
+    const today = getTodayCoins(login);
+    if (today >= DAILY_COIN_CAP) {
+        return { ok: false, skipped: value, todayCoins: today, cap: DAILY_COIN_CAP };
+    }
+    let allowed = value;
+    const remaining = DAILY_COIN_CAP - today;
+    if (allowed > remaining) allowed = remaining;
+    if (allowed <= 0) return { ok: false, skipped: value, todayCoins: today, cap: DAILY_COIN_CAP };
+    u.coins = (u.coins || 0) + allowed;
+    logCoins(login, allowed, reason);
+    saveUsers();
+    return { ok: true, added: allowed, todayCoins: today + allowed, cap: DAILY_COIN_CAP };
+}
 
 function ensureDefaultTeacher() {
     const login = 'місс.стівенс';
@@ -120,14 +160,22 @@ function shuffleArray(arr) {
     return arr;
 }
 function autoGrade(percent) {
-    if (percent >= 90) return 12; if (percent >= 80) return 11; if (percent >= 70) return 10;
-    if (percent >= 65) return 9; if (percent >= 60) return 8; if (percent >= 55) return 7;
-    if (percent >= 50) return 6; if (percent >= 45) return 5; if (percent >= 40) return 4;
-    if (percent >= 35) return 3; if (percent >= 25) return 2; return 1;
+    if (percent >= 90) return 12;
+    if (percent >= 80) return 11;
+    if (percent >= 70) return 10;
+    if (percent >= 65) return 9;
+    if (percent >= 60) return 8;
+    if (percent >= 55) return 7;
+    if (percent >= 50) return 6;
+    if (percent >= 45) return 5;
+    if (percent >= 40) return 4;
+    if (percent >= 35) return 3;
+    if (percent >= 25) return 2;
+    return 1;
 }
 
 const ECONOMY = {
-    coinsCorrect: 1, coinsSpeedBonus: 1, coinsPerGameCap: 30,
+    coinsCorrect: 1, coinsSpeedBonus: 1,
     baseScore: 100, timeBonusMax: 50,
     streakScoreMultiplier: { 3: 1.1, 5: 1.2, 7: 1.35, 10: 1.5, 15: 1.75 },
     finalPrizes: { 1: 70, 2: 60, 3: 50 },
@@ -139,19 +187,21 @@ const ECONOMY = {
 };
 function getFinalPrize(rank) {
     if (ECONOMY.finalPrizes[rank] !== undefined) return ECONOMY.finalPrizes[rank];
-    for (const t of ECONOMY.finalTiers) { if (rank >= t.minRank && rank <= t.maxRank) return t.prize; }
+    for (const t of ECONOMY.finalTiers) {
+        if (rank >= t.minRank && rank <= t.maxRank) return t.prize;
+    }
     return 0;
 }
 
 const QUEST_DEFS = {
-    first_correct:    { id: 'first_correct',    title: 'Перший крок',   desc: 'Дай 1 правильну',     reward: 30, icon: '🎯' },
-    correct_3_streak: { id: 'correct_3_streak', title: 'Розігрів',      desc: '3 поспіль',           reward: 40, icon: '🔥' },
-    correct_5_streak: { id: 'correct_5_streak', title: 'У вогні',       desc: '5 поспіль',           reward: 75, icon: '⚡' },
-    correct_10_total: { id: 'correct_10_total', title: 'Ерудит',        desc: '10 правильних',       reward: 60, icon: '🧠' },
-    first_answer:     { id: 'first_answer',     title: 'Швидкий старт', desc: 'Перша відповідь',     reward: 20, icon: '🚀' },
-    speed_demon:      { id: 'speed_demon',      title: 'Блискавка',     desc: 'За 3 секунди',        reward: 50, icon: '💨' },
-    survivor:         { id: 'survivor',         title: 'Вижити!',       desc: 'Дожити до кінця',     reward: 35, icon: '🛡️' },
-    change_theme:     { id: 'change_theme',     title: 'Стиліст',       desc: 'Зміни тему',          reward: 25, icon: '🎨' }
+    first_correct:    { id: 'first_correct',    title: 'Перший крок',   desc: 'Дай 1 правильну',  reward: 30, icon: '🎯' },
+    correct_3_streak: { id: 'correct_3_streak', title: 'Розігрів',      desc: '3 поспіль',        reward: 40, icon: '🔥' },
+    correct_5_streak: { id: 'correct_5_streak', title: 'У вогні',       desc: '5 поспіль',        reward: 75, icon: '⚡' },
+    correct_10_total: { id: 'correct_10_total', title: 'Ерудит',        desc: '10 правильних',    reward: 60, icon: '🧠' },
+    first_answer:     { id: 'first_answer',     title: 'Швидкий старт', desc: 'Перша відповідь',  reward: 20, icon: '🚀' },
+    speed_demon:      { id: 'speed_demon',      title: 'Блискавка',     desc: 'За 3 секунди',     reward: 50, icon: '💨' },
+    survivor:         { id: 'survivor',         title: 'Вижити!',       desc: 'Дожити до кінця',  reward: 35, icon: '🛡️' },
+    change_theme:     { id: 'change_theme',     title: 'Стиліст',       desc: 'Зміни тему',       reward: 25, icon: '🎨' }
 };
 
 const SHOP = {
@@ -253,11 +303,17 @@ const rateLimits = new Map();
 function checkRateLimit(ip, max = 60) {
     const now = Date.now();
     let e = rateLimits.get(ip);
-    if (!e || now > e.resetAt) { e = { count: 0, resetAt: now + 60000 }; rateLimits.set(ip, e); }
+    if (!e || now > e.resetAt) {
+        e = { count: 0, resetAt: now + 60000 };
+        rateLimits.set(ip, e);
+    }
     e.count++;
     return e.count <= max;
 }
 
+/* ============================================================
+   AUTH
+   ============================================================ */
 app.post('/api/auth/login', (req, res) => {
     const ip = req.ip || 'unknown';
     if (!checkRateLimit(ip, 30)) return res.status(429).json({ ok: false, error: 'Занадто багато спроб' });
@@ -270,9 +326,10 @@ app.post('/api/auth/login', (req, res) => {
     else if (user.password) ok = (user.password === password);
     if (!ok) return res.json({ ok: false, error: 'Невірний логін або пароль' });
     const token = makeId('tok');
-    user.lastToken = token; user.lastLoginAt = Date.now();
+    user.lastToken = token;
+    user.lastLoginAt = Date.now();
     saveUsers();
-    res.json({ ok: true, token, user: publicUser(user) });
+    res.json({ ok: true, token, user: publicUser(user, getTodayCoins(user.login)) });
 });
 
 app.post('/api/auth/me', (req, res) => {
@@ -280,18 +337,76 @@ app.post('/api/auth/me', (req, res) => {
     if (!token) return res.json({ ok: false });
     const user = Object.values(DB.users).find(u => u.lastToken === token);
     if (!user) return res.json({ ok: false });
-    res.json({ ok: true, user: publicUser(user) });
+    res.json({ ok: true, user: publicUser(user, getTodayCoins(user.login)) });
 });
 
-function publicUser(u) {
+/* ============================================================
+   SAVE PROFILE
+   ============================================================ */
+app.post('/api/user/save-profile', (req, res) => {
+    const { token, profile } = req.body || {};
+    if (!token) return res.json({ ok: false, error: 'Немає токена' });
+    if (!profile || typeof profile !== 'object') return res.json({ ok: false, error: 'Немає профілю' });
+    const user = Object.values(DB.users).find(u => u.lastToken === token);
+    if (!user) return res.json({ ok: false, error: 'Юзера не знайдено' });
+
+    if (typeof profile.xp === 'number') user.xp = Math.max(0, profile.xp);
+    if (Array.isArray(profile.ownedAvatars)) user.ownedAvatars = profile.ownedAvatars.slice();
+    if (Array.isArray(profile.ownedAccessories)) user.ownedAccessories = profile.ownedAccessories.slice();
+    if (Array.isArray(profile.ownedThemes)) user.ownedThemes = profile.ownedThemes.slice();
+    if (typeof profile.equippedAvatar === 'string') user.avatarId = profile.equippedAvatar;
+    if (typeof profile.equippedHead === 'string') user.equippedHead = profile.equippedHead;
+    if (typeof profile.equippedEyes === 'string') user.equippedEyes = profile.equippedEyes;
+    if (typeof profile.equippedEffect === 'string') user.equippedEffect = profile.equippedEffect;
+    if (typeof profile.theme === 'string') user.theme = profile.theme;
+    if (profile.completedQuests && typeof profile.completedQuests === 'object') {
+        user.completedQuests = profile.completedQuests;
+    }
+
+    const av = SHOP.avatars.find(a => a.id === user.avatarId);
+    if (av) user.avatar = av.emoji;
+
+    if (!user.ownedAvatars || !user.ownedAvatars.includes('a_cat')) {
+        user.ownedAvatars = (user.ownedAvatars || []).concat(['a_cat']);
+    }
+    if (!user.ownedThemes) user.ownedThemes = ['t_neon', 't_pastel'];
+
+    saveUsers();
+    res.json({ ok: true, user: publicUser(user, getTodayCoins(user.login)) });
+});
+
+/* ============================================================
+   SHOP — ПОКУПКА (СПИСАННЯ КОЇНІВ)
+   ============================================================ */
+app.post('/api/user/spend-coins', (req, res) => {
+    const { token, amount, itemId, itemType } = req.body || {};
+    if (!token) return res.json({ ok: false, error: 'Немає токена' });
+    const user = Object.values(DB.users).find(u => u.lastToken === token);
+    if (!user) return res.json({ ok: false, error: 'Юзера не знайдено' });
+    const cost = parseInt(amount, 10);
+    if (isNaN(cost) || cost <= 0) return res.json({ ok: false, error: 'Хибна сума' });
+    if ((user.coins || 0) < cost) return res.json({ ok: false, error: 'Недостатньо СанКоїнів' });
+    user.coins -= cost;
+    logCoins(user.login, -cost, 'Покупка: ' + (itemId || 'невідомо') + ' (' + (itemType || 'item') + ')');
+    saveUsers();
+    res.json({ ok: true, coins: user.coins });
+});
+
+function publicUser(u, todayCoins) {
     return {
         login: u.login, role: u.role, name: u.name,
         coins: u.coins || 0, xp: u.xp || 0, level: getLevelFromXp(u.xp || 0),
+        todayCoins: todayCoins || 0, dailyCap: DAILY_COIN_CAP,
         avatar: u.avatar || '🐱', avatarId: u.avatarId || 'a_cat',
-        equippedHead: u.equippedHead || '', equippedEyes: u.equippedEyes || '', equippedEffect: u.equippedEffect || '',
-        ownedAvatars: u.ownedAvatars || ['a_cat'], ownedAccessories: u.ownedAccessories || [],
-        ownedThemes: u.ownedThemes || ['t_neon', 't_pastel'], theme: u.theme || 'neon',
-        completedQuests: u.completedQuests || {}, classStudents: u.classStudents || [],
+        equippedHead: u.equippedHead || '',
+        equippedEyes: u.equippedEyes || '',
+        equippedEffect: u.equippedEffect || '',
+        ownedAvatars: u.ownedAvatars || ['a_cat'],
+        ownedAccessories: u.ownedAccessories || [],
+        ownedThemes: u.ownedThemes || ['t_neon', 't_pastel'],
+        theme: u.theme || 'neon',
+        completedQuests: u.completedQuests || {},
+        classStudents: u.classStudents || [],
         subjects: u.subjects || null,
         createdAt: u.createdAt
     };
@@ -302,9 +417,13 @@ function requireTeacher(req, res, next) {
     if (!token) return res.status(401).json({ ok: false, error: 'Немає токена' });
     const user = Object.values(DB.users).find(u => u.lastToken === token && u.role === 'teacher');
     if (!user) return res.status(403).json({ ok: false, error: 'Тільки для вчителя' });
-    req.teacher = user; next();
+    req.teacher = user;
+    next();
 }
 
+/* ============================================================
+   TEACHER
+   ============================================================ */
 app.post('/api/teacher/create-student', requireTeacher, (req, res) => {
     const { login, password, name } = req.body || {};
     if (!login || !password || !name) return res.json({ ok: false, error: 'Заповни всі поля' });
@@ -320,7 +439,7 @@ app.post('/api/teacher/create-student', requireTeacher, (req, res) => {
     if (!req.teacher.classStudents) req.teacher.classStudents = [];
     req.teacher.classStudents.push(key);
     saveUsers();
-    res.json({ ok: true, student: publicUser(student) });
+    res.json({ ok: true, student: publicUser(student, 0) });
 });
 
 app.post('/api/teacher/add-bots', requireTeacher, (req, res) => {
@@ -333,10 +452,12 @@ app.post('/api/teacher/add-bots', requireTeacher, (req, res) => {
         const botLogin = 'bot_' + Math.random().toString(36).slice(2, 8);
         DB.users[botLogin] = {
             login: botLogin, role: 'student', name: fullName.slice(0, 32),
-            coins: 0, xp: 0, avatar: AVATARS_BOT[Math.floor(Math.random() * AVATARS_BOT.length)],
+            coins: 0, xp: 0,
+            avatar: AVATARS_BOT[Math.floor(Math.random() * AVATARS_BOT.length)],
             avatarId: 'a_cat', ownedAvatars: ['a_cat'], ownedAccessories: [],
             ownedThemes: ['t_neon', 't_pastel'], theme: 'neon',
-            completedQuests: {}, isBot: true, createdAt: Date.now(), createdBy: req.teacher.login
+            completedQuests: {}, isBot: true,
+            createdAt: Date.now(), createdBy: req.teacher.login
         };
         req.teacher.classStudents.push(botLogin);
         added.push({ login: botLogin, name: fullName });
@@ -346,7 +467,10 @@ app.post('/api/teacher/add-bots', requireTeacher, (req, res) => {
 });
 
 app.post('/api/teacher/class', requireTeacher, (req, res) => {
-    const list = (req.teacher.classStudents || []).map(l => DB.users[l]).filter(Boolean).map(publicUser);
+    const list = (req.teacher.classStudents || [])
+        .map(l => DB.users[l])
+        .filter(Boolean)
+        .map(u => publicUser(u, getTodayCoins(u.login)));
     res.json({ ok: true, students: list });
 });
 
@@ -384,10 +508,19 @@ app.post('/api/teacher/subjects/delete', requireTeacher, (req, res) => {
     res.json({ ok: true, subjects: req.teacher.subjects });
 });
 
+/* ============================================================
+   QUIZ
+   ============================================================ */
 app.get('/api/quizzes', (req, res) => {
-    const list = Object.values(DB.quizzes).filter(q => q.public !== false)
-        .map(q => ({ id: q.id, title: q.title, author: q.author, subject: q.subject, difficulty: q.difficulty,
-            questionsCount: q.questions.length, plays: q.plays || 0, likes: q.likes || 0, createdAt: q.createdAt }))
+    const list = Object.values(DB.quizzes)
+        .filter(q => q.public !== false)
+        .map(q => ({
+            id: q.id, title: q.title, author: q.author,
+            subject: q.subject, difficulty: q.difficulty,
+            questionsCount: q.questions.length,
+            plays: q.plays || 0, likes: q.likes || 0,
+            createdAt: q.createdAt
+        }))
         .sort((a, b) => (b.plays || 0) - (a.plays || 0));
     res.json({ ok: true, quizzes: list });
 });
@@ -400,7 +533,9 @@ app.get('/api/quizzes/:id', (req, res) => {
 
 app.post('/api/quizzes/create', requireTeacher, (req, res) => {
     const { title, subject, difficulty, questions, isPublic } = req.body || {};
-    if (!title || !Array.isArray(questions) || questions.length === 0) return res.json({ ok: false, error: 'Заповни назву й додай питання' });
+    if (!title || !Array.isArray(questions) || questions.length === 0) {
+        return res.json({ ok: false, error: 'Заповни назву й додай питання' });
+    }
     const errors = [];
     const cleaned = questions.map((q, i) => {
         const text = String(q.text || '').trim();
@@ -409,16 +544,25 @@ app.post('/api/quizzes/create', requireTeacher, (req, res) => {
         if (!text) errors.push('Питання ' + (i + 1) + ': порожній текст');
         if (answers.length < 2) errors.push('Питання ' + (i + 1) + ': менше 2 відповідей');
         if (answers.some(a => !a)) errors.push('Питання ' + (i + 1) + ': порожня відповідь');
-        if (new Set(answers.map(a => a.toLowerCase())).size !== answers.length) errors.push('Питання ' + (i + 1) + ': дублюються');
-        if (isNaN(correct) || correct < 0 || correct >= answers.length) errors.push('Питання ' + (i + 1) + ': не позначено правильну');
+        if (new Set(answers.map(a => a.toLowerCase())).size !== answers.length) {
+            errors.push('Питання ' + (i + 1) + ': дублюються');
+        }
+        if (isNaN(correct) || correct < 0 || correct >= answers.length) {
+            errors.push('Питання ' + (i + 1) + ': не позначено правильну');
+        }
         return { text, answers, correct };
     });
     if (errors.length > 0) return res.json({ ok: false, error: 'Помилки', details: errors });
     const quiz = {
-        id: makeId('quiz'), title: String(title).slice(0, 80),
-        author: req.teacher.name || req.teacher.login, authorLogin: req.teacher.login,
-        subject: String(subject || 'Інше').slice(0, 40), difficulty: String(difficulty || 'medium'),
-        questions: cleaned, public: isPublic !== false, plays: 0, likes: 0, createdAt: Date.now()
+        id: makeId('quiz'),
+        title: String(title).slice(0, 80),
+        author: req.teacher.name || req.teacher.login,
+        authorLogin: req.teacher.login,
+        subject: String(subject || 'Інше').slice(0, 40),
+        difficulty: String(difficulty || 'medium'),
+        questions: cleaned,
+        public: isPublic !== false,
+        plays: 0, likes: 0, createdAt: Date.now()
     };
     DB.quizzes[quiz.id] = quiz;
     saveQuizzes();
@@ -443,23 +587,37 @@ app.post('/api/quizzes/:id/delete', requireTeacher, (req, res) => {
 });
 
 app.post('/api/quizzes/mine', requireTeacher, (req, res) => {
-    const list = Object.values(DB.quizzes).filter(q => q.authorLogin === req.teacher.login)
-        .map(q => ({ id: q.id, title: q.title, subject: q.subject, questionsCount: q.questions.length,
-            plays: q.plays || 0, likes: q.likes || 0, public: q.public, createdAt: q.createdAt }));
+    const list = Object.values(DB.quizzes)
+        .filter(q => q.authorLogin === req.teacher.login)
+        .map(q => ({
+            id: q.id, title: q.title, subject: q.subject,
+            questionsCount: q.questions.length,
+            plays: q.plays || 0, likes: q.likes || 0,
+            public: q.public, createdAt: q.createdAt
+        }));
     res.json({ ok: true, quizzes: list });
 });
 
+/* ============================================================
+   HOMEWORK
+   ============================================================ */
 app.post('/api/homework/create', requireTeacher, (req, res) => {
     const { quizId, title, deadline, classLogins, autoPoints } = req.body || {};
     if (!quizId || !DB.quizzes[quizId]) return res.json({ ok: false, error: 'Квіз не знайдено' });
     if (!deadline) return res.json({ ok: false, error: 'Вкажи дедлайн' });
     const hw = {
-        id: makeId('hw'), quizId, quizTitle: DB.quizzes[quizId].title,
+        id: makeId('hw'),
+        quizId,
+        quizTitle: DB.quizzes[quizId].title,
         title: String(title || DB.quizzes[quizId].title).slice(0, 80),
-        deadline: parseInt(deadline, 10), authorLogin: req.teacher.login,
-        classLogins: Array.isArray(classLogins) && classLogins.length > 0 ? classLogins : (req.teacher.classStudents || []).slice(),
+        deadline: parseInt(deadline, 10),
+        authorLogin: req.teacher.login,
+        classLogins: Array.isArray(classLogins) && classLogins.length > 0
+            ? classLogins
+            : (req.teacher.classStudents || []).slice(),
         autoPoints: autoPoints !== false,
-        createdAt: Date.now(), submissions: {}
+        createdAt: Date.now(),
+        submissions: {}
     };
     DB.homework[hw.id] = hw;
     saveHomework();
@@ -506,18 +664,21 @@ function scheduleBotHomework(hw) {
                 login, correct, total, percent, grade,
                 autoGrade: autoGrade(percent), isLate,
                 timeSpent: 60 + Math.round(Math.random() * 600),
-                submittedAt: now, gradedBy: 'auto', gradedAt: now, comment: comment || ''
+                submittedAt: now,
+                gradedBy: 'auto', gradedAt: now,
+                comment: comment || ''
             };
             saveHomework();
             if (h.autoPoints !== false) {
-                addPointWithCap(login, correct * 10, 'За ДЗ «' + h.title + '»', 'homework', 'system');
+                addPointAuto(login, correct * 10, 'За ДЗ «' + h.title + '»', 'homework');
             }
         }, delay);
     });
 }
 
 app.post('/api/homework/mine', requireTeacher, (req, res) => {
-    const list = Object.values(DB.homework).filter(h => h.authorLogin === req.teacher.login)
+    const list = Object.values(DB.homework)
+        .filter(h => h.authorLogin === req.teacher.login)
         .sort((a, b) => b.createdAt - a.createdAt)
         .map(h => ({ ...h, submissionsCount: Object.keys(h.submissions || {}).length }));
     res.json({ ok: true, homework: list });
@@ -526,10 +687,15 @@ app.post('/api/homework/mine', requireTeacher, (req, res) => {
 app.post('/api/homework/for-student', (req, res) => {
     const { login } = req.body || {};
     if (!login) return res.json({ ok: false });
-    const list = Object.values(DB.homework).filter(h => h.classLogins.includes(login))
+    const list = Object.values(DB.homework)
+        .filter(h => h.classLogins.includes(login))
         .sort((a, b) => b.createdAt - a.createdAt)
-        .map(h => ({ id: h.id, quizId: h.quizId, quizTitle: h.quizTitle, title: h.title,
-            deadline: h.deadline, author: h.authorLogin, submitted: !!h.submissions[login], submission: h.submissions[login] || null }));
+        .map(h => ({
+            id: h.id, quizId: h.quizId, quizTitle: h.quizTitle,
+            title: h.title, deadline: h.deadline, author: h.authorLogin,
+            submitted: !!h.submissions[login],
+            submission: h.submissions[login] || null
+        }));
     res.json({ ok: true, homework: list });
 });
 
@@ -544,11 +710,16 @@ app.post('/api/homework/submit', (req, res) => {
     const percent = total > 0 ? Math.round((correct / total) * 100) : 0;
     let grade = autoGrade(percent);
     if (isLate) grade = Math.max(1, grade - 1);
-    hw.submissions[login] = { login, correct, total, percent, grade, autoGrade: autoGrade(percent),
-        isLate, timeSpent: parseInt(timeSpent, 10) || 0, submittedAt: now, gradedBy: 'auto', gradedAt: now };
+    hw.submissions[login] = {
+        login, correct, total, percent, grade,
+        autoGrade: autoGrade(percent), isLate,
+        timeSpent: parseInt(timeSpent, 10) || 0,
+        submittedAt: now,
+        gradedBy: 'auto', gradedAt: now
+    };
     saveHomework();
     if (hw.autoPoints !== false) {
-        addPointWithCap(login, correct * 10, 'За ДЗ «' + hw.title + '»', 'homework', 'system');
+        addPointAuto(login, correct * 10, 'За ДЗ «' + hw.title + '»', 'homework');
     }
     if (!DB.analytics[hw.quizId]) DB.analytics[hw.quizId] = { questions: {}, games: 0, players: {} };
     const an = DB.analytics[hw.quizId];
@@ -569,9 +740,13 @@ app.post('/api/grades/set', requireTeacher, (req, res) => {
     const g = parseInt(grade, 10);
     if (isNaN(g) || g < 1 || g > 12) return res.json({ ok: false, error: 'Оцінка 1-12' });
     if (!hw.submissions[studentLogin]) {
-        hw.submissions[studentLogin] = { login: studentLogin, correct: 0, total: 0, percent: 0, grade: g,
-            autoGrade: null, isLate: false, timeSpent: 0, submittedAt: Date.now(),
-            gradedBy: req.teacher.login, gradedAt: Date.now(), comment: String(comment || '').slice(0, 200) };
+        hw.submissions[studentLogin] = {
+            login: studentLogin, correct: 0, total: 0, percent: 0, grade: g,
+            autoGrade: null, isLate: false, timeSpent: 0,
+            submittedAt: Date.now(),
+            gradedBy: req.teacher.login, gradedAt: Date.now(),
+            comment: String(comment || '').slice(0, 200)
+        };
     } else {
         hw.submissions[studentLogin].grade = g;
         hw.submissions[studentLogin].gradedBy = req.teacher.login;
@@ -589,9 +764,14 @@ app.post('/api/grades/for-student', (req, res) => {
     Object.values(DB.homework).forEach(hw => {
         const sub = hw.submissions[login];
         if (!sub) return;
-        list.push({ homeworkId: hw.id, title: hw.title, quizTitle: hw.quizTitle, deadline: hw.deadline,
-            grade: sub.grade, autoGrade: sub.autoGrade, percent: sub.percent, correct: sub.correct, total: sub.total,
-            isLate: sub.isLate, submittedAt: sub.submittedAt, gradedBy: sub.gradedBy, comment: sub.comment || '' });
+        list.push({
+            homeworkId: hw.id, title: hw.title, quizTitle: hw.quizTitle,
+            deadline: hw.deadline,
+            grade: sub.grade, autoGrade: sub.autoGrade,
+            percent: sub.percent, correct: sub.correct, total: sub.total,
+            isLate: sub.isLate, submittedAt: sub.submittedAt,
+            gradedBy: sub.gradedBy, comment: sub.comment || ''
+        });
     });
     list.sort((a, b) => b.submittedAt - a.submittedAt);
     res.json({ ok: true, grades: list });
@@ -604,11 +784,19 @@ app.post('/api/grades/for-homework', requireTeacher, (req, res) => {
     const list = hw.classLogins.map(login => {
         const u = DB.users[login];
         const sub = hw.submissions[login];
-        return { login, name: u ? u.name : login, submitted: !!sub, submission: sub || null };
+        return {
+            login,
+            name: u ? u.name : login,
+            submitted: !!sub,
+            submission: sub || null
+        };
     });
     res.json({ ok: true, students: list });
 });
 
+/* ============================================================
+   ANALYTICS
+   ============================================================ */
 app.post('/api/analytics/quiz', requireTeacher, (req, res) => {
     const { quizId } = req.body || {};
     const quiz = DB.quizzes[quizId];
@@ -617,15 +805,25 @@ app.post('/api/analytics/quiz', requireTeacher, (req, res) => {
     const questions = quiz.questions.map((q, i) => {
         const stats = an.questions[i] || { correct: 0, wrong: 0 };
         const total = (stats.correct || 0) + (stats.wrong || 0);
-        return { index: i, text: q.text, correctCount: stats.correct || 0, wrongCount: stats.wrong || 0,
-            totalAttempts: total, wrongPercent: total > 0 ? Math.round((stats.wrong / total) * 100) : 0 };
+        return {
+            index: i, text: q.text,
+            correctCount: stats.correct || 0,
+            wrongCount: stats.wrong || 0,
+            totalAttempts: total,
+            wrongPercent: total > 0 ? Math.round((stats.wrong / total) * 100) : 0
+        };
     });
     questions.sort((a, b) => b.wrongPercent - a.wrongPercent);
     const players = Object.entries(an.players || {}).map(([login, s]) => {
         const u = DB.users[login];
-        return { login, name: u ? u.name : login,
-            attempts: s.attempts, totalCorrect: s.totalCorrect, totalQuestions: s.totalQuestions,
-            percent: s.totalQuestions > 0 ? Math.round((s.totalCorrect / s.totalQuestions) * 100) : 0 };
+        return {
+            login,
+            name: u ? u.name : login,
+            attempts: s.attempts,
+            totalCorrect: s.totalCorrect,
+            totalQuestions: s.totalQuestions,
+            percent: s.totalQuestions > 0 ? Math.round((s.totalCorrect / s.totalQuestions) * 100) : 0
+        };
     });
     players.sort((a, b) => b.totalCorrect - a.totalCorrect);
     res.json({ ok: true, quizTitle: quiz.title, games: an.games || 0, questions, players });
@@ -645,22 +843,36 @@ app.post('/api/analytics/teacher', requireTeacher, (req, res) => {
             if (!s) return;
             const total = (s.correct || 0) + (s.wrong || 0);
             if (total < 3) return;
-            hardest.push({ quizId: q.id, quizTitle: q.title, text: question.text,
-                wrongPercent: Math.round((s.wrong / total) * 100), totalAttempts: total });
+            hardest.push({
+                quizId: q.id, quizTitle: q.title, text: question.text,
+                wrongPercent: Math.round((s.wrong / total) * 100),
+                totalAttempts: total
+            });
         });
     });
     hardest.sort((a, b) => b.wrongPercent - a.wrongPercent);
-    res.json({ ok: true, quizzesCount: myQuizzes.length, totalGames, totalLikes, hardest: hardest.slice(0, 10) });
+    res.json({
+        ok: true,
+        quizzesCount: myQuizzes.length,
+        totalGames, totalLikes,
+        hardest: hardest.slice(0, 10)
+    });
 });
 
+/* ============================================================
+   MARKS — ОЦІНКИ 1-12
+   ============================================================ */
 function addMark(login, value, subject, reason, by) {
     if (!DB.marks[login]) DB.marks[login] = [];
     DB.marks[login].unshift({
-        id: makeId('mark'), value: parseInt(value, 10),
+        id: makeId('mark'),
+        value: parseInt(value, 10),
         subject: String(subject || '').slice(0, 40),
         reason: String(reason || '').slice(0, 200),
-        by: by || 'system', at: Date.now()
+        by: by || 'system',
+        at: Date.now()
     });
+    if (DB.marks[login].length > 500) DB.marks[login].length = 500;
     saveMarks();
 }
 
@@ -696,38 +908,44 @@ app.post('/api/marks/all', requireTeacher, (req, res) => {
         if (!u) return null;
         const list = DB.marks[login] || [];
         const avg = list.length > 0 ? (list.reduce((s, m) => s + m.value, 0) / list.length) : 0;
-        return { login: u.login, name: u.name, marks: list, avg: Math.round(avg * 10) / 10 };
+        return {
+            login: u.login, name: u.name,
+            marks: list,
+            avg: Math.round(avg * 10) / 10
+        };
     }).filter(Boolean);
     out.sort((a, b) => a.name.localeCompare(b.name, 'uk'));
     res.json({ ok: true, students: out });
 });
 
-function addPointWithCap(login, value, reason, source, by) {
+/* ============================================================
+   POINTS — БАЛИ (без ліміту, це статистика)
+   ============================================================ */
+function addPointAuto(login, value, reason, source) {
     if (!DB.points[login]) DB.points[login] = [];
-    const todaySum = getTodayPoints(login);
-    if (todaySum >= DAILY_POINT_CAP) {
-        return { ok: false, skipped: value, todaySum, cap: DAILY_POINT_CAP };
-    }
-    let allowed = value;
-    const remaining = DAILY_POINT_CAP - todaySum;
-    if (allowed > remaining) allowed = remaining;
-    if (allowed <= 0) return { ok: false, skipped: value, todaySum, cap: DAILY_POINT_CAP };
     DB.points[login].unshift({
-        id: makeId('pt'), value: allowed,
+        id: makeId('pt'),
+        value: parseInt(value, 10) || 0,
         reason: String(reason || '').slice(0, 200),
-        source: source || 'manual', by: by || 'system', at: Date.now()
+        source: source || 'auto',
+        by: 'system',
+        at: Date.now()
     });
+    if (DB.points[login].length > 500) DB.points[login].length = 500;
     savePoints();
-    return { ok: true, added: allowed, todaySum: todaySum + allowed, cap: DAILY_POINT_CAP };
 }
 
 function addPointManual(login, value, reason, source, by) {
     if (!DB.points[login]) DB.points[login] = [];
     DB.points[login].unshift({
-        id: makeId('pt'), value: parseInt(value, 10) || 0,
+        id: makeId('pt'),
+        value: parseInt(value, 10) || 0,
         reason: String(reason || '').slice(0, 200),
-        source: source || 'manual', by: by || 'system', at: Date.now()
+        source: source || 'manual',
+        by: by || 'system',
+        at: Date.now()
     });
+    if (DB.points[login].length > 500) DB.points[login].length = 500;
     savePoints();
 }
 
@@ -752,25 +970,37 @@ app.post('/api/points/delete', requireTeacher, (req, res) => {
 app.post('/api/points/for-student', (req, res) => {
     const { login } = req.body || {};
     if (!login) return res.json({ ok: false });
-    const list = (DB.points[login] || []).filter(p => p.source === 'homework' || p.source === 'manual');
+    const list = DB.points[login] || [];
     const sum = list.reduce((s, p) => s + p.value, 0);
-    const today = getTodayPoints(login);
-    res.json({ ok: true, points: list, sum, today, cap: DAILY_POINT_CAP });
+    res.json({ ok: true, points: list, sum });
 });
 
 app.post('/api/points/all', requireTeacher, (req, res) => {
     const out = (req.teacher.classStudents || []).map(login => {
         const u = DB.users[login];
         if (!u) return null;
-        const list = (DB.points[login] || []).filter(p => p.source === 'homework' || p.source === 'manual');
+        const list = DB.points[login] || [];
         const sum = list.reduce((s, p) => s + p.value, 0);
-        const today = getTodayPoints(login);
-        return { login: u.login, name: u.name, points: list, sum, today };
+        return { login: u.login, name: u.name, points: list, sum };
     }).filter(Boolean);
     out.sort((a, b) => b.sum - a.sum);
     res.json({ ok: true, students: out });
 });
 
+/* ============================================================
+   COINS LOG
+   ============================================================ */
+app.post('/api/coins/log', (req, res) => {
+    const { login } = req.body || {};
+    if (!login) return res.json({ ok: false });
+    const list = DB.coinsLog[login] || [];
+    const today = getTodayCoins(login);
+    res.json({ ok: true, log: list, today, cap: DAILY_COIN_CAP });
+});
+
+/* ============================================================
+   DUEL
+   ============================================================ */
 const duelInvites = new Map();
 const onlineUsers = new Map();
 
@@ -785,9 +1015,14 @@ app.post('/api/duel/invite', (req, res) => {
     const targetSocket = onlineUsers.get(toLogin);
     if (!targetSocket) return res.json({ ok: false, error: 'Гравець офлайн' });
     const inviteId = makeId('duel');
-    duelInvites.set(inviteId, { id: inviteId, fromLogin, toLogin, createdAt: Date.now(), status: 'pending' });
+    duelInvites.set(inviteId, {
+        id: inviteId, fromLogin, toLogin,
+        createdAt: Date.now(), status: 'pending'
+    });
     io.to(targetSocket).emit('duelInvite', {
-        inviteId, fromLogin, fromName: fromUser.name, fromAvatar: fromUser.avatar,
+        inviteId, fromLogin,
+        fromName: fromUser.name,
+        fromAvatar: fromUser.avatar,
         expiresAt: Date.now() + 30000
     });
     res.json({ ok: true, inviteId });
@@ -800,34 +1035,69 @@ app.post('/api/duel/respond', (req, res) => {
     if (inv.status !== 'pending') return res.json({ ok: false, error: 'Вже оброблено' });
     inv.status = accept ? 'accepted' : 'declined';
     const fromSocket = onlineUsers.get(inv.fromLogin);
-    if (fromSocket) io.to(fromSocket).emit('duelResponse', { inviteId, accept: !!accept, fromLogin: inv.toLogin });
+    if (fromSocket) {
+        io.to(fromSocket).emit('duelResponse', {
+            inviteId,
+            accept: !!accept,
+            fromLogin: inv.toLogin
+        });
+    }
     if (!accept) duelInvites.delete(inviteId);
     res.json({ ok: true });
 });
 
+/* ============================================================
+   ДУЕЛЬ — БЕЗ БОТІВ
+   ============================================================ */
 app.post('/api/duel/class-online', (req, res) => {
     const { token } = req.body || {};
     if (!token) return res.json({ ok: false });
     const me = Object.values(DB.users).find(u => u.lastToken === token);
     if (!me) return res.json({ ok: false });
-    const teacher = Object.values(DB.users).find(u => u.role === 'teacher' && u.classStudents && u.classStudents.includes(me.login));
+    const teacher = Object.values(DB.users).find(u =>
+        u.role === 'teacher' && u.classStudents && u.classStudents.includes(me.login));
     if (!teacher) return res.json({ ok: true, students: [] });
     const students = teacher.classStudents
         .filter(l => l !== me.login)
         .map(l => DB.users[l])
         .filter(u => u && !u.isBot)
-        .map(u => ({ login: u.login, name: u.name, avatar: u.avatar, online: onlineUsers.has(u.login), level: Math.floor((u.xp || 0) / 100) + 1 }));
+        .map(u => ({
+            login: u.login, name: u.name, avatar: u.avatar,
+            online: onlineUsers.has(u.login),
+            level: Math.floor((u.xp || 0) / 100) + 1
+        }));
     res.json({ ok: true, students });
 });
 
+/* ============================================================
+   SHOP + HEALTH
+   ============================================================ */
 app.get('/api/shop', (req, res) => {
-    res.json({ ok: true, shop: SHOP, economy: ECONOMY, quests: QUEST_DEFS, reactions: REACTION_EMOJIS, chatPhrases: CHAT_PHRASES });
-});
-app.get('/health', (req, res) => {
-    res.json({ ok: true, uptime: Math.round(process.uptime()), users: Object.keys(DB.users).length,
-        quizzes: Object.keys(DB.quizzes).length, homework: Object.keys(DB.homework).length, games: DB.games.length });
+    res.json({
+        ok: true,
+        shop: SHOP,
+        economy: ECONOMY,
+        quests: QUEST_DEFS,
+        reactions: REACTION_EMOJIS,
+        chatPhrases: CHAT_PHRASES,
+        dailyCoinCap: DAILY_COIN_CAP
+    });
 });
 
+app.get('/health', (req, res) => {
+    res.json({
+        ok: true,
+        uptime: Math.round(process.uptime()),
+        users: Object.keys(DB.users).length,
+        quizzes: Object.keys(DB.quizzes).length,
+        homework: Object.keys(DB.homework).length,
+        games: DB.games.length
+    });
+});
+
+/* ============================================================
+   SOCKET.IO
+   ============================================================ */
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
     cors: { origin: '*', methods: ['GET', 'POST'] },
@@ -847,29 +1117,56 @@ function addFeed(room, text) {
 
 function getPublicState(room) {
     return {
-        pin: room.pin, quizId: room.quizId, quizTitle: room.quizTitle,
-        status: room.status, mode: room.mode, timePerQuestion: room.timePerQuestion,
-        questions: room.questions, currentQuestion: room.currentQuestion,
-        questionStartedAt: room.questionStartedAt, timeLeft: room.timeLeft,
-        isSolo: !!room.isSolo, isPublic: !!room.isPublic, isHomework: !!room.isHomework, isDuel: !!room.isDuel,
+        pin: room.pin,
+        quizId: room.quizId,
+        quizTitle: room.quizTitle,
+        status: room.status,
+        mode: room.mode,
+        timePerQuestion: room.timePerQuestion,
+        questions: room.questions,
+        currentQuestion: room.currentQuestion,
+        questionStartedAt: room.questionStartedAt,
+        timeLeft: room.timeLeft,
+        isSolo: !!room.isSolo,
+        isPublic: !!room.isPublic,
+        isHomework: !!room.isHomework,
+        isDuel: !!room.isDuel,
         players: room.players.map(p => ({
-            id: p.id, name: p.name, avatar: p.avatar, avatarId: p.avatarId,
-            accessories: p.accessories, score: p.score, coins: p.coins,
-            coinsEarnedThisGame: p.coinsEarnedThisGame || 0, xp: p.xp || 0,
-            correctCount: p.correctCount, wrongCount: p.wrongCount,
-            alive: p.alive, spectator: (room.mode === 'survival' && !p.alive),
-            answeredThisRound: p.answeredThisRound, lastCorrect: p.lastCorrect,
-            streak: p.streak || 0, bestStreak: p.bestStreak || 0,
-            powerActive: p.powerActive || null, reaction: p.reaction || null,
-            finalRank: p.finalRank || 0, finalPrize: p.finalPrize || 0
+            id: p.id, name: p.name,
+            avatar: p.avatar, avatarId: p.avatarId,
+            accessories: p.accessories,
+            score: p.score, coins: p.coins,
+            coinsEarnedThisGame: p.coinsEarnedThisGame || 0,
+            xp: p.xp || 0,
+            correctCount: p.correctCount,
+            wrongCount: p.wrongCount,
+            alive: p.alive,
+            spectator: (room.mode === 'survival' && !p.alive),
+            answeredThisRound: p.answeredThisRound,
+            lastCorrect: p.lastCorrect,
+            streak: p.streak || 0,
+            bestStreak: p.bestStreak || 0,
+            powerActive: p.powerActive || null,
+            reaction: p.reaction || null,
+            finalRank: p.finalRank || 0,
+            finalPrize: p.finalPrize || 0
         })),
         feed: room.feed || []
     };
 }
 
-function broadcastState(room) { io.to('room_' + room.pin).emit('state', getPublicState(room)); }
-function stopTimer(room) { if (room.timer) { clearInterval(room.timer); room.timer = null; } }
-function stopBotTimers(room) { if (!room.botTimers) return; room.botTimers.forEach(t => clearTimeout(t)); room.botTimers = []; }
+function broadcastState(room) {
+    io.to('room_' + room.pin).emit('state', getPublicState(room));
+}
+
+function stopTimer(room) {
+    if (room.timer) { clearInterval(room.timer); room.timer = null; }
+}
+function stopBotTimers(room) {
+    if (!room.botTimers) return;
+    room.botTimers.forEach(t => clearTimeout(t));
+    room.botTimers = [];
+}
 
 function startTimer(room) {
     stopTimer(room);
@@ -881,7 +1178,11 @@ function startTimer(room) {
         const left = Math.max(0, room.timePerQuestion - elapsed);
         const leftInt = Math.ceil(left);
         room.timeLeft = leftInt;
-        io.to('room_' + room.pin).emit('tick', { timeLeft: leftInt, questionIndex: room.currentQuestion, total: room.timePerQuestion });
+        io.to('room_' + room.pin).emit('tick', {
+            timeLeft: leftInt,
+            questionIndex: room.currentQuestion,
+            total: room.timePerQuestion
+        });
         if (left <= 0) {
             stopTimer(room);
             io.to('room_' + room.pin).emit('timeExpired', { questionIndex: room.currentQuestion });
@@ -904,15 +1205,18 @@ function scheduleAutoAdvance(room) {
             r.firstAnswer = null;
             r.players.forEach(p => { p.answeredThisRound = false; p.lastCorrect = null; });
             addFeed(r, '➡️ Питання ' + (r.currentQuestion + 1));
-            stopTimer(r); stopBotTimers(r);
-            startTimer(r); scheduleBotAnswers(r);
+            stopTimer(r);
+            stopBotTimers(r);
+            startTimer(r);
+            scheduleBotAnswers(r);
             broadcastState(r);
         }
     }, 2000);
 }
 
 function autoFinishRoom(room) {
-    stopTimer(room); stopBotTimers(room);
+    stopTimer(room);
+    stopBotTimers(room);
     room.status = 'finished';
     room.finishedAt = Date.now();
 
@@ -928,14 +1232,17 @@ function autoFinishRoom(room) {
                 let grade = autoGrade(percent);
                 if (isLate) grade = Math.max(1, grade - 1);
                 hw.submissions[me.login] = {
-                    login: me.login, correct: me.correctCount, total, percent, grade,
-                    autoGrade: autoGrade(percent), isLate,
+                    login: me.login,
+                    correct: me.correctCount, total, percent, grade,
+                    autoGrade: autoGrade(percent),
+                    isLate,
                     timeSpent: Math.round((Date.now() - room.startedAt) / 1000),
-                    submittedAt: now, gradedBy: 'auto', gradedAt: now
+                    submittedAt: now,
+                    gradedBy: 'auto', gradedAt: now
                 };
                 saveHomework();
                 if (hw.autoPoints !== false) {
-                    addPointWithCap(me.login, me.correctCount * 10, 'За ДЗ «' + hw.title + '»', 'homework', 'system');
+                    addPointAuto(me.login, me.correctCount * 10, 'За ДЗ «' + hw.title + '»', 'homework');
                 }
             }
         }
@@ -945,8 +1252,11 @@ function autoFinishRoom(room) {
     ranked.forEach((p, idx) => {
         const rank = idx + 1;
         const prize = getFinalPrize(rank);
-        p.finalRank = rank; p.finalPrize = prize;
-        p.coins = (p.coins || 0) + prize;
+        p.finalRank = rank;
+        p.finalPrize = prize;
+        if (!p.isBot && p.login) {
+            addCoinsWithCap(p.login, prize, 'Призове місце #' + rank + ' (' + room.quizTitle + ')');
+        }
     });
     if (room.mode === 'survival') {
         room.players.forEach(p => {
@@ -964,7 +1274,6 @@ function autoFinishRoom(room) {
         if (p.isBot || !p.login) return;
         const u = DB.users[p.login];
         if (!u) return;
-        u.coins = (u.coins || 0) + (p.coins || 0);
         u.xp = (u.xp || 0) + (p.xp || 0);
     });
     saveUsers();
@@ -978,21 +1287,30 @@ function autoFinishRoom(room) {
 }
 
 function calculateRewards(opts) {
-    const { elapsed, timePerQuestion, mode, streak, powerActive, coinsEarnedThisGame } = opts;
+    const { elapsed, timePerQuestion, mode, streak, powerActive } = opts;
     const timeBonus = Math.round(Math.max(0, 1 - elapsed / timePerQuestion) * ECONOMY.timeBonusMax);
     const modeMult = MODES[mode] ? MODES[mode].multiplier : 1.0;
     let streakMultScore = 1.0;
     const keys = Object.keys(ECONOMY.streakScoreMultiplier).map(Number).sort((a, b) => b - a);
-    for (const k of keys) { if (streak >= k) { streakMultScore = ECONOMY.streakScoreMultiplier[k]; break; } }
+    for (const k of keys) {
+        if (streak >= k) { streakMultScore = ECONOMY.streakScoreMultiplier[k]; break; }
+    }
     const powerMult = (powerActive && powerActive.type === 'double') ? 2 : 1;
-    const gainedScore = Math.round((ECONOMY.baseScore + timeBonus) * modeMult * streakMultScore * powerMult);
+    const gainedScore = Math.round(
+        (ECONOMY.baseScore + timeBonus) * modeMult * streakMultScore * powerMult
+    );
     let coins = ECONOMY.coinsCorrect;
     const speedRatio = elapsed / timePerQuestion;
     let speedBonus = 0;
-    if (speedRatio <= 0.25) { speedBonus = ECONOMY.coinsSpeedBonus; coins += speedBonus; }
-    const remaining = Math.max(0, ECONOMY.coinsPerGameCap - (coinsEarnedThisGame || 0));
-    if (coins > remaining) coins = remaining;
-    return { score: gainedScore, coins, xp: Math.round(gainedScore / 10), breakdown: { timeBonus, speedBonus, remaining } };
+    if (speedRatio <= 0.25) {
+        speedBonus = ECONOMY.coinsSpeedBonus;
+        coins += speedBonus;
+    }
+    return {
+        score: gainedScore, coins,
+        xp: Math.round(gainedScore / 10),
+        breakdown: { timeBonus, speedBonus }
+    };
 }
 
 function generateBots(count, customNames) {
@@ -1014,10 +1332,12 @@ function generateBots(count, customNames) {
                 full = first + ' ' + last;
                 attempts++;
             } while (used.has(full) && attempts < 50);
-            used.add(full); name = full;
+            used.add(full);
+            name = full;
         }
         bots.push({
-            id: makeId('bot' + i), name,
+            id: makeId('bot' + i),
+            name,
             avatar: AVATARS_BOT[Math.floor(Math.random() * AVATARS_BOT.length)],
             avatarId: possibleAvatars[Math.floor(Math.random() * possibleAvatars.length)],
             accessories: {
@@ -1029,8 +1349,10 @@ function generateBots(count, customNames) {
             isBot: true, correctCount: 0, wrongCount: 0, alive: true,
             answeredThisRound: false, lastCorrect: null,
             botSpeed: 0.5 + Math.random() * 0.5,
-            streak: 0, bestStreak: 0, powerActive: null, reaction: null,
-            finalRank: 0, finalPrize: 0, quests: {}, socketId: null
+            streak: 0, bestStreak: 0,
+            powerActive: null, reaction: null,
+            finalRank: 0, finalPrize: 0,
+            quests: {}, socketId: null
         });
     }
     return bots;
@@ -1062,8 +1384,11 @@ function scheduleBotAnswers(room) {
                 p.correctCount++;
                 p.streak = (p.streak || 0) + 1;
                 if (p.streak > (p.bestStreak || 0)) p.bestStreak = p.streak;
-                const rewards = calculateRewards({ elapsed, timePerQuestion: room.timePerQuestion, mode: room.mode,
-                    streak: p.streak, powerActive: p.powerActive, coinsEarnedThisGame: p.coinsEarnedThisGame || 0 });
+                const rewards = calculateRewards({
+                    elapsed, timePerQuestion: room.timePerQuestion,
+                    mode: room.mode, streak: p.streak,
+                    powerActive: p.powerActive
+                });
                 p.score += rewards.score;
                 p.coins = (p.coins || 0) + rewards.coins;
                 p.coinsEarnedThisGame = (p.coinsEarnedThisGame || 0) + rewards.coins;
@@ -1072,7 +1397,9 @@ function scheduleBotAnswers(room) {
                 p.powerActive = null;
                 if (Math.random() < 0.15) {
                     const phrase = BOT_PHRASES[Math.floor(Math.random() * BOT_PHRASES.length)];
-                    io.to('room_' + room.pin).emit('playerChat', { playerId: p.id, playerName: p.name, phrase });
+                    io.to('room_' + room.pin).emit('playerChat', {
+                        playerId: p.id, playerName: p.name, phrase
+                    });
                 }
             } else {
                 p.wrongCount++;
@@ -1089,7 +1416,8 @@ function scheduleBotAnswers(room) {
 }
 
 function cleanupRoom(room) {
-    stopTimer(room); stopBotTimers(room);
+    stopTimer(room);
+    stopBotTimers(room);
     if (room._autoAdvanceTimer) clearTimeout(room._autoAdvanceTimer);
     if (room.cleanupTimer) clearTimeout(room.cleanupTimer);
     if (room.teacherDisconnectTimer) clearTimeout(room.teacherDisconnectTimer);
@@ -1099,7 +1427,11 @@ function shuffleQuestions(questions) {
     return shuffleArray(questions.slice()).map(q => {
         const indices = q.answers.map((_, i) => i);
         shuffleArray(indices);
-        return { text: q.text, answers: indices.map(i => q.answers[i]), correct: indices.indexOf(q.correct) };
+        return {
+            text: q.text,
+            answers: indices.map(i => q.answers[i]),
+            correct: indices.indexOf(q.correct)
+        };
     });
 }
 
@@ -1114,12 +1446,20 @@ function trackQuestionAnswer(room, qIndex, isCorrect) {
     saveAnalytics();
 }
 
+/* ============================================================
+   SOCKET HANDLERS
+   ============================================================ */
 io.on('connection', (socket) => {
     let currentRoomPin = null;
     let role = null;
 
     socket.on('getShop', (cb) => {
-        if (cb) cb({ ok: true, shop: SHOP, economy: ECONOMY, quests: QUEST_DEFS, reactions: REACTION_EMOJIS, chatPhrases: CHAT_PHRASES });
+        if (cb) cb({
+            ok: true, shop: SHOP, economy: ECONOMY,
+            quests: QUEST_DEFS, reactions: REACTION_EMOJIS,
+            chatPhrases: CHAT_PHRASES,
+            dailyCoinCap: DAILY_COIN_CAP
+        });
     });
 
     socket.on('registerOnline', (payload) => {
@@ -1136,7 +1476,9 @@ io.on('connection', (socket) => {
         if (!CHAT_PHRASES.includes(phrase)) return cb && cb({ ok: false });
         const player = room.players.find(p => p.id === payload.playerId);
         if (!player) return cb && cb({ ok: false });
-        io.to('room_' + room.pin).emit('playerChat', { playerId: player.id, playerName: player.name, phrase });
+        io.to('room_' + room.pin).emit('playerChat', {
+            playerId: player.id, playerName: player.name, phrase
+        });
         if (cb) cb({ ok: true });
     });
 
@@ -1149,30 +1491,42 @@ io.on('connection', (socket) => {
             const user1 = DB.users[myLogin];
             const user2 = DB.users[opponentLogin];
             if (!user1 || !user2) return cb && cb({ ok: false, error: 'Не знайдено' });
+            if (user2.isBot) return cb && cb({ ok: false, error: 'Гравець офлайн' });
             const pin = makePin();
             const p1 = {
                 id: makeId('pl'), name: user1.name, login: myLogin,
                 avatar: user1.avatar, avatarId: user1.avatarId,
-                accessories: { head: user1.equippedHead || '', eyes: user1.equippedEyes || '', effect: user1.equippedEffect || '' },
+                accessories: {
+                    head: user1.equippedHead || '',
+                    eyes: user1.equippedEyes || '',
+                    effect: user1.equippedEffect || ''
+                },
                 score: 0, coins: 0, coinsEarnedThisGame: 0, xp: 0,
                 isBot: false, correctCount: 0, wrongCount: 0, alive: true,
                 answeredThisRound: false, lastCorrect: null,
                 socketId: socket.id, streak: 0, bestStreak: 0,
-                powerActive: null, reaction: null, quests: {}, finalRank: 0, finalPrize: 0
+                powerActive: null, reaction: null, quests: {},
+                finalRank: 0, finalPrize: 0
             };
             const p2 = {
                 id: makeId('pl'), name: user2.name, login: opponentLogin,
                 avatar: user2.avatar, avatarId: user2.avatarId,
-                accessories: { head: user2.equippedHead || '', eyes: user2.equippedEyes || '', effect: user2.equippedEffect || '' },
+                accessories: {
+                    head: user2.equippedHead || '',
+                    eyes: user2.equippedEyes || '',
+                    effect: user2.equippedEffect || ''
+                },
                 score: 0, coins: 0, coinsEarnedThisGame: 0, xp: 0,
                 isBot: false, correctCount: 0, wrongCount: 0, alive: true,
                 answeredThisRound: false, lastCorrect: null,
                 socketId: null, streak: 0, bestStreak: 0,
-                powerActive: null, reaction: null, quests: {}, finalRank: 0, finalPrize: 0
+                powerActive: null, reaction: null, quests: {},
+                finalRank: 0, finalPrize: 0
             };
             const room = {
                 pin, quizId: quiz.id, quizTitle: quiz.title,
-                createdAt: Date.now(), status: 'running', mode: 'arcade', timePerQuestion: 10,
+                createdAt: Date.now(), status: 'running',
+                mode: 'arcade', timePerQuestion: 10,
                 questions: shuffleQuestions(quiz.questions).slice(0, 5),
                 currentQuestion: 0, questionStartedAt: 0, timeLeft: 10,
                 players: [p1, p2], feed: [], firstAnswer: null,
@@ -1180,18 +1534,28 @@ io.on('connection', (socket) => {
                 timer: null, cleanupTimer: null, teacherDisconnectTimer: null, botTimers: []
             };
             rooms.set(pin, room);
-            currentRoomPin = pin; role = 'student';
+            currentRoomPin = pin;
+            role = 'student';
             socket.join('room_' + pin);
             const p2Socket = onlineUsers.get(opponentLogin);
             if (p2Socket) {
                 const s = io.sockets.sockets.get(p2Socket);
-                if (s) { s.join('room_' + pin); p2.socketId = p2Socket; s.emit('duelStarted', { pin, playerId: p2.id, state: getPublicState(room) }); }
+                if (s) {
+                    s.join('room_' + pin);
+                    p2.socketId = p2Socket;
+                    s.emit('duelStarted', {
+                        pin, playerId: p2.id, state: getPublicState(room)
+                    });
+                }
             }
             addFeed(room, '⚔️ Дуель: ' + user1.name + ' vs ' + user2.name);
             startTimer(room);
             if (cb) cb({ ok: true, pin, playerId: p1.id, state: getPublicState(room) });
             broadcastState(room);
-        } catch (err) { console.error('startDuelRoom', err); if (cb) cb({ ok: false }); }
+        } catch (err) {
+            console.error('startDuelRoom', err);
+            if (cb) cb({ ok: false });
+        }
     });
 
     socket.on('createRoomFromQuiz', (payload, cb) => {
@@ -1199,24 +1563,29 @@ io.on('connection', (socket) => {
             const quiz = DB.quizzes[payload && payload.quizId];
             if (!quiz) return cb && cb({ ok: false, error: 'Квіз не знайдено' });
             const mode = (payload.mode && MODES[payload.mode]) ? payload.mode : 'arcade';
-            const timePerQuestion = Math.max(5, Math.min(60, parseInt(payload.timePerQuestion, 10) || MODES[mode].defaultTime));
+            const timePerQuestion = Math.max(5, Math.min(60,
+                parseInt(payload.timePerQuestion, 10) || MODES[mode].defaultTime));
             const botCount = Math.max(0, Math.min(200, parseInt(payload.botCount, 10) || 0));
             const customNames = Array.isArray(payload.botNames) ? payload.botNames : null;
             const pin = makePin();
             const bots = generateBots(botCount, customNames);
             const room = {
                 pin, quizId: quiz.id, quizTitle: quiz.title,
-                createdAt: Date.now(), status: 'lobby', mode, timePerQuestion,
+                createdAt: Date.now(), status: 'lobby',
+                mode, timePerQuestion,
                 questions: shuffleQuestions(quiz.questions),
                 currentQuestion: -1, questionStartedAt: 0, timeLeft: timePerQuestion,
                 players: bots, feed: [], firstAnswer: null,
                 teacherSocketId: socket.id,
                 timer: null, cleanupTimer: null, teacherDisconnectTimer: null, botTimers: []
             };
-            rooms.set(pin, room); currentRoomPin = pin; role = 'teacher';
+            rooms.set(pin, room);
+            currentRoomPin = pin;
+            role = 'teacher';
             socket.join('room_' + pin);
             addFeed(room, '🎉 Кімнату створено: «' + quiz.title + '»');
-            quiz.plays = (quiz.plays || 0) + 1; saveQuizzes();
+            quiz.plays = (quiz.plays || 0) + 1;
+            saveQuizzes();
             if (cb) cb({ ok: true, pin, state: getPublicState(room) });
             broadcastState(room);
         } catch (err) { if (cb) cb({ ok: false }); }
@@ -1227,34 +1596,45 @@ io.on('connection', (socket) => {
             const quiz = DB.quizzes[payload && payload.quizId];
             if (!quiz) return cb && cb({ ok: false });
             const mode = payload.mode || 'arcade';
-            const timePerQuestion = Math.max(5, Math.min(60, parseInt(payload.timePerQuestion, 10) || MODES[mode].defaultTime));
+            const timePerQuestion = Math.max(5, Math.min(60,
+                parseInt(payload.timePerQuestion, 10) || MODES[mode].defaultTime));
             const playerName = String(payload.name || 'Учень').slice(0, 24);
             const playerLogin = String(payload.login || 'guest');
             const user = DB.users[playerLogin];
             const pin = makePin();
             const player = {
                 id: makeId('pl'), name: playerName, login: playerLogin,
-                avatar: user ? user.avatar : '🐱', avatarId: user ? user.avatarId : 'a_cat',
-                accessories: { head: user ? user.equippedHead : '', eyes: user ? user.equippedEyes : '', effect: user ? user.equippedEffect : '' },
+                avatar: user ? user.avatar : '🐱',
+                avatarId: user ? user.avatarId : 'a_cat',
+                accessories: {
+                    head: user ? user.equippedHead : '',
+                    eyes: user ? user.equippedEyes : '',
+                    effect: user ? user.equippedEffect : ''
+                },
                 score: 0, coins: 0, coinsEarnedThisGame: 0, xp: 0,
                 isBot: false, correctCount: 0, wrongCount: 0, alive: true,
                 answeredThisRound: false, lastCorrect: null,
                 socketId: socket.id, streak: 0, bestStreak: 0,
-                powerActive: null, reaction: null, quests: {}, finalRank: 0, finalPrize: 0
+                powerActive: null, reaction: null, quests: {},
+                finalRank: 0, finalPrize: 0
             };
             const room = {
                 pin, quizId: quiz.id, quizTitle: quiz.title,
-                createdAt: Date.now(), status: 'running', mode, timePerQuestion,
+                createdAt: Date.now(), status: 'running',
+                mode, timePerQuestion,
                 questions: shuffleQuestions(quiz.questions),
                 currentQuestion: 0, questionStartedAt: 0, timeLeft: timePerQuestion,
                 players: [player], feed: [], firstAnswer: null,
                 teacherSocketId: socket.id, isSolo: true,
                 timer: null, cleanupTimer: null, teacherDisconnectTimer: null, botTimers: []
             };
-            rooms.set(pin, room); currentRoomPin = pin; role = 'student';
+            rooms.set(pin, room);
+            currentRoomPin = pin;
+            role = 'student';
             socket.join('room_' + pin);
             addFeed(room, '🎯 Соло: ' + quiz.title);
-            quiz.plays = (quiz.plays || 0) + 1; saveQuizzes();
+            quiz.plays = (quiz.plays || 0) + 1;
+            saveQuizzes();
             startTimer(room);
             if (cb) cb({ ok: true, pin, playerId: player.id, state: getPublicState(room) });
             broadcastState(room);
@@ -1274,29 +1654,40 @@ io.on('connection', (socket) => {
             const pin = makePin();
             const player = {
                 id: makeId('pl'), name: playerName, login: playerLogin,
-                avatar: user ? user.avatar : '😀', avatarId: user ? user.avatarId : 'a_cat',
-                accessories: { head: user ? user.equippedHead : '', eyes: user ? user.equippedEyes : '', effect: user ? user.equippedEffect : '' },
+                avatar: user ? user.avatar : '😀',
+                avatarId: user ? user.avatarId : 'a_cat',
+                accessories: {
+                    head: user ? user.equippedHead : '',
+                    eyes: user ? user.equippedEyes : '',
+                    effect: user ? user.equippedEffect : ''
+                },
                 score: 0, coins: 0, coinsEarnedThisGame: 0, xp: 0,
                 isBot: false, correctCount: 0, wrongCount: 0, alive: true,
                 answeredThisRound: false, lastCorrect: null,
                 socketId: socket.id, streak: 0, bestStreak: 0,
-                powerActive: null, reaction: null, quests: {}, finalRank: 0, finalPrize: 0
+                powerActive: null, reaction: null, quests: {},
+                finalRank: 0, finalPrize: 0
             };
             const bots = generateBots(targetCount - 1, null);
             const room = {
                 pin, quizId: quiz.id, quizTitle: quiz.title,
-                createdAt: Date.now(), status: 'running', mode, timePerQuestion,
+                createdAt: Date.now(), status: 'running',
+                mode, timePerQuestion,
                 questions: shuffleQuestions(quiz.questions),
                 currentQuestion: 0, questionStartedAt: 0, timeLeft: timePerQuestion,
                 players: [player].concat(bots), feed: [], firstAnswer: null,
                 teacherSocketId: socket.id, isPublic: true,
                 timer: null, cleanupTimer: null, teacherDisconnectTimer: null, botTimers: []
             };
-            rooms.set(pin, room); currentRoomPin = pin; role = 'student';
+            rooms.set(pin, room);
+            currentRoomPin = pin;
+            role = 'student';
             socket.join('room_' + pin);
             addFeed(room, '🌐 Гра: ' + quiz.title);
-            quiz.plays = (quiz.plays || 0) + 1; saveQuizzes();
-            startTimer(room); scheduleBotAnswers(room);
+            quiz.plays = (quiz.plays || 0) + 1;
+            saveQuizzes();
+            startTimer(room);
+            scheduleBotAnswers(room);
             if (cb) cb({ ok: true, pin, playerId: player.id, state: getPublicState(room) });
             broadcastState(room);
         } catch (err) { if (cb) cb({ ok: false }); }
@@ -1314,17 +1705,24 @@ io.on('connection', (socket) => {
             const pin = makePin();
             const player = {
                 id: makeId('pl'), name: user ? user.name : login, login,
-                avatar: user ? user.avatar : '🐱', avatarId: user ? user.avatarId : 'a_cat',
-                accessories: { head: user ? user.equippedHead : '', eyes: user ? user.equippedEyes : '', effect: user ? user.equippedEffect : '' },
+                avatar: user ? user.avatar : '🐱',
+                avatarId: user ? user.avatarId : 'a_cat',
+                accessories: {
+                    head: user ? user.equippedHead : '',
+                    eyes: user ? user.equippedEyes : '',
+                    effect: user ? user.equippedEffect : ''
+                },
                 score: 0, coins: 0, coinsEarnedThisGame: 0, xp: 0,
                 isBot: false, correctCount: 0, wrongCount: 0, alive: true,
                 answeredThisRound: false, lastCorrect: null,
                 socketId: socket.id, streak: 0, bestStreak: 0,
-                powerActive: null, reaction: null, quests: {}, finalRank: 0, finalPrize: 0
+                powerActive: null, reaction: null, quests: {},
+                finalRank: 0, finalPrize: 0
             };
             const room = {
                 pin, quizId: quiz.id, quizTitle: quiz.title,
-                createdAt: Date.now(), status: 'running', mode: 'arcade', timePerQuestion: 20,
+                createdAt: Date.now(), status: 'running',
+                mode: 'arcade', timePerQuestion: 20,
                 questions: shuffleQuestions(quiz.questions),
                 currentQuestion: 0, questionStartedAt: 0, timeLeft: 20,
                 players: [player], feed: [], firstAnswer: null,
@@ -1332,7 +1730,9 @@ io.on('connection', (socket) => {
                 homeworkId: hw.id, startedAt: Date.now(),
                 timer: null, cleanupTimer: null, teacherDisconnectTimer: null, botTimers: []
             };
-            rooms.set(pin, room); currentRoomPin = pin; role = 'student';
+            rooms.set(pin, room);
+            currentRoomPin = pin;
+            role = 'student';
             socket.join('room_' + pin);
             startTimer(room);
             if (cb) cb({ ok: true, pin, playerId: player.id, state: getPublicState(room) });
@@ -1358,24 +1758,29 @@ io.on('connection', (socket) => {
             const existing = room.players.find(p => !p.isBot && p.name.toLowerCase() === name.toLowerCase());
             let player;
             if (existing) {
-                existing.avatarId = avatarId; existing.avatar = avatarEmoji;
-                existing.accessories = accessories; existing.xp = Math.max(existing.xp || 0, xp);
+                existing.avatarId = avatarId;
+                existing.avatar = avatarEmoji;
+                existing.accessories = accessories;
+                existing.xp = Math.max(existing.xp || 0, xp);
                 existing.socketId = socket.id;
                 player = existing;
                 addFeed(room, '🔄 ' + name + ' повернувся');
             } else {
                 player = {
-                    id: makeId('pl'), name, avatar: avatarEmoji, avatarId, accessories,
+                    id: makeId('pl'), name,
+                    avatar: avatarEmoji, avatarId, accessories,
                     score: 0, coins: 0, coinsEarnedThisGame: 0, xp,
                     isBot: false, correctCount: 0, wrongCount: 0, alive: true,
                     answeredThisRound: false, lastCorrect: null,
                     socketId: socket.id, streak: 0, bestStreak: 0,
-                    powerActive: null, reaction: null, quests: {}, finalRank: 0, finalPrize: 0
+                    powerActive: null, reaction: null, quests: {},
+                    finalRank: 0, finalPrize: 0
                 };
                 room.players.push(player);
                 addFeed(room, '🎒 ' + name + ' приєднався!');
             }
-            currentRoomPin = pin; role = 'student';
+            currentRoomPin = pin;
+            role = 'student';
             socket.join('room_' + pin);
             if (cb) cb({ ok: true, playerId: player.id, state: getPublicState(room) });
             broadcastState(room);
@@ -1390,7 +1795,10 @@ io.on('connection', (socket) => {
             if (!player) return cb && cb({ ok: false });
             const avatarId = String(payload.avatarId || player.avatarId || 'a_cat');
             const found = SHOP.avatars.find(a => a.id === avatarId);
-            if (found) { player.avatarId = avatarId; player.avatar = found.emoji; }
+            if (found) {
+                player.avatarId = avatarId;
+                player.avatar = found.emoji;
+            }
             if (payload.accessories) player.accessories = payload.accessories;
             if (typeof payload.xp === 'number') player.xp = Math.max(player.xp || 0, payload.xp);
             if (cb) cb({ ok: true });
@@ -1416,7 +1824,9 @@ io.on('connection', (socket) => {
                 const q = room.questions[room.currentQuestion];
                 if (q) {
                     const wrong = [];
-                    q.answers.forEach((_, i) => { if (i !== q.correct) wrong.push(i); });
+                    q.answers.forEach((_, i) => {
+                        if (i !== q.correct) wrong.push(i);
+                    });
                     shuffleArray(wrong);
                     hintIndexes = wrong.slice(0, 2);
                 }
@@ -1435,7 +1845,10 @@ io.on('connection', (socket) => {
             const emoji = String(payload.emoji || '').slice(0, 4);
             if (!REACTION_EMOJIS.includes(emoji)) return cb && cb({ ok: false });
             player.reaction = { emoji, t: Date.now() };
-            io.to('room_' + room.pin).emit('playerReaction', { playerId: player.id, playerName: player.name, emoji, t: Date.now() });
+            io.to('room_' + room.pin).emit('playerReaction', {
+                playerId: player.id, playerName: player.name,
+                emoji, t: Date.now()
+            });
             if (cb) cb({ ok: true });
             setTimeout(() => {
                 const r = rooms.get(room.pin);
@@ -1451,19 +1864,31 @@ io.on('connection', (socket) => {
             const room = rooms.get(currentRoomPin);
             if (!room || room.teacherSocketId !== socket.id) return cb && cb({ ok: false });
             if (room.status === 'running') return cb && cb({ ok: false });
-            room.status = 'running'; room.currentQuestion = 0;
-            room.feed = []; room.firstAnswer = null;
+            room.status = 'running';
+            room.currentQuestion = 0;
+            room.feed = [];
+            room.firstAnswer = null;
             room.players.forEach(p => {
-                p.answeredThisRound = false; p.lastCorrect = null;
-                p.score = 0; p.correctCount = 0; p.wrongCount = 0;
-                p.alive = true; p.streak = 0; p.bestStreak = 0;
-                p.powerActive = null; p.reaction = null;
-                p.quests = {}; p.coinsEarnedThisGame = 0;
-                p.finalPrize = 0; p.finalRank = 0;
+                p.answeredThisRound = false;
+                p.lastCorrect = null;
+                p.score = 0;
+                p.correctCount = 0;
+                p.wrongCount = 0;
+                p.alive = true;
+                p.streak = 0;
+                p.bestStreak = 0;
+                p.powerActive = null;
+                p.reaction = null;
+                p.quests = {};
+                p.coinsEarnedThisGame = 0;
+                p.finalPrize = 0;
+                p.finalRank = 0;
             });
             addFeed(room, '🚀 Гру розпочато!');
-            stopTimer(room); stopBotTimers(room);
-            startTimer(room); scheduleBotAnswers(room);
+            stopTimer(room);
+            stopBotTimers(room);
+            startTimer(room);
+            scheduleBotAnswers(room);
             if (cb) cb({ ok: true });
             broadcastState(room);
         } catch (err) { if (cb) cb({ ok: false }); }
@@ -1474,14 +1899,21 @@ io.on('connection', (socket) => {
             const room = rooms.get(currentRoomPin);
             if (!room || room.teacherSocketId !== socket.id) return cb && cb({ ok: false });
             if (room.status !== 'running') return cb && cb({ ok: false });
-            if (room.currentQuestion + 1 >= room.questions.length) return cb && cb({ ok: false, error: 'Останнє' });
+            if (room.currentQuestion + 1 >= room.questions.length) {
+                return cb && cb({ ok: false, error: 'Останнє питання' });
+            }
             room.currentQuestion++;
             room.firstAnswer = null;
-            room.players.forEach(p => { p.answeredThisRound = false; p.lastCorrect = null; });
+            room.players.forEach(p => {
+                p.answeredThisRound = false;
+                p.lastCorrect = null;
+            });
             addFeed(room, '➡️ Питання ' + (room.currentQuestion + 1));
-            stopTimer(room); stopBotTimers(room);
-            startTimer(room); scheduleBotAnswers(room);
-            if (cb) cb({ ok: true });
+            stopTimer(room);
+            stopBotTimers(room);
+            startTimer(room);
+            scheduleBotAnswers(room);
+            if (cb) cb({ ok: true, questionIndex: room.currentQuestion });
             broadcastState(room);
         } catch (err) { if (cb) cb({ ok: false }); }
     });
@@ -1493,14 +1925,16 @@ io.on('connection', (socket) => {
             const qIndex = parseInt(payload && payload.q, 10);
             const aIndex = parseInt(payload && payload.a, 10);
             const playerId = payload && payload.playerId;
-            if (qIndex !== room.currentQuestion) return cb && cb({ ok: false });
+            if (qIndex !== room.currentQuestion) return cb && cb({ ok: false, error: 'Застаріле' });
             const player = room.players.find(p => p.id === playerId);
             if (!player) return cb && cb({ ok: false });
-            if (player.answeredThisRound) return cb && cb({ ok: false });
+            if (player.answeredThisRound) return cb && cb({ ok: false, error: 'Вже відповіли' });
             if (!player.alive) return cb && cb({ ok: false, error: 'Ти глядач' });
             const q = room.questions[room.currentQuestion];
             if (!q) return cb && cb({ ok: false });
-            if (isNaN(aIndex) || aIndex < 0 || aIndex >= q.answers.length) return cb && cb({ ok: false });
+            if (isNaN(aIndex) || aIndex < 0 || aIndex >= q.answers.length) {
+                return cb && cb({ ok: false });
+            }
             const isCorrect = (aIndex === q.correct);
             trackQuestionAnswer(room, room.currentQuestion, isCorrect);
             player.answeredThisRound = true;
@@ -1512,21 +1946,43 @@ io.on('connection', (socket) => {
                 player.correctCount++;
                 player.streak = (player.streak || 0) + 1;
                 if (player.streak > (player.bestStreak || 0)) player.bestStreak = player.streak;
-                const rewards = calculateRewards({ elapsed, timePerQuestion: room.timePerQuestion, mode: room.mode,
-                    streak: player.streak, powerActive: player.powerActive, coinsEarnedThisGame: player.coinsEarnedThisGame || 0 });
+                const rewards = calculateRewards({
+                    elapsed,
+                    timePerQuestion: room.timePerQuestion,
+                    mode: room.mode,
+                    streak: player.streak,
+                    powerActive: player.powerActive
+                });
                 player.score += rewards.score;
-                player.coins = (player.coins || 0) + rewards.coins;
                 player.coinsEarnedThisGame = (player.coinsEarnedThisGame || 0) + rewards.coins;
                 player.xp = (player.xp || 0) + rewards.xp;
                 addFeed(room, '✅ ' + player.name + ' правильно');
                 if (!player.isBot) {
                     if (!player.quests) player.quests = {};
-                    if (!player.quests.first_correct && player.correctCount >= 1) { player.quests.first_correct = { completed: true }; completedQuests.push('first_correct'); }
-                    if (!player.quests.correct_3_streak && player.streak >= 3) { player.quests.correct_3_streak = { completed: true }; completedQuests.push('correct_3_streak'); }
-                    if (!player.quests.correct_5_streak && player.streak >= 5) { player.quests.correct_5_streak = { completed: true }; completedQuests.push('correct_5_streak'); }
-                    if (!player.quests.correct_10_total && player.correctCount >= 10) { player.quests.correct_10_total = { completed: true }; completedQuests.push('correct_10_total'); }
-                    if (!player.quests.first_answer && room.firstAnswer === player.id) { player.quests.first_answer = { completed: true }; completedQuests.push('first_answer'); }
-                    if (!player.quests.speed_demon && elapsed <= 3) { player.quests.speed_demon = { completed: true }; completedQuests.push('speed_demon'); }
+                    if (!player.quests.first_correct && player.correctCount >= 1) {
+                        player.quests.first_correct = { completed: true };
+                        completedQuests.push('first_correct');
+                    }
+                    if (!player.quests.correct_3_streak && player.streak >= 3) {
+                        player.quests.correct_3_streak = { completed: true };
+                        completedQuests.push('correct_3_streak');
+                    }
+                    if (!player.quests.correct_5_streak && player.streak >= 5) {
+                        player.quests.correct_5_streak = { completed: true };
+                        completedQuests.push('correct_5_streak');
+                    }
+                    if (!player.quests.correct_10_total && player.correctCount >= 10) {
+                        player.quests.correct_10_total = { completed: true };
+                        completedQuests.push('correct_10_total');
+                    }
+                    if (!player.quests.first_answer && room.firstAnswer === player.id) {
+                        player.quests.first_answer = { completed: true };
+                        completedQuests.push('first_answer');
+                    }
+                    if (!player.quests.speed_demon && elapsed <= 3) {
+                        player.quests.speed_demon = { completed: true };
+                        completedQuests.push('speed_demon');
+                    }
                 }
                 player.powerActive = null;
             } else {
@@ -1538,10 +1994,15 @@ io.on('connection', (socket) => {
                     addFeed(room, '💀 ' + player.name + ' вибуває (глядач)');
                 }
             }
-            if (cb) cb({ ok: true, isCorrect, score: player.score, coins: player.coins,
+            if (cb) cb({
+                ok: true,
+                isCorrect,
+                score: player.score,
                 coinsEarnedThisGame: player.coinsEarnedThisGame || 0,
-                coinsRemaining: Math.max(0, ECONOMY.coinsPerGameCap - (player.coinsEarnedThisGame || 0)),
-                xp: player.xp, streak: player.streak, completedQuests });
+                xp: player.xp,
+                streak: player.streak,
+                completedQuests
+            });
             broadcastState(room);
             if (room.isSolo || room.isHomework || room.isDuel || room.isPublic) {
                 const allAnswered = room.players.every(p => p.answeredThisRound || !p.alive);
@@ -1550,25 +2011,32 @@ io.on('connection', (socket) => {
                     scheduleAutoAdvance(room);
                 }
             }
-        } catch (err) { if (cb) cb({ ok: false }); }
+        } catch (err) {
+            console.error('answer error', err);
+            if (cb) cb({ ok: false });
+        }
     });
 
     socket.on('finishGame', (cb) => {
         try {
             const room = rooms.get(currentRoomPin);
             if (!room || room.teacherSocketId !== socket.id) return cb && cb({ ok: false });
-            stopTimer(room); stopBotTimers(room);
+            stopTimer(room);
+            stopBotTimers(room);
             room.status = 'finished';
             room.finishedAt = Date.now();
             const ranked = room.players.slice().sort((a, b) => b.score - a.score);
             ranked.forEach((p, idx) => {
                 const rank = idx + 1;
                 const prize = getFinalPrize(rank);
-                p.finalRank = rank; p.finalPrize = prize;
-                p.coins = (p.coins || 0) + prize;
+                p.finalRank = rank;
+                p.finalPrize = prize;
+                if (!p.isBot && p.login) {
+                    addCoinsWithCap(p.login, prize, 'Призове місце #' + rank + ' (' + room.quizTitle + ')');
+                }
             });
-            if (room.isDuel && ranked[0]) {
-                ranked[0].coins += 20;
+            if (room.isDuel && ranked[0] && ranked[0].login) {
+                addCoinsWithCap(ranked[0].login, 20, 'Дуель — перемога');
                 addFeed(room, '⚔️ Переможець дуелі: ' + ranked[0].name + ' (+20 🪙)');
             }
             if (room.mode === 'survival') {
@@ -1583,16 +2051,21 @@ io.on('connection', (socket) => {
                 DB.analytics[room.quizId].games = (DB.analytics[room.quizId].games || 0) + 1;
                 saveAnalytics();
             }
-            DB.games.unshift({ pin: room.pin, quizId: room.quizId, quizTitle: room.quizTitle,
+            DB.games.unshift({
+                pin: room.pin, quizId: room.quizId,
+                quizTitle: room.quizTitle,
                 finishedAt: room.finishedAt,
-                players: ranked.slice(0, 20).map(p => ({ name: p.name, score: p.score, coins: p.coins, rank: p.finalRank })) });
+                players: ranked.slice(0, 20).map(p => ({
+                    name: p.name, score: p.score,
+                    coins: p.coins, rank: p.finalRank
+                }))
+            });
             if (DB.games.length > 500) DB.games.length = 500;
             saveGames();
             room.players.forEach(p => {
                 if (p.isBot || !p.login) return;
                 const u = DB.users[p.login];
                 if (!u) return;
-                u.coins = (u.coins || 0) + (p.coins || 0);
                 u.xp = (u.xp || 0) + (p.xp || 0);
             });
             saveUsers();
@@ -1635,9 +2108,13 @@ io.on('connection', (socket) => {
             const pin = String((payload && payload.pin) || '').trim();
             const room = rooms.get(pin);
             if (!room) return cb && cb({ ok: false });
-            if (room.teacherDisconnectTimer) { clearTimeout(room.teacherDisconnectTimer); room.teacherDisconnectTimer = null; }
+            if (room.teacherDisconnectTimer) {
+                clearTimeout(room.teacherDisconnectTimer);
+                room.teacherDisconnectTimer = null;
+            }
             room.teacherSocketId = socket.id;
-            currentRoomPin = pin; role = 'teacher';
+            currentRoomPin = pin;
+            role = 'teacher';
             socket.join('room_' + pin);
             if (cb) cb({ ok: true, state: getPublicState(room) });
             broadcastState(room);
@@ -1656,7 +2133,8 @@ io.on('connection', (socket) => {
                 const r = rooms.get(room.pin);
                 if (r && r.teacherSocketId === socket.id) {
                     io.to('room_' + r.pin).emit('roomClosed');
-                    cleanupRoom(r); rooms.delete(r.pin);
+                    cleanupRoom(r);
+                    rooms.delete(r.pin);
                 }
             }, 60000);
         }
@@ -1677,8 +2155,13 @@ setInterval(() => {
     for (const [pin, room] of rooms) {
         const noHuman = room.players.filter(p => !p.isBot).length === 0;
         const oldLobby = noHuman && now - room.createdAt > 2 * 60 * 60 * 1000;
-        const oldFinished = room.status === 'finished' && room.finishedAt && now - room.finishedAt > 60 * 60 * 1000;
-        if (oldLobby || oldFinished) { cleanupRoom(room); rooms.delete(pin); cleaned++; }
+        const oldFinished = room.status === 'finished' &&
+            room.finishedAt && now - room.finishedAt > 60 * 60 * 1000;
+        if (oldLobby || oldFinished) {
+            cleanupRoom(room);
+            rooms.delete(pin);
+            cleaned++;
+        }
     }
     if (cleaned > 0) console.log('[cleanup]', cleaned);
 }, 5 * 60 * 1000);
@@ -1694,15 +2177,18 @@ const HOST = '0.0.0.0';
 
 httpServer.listen(PORT, HOST, () => {
     console.log('==============================================');
-    console.log('🌟 SunLorem v2.6 — Денний ліміт 100 балів');
+    console.log('🌟 SunLorem v3.0 — Фінальна стабільна версія');
     console.log('🚀 http://' + HOST + ':' + PORT);
     console.log('👩‍🏫 Вчитель: місс.стівенс / 102938');
+    console.log('🪙 Ліміт СанКоїнів за день: ' + DAILY_COIN_CAP);
     console.log('==============================================');
 });
 
 function gracefulShutdown(signal) {
     console.log('[shutdown]', signal);
-    saveUsers(); saveQuizzes(); saveGames(); saveHomework(); saveGrades(); saveAnalytics(); saveMarks(); savePoints();
+    saveUsers(); saveQuizzes(); saveGames();
+    saveHomework(); saveGrades(); saveAnalytics();
+    saveMarks(); savePoints(); saveCoinsLog();
     io.close(() => httpServer.close(() => process.exit(0)));
     setTimeout(() => process.exit(0), 5000);
 }
