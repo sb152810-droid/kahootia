@@ -27,6 +27,8 @@ if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
 const DB = { users: {}, quizzes: {}, games: [], homework: {}, grades: {}, analytics: {}, marks: {}, points: {} };
 
+const DAILY_POINT_CAP = 100;
+
 function loadJSON(file, fallback) {
     const p = path.join(DATA_DIR, file);
     try { if (!fs.existsSync(p)) return fallback; return JSON.parse(fs.readFileSync(p, 'utf8')); }
@@ -47,17 +49,13 @@ function loadDB() {
     DB.marks = loadJSON('marks.json', {});
     DB.points = loadJSON('points.json', {});
     console.log('[db] users:', Object.keys(DB.users).length, '| quizzes:', Object.keys(DB.quizzes).length);
-
     let cleaned = 0;
     Object.keys(DB.points).forEach(login => {
         const before = DB.points[login].length;
         DB.points[login] = DB.points[login].filter(p => p.source === 'homework' || p.source === 'manual');
         cleaned += before - DB.points[login].length;
     });
-    if (cleaned > 0) {
-        savePoints();
-        console.log('[db] cleaned', cleaned, 'auto points (quest/game)');
-    }
+    if (cleaned > 0) { savePoints(); console.log('[db] cleaned', cleaned, 'old points'); }
 }
 function saveUsers()     { saveJSON('users.json', DB.users); }
 function saveQuizzes()   { saveJSON('quizzes.json', DB.quizzes); }
@@ -67,6 +65,20 @@ function saveGrades()    { saveJSON('grades.json', DB.grades); }
 function saveAnalytics() { saveJSON('analytics.json', DB.analytics); }
 function saveMarks()     { saveJSON('marks.json', DB.marks); }
 function savePoints()    { saveJSON('points.json', DB.points); }
+
+function todayKey() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function getTodayPoints(login) {
+    const list = DB.points[login] || [];
+    const key = todayKey();
+    return list.filter(p => {
+        const d = new Date(p.at);
+        const k = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        return k === key;
+    }).reduce((s, p) => s + (p.value > 0 ? p.value : 0), 0);
+}
 
 const DEFAULT_SUBJECTS = ['Математика', 'Українська мова', 'Історія', 'Природознавство', 'Інше'];
 
@@ -220,7 +232,6 @@ const SHOP = {
 const REACTION_EMOJIS = ['🎉', '🔥', '👏', '🤔', '🚀', '😂', '😮', '💪', '❓', '💯'];
 const CHAT_PHRASES = ['Вау!', 'Я знаю!', 'Дай шанс', 'Клас!', 'Ой…', 'Складно', 'Перемога!', 'Ще раз'];
 const BOT_PHRASES = ['Ой, я забув формулу', 'Це було легко!', 'Дай підказку', 'Я майже!', 'Хтось знає?', 'Класне питання', 'Хм… складне', 'Я готовий!'];
-
 const BOT_HW_COMMENTS = {
     good: ['Легко було!', 'Я готувався 💪', 'Класні питання!', ''],
     ok:   ['Трохи складнувато', 'Помилився двічі', 'Норм, але можна краще', ''],
@@ -499,7 +510,7 @@ function scheduleBotHomework(hw) {
             };
             saveHomework();
             if (h.autoPoints !== false) {
-                addPoint(login, correct * 10, 'За ДЗ «' + h.title + '»', 'homework', 'system');
+                addPointWithCap(login, correct * 10, 'За ДЗ «' + h.title + '»', 'homework', 'system');
             }
         }, delay);
     });
@@ -537,7 +548,7 @@ app.post('/api/homework/submit', (req, res) => {
         isLate, timeSpent: parseInt(timeSpent, 10) || 0, submittedAt: now, gradedBy: 'auto', gradedAt: now };
     saveHomework();
     if (hw.autoPoints !== false) {
-        addPoint(login, correct * 10, 'За ДЗ «' + hw.title + '»', 'homework', 'system');
+        addPointWithCap(login, correct * 10, 'За ДЗ «' + hw.title + '»', 'homework', 'system');
     }
     if (!DB.analytics[hw.quizId]) DB.analytics[hw.quizId] = { questions: {}, games: 0, players: {} };
     const an = DB.analytics[hw.quizId];
@@ -691,7 +702,26 @@ app.post('/api/marks/all', requireTeacher, (req, res) => {
     res.json({ ok: true, students: out });
 });
 
-function addPoint(login, value, reason, source, by) {
+function addPointWithCap(login, value, reason, source, by) {
+    if (!DB.points[login]) DB.points[login] = [];
+    const todaySum = getTodayPoints(login);
+    if (todaySum >= DAILY_POINT_CAP) {
+        return { ok: false, skipped: value, todaySum, cap: DAILY_POINT_CAP };
+    }
+    let allowed = value;
+    const remaining = DAILY_POINT_CAP - todaySum;
+    if (allowed > remaining) allowed = remaining;
+    if (allowed <= 0) return { ok: false, skipped: value, todaySum, cap: DAILY_POINT_CAP };
+    DB.points[login].unshift({
+        id: makeId('pt'), value: allowed,
+        reason: String(reason || '').slice(0, 200),
+        source: source || 'manual', by: by || 'system', at: Date.now()
+    });
+    savePoints();
+    return { ok: true, added: allowed, todaySum: todaySum + allowed, cap: DAILY_POINT_CAP };
+}
+
+function addPointManual(login, value, reason, source, by) {
     if (!DB.points[login]) DB.points[login] = [];
     DB.points[login].unshift({
         id: makeId('pt'), value: parseInt(value, 10) || 0,
@@ -707,7 +737,7 @@ app.post('/api/points/set', requireTeacher, (req, res) => {
     if (!u) return res.json({ ok: false, error: 'Учня не знайдено' });
     const v = parseInt(value, 10);
     if (isNaN(v)) return res.json({ ok: false, error: 'Число' });
-    addPoint(studentLogin, v, reason || 'Вручну', 'manual', req.teacher.login);
+    addPointManual(studentLogin, v, reason || 'Вручну', 'manual', req.teacher.login);
     res.json({ ok: true });
 });
 
@@ -724,7 +754,8 @@ app.post('/api/points/for-student', (req, res) => {
     if (!login) return res.json({ ok: false });
     const list = (DB.points[login] || []).filter(p => p.source === 'homework' || p.source === 'manual');
     const sum = list.reduce((s, p) => s + p.value, 0);
-    res.json({ ok: true, points: list, sum });
+    const today = getTodayPoints(login);
+    res.json({ ok: true, points: list, sum, today, cap: DAILY_POINT_CAP });
 });
 
 app.post('/api/points/all', requireTeacher, (req, res) => {
@@ -733,7 +764,8 @@ app.post('/api/points/all', requireTeacher, (req, res) => {
         if (!u) return null;
         const list = (DB.points[login] || []).filter(p => p.source === 'homework' || p.source === 'manual');
         const sum = list.reduce((s, p) => s + p.value, 0);
-        return { login: u.login, name: u.name, points: list, sum };
+        const today = getTodayPoints(login);
+        return { login: u.login, name: u.name, points: list, sum, today };
     }).filter(Boolean);
     out.sort((a, b) => b.sum - a.sum);
     res.json({ ok: true, students: out });
@@ -903,7 +935,7 @@ function autoFinishRoom(room) {
                 };
                 saveHomework();
                 if (hw.autoPoints !== false) {
-                    addPoint(me.login, me.correctCount * 10, 'За ДЗ «' + hw.title + '»', 'homework', 'system');
+                    addPointWithCap(me.login, me.correctCount * 10, 'За ДЗ «' + hw.title + '»', 'homework', 'system');
                 }
             }
         }
@@ -1662,7 +1694,7 @@ const HOST = '0.0.0.0';
 
 httpServer.listen(PORT, HOST, () => {
     console.log('==============================================');
-    console.log('🌟 SunLorem v2.5 — Бали за ДЗ + Боти-учні');
+    console.log('🌟 SunLorem v2.6 — Денний ліміт 100 балів');
     console.log('🚀 http://' + HOST + ':' + PORT);
     console.log('👩‍🏫 Вчитель: місс.стівенс / 102938');
     console.log('==============================================');
