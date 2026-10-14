@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1h', etag: tru
 const DATA_DIR = path.join(__dirname, 'data');
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
-const DB = { users: {}, quizzes: {}, games: [], homework: {}, grades: {}, analytics: {} };
+const DB = { users: {}, quizzes: {}, games: [], homework: {}, grades: {}, analytics: {}, marks: {}, points: {} };
 
 function loadJSON(file, fallback) {
     const p = path.join(DATA_DIR, file);
@@ -44,6 +44,8 @@ function loadDB() {
     DB.homework = loadJSON('homework.json', {});
     DB.grades = loadJSON('grades.json', {});
     DB.analytics = loadJSON('analytics.json', {});
+    DB.marks = loadJSON('marks.json', {});
+    DB.points = loadJSON('points.json', {});
     console.log('[db] users:', Object.keys(DB.users).length, '| quizzes:', Object.keys(DB.quizzes).length);
 }
 function saveUsers()     { saveJSON('users.json', DB.users); }
@@ -52,17 +54,26 @@ function saveGames()     { saveJSON('games.json', DB.games); }
 function saveHomework()  { saveJSON('homework.json', DB.homework); }
 function saveGrades()    { saveJSON('grades.json', DB.grades); }
 function saveAnalytics() { saveJSON('analytics.json', DB.analytics); }
+function saveMarks()     { saveJSON('marks.json', DB.marks); }
+function savePoints()    { saveJSON('points.json', DB.points); }
+
+const DEFAULT_SUBJECTS = ['Математика', 'Українська мова', 'Історія', 'Природознавство', 'Інше'];
 
 function ensureDefaultTeacher() {
-    const login = 'вчителька';
+    const login = 'місс.стівенс';
     if (!DB.users[login]) {
         DB.users[login] = {
-            login, password: '132', role: 'teacher', name: 'Вчителька',
+            login, password: '102938', role: 'teacher', name: 'Місс.Стівенс',
             coins: 0, xp: 0, avatar: '👩‍🏫', avatarId: 'a_cat',
             ownedAvatars: ['a_cat'], ownedAccessories: [],
             ownedThemes: ['t_neon', 't_pastel'], theme: 'neon',
-            completedQuests: {}, classStudents: [], createdAt: Date.now()
+            completedQuests: {}, classStudents: [],
+            subjects: DEFAULT_SUBJECTS.slice(),
+            createdAt: Date.now()
         };
+        saveUsers();
+    } else if (!DB.users[login].subjects) {
+        DB.users[login].subjects = DEFAULT_SUBJECTS.slice();
         saveUsers();
     }
 }
@@ -253,6 +264,7 @@ function publicUser(u) {
         ownedAvatars: u.ownedAvatars || ['a_cat'], ownedAccessories: u.ownedAccessories || [],
         ownedThemes: u.ownedThemes || ['t_neon', 't_pastel'], theme: u.theme || 'neon',
         completedQuests: u.completedQuests || {}, classStudents: u.classStudents || [],
+        subjects: u.subjects || null,
         isBot: !!u.isBot, createdAt: u.createdAt
     };
 }
@@ -317,6 +329,31 @@ app.post('/api/teacher/remove-student', requireTeacher, (req, res) => {
     req.teacher.classStudents = (req.teacher.classStudents || []).filter(l => l !== key);
     saveUsers();
     res.json({ ok: true });
+});
+
+app.post('/api/teacher/subjects', requireTeacher, (req, res) => {
+    res.json({ ok: true, subjects: req.teacher.subjects || DEFAULT_SUBJECTS.slice() });
+});
+
+app.post('/api/teacher/subjects/add', requireTeacher, (req, res) => {
+    const { name } = req.body || {};
+    if (!name) return res.json({ ok: false });
+    if (!req.teacher.subjects) req.teacher.subjects = DEFAULT_SUBJECTS.slice();
+    const n = String(name).slice(0, 40).trim();
+    if (!n) return res.json({ ok: false });
+    if (!req.teacher.subjects.includes(n)) {
+        req.teacher.subjects.push(n);
+        saveUsers();
+    }
+    res.json({ ok: true, subjects: req.teacher.subjects });
+});
+
+app.post('/api/teacher/subjects/delete', requireTeacher, (req, res) => {
+    const { name } = req.body || {};
+    if (!req.teacher.subjects) req.teacher.subjects = DEFAULT_SUBJECTS.slice();
+    req.teacher.subjects = req.teacher.subjects.filter(s => s !== name);
+    saveUsers();
+    res.json({ ok: true, subjects: req.teacher.subjects });
 });
 
 app.get('/api/quizzes', (req, res) => {
@@ -385,7 +422,7 @@ app.post('/api/quizzes/mine', requireTeacher, (req, res) => {
 });
 
 app.post('/api/homework/create', requireTeacher, (req, res) => {
-    const { quizId, title, deadline, classLogins } = req.body || {};
+    const { quizId, title, deadline, classLogins, autoPoints } = req.body || {};
     if (!quizId || !DB.quizzes[quizId]) return res.json({ ok: false, error: 'Квіз не знайдено' });
     if (!deadline) return res.json({ ok: false, error: 'Вкажи дедлайн' });
     const hw = {
@@ -393,6 +430,7 @@ app.post('/api/homework/create', requireTeacher, (req, res) => {
         title: String(title || DB.quizzes[quizId].title).slice(0, 80),
         deadline: parseInt(deadline, 10), authorLogin: req.teacher.login,
         classLogins: Array.isArray(classLogins) && classLogins.length > 0 ? classLogins : (req.teacher.classStudents || []).slice(),
+        autoPoints: autoPoints !== false,
         createdAt: Date.now(), submissions: {}
     };
     DB.homework[hw.id] = hw;
@@ -431,6 +469,9 @@ app.post('/api/homework/submit', (req, res) => {
     hw.submissions[login] = { login, correct, total, percent, grade, autoGrade: autoGrade(percent),
         isLate, timeSpent: parseInt(timeSpent, 10) || 0, submittedAt: now, gradedBy: 'auto', gradedAt: now };
     saveHomework();
+    if (hw.autoPoints !== false) {
+        addPoint(login, correct * 10, 'За ДЗ «' + hw.title + '»', 'homework', 'system');
+    }
     if (!DB.analytics[hw.quizId]) DB.analytics[hw.quizId] = { questions: {}, games: 0, players: {} };
     const an = DB.analytics[hw.quizId];
     an.games = (an.games || 0) + 1;
@@ -534,6 +575,160 @@ app.post('/api/analytics/teacher', requireTeacher, (req, res) => {
     res.json({ ok: true, quizzesCount: myQuizzes.length, totalGames, totalLikes, hardest: hardest.slice(0, 10) });
 });
 
+/* ============================================================
+   ОЦІНКИ (шкільні, 1-12)
+   ============================================================ */
+function addMark(login, value, subject, reason, by) {
+    if (!DB.marks[login]) DB.marks[login] = [];
+    DB.marks[login].unshift({
+        id: makeId('mark'),
+        value: parseInt(value, 10),
+        subject: String(subject || '').slice(0, 40),
+        reason: String(reason || '').slice(0, 200),
+        by: by || 'system',
+        at: Date.now()
+    });
+    saveMarks();
+}
+
+app.post('/api/marks/set', requireTeacher, (req, res) => {
+    const { studentLogin, value, subject, reason } = req.body || {};
+    const u = DB.users[studentLogin];
+    if (!u) return res.json({ ok: false, error: 'Учня не знайдено' });
+    const v = parseInt(value, 10);
+    if (isNaN(v) || v < 1 || v > 12) return res.json({ ok: false, error: 'Оцінка 1-12' });
+    addMark(studentLogin, v, subject, reason, req.teacher.login);
+    res.json({ ok: true });
+});
+
+app.post('/api/marks/delete', requireTeacher, (req, res) => {
+    const { studentLogin, markId } = req.body || {};
+    if (!DB.marks[studentLogin]) return res.json({ ok: false });
+    DB.marks[studentLogin] = DB.marks[studentLogin].filter(m => m.id !== markId);
+    saveMarks();
+    res.json({ ok: true });
+});
+
+app.post('/api/marks/edit', requireTeacher, (req, res) => {
+    const { studentLogin, markId, value, subject, reason } = req.body || {};
+    const list = DB.marks[studentLogin];
+    if (!list) return res.json({ ok: false });
+    const m = list.find(x => x.id === markId);
+    if (!m) return res.json({ ok: false });
+    if (value !== undefined) {
+        const v = parseInt(value, 10);
+        if (isNaN(v) || v < 1 || v > 12) return res.json({ ok: false, error: 'Оцінка 1-12' });
+        m.value = v;
+    }
+    if (subject !== undefined) m.subject = String(subject).slice(0, 40);
+    if (reason !== undefined) m.reason = String(reason).slice(0, 200);
+    m.editedBy = req.teacher.login;
+    m.editedAt = Date.now();
+    saveMarks();
+    res.json({ ok: true });
+});
+
+app.post('/api/marks/for-student', (req, res) => {
+    const { login } = req.body || {};
+    if (!login) return res.json({ ok: false });
+    const list = DB.marks[login] || [];
+    const avg = list.length > 0 ? (list.reduce((s, m) => s + m.value, 0) / list.length) : 0;
+    res.json({ ok: true, marks: list, avg: Math.round(avg * 10) / 10 });
+});
+
+app.post('/api/marks/all', requireTeacher, (req, res) => {
+    const out = (req.teacher.classStudents || []).map(login => {
+        const u = DB.users[login];
+        if (!u) return null;
+        const list = DB.marks[login] || [];
+        const avg = list.length > 0 ? (list.reduce((s, m) => s + m.value, 0) / list.length) : 0;
+        return {
+            login: u.login, name: u.name, isBot: !!u.isBot,
+            marks: list, avg: Math.round(avg * 10) / 10
+        };
+    }).filter(Boolean);
+    out.sort((a, b) => a.name.localeCompare(b.name, 'uk'));
+    res.json({ ok: true, students: out });
+});
+
+/* ============================================================
+   БАЛИ — будь-яке число
+   ============================================================ */
+function addPoint(login, value, reason, source, by) {
+    if (!DB.points[login]) DB.points[login] = [];
+    DB.points[login].unshift({
+        id: makeId('pt'),
+        value: parseInt(value, 10) || 0,
+        reason: String(reason || '').slice(0, 200),
+        source: source || 'manual',
+        by: by || 'system',
+        at: Date.now()
+    });
+    savePoints();
+}
+
+app.post('/api/points/set', requireTeacher, (req, res) => {
+    const { studentLogin, value, reason } = req.body || {};
+    const u = DB.users[studentLogin];
+    if (!u) return res.json({ ok: false, error: 'Учня не знайдено' });
+    const v = parseInt(value, 10);
+    if (isNaN(v)) return res.json({ ok: false, error: 'Число' });
+    addPoint(studentLogin, v, reason || 'Вручну', 'manual', req.teacher.login);
+    res.json({ ok: true });
+});
+
+app.post('/api/points/delete', requireTeacher, (req, res) => {
+    const { studentLogin, pointId } = req.body || {};
+    if (!DB.points[studentLogin]) return res.json({ ok: false });
+    DB.points[studentLogin] = DB.points[studentLogin].filter(p => p.id !== pointId);
+    savePoints();
+    res.json({ ok: true });
+});
+
+app.post('/api/points/edit', requireTeacher, (req, res) => {
+    const { studentLogin, pointId, value, reason } = req.body || {};
+    const list = DB.points[studentLogin];
+    if (!list) return res.json({ ok: false });
+    const p = list.find(x => x.id === pointId);
+    if (!p) return res.json({ ok: false });
+    if (value !== undefined) {
+        const v = parseInt(value, 10);
+        if (isNaN(v)) return res.json({ ok: false, error: 'Число' });
+        p.value = v;
+    }
+    if (reason !== undefined) p.reason = String(reason).slice(0, 200);
+    p.editedBy = req.teacher.login;
+    p.editedAt = Date.now();
+    savePoints();
+    res.json({ ok: true });
+});
+
+app.post('/api/points/for-student', (req, res) => {
+    const { login } = req.body || {};
+    if (!login) return res.json({ ok: false });
+    const list = DB.points[login] || [];
+    const sum = list.reduce((s, p) => s + p.value, 0);
+    res.json({ ok: true, points: list, sum });
+});
+
+app.post('/api/points/all', requireTeacher, (req, res) => {
+    const out = (req.teacher.classStudents || []).map(login => {
+        const u = DB.users[login];
+        if (!u) return null;
+        const list = DB.points[login] || [];
+        const sum = list.reduce((s, p) => s + p.value, 0);
+        return {
+            login: u.login, name: u.name, isBot: !!u.isBot,
+            points: list, sum
+        };
+    }).filter(Boolean);
+    out.sort((a, b) => b.sum - a.sum);
+    res.json({ ok: true, students: out });
+});
+
+/* ============================================================
+   ДУЕЛІ
+   ============================================================ */
 const duelInvites = new Map();
 const onlineUsers = new Map();
 
@@ -633,6 +828,7 @@ function getPublicState(room) {
 function broadcastState(room) { io.to('room_' + room.pin).emit('state', getPublicState(room)); }
 function stopTimer(room) { if (room.timer) { clearInterval(room.timer); room.timer = null; } }
 function stopBotTimers(room) { if (!room.botTimers) return; room.botTimers.forEach(t => clearTimeout(t)); room.botTimers = []; }
+
 function startTimer(room) {
     stopTimer(room);
     room.questionStartedAt = Date.now();
@@ -647,8 +843,111 @@ function startTimer(room) {
         if (left <= 0) {
             stopTimer(room);
             io.to('room_' + room.pin).emit('timeExpired', { questionIndex: room.currentQuestion });
+            if (room.isSolo || room.isHomework || room.isDuel || room.isPublic) {
+                scheduleAutoAdvance(room);
+            }
         }
     }, 250);
+}
+
+function scheduleAutoAdvance(room) {
+    if (room._autoAdvanceTimer) clearTimeout(room._autoAdvanceTimer);
+    room._autoAdvanceTimer = setTimeout(() => {
+        const r = rooms.get(room.pin);
+        if (!r || r.status !== 'running') return;
+        if (r.currentQuestion + 1 >= r.questions.length) {
+            autoFinishRoom(r);
+        } else {
+            r.currentQuestion++;
+            r.firstAnswer = null;
+            r.players.forEach(p => { p.answeredThisRound = false; p.lastCorrect = null; });
+            addFeed(r, '➡️ Питання ' + (r.currentQuestion + 1));
+            stopTimer(r); stopBotTimers(r);
+            startTimer(r); scheduleBotAnswers(r);
+            broadcastState(r);
+        }
+    }, 2000);
+}
+
+function autoFinishRoom(room) {
+    stopTimer(room); stopBotTimers(room);
+    room.status = 'finished';
+    room.finishedAt = Date.now();
+
+    if (room.isHomework) {
+        const me = room.players[0];
+        if (me) {
+            const hw = DB.homework[room.homeworkId];
+            if (hw && !hw.submissions[me.login]) {
+                const now = Date.now();
+                const isLate = now > hw.deadline;
+                const total = me.correctCount + me.wrongCount;
+                const percent = total > 0 ? Math.round((me.correctCount / total) * 100) : 0;
+                let grade = autoGrade(percent);
+                if (isLate) grade = Math.max(1, grade - 1);
+                hw.submissions[me.login] = {
+                    login: me.login, correct: me.correctCount, total, percent, grade,
+                    autoGrade: autoGrade(percent), isLate,
+                    timeSpent: Math.round((Date.now() - room.startedAt) / 1000),
+                    submittedAt: now, gradedBy: 'auto', gradedAt: now
+                };
+                saveHomework();
+                if (hw.autoPoints !== false) {
+                    addPoint(me.login, me.correctCount * 10, 'За ДЗ «' + hw.title + '»', 'homework', 'system');
+                }
+            }
+        }
+    }
+
+    const ranked = room.players.slice().sort((a, b) => b.score - a.score);
+    ranked.forEach((p, idx) => {
+        const rank = idx + 1;
+        const prize = getFinalPrize(rank);
+        p.finalRank = rank; p.finalPrize = prize;
+        p.coins = (p.coins || 0) + prize;
+    });
+    if (room.mode === 'survival') {
+        room.players.forEach(p => {
+            if (!p.alive) return;
+            if (!p.quests) p.quests = {};
+            if (!p.quests.survivor) p.quests.survivor = { completed: true };
+        });
+    }
+    if (room.quizId) {
+        if (!DB.analytics[room.quizId]) DB.analytics[room.quizId] = { questions: {}, games: 0, players: {} };
+        DB.analytics[room.quizId].games = (DB.analytics[room.quizId].games || 0) + 1;
+        saveAnalytics();
+    }
+    room.players.forEach(p => {
+        if (p.isBot || !p.login) return;
+        const u = DB.users[p.login];
+        if (!u) return;
+        u.coins = (u.coins || 0) + (p.coins || 0);
+        u.xp = (u.xp || 0) + (p.xp || 0);
+        if (p.quests) {
+            Object.keys(p.quests).forEach(qid => {
+                if (p.quests[qid] && p.quests[qid].completed && !p.quests[qid]._pointsGiven) {
+                    const def = QUEST_DEFS[qid];
+                    if (def) {
+                        addPoint(p.login, def.reward, 'За квест «' + def.title + '»', 'quest', 'system');
+                        p.quests[qid]._pointsGiven = true;
+                    }
+                }
+            });
+        }
+        if (p.finalRank === 1) addPoint(p.login, 50, 'За 1 місце в грі', 'game', 'system');
+        else if (p.finalRank === 2) addPoint(p.login, 30, 'За 2 місце в грі', 'game', 'system');
+        else if (p.finalRank === 3) addPoint(p.login, 20, 'За 3 місце в грі', 'game', 'system');
+        else if (p.score > 0) addPoint(p.login, 10, 'За участь у грі', 'game', 'system');
+    });
+    saveUsers();
+
+    broadcastState(room);
+    io.to('room_' + room.pin).emit('gameOver');
+    room.cleanupTimer = setTimeout(() => {
+        const r = rooms.get(room.pin);
+        if (r && r.status === 'finished') { cleanupRoom(r); rooms.delete(room.pin); }
+    }, 10 * 60 * 1000);
 }
 
 function calculateRewards(opts) {
@@ -755,6 +1054,7 @@ function scheduleBotAnswers(room) {
 
 function cleanupRoom(room) {
     stopTimer(room); stopBotTimers(room);
+    if (room._autoAdvanceTimer) clearTimeout(room._autoAdvanceTimer);
     if (room.cleanupTimer) clearTimeout(room.cleanupTimer);
     if (room.teacherDisconnectTimer) clearTimeout(room.teacherDisconnectTimer);
 }
@@ -1207,6 +1507,14 @@ io.on('connection', (socket) => {
                 coinsRemaining: Math.max(0, ECONOMY.coinsPerGameCap - (player.coinsEarnedThisGame || 0)),
                 xp: player.xp, streak: player.streak, completedQuests });
             broadcastState(room);
+
+            if (room.isSolo || room.isHomework || room.isDuel || room.isPublic) {
+                const allAnswered = room.players.every(p => p.answeredThisRound || !p.alive);
+                if (allAnswered) {
+                    stopTimer(room);
+                    scheduleAutoAdvance(room);
+                }
+            }
         } catch (err) { if (cb) cb({ ok: false }); }
     });
 
@@ -1251,6 +1559,21 @@ io.on('connection', (socket) => {
                 if (!u) return;
                 u.coins = (u.coins || 0) + (p.coins || 0);
                 u.xp = (u.xp || 0) + (p.xp || 0);
+                if (p.quests) {
+                    Object.keys(p.quests).forEach(qid => {
+                        if (p.quests[qid] && p.quests[qid].completed && !p.quests[qid]._pointsGiven) {
+                            const def = QUEST_DEFS[qid];
+                            if (def) {
+                                addPoint(p.login, def.reward, 'За квест «' + def.title + '»', 'quest', 'system');
+                                p.quests[qid]._pointsGiven = true;
+                            }
+                        }
+                    });
+                }
+                if (p.finalRank === 1) addPoint(p.login, 50, 'За 1 місце в грі', 'game', 'system');
+                else if (p.finalRank === 2) addPoint(p.login, 30, 'За 2 місце в грі', 'game', 'system');
+                else if (p.finalRank === 3) addPoint(p.login, 20, 'За 3 місце в грі', 'game', 'system');
+                else if (p.score > 0) addPoint(p.login, 10, 'За участь у грі', 'game', 'system');
             });
             saveUsers();
             if (cb) cb({ ok: true });
@@ -1267,32 +1590,12 @@ io.on('connection', (socket) => {
         try {
             const room = rooms.get(currentRoomPin);
             if (!room || !room.isHomework) return cb && cb({ ok: false });
-            stopTimer(room);
-            room.status = 'finished';
-            room.finishedAt = Date.now();
+            if (room.status === 'finished') return cb && cb({ ok: false, error: 'Вже завершено' });
+            autoFinishRoom(room);
             const me = room.players[0];
-            if (!me) return cb && cb({ ok: false });
-            const timeSpent = Math.round((Date.now() - room.startedAt) / 1000);
             const hw = DB.homework[room.homeworkId];
-            if (!hw) return cb && cb({ ok: false });
-            const now = Date.now();
-            const isLate = now > hw.deadline;
-            const total = me.correctCount + me.wrongCount;
-            const percent = total > 0 ? Math.round((me.correctCount / total) * 100) : 0;
-            let grade = autoGrade(percent);
-            if (isLate) grade = Math.max(1, grade - 1);
-            const submission = { login: me.login, correct: me.correctCount, total, percent, grade,
-                autoGrade: autoGrade(percent), isLate, timeSpent, submittedAt: now, gradedBy: 'auto', gradedAt: now };
-            hw.submissions[me.login] = submission;
-            saveHomework();
-            const u = DB.users[me.login];
-            if (u) { u.coins = (u.coins || 0) + (me.coins || 0); u.xp = (u.xp || 0) + (me.xp || 0); saveUsers(); }
-            if (cb) cb({ ok: true, submission });
-            broadcastState(room);
-            room.cleanupTimer = setTimeout(() => {
-                const r = rooms.get(room.pin);
-                if (r && r.status === 'finished') { cleanupRoom(r); rooms.delete(room.pin); }
-            }, 5 * 60 * 1000);
+            const sub = hw && hw.submissions[me.login];
+            if (cb) cb({ ok: true, submission: sub || null });
         } catch (err) { if (cb) cb({ ok: false }); }
     });
 
@@ -1371,15 +1674,15 @@ const HOST = '0.0.0.0';
 
 httpServer.listen(PORT, HOST, () => {
     console.log('==============================================');
-    console.log('🌟 SunLorem v2.3 — Дуелі + Глядачі + Чат');
+    console.log('🌟 SunLorem v2.4 — Оцінки + Бали + Автоперехід');
     console.log('🚀 http://' + HOST + ':' + PORT);
-    console.log('👩‍🏫 Вчитель: вчителька / 132');
+    console.log('👩‍🏫 Вчитель: місс.стівенс / 102938');
     console.log('==============================================');
 });
 
 function gracefulShutdown(signal) {
     console.log('[shutdown]', signal);
-    saveUsers(); saveQuizzes(); saveGames(); saveHomework(); saveGrades(); saveAnalytics();
+    saveUsers(); saveQuizzes(); saveGames(); saveHomework(); saveGrades(); saveAnalytics(); saveMarks(); savePoints();
     io.close(() => httpServer.close(() => process.exit(0)));
     setTimeout(() => process.exit(0), 5000);
 }
