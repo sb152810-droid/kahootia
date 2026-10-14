@@ -153,6 +153,7 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
 .avatar-render .acc-head{top:-30%;left:50%;transform:translateX(-50%);width:60%;height:auto}
 .avatar-render .acc-eyes{top:22%;left:50%;transform:translateX(-50%);width:70%;height:auto}
 .avatar-render .acc-effect{bottom:-18%;left:-18%;width:55%;height:auto;animation:accFloat 2.5s ease-in-out infinite}
+.avatar-render .preview-acc{position:relative;top:0;left:0;transform:none;width:100%;height:100%}
 @keyframes accFloat{0%,100%{transform:translateY(0) rotate(-6deg);opacity:.85}50%{transform:translateY(-6px) rotate(6deg);opacity:1}}
 .podium{display:flex;align-items:flex-end;justify-content:center;gap:8px;margin:16px 0;min-height:180px}
 .podium-place{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;max-width:130px}
@@ -267,7 +268,7 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
     </div>
     <div class="panel panel-narrow">
         <div class="panel-title">🎮 Як грати</div>
-        <p style="font-size:13px;line-height:1.6">1. Обери квіз у каталозі.<br>2. Соло / з людьми / кімната.<br>3. Або приєднайся за PIN.<br>4. Виклич друга на дуель.<br>5. Серія 3+ множить бали.</p>
+        <p style="font-size:13px;line-height:1.6">1. Обери квіз у каталозі.<br>2. Соло / з людьми / кімната.<br>3. Або приєднайся за PIN.<br>4. Виклич друга на дуель.<br>5. Бали — тільки за ДЗ (до 100/день).</p>
     </div>
 </div>
 
@@ -496,10 +497,10 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
 
 <div id="screen-points" class="screen">
     <h1>🏆 Мої бали</h1>
-    <p class="subtitle">Бали за ДЗ та від вчителя</p>
+    <p class="subtitle">Ліміт 100 балів на день</p>
     <div class="panel panel-narrow">
         <div class="balance-bar">
-            <span>⭐ Сума: <span id="pointsSum">0</span></span>
+            <span>Сьогодні: <span id="pointsSum">0 / 100</span></span>
         </div>
         <div id="pointsList"></div>
     </div>
@@ -716,7 +717,8 @@ chatPhrases:['Вау!','Я знаю!','Дай шанс','Клас!','Ой…','�
 room:null,socket:null,connected:false,initDone:false,shopTabName:'avatars',hwTabName:'hw',answeredCurrent:false,
 lastQIndex:-1,lastQStart:0,questionStart:0,_localTimer:null,_prizeApplied:false,
 questionsDraft:[],currentHomework:null,allMyQuizzes:[],currentDuelInvite:null,isSpectator:false,
-subjects:['Математика','Українська мова','Історія','Природознавство','Інше']};
+subjects:['Математика','Українська мова','Історія','Природознавство','Інше'],
+todayPoints:0,dailyCap:100};
 function $(id){return document.getElementById(id)}
 function qsa(s,r=document){return Array.from(r.querySelectorAll(s))}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -744,16 +746,16 @@ const SVG_ACC = {
     x_snow: '<svg class="acc-svg acc-effect" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><line x1="50" y1="10" x2="50" y2="90" stroke="#5ff0ff" stroke-width="4"/><line x1="10" y1="50" x2="90" y2="50" stroke="#5ff0ff" stroke-width="4"/><line x1="22" y1="22" x2="78" y2="78" stroke="#5ff0ff" stroke-width="4"/><line x1="78" y1="22" x2="22" y2="78" stroke="#5ff0ff" stroke-width="4"/></svg>'
 };
 
-function renderAvatar(avatarEmoji, accessories) {
-    let html = '<span class="avatar-render">' + avatarEmoji;
-    if (accessories) {
-        if (accessories.effect && SVG_ACC[accessories.effect]) html += SVG_ACC[accessories.effect];
-        if (accessories.head && SVG_ACC[accessories.head]) html += SVG_ACC[accessories.head];
-        if (accessories.eyes && SVG_ACC[accessories.eyes]) html += SVG_ACC[accessories.eyes];
-    }
-    html += '</span>';
-    return html;
-}
+function renderAvatar(avatarEmoji,accessories){let html='<span class="avatar-render">'+avatarEmoji;
+if(accessories){if(accessories.effect&&SVG_ACC[accessories.effect])html+=SVG_ACC[accessories.effect];
+if(accessories.head&&SVG_ACC[accessories.head])html+=SVG_ACC[accessories.head];
+if(accessories.eyes&&SVG_ACC[accessories.eyes])html+=SVG_ACC[accessories.eyes];}
+html+='</span>';return html;}
+function renderAccessoriesSVG(acc){let html='';
+if(acc.effect&&SVG_ACC[acc.effect])html+=SVG_ACC[acc.effect];
+if(acc.head&&SVG_ACC[acc.head])html+=SVG_ACC[acc.head];
+if(acc.eyes&&SVG_ACC[acc.eyes])html+=SVG_ACC[acc.eyes];
+return html;}
 
 let toastTimer=null;
 function toast(msg,ms=2400){const t=$('toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),ms)}
@@ -783,8 +785,20 @@ if(!Array.isArray(State.profile.ownedAvatars))State.profile.ownedAvatars=['a_cat
 if(!Array.isArray(State.profile.ownedAccessories))State.profile.ownedAccessories=[];
 if(!Array.isArray(State.profile.ownedThemes))State.profile.ownedThemes=['t_neon','t_pastel'];
 if(!State.profile.completedQuests)State.profile.completedQuests={};}
-function saveProfile(){Storage.set('sunlorem_profile',State.profile);toast('💾 Збережено!');
-if(State.socket&&State.connected&&State.room&&State.playerId){State.socket.emit('updateProfile',{playerId:State.playerId,avatarId:State.profile.equippedAvatar,accessories:{head:State.profile.equippedHead,eyes:State.profile.equippedEyes,effect:State.profile.equippedEffect},xp:State.profile.xp});}}
+function saveProfile(){
+    Storage.set('sunlorem_profile',State.profile);
+    if(State.socket&&State.connected&&State.room&&State.playerId){
+        State.socket.emit('updateProfile',{playerId:State.playerId,avatarId:State.profile.equippedAvatar,accessories:{head:State.profile.equippedHead,eyes:State.profile.equippedEyes,effect:State.profile.equippedEffect},xp:State.profile.xp});
+    }
+    if(State.token&&State.user){
+        api('/api/auth/me',{token:State.token}).then(res=>{
+            if(res&&res.ok){syncFromUser(res.user);toast('💾 Збережено!');}
+            else toast('💾 Збережено локально');
+        }).catch(()=>toast('💾 Збережено локально'));
+    } else {
+        toast('💾 Збережено локально');
+    }
+}
 function syncFromUser(u){if(!u)return;State.user=u;
 State.profile.coins=u.coins||0;State.profile.xp=u.xp||0;
 State.profile.ownedAvatars=u.ownedAvatars||['a_cat'];
@@ -794,7 +808,8 @@ State.profile.equippedAvatar=u.avatarId||'a_cat';
 State.profile.equippedHead=u.equippedHead||'';State.profile.equippedEyes=u.equippedEyes||'';State.profile.equippedEffect=u.equippedEffect||'';
 State.profile.completedQuests=u.completedQuests||{};
 if(u.subjects&&Array.isArray(u.subjects))State.subjects=u.subjects;
-saveProfile();updateAllBalances();if(u.theme)applyTheme(u.theme);}
+Storage.set('sunlorem_profile',State.profile);
+updateAllBalances();if(u.theme)applyTheme(u.theme);}
 function showUserUI(){const isT=State.user&&State.user.role==='teacher';const isS=State.user&&State.user.role==='student';
 $('btnTeacherPanel').classList.toggle('hidden',!isT);
 $('btnHW').classList.toggle('hidden',!isS);
@@ -1001,15 +1016,6 @@ const card=document.createElement('div');card.className='shop-card'+(eq?' equipp
 card.innerHTML='<span class="preview">'+(emojis[t.id]||'🎨')+'</span><div class="name">'+esc(t.name)+'</div><div class="price '+(owned?'owned':(State.profile.coins<t.price?'cant':''))+'">'+(owned?'✓':(t.price+' 🪙'))+'</div>';
 card.onclick=()=>buyOrEquipTheme(t);wrap.appendChild(card);});}
 updateAllBalances();}
-
-function renderAccessoriesSVG(acc){
-    let html='';
-    if(acc.effect&&SVG_ACC[acc.effect])html+=SVG_ACC[acc.effect];
-    if(acc.head&&SVG_ACC[acc.head])html+=SVG_ACC[acc.head];
-    if(acc.eyes&&SVG_ACC[acc.eyes])html+=SVG_ACC[acc.eyes];
-    return html;
-}
-
 function buyOrEquipAvatar(a){if(State.profile.ownedAvatars.includes(a.id)){State.profile.equippedAvatar=a.id;saveProfile();renderShop();return}
 if(State.profile.coins<a.price){toast('Треба ще '+(a.price-State.profile.coins)+' 🪙');return}
 if(!confirm('Купити "'+a.name+'" за '+a.price+' 🪙?'))return;
@@ -1044,7 +1050,9 @@ wrap.appendChild(row);});}
 async function loadMyPoints(){if(!State.user||State.user.role!=='student'){toast('Треба увійти як учень');go('screen-welcome');return}
 const res=await api('/api/points/for-student',{login:State.user.login});
 if(!res.ok){toast('Помилка');return}
-$('pointsSum').textContent=res.sum||0;
+State.todayPoints=res.today||0;
+State.dailyCap=res.cap||100;
+$('pointsSum').textContent=State.todayPoints + ' / ' + State.dailyCap;
 const wrap=$('pointsList');wrap.innerHTML='';
 if(res.points.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:14px">Балів немає</p>';return}
 res.points.forEach(p=>{
@@ -1117,7 +1125,7 @@ const wrap=$('pointsAllList');wrap.innerHTML='';
 if(res.students.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:10px">Порожньо</p>';return}
 res.students.forEach(s=>{
 const h=document.createElement('div');h.className='student-row';h.style.background='transparent';
-h.innerHTML='<div style="flex:1"><div class="s-name">'+esc(s.name)+'</div><div class="s-login">Сума: '+s.sum+' балів</div></div>';
+h.innerHTML='<div style="flex:1"><div class="s-name">'+esc(s.name)+'</div><div class="s-login">Сума: '+s.sum+' • Сьогодні: '+s.today+'/100</div></div>';
 wrap.appendChild(h);
 s.points.forEach(p=>{
 const cls=p.value>=0?'point-pos':'point-neg';
