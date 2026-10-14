@@ -185,6 +185,18 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
 .duel-row .dr-offline{color:var(--text-dim)}
 .duel-row .dr-invite{padding:8px 14px;font-size:13px;min-height:38px;width:auto}
 .spectator-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(255,215,95,.15);border:1px solid var(--accent-4);color:var(--accent-4);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:800}
+.record-row{display:flex;align-items:center;gap:10px;background:var(--input-bg);border:1.5px solid var(--panel-border);border-radius:var(--radius-sm);padding:8px 10px;margin-bottom:6px}
+.record-row .rec-value{font-weight:900;font-size:20px;min-width:48px;text-align:center;border-radius:8px;padding:4px 8px}
+.record-row .rec-value.mark-good{background:linear-gradient(135deg,#5fff9b,#5ff0ff);color:#10261a}
+.record-row .rec-value.mark-ok{background:linear-gradient(135deg,#ffd75f,#ffaa00);color:#3a2400}
+.record-row .rec-value.mark-bad{background:linear-gradient(135deg,#ff6b8b,#ff3d6e);color:#fff}
+.record-row .rec-value.point-pos{background:linear-gradient(135deg,#5fff9b,#5ff0ff);color:#10261a}
+.record-row .rec-value.point-neg{background:linear-gradient(135deg,#ff6b8b,#ff3d6e);color:#fff}
+.record-row .rec-info{flex:1;min-width:0}
+.record-row .rec-title{font-weight:800;font-size:14px}
+.record-row .rec-meta{font-size:11px;color:var(--text-dim);margin-top:2px;word-break:break-word}
+.record-row .rec-actions{display:flex;gap:4px}
+.record-row .rec-actions button{padding:4px 8px;font-size:12px;min-height:30px;width:auto}
 @media print{
     @page{size:A4 portrait;margin:15mm}
     html,body{background:#fff!important;color:#000!important;height:auto!important;overflow:visible!important;width:100%!important;margin:0!important;padding:0!important}
@@ -243,6 +255,8 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
         <div class="button-row">
             <button class="ghost" onclick="App.go('screen-quests')">🏆 Квести</button>
             <button class="ghost hidden" id="btnHW" onclick="App.go('screen-homework')">📝 ДЗ</button>
+            <button class="ghost hidden" id="btnMarks" onclick="App.go('screen-marks')">🎓 Оцінки</button>
+            <button class="ghost hidden" id="btnPoints" onclick="App.go('screen-points')">🏆 Бали</button>
             <button class="ghost hidden" id="btnTeacherPanel" onclick="App.go('screen-teacher')">👩‍🏫 Вчитель</button>
         </div>
     </div>
@@ -257,14 +271,13 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
     <p class="subtitle">Введи логін та пароль</p>
     <div class="panel panel-narrow">
         <label>Логін</label>
-        <input type="text" id="loginInput" autocomplete="username" placeholder="вчителька">
+        <input type="text" id="loginInput" autocomplete="username" placeholder="Логін">
         <label>Пароль</label>
         <input type="password" id="passwordInput" autocomplete="current-password" placeholder="•••">
         <div class="button-grid two-col">
             <button class="primary" onclick="App.doLogin()">✅ Увійти</button>
             <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
         </div>
-        <p style="font-size:12px;color:var(--text-dim);margin-top:10px;text-align:center">Вчитель: <b>вчителька</b> / <b>132</b></p>
     </div>
 </div>
 
@@ -452,7 +465,7 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
         </div>
         <div class="tabs">
             <div class="tab active" data-hwtab="hw" onclick="App.hwTab('hw')">📝 ДЗ</div>
-            <div class="tab" data-hwtab="grades" onclick="App.hwTab('grades')">🎓 Оцінки</div>
+            <div class="tab" data-hwtab="grades" onclick="App.hwTab('grades')">🎓 Оцінки ДЗ</div>
         </div>
         <div id="hwList"></div>
         <div id="gradesList" class="hidden"></div>
@@ -462,16 +475,47 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
     </div>
 </div>
 
+<div id="screen-marks" class="screen">
+    <h1>🎓 Мої оцінки</h1>
+    <p class="subtitle">Шкільні оцінки (1-12)</p>
+    <div class="panel panel-narrow">
+        <div class="balance-bar">
+            <span>📊 Середнє: <span id="marksAvg">0</span></span>
+        </div>
+        <div id="marksList"></div>
+    </div>
+    <div class="panel panel-narrow">
+        <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
+    </div>
+</div>
+
+<div id="screen-points" class="screen">
+    <h1>🏆 Мої бали</h1>
+    <p class="subtitle">Бали за завдання, квести, ігри</p>
+    <div class="panel panel-narrow">
+        <div class="balance-bar">
+            <span>⭐ Сума: <span id="pointsSum">0</span></span>
+        </div>
+        <div id="pointsList"></div>
+    </div>
+    <div class="panel panel-narrow">
+        <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
+    </div>
+</div>
+
 <div id="screen-teacher" class="screen">
     <h1>👩‍🏫 Панель вчителя</h1>
-    <p class="subtitle">Клас, квізи, ДЗ, аналітика</p>
+    <p class="subtitle">Клас, квізи, ДЗ, оцінки, бали</p>
     <div class="panel panel-narrow">
         <div class="tabs">
             <div class="tab active" data-tab="class" onclick="App.teacherTab('class')">👥 Клас</div>
+            <div class="tab" data-tab="marks" onclick="App.teacherTab('marks')">🎓 Оцінки</div>
+            <div class="tab" data-tab="points" onclick="App.teacherTab('points')">🏆 Бали</div>
             <div class="tab" data-tab="create" onclick="App.teacherTab('create')">✏️ Квіз</div>
             <div class="tab" data-tab="mine" onclick="App.teacherTab('mine')">📚 Мої</div>
             <div class="tab" data-tab="hw" onclick="App.teacherTab('hw')">📝 ДЗ</div>
             <div class="tab" data-tab="analytics" onclick="App.teacherTab('analytics')">📊 Аналітика</div>
+            <div class="tab" data-tab="subjects" onclick="App.teacherTab('subjects')">📖 Предмети</div>
         </div>
         <div id="teacherClassTab">
             <div class="panel-title">➕ Учень</div>
@@ -486,6 +530,27 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
             <div class="spacer"></div>
             <div class="panel-title">👥 Мій клас</div>
             <div id="classList"></div>
+        </div>
+        <div id="teacherMarksTab" class="hidden">
+            <div class="panel-title">🎓 Поставити оцінку</div>
+            <select id="markStudentSelect"></select>
+            <select id="markSubjectSelect"></select>
+            <input type="number" id="markValueInput" min="1" max="12" placeholder="Оцінка 1-12">
+            <input type="text" id="markReasonInput" placeholder="За що (текст)">
+            <button class="success" onclick="App.setMark()">➕ Поставити</button>
+            <div class="spacer"></div>
+            <div class="panel-title">📊 Журнал оцінок</div>
+            <div id="marksAllList"></div>
+        </div>
+        <div id="teacherPointsTab" class="hidden">
+            <div class="panel-title">🏆 Додати бали</div>
+            <select id="pointStudentSelect"></select>
+            <input type="number" id="pointValueInput" placeholder="Бали (число)">
+            <input type="text" id="pointReasonInput" placeholder="За що (текст)">
+            <button class="success" onclick="App.setPoint()">➕ Додати</button>
+            <div class="spacer"></div>
+            <div class="panel-title">📊 Журнал балів</div>
+            <div id="pointsAllList"></div>
         </div>
         <div id="teacherCreateTab" class="hidden">
             <div class="panel-title">✏️ Новий квіз</div>
@@ -527,6 +592,10 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
             <input type="text" id="hwTitle" placeholder="Назва ДЗ">
             <label>Дедлайн</label>
             <input type="datetime-local" id="hwDeadline">
+            <label style="display:flex;align-items:center;gap:8px;margin:8px 0">
+                <input type="checkbox" id="hwAutoPoints" checked style="width:auto;margin:0">
+                <span>Автоматично нарахувати бали (10 балів за правильну)</span>
+            </label>
             <button class="success" onclick="App.createHomework()">📝 Створити</button>
             <div class="spacer"></div>
             <div class="panel-title">📋 Мої ДЗ</div>
@@ -540,6 +609,14 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
             <select id="analyticsQuizSelect"></select>
             <button class="primary small" onclick="App.loadQuizAnalytics()" style="margin-top:6px">Показати</button>
             <div id="quizAnalytics"></div>
+        </div>
+        <div id="teacherSubjectsTab" class="hidden">
+            <div class="panel-title">📖 Додати предмет</div>
+            <input type="text" id="newSubjectName" placeholder="Назва предмету">
+            <button class="success" onclick="App.addSubject()">➕ Додати</button>
+            <div class="spacer"></div>
+            <div class="panel-title">📚 Мої предмети</div>
+            <div id="subjectsList"></div>
         </div>
     </div>
     <div class="panel panel-narrow">
@@ -633,7 +710,8 @@ reactionEmojis:['🎉','🔥','👏','🤔','🚀','😂','😮','💪','❓','�
 chatPhrases:['Вау!','Я знаю!','Дай шанс','Клас!','Ой…','Складно','Перемога!','Ще раз'],
 room:null,socket:null,connected:false,initDone:false,shopTabName:'avatars',hwTabName:'hw',answeredCurrent:false,
 lastQIndex:-1,lastQStart:0,questionStart:0,_localTimer:null,_prizeApplied:false,
-questionsDraft:[],currentHomework:null,allMyQuizzes:[],currentDuelInvite:null,isSpectator:false};
+questionsDraft:[],currentHomework:null,allMyQuizzes:[],currentDuelInvite:null,isSpectator:false,
+subjects:['Математика','Українська мова','Історія','Природознавство','Інше']};
 function $(id){return document.getElementById(id)}
 function qsa(s,r=document){return Array.from(r.querySelectorAll(s))}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -652,6 +730,8 @@ else if(id==='screen-quests')renderQuests();
 else if(id==='screen-teacher')renderTeacher();
 else if(id==='screen-homework')loadHomework();
 else if(id==='screen-duel')loadDuelScreen();
+else if(id==='screen-marks')loadMyMarks();
+else if(id==='screen-points')loadMyPoints();
 updateAllBalances();}
 function updateAllBalances(){const p=State.profile;
 const pairs=[['welcomeCoins',p.coins],['catalogCoins',p.coins],['shopCoins',p.coins],['questsCoins',p.coins],['hwCoins',p.coins],
@@ -674,10 +754,13 @@ State.profile.ownedThemes=u.ownedThemes||['t_neon','t_pastel'];
 State.profile.equippedAvatar=u.avatarId||'a_cat';
 State.profile.equippedHead=u.equippedHead||'';State.profile.equippedEyes=u.equippedEyes||'';State.profile.equippedEffect=u.equippedEffect||'';
 State.profile.completedQuests=u.completedQuests||{};
+if(u.subjects&&Array.isArray(u.subjects))State.subjects=u.subjects;
 saveProfile();updateAllBalances();if(u.theme)applyTheme(u.theme);}
 function showUserUI(){const isT=State.user&&State.user.role==='teacher';const isS=State.user&&State.user.role==='student';
 $('btnTeacherPanel').classList.toggle('hidden',!isT);
 $('btnHW').classList.toggle('hidden',!isS);
+$('btnMarks').classList.toggle('hidden',!isS);
+$('btnPoints').classList.toggle('hidden',!isS);
 $('welcomeGuestBox').classList.toggle('hidden',!!State.user);
 $('welcomeUserBox').classList.toggle('hidden',!State.user);
 if(State.user)$('welcomeUserName').textContent=(isT?'👩‍🏫 ':'🎒 ')+State.user.name;
@@ -895,6 +978,30 @@ Object.values(State.questDefs).forEach(def=>{const done=!!State.profile.complete
 const item=document.createElement('div');item.className='quest-item'+(done?' done':'');
 item.innerHTML='<div class="q-icon">'+def.icon+'</div><div class="q-info"><div class="q-title">'+esc(def.title)+(done?' ✓':'')+'</div><div class="q-desc">'+esc(def.desc)+'</div></div><div class="q-reward">'+(done?'✅':'+'+def.reward+' 🪙')+'</div>';
 wrap.appendChild(item);});}
+async function loadMyMarks(){if(!State.user||State.user.role!=='student'){toast('Треба увійти як учень');go('screen-welcome');return}
+const res=await api('/api/marks/for-student',{login:State.user.login});
+if(!res.ok){toast('Помилка');return}
+$('marksAvg').textContent=res.avg||0;
+const wrap=$('marksList');wrap.innerHTML='';
+if(res.marks.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:14px">Оцінок немає</p>';return}
+res.marks.forEach(m=>{
+const cls=m.value>=10?'mark-good':m.value>=7?'mark-ok':'mark-bad';
+const d=new Date(m.at).toLocaleString('uk-UA');
+const row=document.createElement('div');row.className='record-row';
+row.innerHTML='<div class="rec-value '+cls+'">'+m.value+'</div><div class="rec-info"><div class="rec-title">'+esc(m.subject||'Без предмету')+'</div><div class="rec-meta">'+esc(m.reason||'')+' • '+d+' • від '+esc(m.by)+'</div></div>';
+wrap.appendChild(row);});}
+async function loadMyPoints(){if(!State.user||State.user.role!=='student'){toast('Треба увійти як учень');go('screen-welcome');return}
+const res=await api('/api/points/for-student',{login:State.user.login});
+if(!res.ok){toast('Помилка');return}
+$('pointsSum').textContent=res.sum||0;
+const wrap=$('pointsList');wrap.innerHTML='';
+if(res.points.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:14px">Балів немає</p>';return}
+res.points.forEach(p=>{
+const cls=p.value>=0?'point-pos':'point-neg';
+const d=new Date(p.at).toLocaleString('uk-UA');
+const row=document.createElement('div');row.className='record-row';
+row.innerHTML='<div class="rec-value '+cls+'">'+(p.value>0?'+':'')+p.value+'</div><div class="rec-info"><div class="rec-title">'+esc(p.reason||'')+'</div><div class="rec-meta">'+d+' • '+esc(p.by||'')+'</div></div>';
+wrap.appendChild(row);});}
 async function loadDuelScreen(){if(!State.user||State.user.role!=='student'){toast('Треба увійти як учень');go('screen-welcome');return}
 if(!State.token)return;
 const qres=await fetch('/api/quizzes');const qj=await qres.json();
@@ -928,15 +1035,102 @@ State.answeredCurrent=false;State.lastQIndex=-1;$('gameTitle').textContent='⚔�
 go('screen-game');renderGame(r.state);});}
 State.currentDuelInvite=null;}
 function teacherTab(t){qsa('#screen-teacher .tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===t));
-['class','create','mine','hw','analytics'].forEach(name=>{const el=$('teacher'+name.charAt(0).toUpperCase()+name.slice(1)+'Tab');if(el)el.classList.toggle('hidden',name!==t);});
-if(t==='mine')loadMyQuizzes();if(t==='hw')loadMyHomework();if(t==='analytics')loadGeneralAnalytics();}
+['class','marks','points','create','mine','hw','analytics','subjects'].forEach(name=>{const el=$('teacher'+name.charAt(0).toUpperCase()+name.slice(1)+'Tab');if(el)el.classList.toggle('hidden',name!==t);});
+if(t==='mine')loadMyQuizzes();if(t==='hw')loadMyHomework();if(t==='analytics')loadGeneralAnalytics();if(t==='marks')loadMarksAll();if(t==='points')loadPointsAll();if(t==='subjects')renderSubjects();}
 function renderTeacher(){if(!State.user||State.user.role!=='teacher'){toast('Тільки для вчителя');go('screen-welcome');return}loadClass();}
 async function loadClass(){if(!State.token)return;const res=await api('/api/teacher/class',{token:State.token});if(!res.ok)return;
 const wrap=$('classList');wrap.innerHTML='';
+const markSel=$('markStudentSelect');const pointSel=$('pointStudentSelect');
+if(markSel)markSel.innerHTML='';if(pointSel)pointSel.innerHTML='';
 if(res.students.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:10px">Порожньо</p>';return}
 res.students.forEach(s=>{const row=document.createElement('div');row.className='student-row';
 row.innerHTML='<div style="flex:1"><div class="s-name">'+esc(s.name)+'</div><div class="s-login">'+esc(s.login)+' • 🪙 '+s.coins+' • ⭐ '+s.xp+'</div></div>'+(s.isBot?'<span class="s-bot-tag">бот</span>':'')+'<button class="danger small" onclick="App.removeStudent(\''+esc(s.login)+'\')">🗑️</button>';
+wrap.appendChild(row);
+if(markSel){const o=document.createElement('option');o.value=s.login;o.textContent=s.name;markSel.appendChild(o);}
+if(pointSel){const o=document.createElement('option');o.value=s.login;o.textContent=s.name;pointSel.appendChild(o);}});}
+async function loadMarksAll(){if(!State.token)return;const res=await api('/api/marks/all',{token:State.token});if(!res.ok)return;
+const wrap=$('marksAllList');wrap.innerHTML='';
+if(res.students.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:10px">Порожньо</p>';return}
+res.students.forEach(s=>{
+const h=document.createElement('div');h.className='student-row';h.style.background='transparent';
+h.innerHTML='<div style="flex:1"><div class="s-name">'+esc(s.name)+(s.isBot?' 🤖':'')+'</div><div class="s-login">Середнє: '+s.avg+' • Оцінок: '+s.marks.length+'</div></div>';
+wrap.appendChild(h);
+s.marks.forEach(m=>{
+const cls=m.value>=10?'mark-good':m.value>=7?'mark-ok':'mark-bad';
+const d=new Date(m.at).toLocaleString('uk-UA');
+const row=document.createElement('div');row.className='record-row';
+row.innerHTML='<div class="rec-value '+cls+'">'+m.value+'</div><div class="rec-info"><div class="rec-title">'+esc(m.subject||'')+'</div><div class="rec-meta">'+esc(m.reason||'')+' • '+d+'</div></div><div class="rec-actions"><button class="danger" onclick="App.deleteMark(\''+esc(s.login)+'\',\''+m.id+'\')">🗑️</button></div>';
+wrap.appendChild(row);});});}
+async function loadPointsAll(){if(!State.token)return;const res=await api('/api/points/all',{token:State.token});if(!res.ok)return;
+const wrap=$('pointsAllList');wrap.innerHTML='';
+if(res.students.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:10px">Порожньо</p>';return}
+res.students.forEach(s=>{
+const h=document.createElement('div');h.className='student-row';h.style.background='transparent';
+h.innerHTML='<div style="flex:1"><div class="s-name">'+esc(s.name)+(s.isBot?' 🤖':'')+'</div><div class="s-login">Сума: '+s.sum+' балів</div></div>';
+wrap.appendChild(h);
+s.points.forEach(p=>{
+const cls=p.value>=0?'point-pos':'point-neg';
+const d=new Date(p.at).toLocaleString('uk-UA');
+const row=document.createElement('div');row.className='record-row';
+row.innerHTML='<div class="rec-value '+cls+'">'+(p.value>0?'+':'')+p.value+'</div><div class="rec-info"><div class="rec-title">'+esc(p.reason||'')+'</div><div class="rec-meta">'+d+' • '+esc(p.source||'')+'</div></div><div class="rec-actions"><button class="danger" onclick="App.deletePoint(\''+esc(s.login)+'\',\''+p.id+'\')">🗑️</button></div>';
+wrap.appendChild(row);});});}
+async function setMark(){if(!State.token)return;
+const login=$('markStudentSelect').value;
+const subject=$('markSubjectSelect').value;
+const value=$('markValueInput').value;
+const reason=$('markReasonInput').value.trim();
+if(!login){toast('Обери учня');return}
+if(!value){toast('Введи оцінку');return}
+const res=await api('/api/marks/set',{token:State.token,studentLogin:login,value,subject,reason});
+if(!res.ok){toast(res.error||'Помилка');return}
+toast('✅ Оцінку поставлено');
+$('markValueInput').value='';$('markReasonInput').value='';
+loadMarksAll();}
+async function deleteMark(login,markId){if(!confirm('Видалити оцінку?'))return;
+if(!State.token)return;
+const res=await api('/api/marks/delete',{token:State.token,studentLogin:login,markId});
+if(!res.ok){toast('Помилка');return}
+toast('Видалено');loadMarksAll();}
+async function setPoint(){if(!State.token)return;
+const login=$('pointStudentSelect').value;
+const value=$('pointValueInput').value;
+const reason=$('pointReasonInput').value.trim();
+if(!login){toast('Обери учня');return}
+if(!value){toast('Введи бали');return}
+const res=await api('/api/points/set',{token:State.token,studentLogin:login,value,reason});
+if(!res.ok){toast(res.error||'Помилка');return}
+toast('✅ Бали додано');
+$('pointValueInput').value='';$('pointReasonInput').value='';
+loadPointsAll();}
+async function deletePoint(login,pointId){if(!confirm('Видалити бали?'))return;
+if(!State.token)return;
+const res=await api('/api/points/delete',{token:State.token,studentLogin:login,pointId});
+if(!res.ok){toast('Помилка');return}
+toast('Видалено');loadPointsAll();}
+async function renderSubjects(){if(!State.token)return;
+const res=await api('/api/teacher/subjects',{token:State.token});
+if(!res.ok)return;
+State.subjects=res.subjects||[];
+const wrap=$('subjectsList');wrap.innerHTML='';
+const markSel=$('markSubjectSelect');if(markSel){markSel.innerHTML='';State.subjects.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;markSel.appendChild(o);});}
+const quizSel=$('quizSubject');if(quizSel){quizSel.innerHTML='';State.subjects.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;quizSel.appendChild(o);});}
+State.subjects.forEach(s=>{const row=document.createElement('div');row.className='student-row';
+row.innerHTML='<div style="flex:1"><div class="s-name">'+esc(s)+'</div></div><button class="danger small" onclick="App.deleteSubject(\''+esc(s)+'\')">🗑️</button>';
 wrap.appendChild(row);});}
+async function addSubject(){if(!State.token)return;
+const name=$('newSubjectName').value.trim();
+if(!name){toast('Введи назву');return}
+const res=await api('/api/teacher/subjects/add',{token:State.token,name});
+if(!res.ok){toast('Помилка');return}
+toast('✅ Додано');
+$('newSubjectName').value='';
+renderSubjects();}
+async function deleteSubject(name){if(!confirm('Видалити предмет?'))return;
+if(!State.token)return;
+const res=await api('/api/teacher/subjects/delete',{token:State.token,name});
+if(!res.ok){toast('Помилка');return}
+toast('Видалено');
+renderSubjects();}
 async function createStudent(){if(!State.token)return;const name=$('newStudentName').value.trim();const login=$('newStudentLogin').value.trim().toLowerCase();const password=$('newStudentPassword').value.trim();
 if(!name||!login||!password){toast('Заповни всі поля');return}
 const res=await api('/api/teacher/create-student',{token:State.token,login,password,name});
@@ -978,10 +1172,10 @@ wrap.appendChild(row);});
 const sel=$('hwQuizSelect');if(sel){sel.innerHTML='';res.quizzes.forEach(q=>{const o=document.createElement('option');o.value=q.id;o.textContent=q.title;sel.appendChild(o);});}
 const asel=$('analyticsQuizSelect');if(asel){asel.innerHTML='';res.quizzes.forEach(q=>{const o=document.createElement('option');o.value=q.id;o.textContent=q.title;asel.appendChild(o);});}}
 async function deleteQuiz(id){if(!confirm('Видалити?'))return;if(!State.token)return;await api('/api/quizzes/'+id+'/delete',{token:State.token});toast('Видалено');loadMyQuizzes();loadCatalog();}
-async function createHomework(){if(!State.token)return;const quizId=$('hwQuizSelect').value;const title=$('hwTitle').value.trim();const dl=$('hwDeadline').value;
+async function createHomework(){if(!State.token)return;const quizId=$('hwQuizSelect').value;const title=$('hwTitle').value.trim();const dl=$('hwDeadline').value;const autoPoints=$('hwAutoPoints').checked;
 if(!quizId){toast('Обери квіз');return}if(!dl){toast('Вкажи дедлайн');return}
 const deadline=new Date(dl).getTime();
-const res=await api('/api/homework/create',{token:State.token,quizId,title,deadline});
+const res=await api('/api/homework/create',{token:State.token,quizId,title,deadline,autoPoints});
 if(!res.ok){toast(res.error||'Помилка');return}
 toast('📝 ДЗ створено');$('hwTitle').value='';$('hwDeadline').value='';loadMyHomework();}
 async function loadMyHomework(){if(!State.token)return;const res=await api('/api/homework/mine',{token:State.token});if(!res.ok)return;
@@ -1066,6 +1260,7 @@ function renderHomeworkResult(state){if(!state)return;
 if(State.socket)State.socket.emit('finishHomeworkGame',{},res=>{
 if(!res.ok){toast('Помилка');return}
 const s=res.submission;
+if(!s){openModal('📝 ДЗ завершено','<p>ДЗ завершено, але оцінку не вдалось зберегти.</p>');loadHomework();return;}
 openModal('📝 ДЗ завершено','<div style="text-align:center"><div class="grade-badge grade-'+s.grade+'" style="margin:10px auto">'+s.grade+'</div><p>Правильних: '+s.correct+'/'+s.total+' ('+s.percent+'%)</p>'+(s.isLate?'<p style="color:#ff3d6e">⚠️ Здано після дедлайну (−1 бал)</p>':'')+'</div>');
 loadHomework();});}
 function init(){
@@ -1076,7 +1271,7 @@ $('joinPin').addEventListener('input',e=>{e.target.value=e.target.value.replace(
 const params=new URLSearchParams(window.location.search);const pinParam=params.get('pin');
 if(pinParam&&/^\d{6}$/.test(pinParam)){$('joinPin').value=pinParam;go('screen-join')}
 tryAutoLogin().then(()=>{showUserUI();initSocket();loadCatalog();}).catch(()=>{showUserUI();initSocket();loadCatalog();});}
-return{go,doLogin,logout,continueAsGuest,filterCatalog,playSolo,playPublic,playRoom,joinByPin,startGame,nextQuestion,finishGame,closeRoom,activatePower,saveProfile,shopTab,teacherTab,createStudent,addBots,removeStudent,addQuestion,loadTemplate,createQuiz,deleteQuiz,closeModal,init,hwTab,loadHomework,openHomework,startHomework,createHomework,showHomeworkGrades,editGrade,loadQuizAnalytics,loadGeneralAnalytics,inviteDuel,respondDuel};
+return{go,doLogin,logout,continueAsGuest,filterCatalog,playSolo,playPublic,playRoom,joinByPin,startGame,nextQuestion,finishGame,closeRoom,activatePower,saveProfile,shopTab,teacherTab,createStudent,addBots,removeStudent,addQuestion,loadTemplate,createQuiz,deleteQuiz,closeModal,init,hwTab,loadHomework,openHomework,startHomework,createHomework,showHomeworkGrades,editGrade,loadQuizAnalytics,loadGeneralAnalytics,inviteDuel,respondDuel,loadMyMarks,loadMyPoints,setMark,deleteMark,setPoint,deletePoint,addSubject,deleteSubject,renderSubjects};
 })();
 document.addEventListener('DOMContentLoaded',()=>{if(!document.body.className.startsWith('theme-'))document.body.classList.add('theme-neon');App.init();});
 </script>
