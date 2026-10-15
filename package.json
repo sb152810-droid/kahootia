@@ -1,20 +1,16 @@
 {
-  "name": "sunlorem-camp-5",
-  "version": "3.1.0",
-  "description": "SunLorem: Школа-Табір 5 Клас — каталог квізів, акаунти, ігри",
+  "name": "sunlorem",
+  "version": "3.2.0",
+  "description": "SunLorem — квіз-гра для 5 класу",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
-  },
-  "keywords": ["quiz", "socket.io", "express", "school", "ukrainian", "catalog"],
-  "author": "SunLorem",
-  "license": "MIT",
-  "dependencies": {
-    "express": "^4.19.2",
-    "socket.io": "^4.7.5"
+    "start": "node server.js"
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
   }
 }
