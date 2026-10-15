@@ -227,2337 +227,560 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
 <div class="conn-status" id="connStatus">З'єднання...</div>
 <div id="floatLayer"></div>
 <div id="app">
-
 <div id="screen-welcome" class="screen active">
-    <h1>🌟 SunLorem 🌟</h1>
-    <p class="subtitle">Каталог квізів • 5 клас</p>
-    <div class="panel panel-narrow">
-        <div class="balance-bar">
-            <span>🪙 <span id="welcomeCoins">0</span></span>
-            <span class="cap">(сьогодні: <span id="welcomeTodayCoins">0</span>/100)</span>
-            <span class="xp">⭐ XP: <span id="welcomeXp">0</span></span>
-            <span class="xp">🎖️ Рів. <span id="welcomeLevel">1</span></span>
-        </div>
-        <div id="welcomeUserBox" class="hidden">
-            <div class="status-row">
-                <span class="badge live" id="welcomeUserName">Гість</span>
-                <button class="small ghost" onclick="App.logout()">Вийти</button>
-            </div>
-        </div>
-        <div id="welcomeGuestBox">
-            <div class="button-grid two-col">
-                <button class="primary" onclick="App.go('screen-login')">🔑 Ввійти</button>
-                <button class="ghost" onclick="App.continueAsGuest()">👤 Гість</button>
-            </div>
-        </div>
-    </div>
-    <div class="panel panel-narrow">
-        <div class="button-grid two-col">
-            <button class="success" onclick="App.go('screen-catalog')">📚 Каталог</button>
-            <button class="ghost" onclick="App.go('screen-join')">🎮 За PIN</button>
-        </div>
-        <div class="button-row">
-            <button class="gold" onclick="App.go('screen-duel')">⚔️ Дуель</button>
-            <button class="gold" onclick="App.go('screen-shop')">🛒 Магазин</button>
-        </div>
-        <div class="button-row">
-            <button class="ghost" onclick="App.go('screen-quests')">🏆 Квести</button>
-            <button class="ghost hidden" id="btnHW" onclick="App.go('screen-homework')">📝 ДЗ</button>
-            <button class="ghost hidden" id="btnMarks" onclick="App.go('screen-marks')">🎓 Оцінки</button>
-            <button class="ghost hidden" id="btnPoints" onclick="App.go('screen-points')">🏆 Бали</button>
-            <button class="ghost hidden" id="btnTeacherPanel" onclick="App.go('screen-teacher')">👩‍🏫 Вчитель</button>
-        </div>
-    </div>
-    <div class="panel panel-narrow">
-        <div class="panel-title">🎮 Як грати</div>
-        <p style="font-size:13px;line-height:1.6">
-            1. Обери квіз у каталозі.<br>
-            2. Соло (макс. 5 🪙) або з людьми.<br>
-            3. Призові: 1м=30, 2м=20, 3м=10, решта=5.<br>
-            4. Дуель: перемога +10 🪙, поразка −10 🪙.<br>
-            5. Ліміт: 100 🪙/день. Купуй у магазині!
-        </p>
-    </div>
+<h1>🌟 SunLorem 🌟</h1>
+<p class="subtitle">Каталог квізів • 5 клас</p>
+<div class="panel panel-narrow">
+<div class="balance-bar">
+<span>🪙 <span id="welcomeCoins">0</span></span>
+<span class="cap">(сьогодні: <span id="welcomeTodayCoins">0</span>/100)</span>
+<span class="xp">⭐ XP: <span id="welcomeXp">0</span></span>
+<span class="xp">🎖️ Рів. <span id="welcomeLevel">1</span></span>
 </div>
-
+<div id="welcomeUserBox" class="hidden">
+<div class="status-row">
+<span class="badge live" id="welcomeUserName">Гість</span>
+<button class="small ghost" onclick="App.logout()">Вийти</button>
+</div>
+</div>
+<div id="welcomeGuestBox">
+<div class="button-grid two-col">
+<button class="primary" onclick="App.go('screen-login')">🔑 Ввійти</button>
+<button class="ghost" onclick="App.continueAsGuest()">👤 Гість</button>
+</div>
+</div>
+</div>
+<div class="panel panel-narrow">
+<div class="button-grid two-col">
+<button class="success" onclick="App.go('screen-catalog')">📚 Каталог</button>
+<button class="ghost" onclick="App.go('screen-join')">🎮 За PIN</button>
+</div>
+<div class="button-row">
+<button class="gold" onclick="App.go('screen-duel')">⚔️ Дуель</button>
+<button class="gold" onclick="App.go('screen-shop')">🛒 Магазин</button>
+</div>
+<div class="button-row">
+<button class="ghost" onclick="App.go('screen-quests')">🏆 Квести</button>
+<button class="ghost hidden" id="btnHW" onclick="App.go('screen-homework')">📝 ДЗ</button>
+<button class="ghost hidden" id="btnMarks" onclick="App.go('screen-marks')">🎓 Оцінки</button>
+<button class="ghost hidden" id="btnPoints" onclick="App.go('screen-points')">🏆 Бали</button>
+<button class="ghost hidden" id="btnTeacherPanel" onclick="App.go('screen-teacher')">👩‍🏫 Вчитель</button>
+</div>
+</div>
+</div>
 <div id="screen-login" class="screen">
-    <h1>🔑 Вхід</h1>
-    <p class="subtitle">Введи логін та пароль</p>
-    <div class="panel panel-narrow">
-        <label>Логін</label>
-        <input type="text" id="loginInput" autocomplete="username" placeholder="Логін">
-        <label>Пароль</label>
-        <input type="password" id="passwordInput" autocomplete="current-password" placeholder="•••">
-        <div class="button-grid two-col">
-            <button class="primary" onclick="App.doLogin()">✅ Увійти</button>
-            <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
-        </div>
-    </div>
+<h1>🔑 Вхід</h1>
+<p class="subtitle">Введи логін та пароль</p>
+<div class="panel panel-narrow">
+<label>Логін</label>
+<input type="text" id="loginInput" autocomplete="username" placeholder="Логін">
+<label>Пароль</label>
+<input type="password" id="passwordInput" autocomplete="current-password" placeholder="•••">
+<div class="button-grid two-col">
+<button class="primary" onclick="App.doLogin()">✅ Увійти</button>
+<button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
 </div>
-
+</div>
+</div>
 <div id="screen-catalog" class="screen">
-    <h1>📚 Каталог</h1>
-    <p class="subtitle">Обери квіз</p>
-    <div class="panel panel-narrow">
-        <div class="balance-bar">
-            <span>🪙 <span id="catalogCoins">0</span></span>
-            <span class="cap">(сьогодні: <span id="catalogTodayCoins">0</span>/100)</span>
-            <span class="xp">⭐ XP: <span id="catalogXp">0</span></span>
-        </div>
-        <div class="button-row">
-            <input type="text" id="searchQuiz" placeholder="🔍 Пошук..." oninput="App.filterCatalog()" style="margin-bottom:0;flex:1">
-            <select id="filterSubject" onchange="App.filterCatalog()" style="max-width:150px;margin-bottom:0">
-                <option value="">Всі предмети</option>
-                <option>Математика</option>
-                <option>Українська мова</option>
-                <option>Історія</option>
-                <option>Природознавство</option>
-                <option>Інше</option>
-            </select>
-        </div>
-    </div>
-    <div id="catalogList" class="quiz-grid"></div>
-    <div class="panel panel-narrow">
-        <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
-    </div>
+<h1>📚 Каталог</h1>
+<p class="subtitle">Обери квіз</p>
+<div class="panel panel-narrow">
+<div class="balance-bar">
+<span>🪙 <span id="catalogCoins">0</span></span>
+<span class="cap">(сьогодні: <span id="catalogTodayCoins">0</span>/100)</span>
+<span class="xp">⭐ XP: <span id="catalogXp">0</span></span>
 </div>
-
+<div class="button-row">
+<input type="text" id="searchQuiz" placeholder="🔍 Пошук..." oninput="App.filterCatalog()" style="margin-bottom:0;flex:1">
+<select id="filterSubject" onchange="App.filterCatalog()" style="max-width:150px;margin-bottom:0">
+<option value="">Всі предмети</option>
+<option>Математика</option>
+<option>Українська мова</option>
+<option>Історія</option>
+<option>Природознавство</option>
+<option>Інше</option>
+</select>
+</div>
+</div>
+<div id="catalogList" class="quiz-grid"></div>
+<div class="panel panel-narrow"><button class="ghost" onclick="App.go('screen-welcome')">← Назад</button></div>
+</div>
 <div id="screen-quiz-mode" class="screen">
-    <h1 id="qmTitle">Квіз</h1>
-    <p class="subtitle" id="qmSubtitle">Обери режим</p>
-    <div class="panel panel-narrow">
-        <div class="button-grid">
-            <button class="success" onclick="App.playSolo()">🎯 Соло (макс. 5 🪙)</button>
-            <button class="primary" onclick="App.playPublic()">🌐 З людьми</button>
-            <button class="gold" onclick="App.playRoom()">🎮 Кімната (PIN)</button>
-            <button class="ghost" onclick="App.go('screen-catalog')">← Назад</button>
-        </div>
-    </div>
+<h1 id="qmTitle">Квіз</h1>
+<p class="subtitle" id="qmSubtitle">Обери режим</p>
+<div class="panel panel-narrow">
+<div class="button-grid">
+<button class="success" onclick="App.playSolo()">🎯 Соло (макс. 5 🪙)</button>
+<button class="primary" onclick="App.playPublic()">🌐 З людьми</button>
+<button class="gold" onclick="App.playRoom()">🎮 Кімната (PIN)</button>
+<button class="ghost" onclick="App.go('screen-catalog')">← Назад</button>
 </div>
-
+</div>
+</div>
 <div id="screen-join" class="screen">
-    <h1>🎮 За PIN</h1>
-    <p class="subtitle">Введи PIN кімнати</p>
-    <div class="panel panel-narrow">
-        <input type="text" id="joinPin" class="pin-input" maxlength="6" inputmode="numeric" placeholder="000000">
-        <label>Твоє ім'я</label>
-        <input type="text" id="joinName" maxlength="24" placeholder="Ім'я">
-        <div class="button-grid two-col">
-            <button class="success" onclick="App.joinByPin()">✅ Увійти</button>
-            <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
-        </div>
-    </div>
+<h1>🎮 За PIN</h1>
+<p class="subtitle">Введи PIN кімнати</p>
+<div class="panel panel-narrow">
+<input type="text" id="joinPin" class="pin-input" maxlength="6" inputmode="numeric" placeholder="000000">
+<label>Твоє ім'я</label>
+<input type="text" id="joinName" maxlength="24" placeholder="Ім'я">
+<div class="button-grid two-col">
+<button class="success" onclick="App.joinByPin()">✅ Увійти</button>
+<button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
 </div>
-
+</div>
+</div>
 <div id="screen-lobby" class="screen">
-    <h1>🎯 Кімната</h1>
-    <p class="subtitle">Покажи PIN учням</p>
-    <div class="panel panel-narrow center">
-        <div class="panel-title" style="justify-content:center">🔑 PIN</div>
-        <div class="pin-display" id="roomPin">------</div>
-        <div class="status-row">
-            <span class="badge live">Активна</span>
-            <span class="badge waiting" id="lobbyCount">Гравців: 0</span>
-        </div>
-    </div>
-    <div class="panel panel-narrow center">
-        <div class="panel-title" style="justify-content:center">📱 QR</div>
-        <div class="qr-container" id="qrBox"></div>
-    </div>
-    <div class="panel panel-narrow">
-        <div class="panel-title">👥 Гравці (<span id="lobbyCountInline">0</span>)</div>
-        <div id="lobbyPlayerList" class="player-list"></div>
-    </div>
-    <div class="panel panel-narrow">
-        <div class="button-grid two-col">
-            <button class="primary" onclick="App.startGame()">▶️ Почати</button>
-            <button class="danger" onclick="App.closeRoom()">✖️ Закрити</button>
-        </div>
-    </div>
+<h1>🎯 Кімната</h1>
+<p class="subtitle">Покажи PIN учням</p>
+<div class="panel panel-narrow center">
+<div class="panel-title" style="justify-content:center">🔑 PIN</div>
+<div class="pin-display" id="roomPin">------</div>
+<div class="status-row">
+<span class="badge live">Активна</span>
+<span class="badge waiting" id="lobbyCount">Гравців: 0</span>
 </div>
-
+</div>
+<div class="panel panel-narrow center">
+<div class="panel-title" style="justify-content:center">📱 QR</div>
+<div class="qr-container" id="qrBox"></div>
+</div>
+<div class="panel panel-narrow">
+<div class="panel-title">👥 Гравці (<span id="lobbyCountInline">0</span>)</div>
+<div id="lobbyPlayerList" class="player-list"></div>
+</div>
+<div class="panel panel-narrow">
+<div class="button-grid two-col">
+<button class="primary" onclick="App.startGame()">▶️ Почати</button>
+<button class="danger" onclick="App.closeRoom()">✖️ Закрити</button>
+</div>
+</div>
+</div>
 <div id="screen-game" class="screen">
-    <h1 id="gameTitle">🎮 Гра</h1>
-    <div class="panel">
-        <div style="display:flex;justify-content:space-between;font-size:clamp(12px,2.9vw,14px);color:var(--text-dim);font-weight:700;flex-wrap:wrap;gap:6px;margin-bottom:6px">
-            <span>Питання <b id="gIndex">1</b>/<b id="gTotal">10</b></span>
-            <span id="gAnswered">Відповіли: 0</span>
-            <span id="gScore">Бали: 0</span>
-        </div>
-        <div class="timer-wrap">
-            <div class="timer-bar"><div class="timer-fill" id="gTimerFill" style="width:100%"></div></div>
-            <div class="timer-text" id="gTimerText">20</div>
-        </div>
-        <div id="gSpectator" class="hidden" style="text-align:center;margin:8px 0">
-            <span class="spectator-badge">👀 Ти глядач — можеш тільки дивитись і реагувати</span>
-        </div>
-        <div class="question-text" id="gText">Питання...</div>
-        <div class="answers-grid" id="gAnswers"></div>
-        <p id="gFeedback" style="text-align:center;margin-top:10px;font-weight:800;font-size:15px;min-height:22px"></p>
-        <div style="display:flex;justify-content:space-between;font-size:clamp(12px,2.8vw,14px);color:var(--text-dim);font-weight:700;margin-top:8px;flex-wrap:wrap;gap:6px">
-            <span id="gStreak">🔥 Серія: 0</span>
-            <span id="gXp">⭐ XP: 0</span>
-        </div>
-        <div class="button-row" style="margin-top:10px">
-            <button class="gold small" id="btnPowDouble" onclick="App.activatePower('double')" disabled>⚡ Подвійні</button>
-            <button class="gold small" id="btnPowShield" onclick="App.activatePower('shield')" disabled>🛡️ Щит</button>
-            <button class="gold small" id="btnPowReveal" onclick="App.activatePower('reveal')" disabled>🔍 Підказка</button>
-        </div>
-    </div>
-    <div class="panel">
-        <div class="panel-title">💬 Чат</div>
-        <div class="chat-bar" id="chatBar"></div>
-    </div>
-    <div class="panel">
-        <div class="panel-title">🎉 Реакції</div>
-        <div class="reactions-bar" id="gameReactions"></div>
-    </div>
-    <div class="panel">
-        <div class="panel-title">🏆 Топ</div>
-        <div id="gLeaderboard" class="player-list"></div>
-    </div>
-    <div class="panel">
-        <div class="panel-title">📡 Стрічка</div>
-        <div class="event-feed" id="gFeed"></div>
-    </div>
-    <div class="panel hidden" id="teacherGameBtns">
-        <div class="button-grid two-col">
-            <button class="primary" id="btnNext" onclick="App.nextQuestion()">⏭️ Далі</button>
-            <button class="danger" onclick="App.finishGame()">🏁 Завершити</button>
-        </div>
-    </div>
+<h1 id="gameTitle">🎮 Гра</h1>
+<div class="panel">
+<div style="display:flex;justify-content:space-between;font-size:clamp(12px,2.9vw,14px);color:var(--text-dim);font-weight:700;flex-wrap:wrap;gap:6px;margin-bottom:6px">
+<span>Питання <b id="gIndex">1</b>/<b id="gTotal">10</b></span>
+<span id="gAnswered">Відповіли: 0</span>
+<span id="gScore">Бали: 0</span>
 </div>
-
+<div class="timer-wrap">
+<div class="timer-bar"><div class="timer-fill" id="gTimerFill" style="width:100%"></div></div>
+<div class="timer-text" id="gTimerText">20</div>
+</div>
+<div id="gSpectator" class="hidden" style="text-align:center;margin:8px 0">
+<span class="spectator-badge">👀 Ти глядач — можеш тільки дивитись і реагувати</span>
+</div>
+<div class="question-text" id="gText">Питання...</div>
+<div class="answers-grid" id="gAnswers"></div>
+<p id="gFeedback" style="text-align:center;margin-top:10px;font-weight:800;font-size:15px;min-height:22px"></p>
+<div style="display:flex;justify-content:space-between;font-size:clamp(12px,2.8vw,14px);color:var(--text-dim);font-weight:700;margin-top:8px;flex-wrap:wrap;gap:6px">
+<span id="gStreak">🔥 Серія: 0</span>
+<span id="gXp">⭐ XP: 0</span>
+</div>
+<div class="button-row" style="margin-top:10px">
+<button class="gold small" id="btnPowDouble" onclick="App.activatePower('double')" disabled>⚡ Подвійні</button>
+<button class="gold small" id="btnPowShield" onclick="App.activatePower('shield')" disabled>🛡️ Щит</button>
+<button class="gold small" id="btnPowReveal" onclick="App.activatePower('reveal')" disabled>🔍 Підказка</button>
+</div>
+</div>
+<div class="panel">
+<div class="panel-title">💬 Чат</div>
+<div class="chat-bar" id="chatBar"></div>
+</div>
+<div class="panel">
+<div class="panel-title">🎉 Реакції</div>
+<div class="reactions-bar" id="gameReactions"></div>
+</div>
+<div class="panel">
+<div class="panel-title">🏆 Топ</div>
+<div id="gLeaderboard" class="player-list"></div>
+</div>
+<div class="panel">
+<div class="panel-title">📡 Стрічка</div>
+<div class="event-feed" id="gFeed"></div>
+</div>
+<div class="panel hidden" id="teacherGameBtns">
+<div class="button-grid two-col">
+<button class="primary" id="btnNext" onclick="App.nextQuestion()">⏭️ Далі</button>
+<button class="danger" onclick="App.finishGame()">🏁 Завершити</button>
+</div>
+</div>
+</div>
 <div id="screen-results" class="screen">
-    <h1>🏆 Результати</h1>
-    <div class="panel"><div class="podium" id="podium"></div></div>
-    <div class="panel">
-        <div class="panel-title">🎖️ Рейтинг</div>
-        <div id="finalLeaderboard" class="player-list"></div>
-    </div>
-    <div class="certificate" id="certificateBox">
-        <h2>🏅 Грамота</h2>
-        <p style="font-size:15px">Ця грамота вручається</p>
-        <div class="recipient" id="certName">Переможцю</div>
-        <p style="font-size:15px">за перемогу у вікторині SunLorem<br>«Школа-Табір 5 Клас»</p>
-        <p style="font-size:20px;margin-top:10px" id="certScore">Балів: 0</p>
-        <p style="font-size:14px;margin-top:6px" id="certCoins">🪙 Разом: 0</p>
-        <p style="font-size:13px;color:var(--text-dim);margin-top:12px" id="certDate"></p>
-    </div>
-    <div class="panel">
-        <div class="button-grid two-col">
-            <button class="primary" onclick="window.print()">🖨️ Друк</button>
-            <button class="gold" onclick="App.go('screen-catalog')">📚 Каталог</button>
-        </div>
-        <div class="button-row">
-            <button class="ghost" onclick="App.go('screen-welcome')">🔄 Нова гра</button>
-        </div>
-    </div>
+<h1>🏆 Результати</h1>
+<div class="panel"><div class="podium" id="podium"></div></div>
+<div class="panel">
+<div class="panel-title">🎖️ Рейтинг</div>
+<div id="finalLeaderboard" class="player-list"></div>
 </div>
-
+<div class="certificate" id="certificateBox">
+<h2>🏅 Грамота</h2>
+<p style="font-size:15px">Ця грамота вручається</p>
+<div class="recipient" id="certName">Переможцю</div>
+<p style="font-size:15px">за перемогу у вікторині SunLorem<br>«Школа-Табір 5 Клас»</p>
+<p style="font-size:20px;margin-top:10px" id="certScore">Балів: 0</p>
+<p style="font-size:14px;margin-top:6px" id="certCoins">🪙 Разом: 0</p>
+<p style="font-size:13px;color:var(--text-dim);margin-top:12px" id="certDate"></p>
+</div>
+<div class="panel">
+<div class="button-grid two-col">
+<button class="primary" onclick="window.print()">🖨️ Друк</button>
+<button class="gold" onclick="App.go('screen-catalog')">📚 Каталог</button>
+</div>
+<div class="button-row"><button class="ghost" onclick="App.go('screen-welcome')">🔄 Нова гра</button></div>
+</div>
+</div>
 <div id="screen-duel" class="screen">
-    <h1>⚔️ Дуель</h1>
-    <p class="subtitle">Виклич однокласника на 1-на-1 (+10 🪙 / −10 🪙)</p>
-    <div class="panel panel-narrow">
-        <div class="panel-title">📚 Обери квіз</div>
-        <select id="duelQuizSelect"></select>
-        <div class="panel-title" style="margin-top:14px">👥 Клас</div>
-        <div id="duelClassList"></div>
-    </div>
-    <div class="panel panel-narrow">
-        <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
-    </div>
+<h1>⚔️ Дуель</h1>
+<p class="subtitle">Виклич однокласника на 1-на-1 (+10 🪙 / −10 🪙)</p>
+<div class="panel panel-narrow">
+<div class="panel-title">📚 Обери квіз</div>
+<select id="duelQuizSelect"></select>
+<div class="panel-title" style="margin-top:14px">👥 Клас</div>
+<div id="duelClassList"></div>
 </div>
-
+<div class="panel panel-narrow"><button class="ghost" onclick="App.go('screen-welcome')">← Назад</button></div>
+</div>
 <div id="screen-homework" class="screen">
-    <h1>📝 ДЗ</h1>
-    <p class="subtitle">Твої домашні завдання</p>
-    <div class="panel panel-narrow">
-        <div class="balance-bar">
-            <span>🪙 <span id="hwCoins">0</span></span>
-            <span class="xp">⭐ XP: <span id="hwXp">0</span></span>
-        </div>
-        <div class="tabs">
-            <div class="tab active" data-hwtab="hw" onclick="App.hwTab('hw')">📝 ДЗ</div>
-            <div class="tab" data-hwtab="grades" onclick="App.hwTab('grades')">🎓 Оцінки ДЗ</div>
-        </div>
-        <div id="hwList"></div>
-        <div id="gradesList" class="hidden"></div>
-    </div>
-    <div class="panel panel-narrow">
-        <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
-    </div>
+<h1>📝 ДЗ</h1>
+<p class="subtitle">Твої домашні завдання</p>
+<div class="panel panel-narrow">
+<div class="balance-bar">
+<span>🪙 <span id="hwCoins">0</span></span>
+<span class="xp">⭐ XP: <span id="hwXp">0</span></span>
 </div>
-
+<div class="tabs">
+<div class="tab active" data-hwtab="hw" onclick="App.hwTab('hw')">📝 ДЗ</div>
+<div class="tab" data-hwtab="grades" onclick="App.hwTab('grades')">🎓 Оцінки ДЗ</div>
+</div>
+<div id="hwList"></div>
+<div id="gradesList" class="hidden"></div>
+</div>
+<div class="panel panel-narrow"><button class="ghost" onclick="App.go('screen-welcome')">← Назад</button></div>
+</div>
 <div id="screen-marks" class="screen">
-    <h1>🎓 Мої оцінки</h1>
-    <p class="subtitle">Шкільні оцінки (1-12)</p>
-    <div class="panel panel-narrow">
-        <div class="balance-bar">
-            <span>📊 Середнє: <span id="marksAvg">0</span></span>
-        </div>
-        <div id="marksList"></div>
-    </div>
-    <div class="panel panel-narrow">
-        <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
-    </div>
+<h1>🎓 Мої оцінки</h1>
+<p class="subtitle">Шкільні оцінки (1-12)</p>
+<div class="panel panel-narrow">
+<div class="balance-bar"><span>📊 Середнє: <span id="marksAvg">0</span></span></div>
+<div id="marksList"></div>
 </div>
-
+<div class="panel panel-narrow"><button class="ghost" onclick="App.go('screen-welcome')">← Назад</button></div>
+</div>
 <div id="screen-points" class="screen">
-    <h1>🏆 Мої бали</h1>
-    <p class="subtitle">Бали за ДЗ та від вчителя</p>
-    <div class="panel panel-narrow">
-        <div class="balance-bar">
-            <span>⭐ Сума: <span id="pointsSum">0</span></span>
-        </div>
-        <div id="pointsList"></div>
-    </div>
-    <div class="panel panel-narrow">
-        <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
-    </div>
+<h1>🏆 Мої бали</h1>
+<p class="subtitle">Бали за ДЗ та від вчителя</p>
+<div class="panel panel-narrow">
+<div class="balance-bar"><span>⭐ Сума: <span id="pointsSum">0</span></span></div>
+<div id="pointsList"></div>
 </div>
-
+<div class="panel panel-narrow"><button class="ghost" onclick="App.go('screen-welcome')">← Назад</button></div>
+</div>
 <div id="screen-teacher" class="screen">
-    <h1>👩‍🏫 Панель вчителя</h1>
-    <p class="subtitle">Клас, квізи, ДЗ, оцінки, бали</p>
-    <div class="panel panel-narrow">
-        <div class="tabs">
-            <div class="tab active" data-tab="class" onclick="App.teacherTab('class')">👥 Клас</div>
-            <div class="tab" data-tab="marks" onclick="App.teacherTab('marks')">🎓 Оцінки</div>
-            <div class="tab" data-tab="points" onclick="App.teacherTab('points')">🏆 Бали</div>
-            <div class="tab" data-tab="create" onclick="App.teacherTab('create')">✏️ Квіз</div>
-            <div class="tab" data-tab="mine" onclick="App.teacherTab('mine')">📚 Мої</div>
-            <div class="tab" data-tab="hw" onclick="App.teacherTab('hw')">📝 ДЗ</div>
-            <div class="tab" data-tab="analytics" onclick="App.teacherTab('analytics')">📊 Аналітика</div>
-            <div class="tab" data-tab="subjects" onclick="App.teacherTab('subjects')">📖 Предмети</div>
-        </div>
-        <div id="teacherClassTab">
-            <div class="panel-title">➕ Учень</div>
-            <input type="text" id="newStudentName" placeholder="Ім'я">
-            <input type="text" id="newStudentLogin" placeholder="Логін (латиниця)">
-            <input type="text" id="newStudentPassword" placeholder="Пароль">
-            <button class="success" onclick="App.createStudent()">➕ Додати</button>
-            <div class="spacer"></div>
-            <div class="panel-title">🤖 Боти (по одному з рядка)</div>
-            <textarea id="botsNames" placeholder="Марко Шевченко&#10;Аліна Коваль"></textarea>
-            <button class="gold" onclick="App.addBots()">🤖 Додати ботів</button>
-            <div class="spacer"></div>
-            <div class="panel-title">👥 Мій клас</div>
-            <div id="classList"></div>
-        </div>
-        <div id="teacherMarksTab" class="hidden">
-            <div class="panel-title">🎓 Поставити оцінку</div>
-            <select id="markStudentSelect"></select>
-            <select id="markSubjectSelect"></select>
-            <input type="number" id="markValueInput" min="1" max="12" placeholder="Оцінка 1-12">
-            <input type="text" id="markReasonInput" placeholder="За що (текст)">
-            <button class="success" onclick="App.setMark()">➕ Поставити</button>
-            <div class="spacer"></div>
-            <div class="panel-title">📊 Журнал оцінок</div>
-            <div id="marksAllList"></div>
-        </div>
-        <div id="teacherPointsTab" class="hidden">
-            <div class="panel-title">🏆 Додати бали</div>
-            <select id="pointStudentSelect"></select>
-            <input type="number" id="pointValueInput" placeholder="Бали (число)">
-            <input type="text" id="pointReasonInput" placeholder="За що (текст)">
-            <button class="success" onclick="App.setPoint()">➕ Додати</button>
-            <div class="spacer"></div>
-            <div class="panel-title">📊 Журнал балів</div>
-            <div id="pointsAllList"></div>
-        </div>
-        <div id="teacherCreateTab" class="hidden">
-            <div class="panel-title">✏️ Новий квіз</div>
-            <label>Назва</label>
-            <input type="text" id="quizTitle" placeholder="Математика 5 клас">
-            <label>Предмет</label>
-            <select id="quizSubject">
-                <option>Математика</option>
-                <option>Українська мова</option>
-                <option>Історія</option>
-                <option>Природознавство</option>
-                <option>Інше</option>
-            </select>
-            <label>Складність</label>
-            <select id="quizDifficulty">
-                <option value="easy">Легкий</option>
-                <option value="medium" selected>Середній</option>
-                <option value="hard">Складний</option>
-            </select>
-            <label>Питання</label>
-            <div id="questionsEditor"></div>
-            <div class="button-row">
-                <button class="ghost small" onclick="App.addQuestion()">➕ Питання</button>
-                <button class="ghost small" onclick="App.loadTemplate('math')">➗ Матем.</button>
-                <button class="ghost small" onclick="App.loadTemplate('ukrainian')">📖 Мова</button>
-                <button class="ghost small" onclick="App.loadTemplate('history')">🏛️ Історія</button>
-                <button class="ghost small" onclick="App.loadTemplate('nature')">🌿 Природа</button>
-            </div>
-            <div class="spacer"></div>
-            <button class="primary" onclick="App.createQuiz()">💾 Зберегти</button>
-        </div>
-        <div id="teacherMineTab" class="hidden">
-            <div class="panel-title">📚 Мої квізи</div>
-            <div id="myQuizzes"></div>
-        </div>
-        <div id="teacherHwTab" class="hidden">
-            <div class="panel-title">📝 Створити ДЗ</div>
-            <select id="hwQuizSelect"></select>
-            <input type="text" id="hwTitle" placeholder="Назва ДЗ">
-            <label>Дедлайн</label>
-            <input type="datetime-local" id="hwDeadline">
-            <label style="display:flex;align-items:center;gap:8px;margin:8px 0">
-                <input type="checkbox" id="hwAutoPoints" checked style="width:auto;margin:0">
-                <span>Автоматично нарахувати бали (10 балів за правильну)</span>
-            </label>
-            <button class="success" onclick="App.createHomework()">📝 Створити</button>
-            <div class="spacer"></div>
-            <div class="panel-title">📋 Мої ДЗ</div>
-            <div id="myHomework"></div>
-        </div>
-        <div id="teacherAnalyticsTab" class="hidden">
-            <div class="panel-title">📊 Загальна</div>
-            <div id="generalAnalytics"></div>
-            <div class="spacer"></div>
-            <div class="panel-title">📚 По квізу</div>
-            <select id="analyticsQuizSelect"></select>
-            <button class="primary small" onclick="App.loadQuizAnalytics()" style="margin-top:6px">Показати</button>
-            <div id="quizAnalytics"></div>
-        </div>
-        <div id="teacherSubjectsTab" class="hidden">
-            <div class="panel-title">📖 Додати предмет</div>
-            <input type="text" id="newSubjectName" placeholder="Назва предмету">
-            <button class="success" onclick="App.addSubject()">➕ Додати</button>
-            <div class="spacer"></div>
-            <div class="panel-title">📚 Мої предмети</div>
-            <div id="subjectsList"></div>
-        </div>
-    </div>
-    <div class="panel panel-narrow">
-        <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
-    </div>
+<h1>👩‍🏫 Панель вчителя</h1>
+<p class="subtitle">Клас, квізи, ДЗ, оцінки, бали</p>
+<div class="panel panel-narrow">
+<div class="tabs">
+<div class="tab active" data-tab="class" onclick="App.teacherTab('class')">👥 Клас</div>
+<div class="tab" data-tab="marks" onclick="App.teacherTab('marks')">🎓 Оцінки</div>
+<div class="tab" data-tab="points" onclick="App.teacherTab('points')">🏆 Бали</div>
+<div class="tab" data-tab="create" onclick="App.teacherTab('create')">✏️ Квіз</div>
+<div class="tab" data-tab="mine" onclick="App.teacherTab('mine')">📚 Мої</div>
+<div class="tab" data-tab="hw" onclick="App.teacherTab('hw')">📝 ДЗ</div>
+<div class="tab" data-tab="analytics" onclick="App.teacherTab('analytics')">📊 Аналітика</div>
+<div class="tab" data-tab="subjects" onclick="App.teacherTab('subjects')">📖 Предмети</div>
 </div>
-
+<div id="teacherClassTab">
+<div class="panel-title">➕ Учень</div>
+<input type="text" id="newStudentName" placeholder="Ім'я">
+<input type="text" id="newStudentLogin" placeholder="Логін (латиниця)">
+<input type="text" id="newStudentPassword" placeholder="Пароль">
+<button class="success" onclick="App.createStudent()">➕ Додати</button>
+<div class="spacer"></div>
+<div class="panel-title">🤖 Боти (по одному з рядка)</div>
+<textarea id="botsNames" placeholder="Марко Шевченко&#10;Аліна Коваль"></textarea>
+<button class="gold" onclick="App.addBots()">🤖 Додати ботів</button>
+<div class="spacer"></div>
+<div class="panel-title">👥 Мій клас</div>
+<div id="classList"></div>
+</div>
+<div id="teacherMarksTab" class="hidden">
+<div class="panel-title">🎓 Поставити оцінку</div>
+<select id="markStudentSelect"></select>
+<select id="markSubjectSelect"></select>
+<input type="number" id="markValueInput" min="1" max="12" placeholder="Оцінка 1-12">
+<input type="text" id="markReasonInput" placeholder="За що (текст)">
+<button class="success" onclick="App.setMark()">➕ Поставити</button>
+<div class="spacer"></div>
+<div class="panel-title">📊 Журнал оцінок</div>
+<div id="marksAllList"></div>
+</div>
+<div id="teacherPointsTab" class="hidden">
+<div class="panel-title">🏆 Додати бали</div>
+<select id="pointStudentSelect"></select>
+<input type="number" id="pointValueInput" placeholder="Бали (число)">
+<input type="text" id="pointReasonInput" placeholder="За що (текст)">
+<button class="success" onclick="App.setPoint()">➕ Додати</button>
+<div class="spacer"></div>
+<div class="panel-title">📊 Журнал балів</div>
+<div id="pointsAllList"></div>
+</div>
+<div id="teacherCreateTab" class="hidden">
+<div class="panel-title">✏️ Новий квіз</div>
+<label>Назва</label>
+<input type="text" id="quizTitle" placeholder="Математика 5 клас">
+<label>Предмет</label>
+<select id="quizSubject">
+<option>Математика</option>
+<option>Українська мова</option>
+<option>Історія</option>
+<option>Природознавство</option>
+<option>Інше</option>
+</select>
+<label>Складність</label>
+<select id="quizDifficulty">
+<option value="easy">Легкий</option>
+<option value="medium" selected>Середній</option>
+<option value="hard">Складний</option>
+</select>
+<label>Питання</label>
+<div id="questionsEditor"></div>
+<div class="button-row">
+<button class="ghost small" onclick="App.addQuestion()">➕ Питання</button>
+<button class="ghost small" onclick="App.loadTemplate('math')">➗ Матем.</button>
+<button class="ghost small" onclick="App.loadTemplate('ukrainian')">📖 Мова</button>
+<button class="ghost small" onclick="App.loadTemplate('history')">🏛️ Історія</button>
+<button class="ghost small" onclick="App.loadTemplate('nature')">🌿 Природа</button>
+</div>
+<div class="spacer"></div>
+<button class="primary" onclick="App.createQuiz()">💾 Зберегти</button>
+</div>
+<div id="teacherMineTab" class="hidden">
+<div class="panel-title">📚 Мої квізи</div>
+<div id="myQuizzes"></div>
+</div>
+<div id="teacherHwTab" class="hidden">
+<div class="panel-title">📝 Створити ДЗ</div>
+<select id="hwQuizSelect"></select>
+<input type="text" id="hwTitle" placeholder="Назва ДЗ">
+<label>Дедлайн</label>
+<input type="datetime-local" id="hwDeadline">
+<label style="display:flex;align-items:center;gap:8px;margin:8px 0">
+<input type="checkbox" id="hwAutoPoints" checked style="width:auto;margin:0">
+<span>Автоматично нарахувати бали (10 балів за правильну)</span>
+</label>
+<button class="success" onclick="App.createHomework()">📝 Створити</button>
+<div class="spacer"></div>
+<div class="panel-title">📋 Мої ДЗ</div>
+<div id="myHomework"></div>
+</div>
+<div id="teacherAnalyticsTab" class="hidden">
+<div class="panel-title">📊 Загальна</div>
+<div id="generalAnalytics"></div>
+<div class="spacer"></div>
+<div class="panel-title">📚 По квізу</div>
+<select id="analyticsQuizSelect"></select>
+<button class="primary small" onclick="App.loadQuizAnalytics()" style="margin-top:6px">Показати</button>
+<div id="quizAnalytics"></div>
+</div>
+<div id="teacherSubjectsTab" class="hidden">
+<div class="panel-title">📖 Додати предмет</div>
+<input type="text" id="newSubjectName" placeholder="Назва предмету">
+<button class="success" onclick="App.addSubject()">➕ Додати</button>
+<div class="spacer"></div>
+<div class="panel-title">📚 Мої предмети</div>
+<div id="subjectsList"></div>
+</div>
+</div>
+<div class="panel panel-narrow"><button class="ghost" onclick="App.go('screen-welcome')">← Назад</button></div>
+</div>
 <div id="screen-hw-detail" class="screen">
-    <h1 id="hwdTitle">ДЗ</h1>
-    <p class="subtitle" id="hwdSubtitle">Деталі</p>
-    <div class="panel panel-narrow">
-        <div class="button-grid">
-            <button class="primary" id="hwdStartBtn" onclick="App.startHomework()">▶️ Почати</button>
-            <button class="ghost" onclick="App.go('screen-homework')">← Назад</button>
-        </div>
-    </div>
+<h1 id="hwdTitle">ДЗ</h1>
+<p class="subtitle" id="hwdSubtitle">Деталі</p>
+<div class="panel panel-narrow">
+<div class="button-grid">
+<button class="primary" id="hwdStartBtn" onclick="App.startHomework()">▶️ Почати</button>
+<button class="ghost" onclick="App.go('screen-homework')">← Назад</button>
 </div>
-
+</div>
+</div>
 <div id="screen-hw-grades" class="screen">
-    <h1 id="hwgTitle">Оцінки</h1>
-    <p class="subtitle">Хто скільки набрав</p>
-    <div class="panel panel-narrow">
-        <div id="hwGradesList"></div>
-    </div>
-    <div class="panel panel-narrow">
-        <button class="ghost" onclick="App.go('screen-teacher')">← Назад</button>
-    </div>
+<h1 id="hwgTitle">Оцінки</h1>
+<p class="subtitle">Хто скільки набрав</p>
+<div class="panel panel-narrow"><div id="hwGradesList"></div></div>
+<div class="panel panel-narrow"><button class="ghost" onclick="App.go('screen-teacher')">← Назад</button></div>
 </div>
-
 <div id="screen-shop" class="screen">
-    <h1>🛒 Магазин</h1>
-    <p class="subtitle">Аватари, аксесуари, теми</p>
-    <div class="panel panel-narrow">
-        <div class="balance-bar">
-            <span>🪙 <span id="shopCoins">0</span></span>
-            <span class="cap">(сьогодні: <span id="shopTodayCoins">0</span>/100)</span>
-            <span class="xp">⭐ XP: <span id="shopXp">0</span></span>
-        </div>
-        <div class="shop-avatar-preview">
-            <div class="big-avatar"><span class="avatar-render" id="shopPreviewAvatar">😶</span></div>
-            <div id="shopPreviewName" style="font-size:14px;font-weight:800;margin-top:8px">Смайлик</div>
-        </div>
-        <div class="tabs">
-            <div class="tab active" data-tab="avatars" onclick="App.shopTab('avatars')">🐾 Аватари</div>
-            <div class="tab" data-tab="accessories" onclick="App.shopTab('accessories')">🎩 Аксесуари</div>
-            <div class="tab" data-tab="themes" onclick="App.shopTab('themes')">🎨 Теми</div>
-        </div>
-        <div id="shopGrid" class="shop-grid"></div>
-    </div>
-    <div class="panel panel-narrow">
-        <div class="button-grid two-col">
-            <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
-            <button class="primary" onclick="App.saveProfile()">💾 Зберегти</button>
-        </div>
-    </div>
+<h1>🛒 Магазин</h1>
+<p class="subtitle">Аватари, аксесуари, теми</p>
+<div class="panel panel-narrow">
+<div class="balance-bar">
+<span>🪙 <span id="shopCoins">0</span></span>
+<span class="cap">(сьогодні: <span id="shopTodayCoins">0</span>/100)</span>
+<span class="xp">⭐ XP: <span id="shopXp">0</span></span>
 </div>
-
+<div class="shop-avatar-preview">
+<div class="big-avatar"><span class="avatar-render" id="shopPreviewAvatar">😶</span></div>
+<div id="shopPreviewName" style="font-size:14px;font-weight:800;margin-top:8px">Смайлик</div>
+</div>
+<div class="tabs">
+<div class="tab active" data-tab="avatars" onclick="App.shopTab('avatars')">🐾 Аватари</div>
+<div class="tab" data-tab="accessories" onclick="App.shopTab('accessories')">🎩 Аксесуари</div>
+<div class="tab" data-tab="themes" onclick="App.shopTab('themes')">🎨 Теми</div>
+</div>
+<div id="shopGrid" class="shop-grid"></div>
+</div>
+<div class="panel panel-narrow">
+<div class="button-grid two-col">
+<button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
+<button class="primary" onclick="App.saveProfile()">💾 Зберегти</button>
+</div>
+</div>
+</div>
 <div id="screen-quests" class="screen">
-    <h1>🏆 Квести</h1>
-    <p class="subtitle">Виконуй — отримуй монети</p>
-    <div class="panel panel-narrow">
-        <div class="balance-bar">
-            <span>🪙 <span id="questsCoins">0</span></span>
-            <span class="xp">⭐ XP: <span id="questsXp">0</span></span>
-        </div>
-        <div id="questsList"></div>
-    </div>
-    <div class="panel panel-narrow">
-        <button class="ghost" onclick="App.go('screen-welcome')">← Назад</button>
-    </div>
+<h1>🏆 Квести</h1>
+<p class="subtitle">Виконуй — отримуй монети</p>
+<div class="panel panel-narrow">
+<div class="balance-bar">
+<span>🪙 <span id="questsCoins">0</span></span>
+<span class="xp">⭐ XP: <span id="questsXp">0</span></span>
 </div>
-
+<div id="questsList"></div>
+</div>
+<div class="panel panel-narrow"><button class="ghost" onclick="App.go('screen-welcome')">← Назад</button></div>
+</div>
 <div class="modal-overlay" id="modalOverlay">
-    <div class="modal-box">
-        <h2 id="modalTitle">Заголовок</h2>
-        <div id="modalBody" style="margin:10px 0;font-size:15px">Текст</div>
-        <div id="modalActions"></div>
-    </div>
+<div class="modal-box">
+<h2 id="modalTitle">Заголовок</h2>
+<div id="modalBody" style="margin:10px 0;font-size:15px">Текст</div>
+<div id="modalActions"></div>
 </div>
-
+</div>
 <div class="toast" id="toast">Повідомлення</div>
 </div>
-
 <script src="/socket.io/socket.io.js"></script>
 <script>
 "use strict";
-const App = (function() {
-  const State = {
-    theme: 'neon', role: null, pin: null, playerId: null, playerName: null,
-    user: null, token: null, isGuest: true,
-    profile: {
-      coins: 0, xp: 0,
-      ownedAvatars: ['a_smile', 'a_grin', 'a_cool'],
-      ownedAccessories: [],
-      ownedThemes: ['t_neon', 't_pastel'],
-      equippedAvatar: 'a_smile',
-      equippedHead: '', equippedEyes: '', equippedEffect: '',
-      completedQuests: {}
-    },
-    todayCoins: 0, dailyCap: 100,
-    catalog: [], currentQuiz: null, shop: null, economy: null, questDefs: null,
-    reactionEmojis: ['🎉', '🔥', '👏', '🤔', '🚀', '😂', '😮', '💪', '❓', '💯'],
-    chatPhrases: ['Вау!', 'Я знаю!', 'Дай шанс', 'Клас!', 'Ой…', 'Складно', 'Перемога!', 'Ще раз'],
-    room: null, socket: null, connected: false, initDone: false,
-    shopTabName: 'avatars', hwTabName: 'hw', answeredCurrent: false,
-    lastQIndex: -1, lastQStart: 0, questionStart: 0, _localTimer: null, _prizeApplied: false,
-    questionsDraft: [], currentHomework: null, allMyQuizzes: [], currentDuelInvite: null, isSpectator: false,
-    subjects: ['Математика', 'Українська мова', 'Історія', 'Природознавство', 'Інше'],
-    _savingProfile: false
-  };
-
-  function $(id) { return document.getElementById(id); }
-  function qsa(s, r = document) { return Array.from(r.querySelectorAll(s)); }
-  function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
-  const Storage = {
-    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
-    get(k, d = null) { try { const r = localStorage.getItem(k); return r === null ? d : JSON.parse(r); } catch (e) { return d; } },
-    remove(k) { try { localStorage.removeItem(k); } catch (e) {} }
-  };
-
-  const SVG_ACC = {
-    x_crown: '<svg class="acc-svg acc-head" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><path d="M10 50 L20 20 L35 35 L50 10 L65 35 L80 20 L90 50 Z" fill="#ffd75f" stroke="#b8860b" stroke-width="2" stroke-linejoin="round"/><circle cx="20" cy="20" r="4" fill="#ff5ff0"/><circle cx="50" cy="10" r="5" fill="#5ff0ff"/><circle cx="80" cy="20" r="4" fill="#ff5ff0"/><rect x="10" y="48" width="80" height="8" fill="#ffaa00" stroke="#b8860b" stroke-width="2"/></svg>',
-    x_hat: '<svg class="acc-svg acc-head" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="48" rx="42" ry="8" fill="#8b4513" stroke="#5a2d0a" stroke-width="2"/><path d="M25 48 Q25 20 50 20 Q75 20 75 48 Z" fill="#a0522d" stroke="#5a2d0a" stroke-width="2"/><rect x="25" y="42" width="50" height="6" fill="#ff5ff0" stroke="#5a2d0a" stroke-width="1"/></svg>',
-    x_partyhat: '<svg class="acc-svg acc-head" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><path d="M50 5 L75 50 L25 50 Z" fill="#ff5ff0" stroke="#b56bff" stroke-width="2" stroke-linejoin="round"/><circle cx="50" cy="5" r="5" fill="#ffd75f"/><circle cx="40" cy="25" r="3" fill="#5ff0ff"/><circle cx="60" cy="35" r="3" fill="#5fff9b"/></svg>',
-    x_cap: '<svg class="acc-svg acc-head" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><path d="M20 45 Q20 15 50 15 Q80 15 80 45 Z" fill="#5f9fff" stroke="#2a5fa8" stroke-width="2"/><path d="M15 45 L85 45 L90 52 L80 52 Z" fill="#5f9fff" stroke="#2a5fa8" stroke-width="2"/></svg>',
-    x_grad: '<svg class="acc-svg acc-head" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="35" width="40" height="15" fill="#1a1a2e" stroke="#000" stroke-width="2"/><path d="M10 30 L50 15 L90 30 L50 45 Z" fill="#1a1a2e" stroke="#000" stroke-width="2"/><line x1="85" y1="32" x2="85" y2="48" stroke="#ffd75f" stroke-width="2"/><circle cx="85" cy="50" r="3" fill="#ffd75f"/></svg>',
-    x_beanie: '<svg class="acc-svg acc-head" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><path d="M20 45 Q20 20 50 20 Q80 20 80 45 Z" fill="#c0392b" stroke="#7a1e16" stroke-width="2"/><rect x="18" y="42" width="64" height="10" fill="#e74c3c" stroke="#7a1e16" stroke-width="2" rx="3"/><circle cx="50" cy="15" r="6" fill="#ffd75f"/></svg>',
-    x_helmet: '<svg class="acc-svg acc-head" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><path d="M15 50 Q15 15 50 15 Q85 15 85 50 Z" fill="#ff8040" stroke="#a04010" stroke-width="2"/><rect x="15" y="45" width="70" height="8" fill="#ffaa00" stroke="#a04010" stroke-width="2"/><circle cx="50" cy="32" r="5" fill="#fff"/></svg>',
-    x_top_hat: '<svg class="acc-svg acc-head" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="52" rx="40" ry="6" fill="#1a1a1a"/><rect x="30" y="15" width="40" height="38" fill="#1a1a1a" stroke="#444" stroke-width="2"/><rect x="28" y="48" width="44" height="6" fill="#ff5ff0"/></svg>',
-    x_glasses: '<svg class="acc-svg acc-eyes" viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="8" width="30" height="18" rx="4" fill="#000" opacity="0.85" stroke="#5ff0ff" stroke-width="2"/><rect x="60" y="8" width="30" height="18" rx="4" fill="#000" opacity="0.85" stroke="#5ff0ff" stroke-width="2"/><line x1="40" y1="17" x2="60" y2="17" stroke="#5ff0ff" stroke-width="2"/></svg>',
-    x_goggles: '<svg class="acc-svg acc-eyes" viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="8" width="34" height="18" rx="9" fill="#ffaa00" opacity="0.85" stroke="#000" stroke-width="2"/><rect x="56" y="8" width="34" height="18" rx="9" fill="#ffaa00" opacity="0.85" stroke="#000" stroke-width="2"/><rect x="44" y="14" width="12" height="6" fill="#333"/></svg>',
-    x_monocle: '<svg class="acc-svg acc-eyes" viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="15" r="12" fill="none" stroke="#ffd75f" stroke-width="3"/><circle cx="50" cy="15" r="9" fill="#fff" opacity="0.2"/><line x1="62" y1="20" x2="80" y2="28" stroke="#ffd75f" stroke-width="2"/></svg>',
-    x_aura: '<svg class="acc-svg acc-effect" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" fill="none" stroke="#5ff0ff" stroke-width="3" opacity="0.6"/><circle cx="50" cy="50" r="38" fill="none" stroke="#ffd75f" stroke-width="2" opacity="0.5"/><circle cx="20" cy="20" r="3" fill="#fff"/><circle cx="80" cy="30" r="3" fill="#fff"/><circle cx="70" cy="80" r="3" fill="#fff"/></svg>',
-    x_fire: '<svg class="acc-svg acc-effect" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 90 Q30 75 30 55 Q40 60 45 50 Q45 70 55 65 Q65 60 60 45 Q75 60 70 75 Q65 90 50 90 Z" fill="#ff8040" stroke="#a04010" stroke-width="2"/><path d="M50 85 Q40 75 42 60 Q48 65 50 55 Q55 65 58 60 Q60 75 50 85 Z" fill="#ffd75f"/></svg>',
-    x_star: '<svg class="acc-svg acc-effect" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 10 L60 40 L90 45 L65 65 L75 95 L50 78 L25 95 L35 65 L10 45 L40 40 Z" fill="#ffd75f" stroke="#b8860b" stroke-width="2" stroke-linejoin="round"/></svg>',
-    x_rainbow: '<svg class="acc-svg acc-effect" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M10 70 Q50 10 90 70" fill="none" stroke="#ff3d6e" stroke-width="6"/><path d="M15 70 Q50 20 85 70" fill="none" stroke="#ffaa00" stroke-width="6"/><path d="M20 70 Q50 30 80 70" fill="none" stroke="#5fff9b" stroke-width="6"/><path d="M25 70 Q50 40 75 70" fill="none" stroke="#5f9fff" stroke-width="6"/></svg>',
-    x_lightning: '<svg class="acc-svg acc-effect" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M60 5 L35 50 L50 50 L40 95 L75 45 L60 45 Z" fill="#ffd75f" stroke="#ffaa00" stroke-width="2"/></svg>',
-    x_heart: '<svg class="acc-svg acc-effect" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 85 Q15 60 15 35 Q15 15 35 15 Q50 15 50 35 Q50 15 65 15 Q85 15 85 35 Q85 60 50 85 Z" fill="#ff5f8f" stroke="#a02050" stroke-width="2"/></svg>',
-    x_leaf: '<svg class="acc-svg acc-effect" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 15 Q80 30 75 70 Q60 90 30 80 Q20 50 50 15 Z" fill="#ff8040" stroke="#a04010" stroke-width="2"/><line x1="50" y1="20" x2="40" y2="75" stroke="#a04010" stroke-width="2"/></svg>',
-    x_snow: '<svg class="acc-svg acc-effect" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><line x1="50" y1="10" x2="50" y2="90" stroke="#5ff0ff" stroke-width="4"/><line x1="10" y1="50" x2="90" y2="50" stroke="#5ff0ff" stroke-width="4"/><line x1="22" y1="22" x2="78" y2="78" stroke="#5ff0ff" stroke-width="4"/><line x1="78" y1="22" x2="22" y2="78" stroke="#5ff0ff" stroke-width="4"/></svg>'
-  };
-
-  function renderAvatar(avatarEmoji, accessories) {
-    let html = '<span class="avatar-render">' + avatarEmoji;
-    if (accessories) {
-      if (accessories.effect && SVG_ACC[accessories.effect]) html += SVG_ACC[accessories.effect];
-      if (accessories.head && SVG_ACC[accessories.head]) html += SVG_ACC[accessories.head];
-      if (accessories.eyes && SVG_ACC[accessories.eyes]) html += SVG_ACC[accessories.eyes];
-    }
-    html += '</span>';
-    return html;
-  }
-  function renderAccessoriesSVG(acc) {
-    let html = '';
-    if (acc.effect && SVG_ACC[acc.effect]) html += SVG_ACC[acc.effect];
-    if (acc.head && SVG_ACC[acc.head]) html += SVG_ACC[acc.head];
-    if (acc.eyes && SVG_ACC[acc.eyes]) html += SVG_ACC[acc.eyes];
-    return html;
-  }
-
-  let toastTimer = null;
-  function toast(msg, ms = 2400) {
-    const t = $('toast');
-    if (!t) return;
-    t.textContent = msg;
-    t.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove('show'), ms);
-  }
-  function openModal(title, body, actions) {
-    $('modalTitle').textContent = title;
-    $('modalBody').innerHTML = body;
-    const ac = $('modalActions');
-    ac.innerHTML = '';
-    if (actions) {
-      actions.forEach(a => {
-        const b = document.createElement('button');
-        b.className = a.cls || 'primary';
-        b.textContent = a.text;
-        b.onclick = () => { closeModal(); a.fn && a.fn(); };
-        ac.appendChild(b);
-      });
-    } else {
-      const b = document.createElement('button');
-      b.className = 'primary';
-      b.textContent = 'Гаразд';
-      b.onclick = closeModal;
-      ac.appendChild(b);
-    }
-    $('modalOverlay').classList.add('active');
-  }
-  function closeModal() { $('modalOverlay').classList.remove('active'); }
-
-  function go(id) {
-    qsa('.screen').forEach(s => s.classList.remove('active'));
-    const el = $(id);
-    if (el) { el.classList.add('active'); el.scrollTop = 0; }
-    if (id === 'screen-catalog') loadCatalog();
-    else if (id === 'screen-shop') renderShop();
-    else if (id === 'screen-quests') renderQuests();
-    else if (id === 'screen-teacher') renderTeacher();
-    else if (id === 'screen-homework') loadHomework();
-    else if (id === 'screen-duel') loadDuelScreen();
-    else if (id === 'screen-marks') loadMyMarks();
-    else if (id === 'screen-points') loadMyPoints();
-    updateAllBalances();
-  }
-
-  function updateAllBalances() {
-    const p = State.profile;
-    const pairs = [
-      ['welcomeCoins', p.coins], ['catalogCoins', p.coins], ['shopCoins', p.coins],
-      ['questsCoins', p.coins], ['hwCoins', p.coins],
-      ['welcomeXp', p.xp], ['catalogXp', p.xp], ['shopXp', p.xp],
-      ['questsXp', p.xp], ['hwXp', p.xp],
-      ['welcomeLevel', Math.floor(p.xp / 100) + 1],
-      ['welcomeTodayCoins', State.todayCoins],
-      ['catalogTodayCoins', State.todayCoins],
-      ['shopTodayCoins', State.todayCoins]
-    ];
-    pairs.forEach(([id, v]) => {
-      const el = $(id);
-      if (el) el.textContent = v;
-    });
-  }
-
-  function applyTheme(themeId) {
-    const all = ['neon','pastel','space','cyber','forest','sunset','ocean','candy','autumn'].map(t => 'theme-' + t);
-    document.body.classList.remove(...all);
-    document.body.classList.add('theme-' + themeId);
-    State.theme = themeId;
-    Storage.set('sunlorem_theme', themeId);
-  }
-
-  function loadProfile() {
-    const saved = Storage.get('sunlorem_profile');
-    if (saved && typeof saved === 'object') State.profile = Object.assign(State.profile, saved);
-    const freeAvatars = ['a_smile', 'a_grin', 'a_cool'];
-    freeAvatars.forEach(id => {
-      if (!State.profile.ownedAvatars.includes(id)) State.profile.ownedAvatars.push(id);
-    });
-    if (!Array.isArray(State.profile.ownedAvatars)) State.profile.ownedAvatars = freeAvatars.slice();
-    if (!Array.isArray(State.profile.ownedAccessories)) State.profile.ownedAccessories = [];
-    if (!Array.isArray(State.profile.ownedThemes)) State.profile.ownedThemes = ['t_neon', 't_pastel'];
-    if (!State.profile.completedQuests) State.profile.completedQuests = {};
-  }
-
-  function saveProfile() {
-    Storage.set('sunlorem_profile', State.profile);
-    if (State.socket && State.connected && State.room && State.playerId) {
-      State.socket.emit('updateProfile', {
-        playerId: State.playerId,
-        avatarId: State.profile.equippedAvatar,
-        accessories: {
-          head: State.profile.equippedHead,
-          eyes: State.profile.equippedEyes,
-          effect: State.profile.equippedEffect
-        },
-        xp: State.profile.xp
-      });
-    }
-    if (State.token && State.user && !State.isGuest) {
-      if (State._savingProfile) return;
-      State._savingProfile = true;
-      api('/api/user/save-profile', {
-        token: State.token,
-        profile: {
-          xp: State.profile.xp,
-          ownedAvatars: State.profile.ownedAvatars,
-          ownedAccessories: State.profile.ownedAccessories,
-          ownedThemes: State.profile.ownedThemes,
-          equippedAvatar: State.profile.equippedAvatar,
-          equippedHead: State.profile.equippedHead,
-          equippedEyes: State.profile.equippedEyes,
-          equippedEffect: State.profile.equippedEffect,
-          theme: State.theme,
-          completedQuests: State.profile.completedQuests
-        }
-      }).then(res => {
-        State._savingProfile = false;
-        if (res && res.ok) {
-          State.user = res.user;
-          toast('💾 Збережено!');
-        } else {
-          toast('💾 Збережено локально');
-        }
-      }).catch(() => {
-        State._savingProfile = false;
-        toast('💾 Збережено локально');
-      });
-    } else {
-      toast('💾 Збережено локально');
-    }
-  }
-
-  function syncFromUser(u) {
-    if (!u) return;
-    State.user = u;
-    State.profile.coins = u.coins || 0;
-    State.profile.xp = u.xp || 0;
-    State.todayCoins = u.todayCoins || 0;
-    State.dailyCap = u.dailyCap || 100;
-    const freeAvatars = ['a_smile', 'a_grin', 'a_cool'];
-    const serverOwned = u.ownedAvatars || [];
-    State.profile.ownedAvatars = Array.from(new Set(freeAvatars.concat(serverOwned)));
-    State.profile.ownedAccessories = u.ownedAccessories || [];
-    State.profile.ownedThemes = u.ownedThemes || ['t_neon', 't_pastel'];
-    State.profile.equippedAvatar = u.avatarId || 'a_smile';
-    State.profile.equippedHead = u.equippedHead || '';
-    State.profile.equippedEyes = u.equippedEyes || '';
-    State.profile.equippedEffect = u.equippedEffect || '';
-    State.profile.completedQuests = u.completedQuests || {};
-    if (u.subjects && Array.isArray(u.subjects)) State.subjects = u.subjects;
-    Storage.set('sunlorem_profile', State.profile);
-    updateAllBalances();
-    if (u.theme) applyTheme(u.theme);
-  }
-
-  function showUserUI() {
-    const isT = State.user && State.user.role === 'teacher';
-    const isS = State.user && State.user.role === 'student';
-    $('btnTeacherPanel').classList.toggle('hidden', !isT);
-    $('btnHW').classList.toggle('hidden', !isS);
-    $('btnMarks').classList.toggle('hidden', !isS);
-    $('btnPoints').classList.toggle('hidden', !isS);
-    $('welcomeGuestBox').classList.toggle('hidden', !!State.user);
-    $('welcomeUserBox').classList.toggle('hidden', !State.user);
-    if (State.user) $('welcomeUserName').textContent = (isT ? '👩‍🏫 ' : '🎒 ') + State.user.name;
-    if (State.socket && State.socket.connected && State.user && !State.user.isBot) {
-      State.socket.emit('registerOnline', { login: State.user.login });
-    }
-  }
-
-  async function api(path, body) {
-    const r = await fetch(path, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body || {})
-    });
-    return r.json();
-  }
-
-  async function doLogin() {
-    const login = $('loginInput').value.trim();
-    const password = $('passwordInput').value;
-    if (!login || !password) { toast('Введи логін і пароль'); return; }
-    const res = await api('/api/auth/login', { login, password });
-    if (!res.ok) { toast(res.error || 'Помилка'); return; }
-    State.token = res.token;
-    Storage.set('sunlorem_token', res.token);
-    State.isGuest = false;
-    syncFromUser(res.user);
-    showUserUI();
-    toast('👋 Вітаю, ' + (res.user.name || res.user.login) + '!');
-    go('screen-welcome');
-  }
-  async function tryAutoLogin() {
-    const t = Storage.get('sunlorem_token');
-    if (!t) return false;
-    const res = await api('/api/auth/me', { token: t });
-    if (!res.ok) return false;
-    State.token = t;
-    State.isGuest = false;
-    syncFromUser(res.user);
-    showUserUI();
-    return true;
-  }
-  function logout() {
-    State.user = null;
-    State.token = null;
-    State.isGuest = true;
-    Storage.remove('sunlorem_token');
-    showUserUI();
-    go('screen-welcome');
-    toast('Вийшли');
-  }
-  function continueAsGuest() {
-    State.isGuest = true;
-    State.user = null;
-    showUserUI();
-    go('screen-catalog');
-  }
-
-  async function loadCatalog() {
-    try {
-      const r = await fetch('/api/quizzes');
-      const j = await r.json();
-      if (j.ok) State.catalog = j.quizzes || [];
-      renderCatalog();
-    } catch (e) {}
-  }
-  function renderCatalog() {
-    const wrap = $('catalogList');
-    if (!wrap) return;
-    const q = $('searchQuiz') ? $('searchQuiz').value.toLowerCase() : '';
-    const s = $('filterSubject') ? $('filterSubject').value : '';
-    const list = State.catalog.filter(x => {
-      if (q && !x.title.toLowerCase().includes(q)) return false;
-      if (s && x.subject !== s) return false;
-      return true;
-    });
-    wrap.innerHTML = '';
-    if (list.length === 0) {
-      wrap.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:20px">Квізів немає.</p>';
-      return;
-    }
-    const subjEmoji = { 'Математика': '➗', 'Українська мова': '📖', 'Історія': '🏛️', 'Природознавство': '🌿', 'Інше': '📚' };
-    list.forEach(x => {
-      const card = document.createElement('div');
-      card.className = 'quiz-card';
-      card.innerHTML = '<span class="q-emoji">' + (subjEmoji[x.subject] || '📚') + '</span>' +
-        '<div class="q-title">' + esc(x.title) + '</div>' +
-        '<div class="q-author">Автор: ' + esc(x.author) + '</div>' +
-        '<div class="q-meta"><span>' + esc(x.subject) + '</span><span>📝 ' + x.questionsCount + '</span><span>🎮 ' + x.plays + '</span><span>❤️ ' + x.likes + '</span></div>';
-      card.onclick = () => openQuiz(x);
-      wrap.appendChild(card);
-    });
-  }
-  function filterCatalog() { renderCatalog(); }
-  async function openQuiz(x) {
-    State.currentQuiz = x;
-    $('qmTitle').textContent = x.title;
-    $('qmSubtitle').textContent = x.subject + ' • ' + x.questionsCount + ' питань';
-    go('screen-quiz-mode');
-  }
-  function playerInfo() {
-    if (State.user) return { name: State.user.name, login: State.user.login };
-    return { name: State.playerName || 'Гість', login: 'guest' };
-  }
-  function playSolo() {
-    if (!State.currentQuiz) return;
-    if (!State.socket || !State.connected) { toast('Немає з\'єднання'); return; }
-    const p = playerInfo();
-    State.socket.emit('startSoloGame', {
-      quizId: State.currentQuiz.id, mode: 'arcade', name: p.name, login: p.login
-    }, res => {
-      if (!res.ok) { toast(res.error || 'Помилка'); return; }
-      State.role = 'student';
-      State.pin = res.pin;
-      State.playerId = res.playerId;
-      State.room = res.state;
-      State.answeredCurrent = false;
-      State.lastQIndex = -1;
-      $('gameTitle').textContent = '🎯 Соло';
-      $('teacherGameBtns').classList.add('hidden');
-      go('screen-game');
-      renderGame(res.state);
-    });
-  }
-  function playPublic() {
-    if (!State.currentQuiz) return;
-    if (!State.socket || !State.connected) { toast('Немає з\'єднання'); return; }
-    const p = playerInfo();
-    State.socket.emit('startPublicGame', {
-      quizId: State.currentQuiz.id, mode: 'arcade', targetCount: 5,
-      name: p.name, login: p.login
-    }, res => {
-      if (!res.ok) { toast(res.error || 'Помилка'); return; }
-      State.role = 'student';
-      State.pin = res.pin;
-      State.playerId = res.playerId;
-      State.room = res.state;
-      State.answeredCurrent = false;
-      State.lastQIndex = -1;
-      $('gameTitle').textContent = '🌐 З людьми';
-      $('teacherGameBtns').classList.add('hidden');
-      go('screen-game');
-      renderGame(res.state);
-    });
-  }
-  function playRoom() {
-    if (!State.currentQuiz) return;
-    if (!State.socket || !State.connected) { toast('Немає з\'єднання'); return; }
-    State.socket.emit('createRoomFromQuiz', {
-      quizId: State.currentQuiz.id, mode: 'arcade',
-      timePerQuestion: 20, botCount: 0
-    }, res => {
-      if (!res.ok) { toast(res.error || 'Помилка'); return; }
-      State.role = 'teacher';
-      State.pin = res.pin;
-      State.room = res.state;
-      $('roomPin').textContent = res.pin;
-      renderQR(res.pin);
-      updateLobby(res.state);
-      go('screen-lobby');
-    });
-  }
-  function renderQR(pin) {
-    const box = $('qrBox');
-    if (!box) return;
-    box.innerHTML = '';
-    const link = window.location.origin + window.location.pathname + '?pin=' + pin;
-    const img = document.createElement('img');
-    img.width = 200; img.height = 200; img.alt = 'QR';
-    img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(link);
-    img.onerror = () => {
-      box.innerHTML = '<div class="qr-fallback"><div style="font-size:15px">PIN:</div><div class="pin-big">' + pin + '</div></div>';
-    };
-    box.appendChild(img);
-  }
-  function joinByPin() {
-    const pin = $('joinPin').value.trim();
-    const name = $('joinName').value.trim();
-    if (!/^\d{6}$/.test(pin)) { toast('6-значний PIN'); return; }
-    if (name.length < 2) { toast('Ім\'я закоротке'); return; }
-    State.playerName = name;
-    if (!State.socket || !State.connected) { toast('Немає з\'єднання'); return; }
-    State.socket.emit('joinRoom', {
-      pin, name,
-      avatarId: State.profile.equippedAvatar,
-      accessories: {
-        head: State.profile.equippedHead,
-        eyes: State.profile.equippedEyes,
-        effect: State.profile.equippedEffect
-      },
-      xp: State.profile.xp
-    }, res => {
-      if (!res.ok) { toast(res.error || 'Помилка'); return; }
-      State.role = 'student';
-      State.pin = pin;
-      State.playerId = res.playerId;
-      State.room = res.state;
-      State.answeredCurrent = false;
-      State.lastQIndex = -1;
-      $('gameTitle').textContent = '🎮 Гра';
-      if (res.state.status === 'lobby') go('screen-lobby');
-      else { go('screen-game'); renderGame(res.state); }
-    });
-  }
-  function startGame() {
-    if (!State.socket) return;
-    State.socket.emit('startGame', res => {
-      if (!res.ok) toast(res.error || 'Помилка');
-      else toast('Гра почалася!');
-    });
-  }
-  function nextQuestion() {
-    if (!State.socket) return;
-    State.socket.emit('nextQuestion', res => {
-      if (!res.ok) toast(res.error || 'Помилка');
-    });
-  }
-  function finishGame() {
-    if (!State.socket) return;
-    State.socket.emit('finishGame', res => {
-      if (!res.ok) toast(res.error || 'Помилка');
-    });
-  }
-  function closeRoom() {
-    if (!confirm('Закрити?')) return;
-    if (!State.socket) { go('screen-welcome'); return; }
-    State.socket.emit('closeRoom', () => {
-      State.room = null;
-      go('screen-welcome');
-    });
-  }
-
-  function renderGame(state) {
-    if (!state) return;
-    const q = state.questions[state.currentQuestion];
-    if (!q) return;
-    const me = state.players.find(p => p.id === State.playerId);
-    const qChanged = (state.currentQuestion !== State.lastQIndex) ||
-                     (state.questionStartedAt !== State.lastQStart);
-
-    if (qChanged) {
-      State.lastQIndex = state.currentQuestion;
-      State.lastQStart = state.questionStartedAt;
-      State.questionStart = Date.now();
-      State.answeredCurrent = false;
-      $('gFeedback').textContent = '';
-      const wrap = $('gAnswers');
-      wrap.innerHTML = '';
-      q.answers.forEach((a, i) => {
-        const btn = document.createElement('button');
-        btn.className = 'answer-btn';
-        btn.innerHTML = '<span style="display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent-1),var(--accent-2));color:#fff;font-weight:900;margin-right:10px">' +
-          String.fromCharCode(65 + i) + '</span>' + esc(a);
-        btn.onclick = () => sendAnswer(i);
-        wrap.appendChild(btn);
-      });
-      startLocalTimer(state.timePerQuestion);
-    }
-
-    $('gIndex').textContent = state.currentQuestion + 1;
-    $('gTotal').textContent = state.questions.length;
-    $('gText').textContent = q.text;
-
-    if (me) {
-      $('gScore').textContent = 'Бали: ' + me.score;
-      $('gStreak').textContent = '🔥 Серія: ' + (me.streak || 0);
-      $('gXp').textContent = '⭐ XP: ' + (me.xp || 0);
-    }
-
-    const spectator = me && !me.alive && state.mode === 'survival';
-    State.isSpectator = spectator;
-    $('gSpectator').classList.toggle('hidden', !spectator);
-    $('gAnswered').textContent = 'Відповіли: ' + state.players.filter(p => p.answeredThisRound).length + '/' + state.players.length;
-
-    if (State.answeredCurrent || !me || !me.alive) {
-      qsa('#gAnswers .answer-btn').forEach((b, i) => {
-        b.disabled = true;
-        if (i === q.correct) b.classList.add('correct');
-      });
-    }
-
-    const canPower = me && (me.streak || 0) >= 3 && !me.powerActive && me.alive;
-    ['btnPowDouble', 'btnPowShield', 'btnPowReveal'].forEach(id => {
-      const b = $(id);
-      if (b) b.disabled = !canPower;
-    });
-
-    $('teacherGameBtns').classList.toggle('hidden', State.role !== 'teacher');
-    if (State.role === 'teacher') {
-      const btn = $('btnNext');
-      if (btn) btn.textContent = (state.currentQuestion >= state.questions.length - 1) ? '🏁 Завершити' : '⏭️ Далі';
-    }
-
-    renderLeaderboard(state, 'gLeaderboard');
-    renderFeed(state, 'gFeed');
-  }
-
-  function sendAnswer(i) {
-    if (State.answeredCurrent) return;
-    if (!State.socket || !State.room) return;
-    State.answeredCurrent = true;
-    const q = State.room.questions[State.room.currentQuestion];
-    if (!q) return;
-    qsa('#gAnswers .answer-btn').forEach((b, idx) => {
-      b.disabled = true;
-      if (idx === q.correct) b.classList.add('correct');
-      if (idx === i && idx !== q.correct) b.classList.add('wrong');
-    });
-    const ok = i === q.correct;
-    $('gFeedback').textContent = ok ? '✅ Правильно!' : '❌ Неправильно';
-    $('gFeedback').style.color = ok ? 'var(--accent-5)' : '#ff3d6e';
-    State.socket.emit('answer', {
-      playerId: State.playerId,
-      q: State.room.currentQuestion,
-      a: i
-    }, res => {
-      if (res && res.ok && typeof res.xp === 'number' && State.user) {
-        State.user.xp = res.xp;
-        State.profile.xp = res.xp;
-        Storage.set('sunlorem_profile', State.profile);
-        updateAllBalances();
-      }
-    });
-  }
-  function activatePower(type) {
-    if (!State.socket) return;
-    State.socket.emit('activatePower', { playerId: State.playerId, type }, res => {
-      if (!res.ok) { toast(res.error || 'Помилка'); return; }
-      const names = { double: '⚡ Подвійні', shield: '🛡️ Щит', reveal: '🔍 Підказка' };
-      toast('Активовано: ' + names[type]);
-      if (type === 'reveal' && Array.isArray(res.hintIndexes)) {
-        const btns = qsa('#gAnswers .answer-btn');
-        res.hintIndexes.forEach(i => { if (btns[i]) btns[i].style.opacity = .25; });
-      }
-      ['btnPowDouble', 'btnPowShield', 'btnPowReveal'].forEach(id => {
-        const b = $(id);
-        if (b) b.disabled = true;
-      });
-    });
-  }
-  function renderLeaderboard(state, targetId) {
-    const wrap = $(targetId);
-    if (!wrap) return;
-    wrap.innerHTML = '';
-    state.players.slice().sort((a, b) => b.score - a.score).slice(0, 15).forEach((p, i) => {
-      const c = document.createElement('div');
-      c.className = 'player-card';
-      if (i === 0) c.classList.add('leader');
-      if (p.id === State.playerId) c.classList.add('self');
-      if (state.mode === 'survival' && !p.alive) c.classList.add('spectator');
-      const accHtml = renderAvatar(p.avatar || '😶', p.accessories);
-      c.innerHTML = '<span class="avatar">' + accHtml + '</span>' +
-        '<span class="name">' + esc(p.name) + (state.mode === 'survival' && !p.alive ? ' 👀' : '') + '</span>' +
-        '<span class="score">' + (p.score || 0) + ' 🏅</span>';
-      wrap.appendChild(c);
-    });
-  }
-  function renderFeed(state, targetId) {
-    const wrap = $(targetId);
-    if (!wrap) return;
-    wrap.innerHTML = '';
-    const feed = state.feed || [];
-    if (feed.length === 0) {
-      wrap.innerHTML = '<div class="event-line" style="opacity:.5">Подій немає...</div>';
-      return;
-    }
-    feed.slice(0, 15).forEach(ev => {
-      const d = document.createElement('div');
-      d.className = 'event-line';
-      d.textContent = ev.text;
-      wrap.appendChild(d);
-    });
-  }
-  function updateLobby(state) {
-    if (!state) return;
-    $('lobbyCount').textContent = 'Гравців: ' + state.players.length;
-    $('lobbyCountInline').textContent = state.players.length;
-    const wrap = $('lobbyPlayerList');
-    wrap.innerHTML = '';
-    if (state.players.length === 0) {
-      wrap.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:14px">Очікуємо...</p>';
-      return;
-    }
-    state.players.slice().sort((a, b) => b.score - a.score).forEach(p => {
-      const c = document.createElement('div');
-      c.className = 'player-card';
-      if (p.id === State.playerId) c.classList.add('self');
-      const accHtml = renderAvatar(p.avatar || '😶', p.accessories);
-      c.innerHTML = '<span class="avatar">' + accHtml + '</span>' +
-        '<span class="name">' + esc(p.name) + '</span>' +
-        '<span class="score">' + (p.score || 0) + ' 🏅</span>';
-      wrap.appendChild(c);
-    });
-  }
-  function renderResults(state) {
-    if (!state) return;
-    const sorted = state.players.slice().sort((a, b) => b.score - a.score);
-    const podium = $('podium');
-    podium.innerHTML = '';
-    const top3 = [sorted[1], sorted[0], sorted[2]];
-    const labels = ['p2', 'p1', 'p3'];
-    const medals = ['🥈', '🥇', '🥉'];
-    for (let i = 0; i < 3; i++) {
-      const p = top3[i];
-      const pl = document.createElement('div');
-      pl.className = 'podium-place ' + labels[i];
-      if (!p) {
-        pl.innerHTML = '<div class="avatar">—</div><div class="name">—</div><div class="pedestal">—</div>';
-      } else {
-        pl.innerHTML = '<div class="avatar">' + renderAvatar(p.avatar || '😶', p.accessories) + '</div>' +
-          '<div class="name">' + esc(p.name) + '</div>' +
-          '<div style="font-size:11px;color:var(--accent-4);font-weight:900">+' + (p.finalPrize || 0) + ' 🪙</div>' +
-          '<div class="pedestal">' + medals[i] + '</div>';
-      }
-      podium.appendChild(pl);
-    }
-    const lb = $('finalLeaderboard');
-    lb.innerHTML = '';
-    sorted.slice(0, 50).forEach((p, i) => {
-      const c = document.createElement('div');
-      c.className = 'player-card';
-      if (i === 0) c.classList.add('leader');
-      c.innerHTML = '<span class="avatar">' + renderAvatar(p.avatar || '😶', p.accessories) + '</span>' +
-        '<span class="name">' + esc(p.name) + '</span>' +
-        '<span class="score">' + (p.score || 0) + ' 🏅 +' + (p.finalPrize || 0) + ' 🪙</span>';
-      lb.appendChild(c);
-    });
-    const w = sorted[0];
-    if (w) {
-      $('certName').textContent = w.name;
-      $('certScore').textContent = 'Балів: ' + w.score;
-      $('certCoins').textContent = '🪙 Разом: ' + (w.coins || 0);
-    }
-    $('certDate').textContent = new Date().toLocaleDateString('uk-UA', {
-      day: 'numeric', month: 'long', year: 'numeric'
-    });
-  }
-  function startLocalTimer(duration) {
-    stopLocalTimer();
-    State.questionStart = Date.now();
-    State._localTimer = setInterval(() => {
-      const elapsed = (Date.now() - State.questionStart) / 1000;
-      const left = Math.max(0, duration - elapsed);
-      updateTimer(Math.ceil(left), duration);
-      if (left <= 0) stopLocalTimer();
-    }, 100);
-  }
-  function stopLocalTimer() {
-    if (State._localTimer) { clearInterval(State._localTimer); State._localTimer = null; }
-  }
-  function updateTimer(left, total) {
-    const pct = Math.max(0, (left / (total || 1)) * 100);
-    const f = $('gTimerFill');
-    if (f) f.style.width = pct + '%';
-    const t = $('gTimerText');
-    if (t) t.textContent = left;
-  }
-
-  function initSocket() {
-    const socket = io();
-    State.socket = socket;
-    socket.on('connect', () => {
-      State.connected = true;
-      showConn(true, '🟢 Онлайн');
-      socket.emit('getShop', res => {
-        if (res && res.ok) {
-          State.shop = res.shop;
-          State.economy = res.economy;
-          State.questDefs = res.quests;
-          State.reactionEmojis = res.reactions || State.reactionEmojis;
-          State.chatPhrases = res.chatPhrases || State.chatPhrases;
-          if (res.dailyCoinCap) State.dailyCap = res.dailyCoinCap;
-          buildReactions();
-          buildChat();
-          renderQuests();
-          renderShop();
-        }
-      });
-      if (State.user && !State.user.isBot) {
-        socket.emit('registerOnline', { login: State.user.login });
-      }
-    });
-    socket.on('disconnect', () => {
-      State.connected = false;
-      showConn(false, '🔴 Офлайн');
-    });
-    socket.on('connect_error', () => showConn(false, '🔴 Помилка'));
-    socket.on('state', state => {
-      State.room = state;
-      if (state.status === 'finished' && state.isHomework) {
-        renderHomeworkResult(state);
-        return;
-      }
-      if (State.role === 'teacher') {
-        if (state.status === 'lobby') {
-          updateLobby(state);
-          if (!$('screen-lobby').classList.contains('active')) go('screen-lobby');
-        } else if (state.status === 'running') {
-          if (!$('screen-game').classList.contains('active')) go('screen-game');
-          renderGame(state);
-        } else if (state.status === 'finished') {
-          renderResults(state);
-          go('screen-results');
-        }
-      } else if (State.role === 'student') {
-        const me = state.players.find(p => p.id === State.playerId);
-        if (state.status === 'finished') {
-          if (me && me.finalPrize && !State._prizeApplied) {
-            State._prizeApplied = true;
-            toast('🏆 +' + me.finalPrize + ' 🪙 за ' + me.finalRank + ' місце!');
-            if (State.token && State.user) {
-              api('/api/auth/me', { token: State.token }).then(r => {
-                if (r && r.ok) syncFromUser(r.user);
-              });
-            }
-          }
-          renderResults(state);
-          go('screen-results');
-        } else if (state.status === 'running') {
-          if (!$('screen-game').classList.contains('active')) go('screen-game');
-          renderGame(state);
-        } else if (state.status === 'lobby') {
-          if (!$('screen-lobby').classList.contains('active')) go('screen-lobby');
-          updateLobby(state);
-        }
-      }
-    });
-    socket.on('tick', d => updateTimer(d.timeLeft, d.total));
-    socket.on('playerReaction', d => spawnFloatEmoji(d.emoji));
-    socket.on('playerChat', d => { showChatBubble(d.playerId, d.playerName, d.phrase); spawnFloatEmoji('💬'); });
-    socket.on('roomClosed', () => openModal('Кімнату закрито', 'Вчитель закрив кімнату.'));
-    socket.on('duelInvite', d => {
-      State.currentDuelInvite = d;
-      openModal('⚔️ Виклик на дуель',
-        '<div style="text-align:center"><div style="font-size:44px">' + d.fromAvatar + '</div><p><b>' + esc(d.fromName) + '</b> викликає тебе на дуель!</p><p style="color:var(--text-dim);font-size:13px">Перемога +10 🪙, поразка −10 🪙</p></div>',
-        [
-          { text: '❌ Відхилити', cls: 'danger', fn: () => respondDuel(d.inviteId, false) },
-          { text: '✅ Прийняти', cls: 'success', fn: () => respondDuel(d.inviteId, true) }
-        ]);
-    });
-    socket.on('duelResponse', d => {
-      if (d.accept) toast('✅ Виклик прийнято!');
-      else toast('❌ Виклик відхилено');
-      State.currentDuelInvite = null;
-    });
-    socket.on('duelStarted', d => {
-      State.role = 'student';
-      State.pin = d.pin;
-      State.playerId = d.playerId;
-      State.room = d.state;
-      State.answeredCurrent = false;
-      State.lastQIndex = -1;
-      $('gameTitle').textContent = '⚔️ Дуель';
-      $('teacherGameBtns').classList.add('hidden');
-      go('screen-game');
-      renderGame(d.state);
-      toast('⚔️ Дуель почалася!');
-    });
-  }
-  function showConn(ok, text) {
-    const el = $('connStatus');
-    if (!el) return;
-    el.textContent = text;
-    el.className = 'conn-status show ' + (ok ? 'ok' : 'err');
-    if (ok) {
-      clearTimeout(el._t);
-      el._t = setTimeout(() => el.classList.remove('show'), 2000);
-    }
-  }
-  function spawnFloatEmoji(emoji) {
-    const layer = $('floatLayer') || document.body;
-    const el = document.createElement('div');
-    el.className = 'float-emoji';
-    el.textContent = emoji;
-    el.style.left = (20 + Math.random() * 60) + 'vw';
-    el.style.bottom = (10 + Math.random() * 20) + 'vh';
-    layer.appendChild(el);
-    setTimeout(() => el.remove(), 2600);
-  }
-  function showChatBubble(playerId, playerName, phrase) {
-    const cards = qsa('.player-card');
-    cards.forEach(card => {
-      const nameEl = card.querySelector('.name');
-      if (nameEl && nameEl.textContent.indexOf(playerName) !== -1) {
-        const old = card.querySelector('.chat-bubble');
-        if (old) old.remove();
-        const b = document.createElement('div');
-        b.className = 'chat-bubble';
-        b.textContent = phrase;
-        card.appendChild(b);
-        setTimeout(() => b.remove(), 2500);
-      }
-    });
-  }
-  function buildReactions() {
-    const bar = $('gameReactions');
-    if (!bar) return;
-    bar.innerHTML = '';
-    State.reactionEmojis.forEach(e => {
-      const btn = document.createElement('button');
-      btn.className = 'reaction-btn';
-      btn.textContent = e;
-      btn.onclick = () => sendReaction(e);
-      bar.appendChild(btn);
-    });
-  }
-  function buildChat() {
-    const bar = $('chatBar');
-    if (!bar) return;
-    bar.innerHTML = '';
-    State.chatPhrases.forEach(p => {
-      const btn = document.createElement('button');
-      btn.className = 'chat-btn';
-      btn.textContent = p;
-      btn.onclick = () => sendChat(p);
-      bar.appendChild(btn);
-    });
-  }
-  function sendReaction(e) {
-    if (!State.socket || !State.playerId) return;
-    State.socket.emit('sendReaction', { playerId: State.playerId, emoji: e }, res => {
-      if (res && res.ok) spawnFloatEmoji(e);
-    });
-  }
-  function sendChat(p) {
-    if (!State.socket || !State.playerId) return;
-    State.socket.emit('sendChatPhrase', { playerId: State.playerId, phrase: p }, res => {
-      if (res && res.ok) showChatBubble(State.playerId, State.playerName || (State.user && State.user.name) || '', p);
-    });
-  }
-
-  function shopTab(t) {
-    State.shopTabName = t;
-    qsa('#screen-shop .tab').forEach(x => x.classList.toggle('active', x.dataset.tab === t));
-    renderShop();
-  }
-  function renderShop() {
-    if (!State.shop) return;
-    const wrap = $('shopGrid');
-    if (!wrap) return;
-    wrap.innerHTML = '';
-    const preview = $('shopPreviewAvatar');
-    if (preview) {
-      const av = State.shop.avatars.find(a => a.id === State.profile.equippedAvatar);
-      preview.innerHTML = (av ? av.emoji : '😶') + renderAccessoriesSVG({
-        head: State.profile.equippedHead,
-        eyes: State.profile.equippedEyes,
-        effect: State.profile.equippedEffect
-      });
-    }
-    const pn = $('shopPreviewName');
-    if (pn) {
-      const av = State.shop.avatars.find(a => a.id === State.profile.equippedAvatar);
-      pn.textContent = av ? av.name : 'Смайлик';
-    }
-    if (State.shopTabName === 'avatars') {
-      State.shop.avatars.forEach(a => {
-        const owned = State.profile.ownedAvatars.includes(a.id);
-        const eq = State.profile.equippedAvatar === a.id;
-        const card = document.createElement('div');
-        card.className = 'shop-card' + (eq ? ' equipped' : '');
-        card.innerHTML = '<span class="preview">' + a.emoji + '</span>' +
-          '<div class="name">' + esc(a.name) + '</div>' +
-          '<div class="price ' + (owned ? 'owned' : (State.profile.coins < a.price ? 'cant' : '')) + '">' +
-          (owned ? '✓' : (a.price + ' 🪙')) + '</div>';
-        card.onclick = () => buyOrEquipAvatar(a);
-        wrap.appendChild(card);
-      });
-    } else if (State.shopTabName === 'accessories') {
-      State.shop.accessories.forEach(a => {
-        const owned = State.profile.ownedAccessories.includes(a.id);
-        const eq = (a.slot === 'head' && State.profile.equippedHead === a.id) ||
-                   (a.slot === 'eyes' && State.profile.equippedEyes === a.id) ||
-                   (a.slot === 'effect' && State.profile.equippedEffect === a.id);
-        const card = document.createElement('div');
-        card.className = 'shop-card' + (eq ? ' equipped' : '');
-        const svgPreview = SVG_ACC[a.id]
-          ? '<div style="width:70px;height:50px;margin:6px auto;position:relative">' +
-            SVG_ACC[a.id].replace('acc-svg', 'acc-svg preview-acc') + '</div>'
-          : '<span class="preview">' + a.emoji + '</span>';
-        card.innerHTML = svgPreview +
-          '<div class="name">' + esc(a.name) + '</div>' +
-          '<div style="font-size:11px;color:var(--text-dim)">' +
-          (a.slot === 'head' ? 'голова' : a.slot === 'eyes' ? 'очі' : 'ефект') + '</div>' +
-          '<div class="price ' + (owned ? 'owned' : (State.profile.coins < a.price ? 'cant' : '')) + '">' +
-          (owned ? '✓' : (a.price + ' 🪙')) + '</div>';
-        card.onclick = () => buyOrEquipAcc(a);
-        wrap.appendChild(card);
-      });
-      const clr = document.createElement('div');
-      clr.className = 'shop-card';
-      clr.innerHTML = '<span class="preview">∅</span><div class="name">Зняти все</div>';
-      clr.onclick = () => {
-        State.profile.equippedHead = '';
-        State.profile.equippedEyes = '';
-        State.profile.equippedEffect = '';
-        saveProfile();
-        renderShop();
-      };
-      wrap.appendChild(clr);
-    } else if (State.shopTabName === 'themes') {
-      const emojis = { t_neon:'🌌', t_pastel:'🍑', t_space:'🌠', t_cyber:'⚡', t_forest:'🌲', t_sunset:'🌅', t_ocean:'🌊', t_candy:'🍭', t_autumn:'🍂' };
-      State.shop.themes.forEach(t => {
-        const owned = State.profile.ownedThemes.includes(t.id);
-        const eq = State.theme === t.id.replace('t_', '');
-        const card = document.createElement('div');
-        card.className = 'shop-card' + (eq ? ' equipped' : '');
-        card.innerHTML = '<span class="preview">' + (emojis[t.id] || '🎨') + '</span>' +
-          '<div class="name">' + esc(t.name) + '</div>' +
-          '<div class="price ' + (owned ? 'owned' : (State.profile.coins < t.price ? 'cant' : '')) + '">' +
-          (owned ? '✓' : (t.price + ' 🪙')) + '</div>';
-        card.onclick = () => buyOrEquipTheme(t);
-        wrap.appendChild(card);
-      });
-    }
-    updateAllBalances();
-  }
-
-  async function spendCoins(amount, itemId, itemType) {
-    const cost = parseInt(amount, 10);
-    if (isNaN(cost) || cost <= 0) { toast('Помилка ціни'); return false; }
-    if (State.isGuest || !State.token) {
-      if (State.profile.coins < cost) { toast('Недостатньо СанКоїнів'); return false; }
-      State.profile.coins -= cost;
-      Storage.set('sunlorem_profile', State.profile);
-      updateAllBalances();
-      return true;
-    }
-    const res = await api('/api/user/spend-coins', {
-      token: State.token, amount: cost,
-      itemId: String(itemId), itemType: String(itemType)
-    });
-    if (!res.ok) { toast(res.error || 'Помилка покупки'); return false; }
-    State.profile.coins = res.coins;
-    if (State.user) State.user.coins = res.coins;
-    Storage.set('sunlorem_profile', State.profile);
-    updateAllBalances();
-    return true;
-  }
-
-  async function buyOrEquipAvatar(a) {
-    if (State.profile.ownedAvatars.includes(a.id)) {
-      State.profile.equippedAvatar = a.id;
-      saveProfile();
-      renderShop();
-      return;
-    }
-    if (State.profile.coins < a.price) { toast('Треба ще ' + (a.price - State.profile.coins) + ' 🪙'); return; }
-    if (!confirm('Купити "' + a.name + '" за ' + a.price + ' 🪙?')) return;
-    const ok = await spendCoins(a.price, a.id, 'avatar');
-    if (!ok) return;
-    State.profile.ownedAvatars.push(a.id);
-    State.profile.equippedAvatar = a.id;
-    saveProfile();
-    renderShop();
-    toast('🎉 Куплено!');
-  }
-  async function buyOrEquipAcc(a) {
-    if (State.profile.ownedAccessories.includes(a.id)) {
-      if (a.slot === 'head') State.profile.equippedHead = State.profile.equippedHead === a.id ? '' : a.id;
-      if (a.slot === 'eyes') State.profile.equippedEyes = State.profile.equippedEyes === a.id ? '' : a.id;
-      if (a.slot === 'effect') State.profile.equippedEffect = State.profile.equippedEffect === a.id ? '' : a.id;
-      saveProfile();
-      renderShop();
-      return;
-    }
-    if (State.profile.coins < a.price) { toast('Треба ще ' + (a.price - State.profile.coins) + ' 🪙'); return; }
-    if (!confirm('Купити "' + a.name + '" за ' + a.price + ' 🪙?')) return;
-    const ok = await spendCoins(a.price, a.id, 'accessory');
-    if (!ok) return;
-    State.profile.ownedAccessories.push(a.id);
-    if (a.slot === 'head') State.profile.equippedHead = a.id;
-    if (a.slot === 'eyes') State.profile.equippedEyes = a.id;
-    if (a.slot === 'effect') State.profile.equippedEffect = a.id;
-    saveProfile();
-    renderShop();
-    toast('🎉 Куплено!');
-  }
-  async function buyOrEquipTheme(t) {
-    if (State.profile.ownedThemes.includes(t.id)) {
-      applyTheme(t.id.replace('t_', ''));
-      saveProfile();
-      renderShop();
-      return;
-    }
-    if (State.profile.coins < t.price) { toast('Треба ще ' + (t.price - State.profile.coins) + ' 🪙'); return; }
-    if (!confirm('Розблокувати "' + t.name + '" за ' + t.price + ' 🪙?')) return;
-    const ok = await spendCoins(t.price, t.id, 'theme');
-    if (!ok) return;
-    State.profile.ownedThemes.push(t.id);
-    applyTheme(t.id.replace('t_', ''));
-    saveProfile();
-    renderShop();
-    toast('🎉 Розблоковано!');
-  }
-
-  function renderQuests() {
-    const wrap = $('questsList');
-    if (!wrap || !State.questDefs) return;
-    wrap.innerHTML = '';
-    Object.values(State.questDefs).forEach(def => {
-      const done = !!State.profile.completedQuests[def.id];
-      const item = document.createElement('div');
-      item.className = 'quest-item' + (done ? ' done' : '');
-      item.innerHTML = '<div class="q-icon">' + def.icon + '</div>' +
-        '<div class="q-info"><div class="q-title">' + esc(def.title) + (done ? ' ✓' : '') + '</div>' +
-        '<div class="q-desc">' + esc(def.desc) + '</div></div>' +
-        '<div class="q-reward">' + (done ? '✅' : '+' + def.reward + ' 🪙') + '</div>';
-      wrap.appendChild(item);
-    });
-  }
-
-  async function loadMyMarks() {
-    if (!State.user || State.user.role !== 'student') { toast('Треба увійти як учень'); go('screen-welcome'); return; }
-    const res = await api('/api/marks/for-student', { login: State.user.login });
-    if (!res.ok) { toast('Помилка'); return; }
-    $('marksAvg').textContent = res.avg || 0;
-    const wrap = $('marksList');
-    wrap.innerHTML = '';
-    if (res.marks.length === 0) {
-      wrap.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:14px">Оцінок немає</p>';
-      return;
-    }
-    res.marks.forEach(m => {
-      const cls = m.value >= 10 ? 'mark-good' : m.value >= 7 ? 'mark-ok' : 'mark-bad';
-      const d = new Date(m.at).toLocaleString('uk-UA');
-      const row = document.createElement('div');
-      row.className = 'record-row';
-      row.innerHTML = '<div class="rec-value ' + cls + '">' + m.value + '</div>' +
-        '<div class="rec-info"><div class="rec-title">' + esc(m.subject || 'Без предмету') + '</div>' +
-        '<div class="rec-meta">' + esc(m.reason || '') + ' • ' + d + '</div></div>';
-      wrap.appendChild(row);
-    });
-  }
-
-  async function loadMyPoints() {
-    if (!State.user || State.user.role !== 'student') { toast('Треба увійти як учень'); go('screen-welcome'); return; }
-    const res = await api('/api/points/for-student', { login: State.user.login });
-    if (!res.ok) { toast('Помилка'); return; }
-    $('pointsSum').textContent = res.sum || 0;
-    const wrap = $('pointsList');
-    wrap.innerHTML = '';
-    if (res.points.length === 0) {
-      wrap.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:14px">Балів немає</p>';
-      return;
-    }
-    res.points.forEach(p => {
-      const cls = p.value >= 0 ? 'point-pos' : 'point-neg';
-      const d = new Date(p.at).toLocaleString('uk-UA');
-      const row = document.createElement('div');
-      row.className = 'record-row';
-      row.innerHTML = '<div class="rec-value ' + cls + '">' + (p.value > 0 ? '+' : '') + p.value + '</div>' +
-        '<div class="rec-info"><div class="rec-title">' + esc(p.reason || '') + '</div>' +
-        '<div class="rec-meta">' + d + '</div></div>';
-      wrap.appendChild(row);
-    });
-  }
-
-  async function loadDuelScreen() {
-    if (!State.user || State.user.role !== 'student') { toast('Треба увійти як учень'); go('screen-welcome'); return; }
-    if (!State.token) return;
-    const qres = await fetch('/api/quizzes');
-    const qj = await qres.json();
-    const sel = $('duelQuizSelect');
-    sel.innerHTML = '';
-    if (qj.ok && qj.quizzes) {
-      qj.quizzes.forEach(q => {
-        const o = document.createElement('option');
-        o.value = q.id;
-        o.textContent = q.title;
-        sel.appendChild(o);
-      });
-    }
-    const res = await api('/api/duel/class-online', { token: State.token });
-    if (!res.ok) { toast('Помилка'); return; }
-    const wrap = $('duelClassList');
-    wrap.innerHTML = '';
-    if (res.students.length === 0) {
-      wrap.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:14px">Клас порожній</p>';
-      return;
-    }
-    res.students.forEach(s => {
-      const row = document.createElement('div');
-      row.className = 'duel-row';
-      row.innerHTML = '<div class="dr-avatar">' + s.avatar + '</div>' +
-        '<div class="dr-info"><div class="dr-name">' + esc(s.name) + '</div>' +
-        '<div class="dr-status ' + (s.online ? 'dr-online' : 'dr-offline') + '">' +
-        (s.online ? '🟢 онлайн' : '⚫ офлайн') + ' • 🎖️ рів. ' + s.level + '</div></div>';
-      if (s.online) {
-        const btn = document.createElement('button');
-        btn.className = 'primary dr-invite';
-        btn.textContent = '⚔️ Виклик';
-        btn.onclick = () => inviteDuel(s.login);
-        row.appendChild(btn);
-      }
-      wrap.appendChild(row);
-    });
-  }
-  async function inviteDuel(opponentLogin) {
-    if (!State.token) { toast('Треба увійти'); return; }
-    const quizId = $('duelQuizSelect').value;
-    if (!quizId) { toast('Обери квіз'); return; }
-    State.currentDuelQuizId = quizId;
-    const res = await api('/api/duel/invite', { fromLogin: State.user.login, toLogin: opponentLogin });
-    if (!res.ok) { toast(res.error || 'Помилка'); return; }
-    toast('⚔️ Виклик надіслано!');
-  }
-  async function respondDuel(inviteId, accept) {
-    if (!State.token) return;
-    const res = await api('/api/duel/respond', { inviteId, accept });
-    if (!res.ok) { toast(res.error || 'Помилка'); return; }
-    if (accept) {
-      const inv = State.currentDuelInvite;
-      if (!inv) return;
-      const quizId = State.currentDuelQuizId || (State.catalog[0] && State.catalog[0].id);
-      if (!quizId) { toast('Немає квізу'); return; }
-      State.socket.emit('startDuelRoom', {
-        quizId, login: State.user.login, opponent: inv.fromLogin
-      }, r => {
-        if (!r.ok) { toast(r.error || 'Помилка'); return; }
-        State.role = 'student';
-        State.pin = r.pin;
-        State.playerId = r.playerId;
-        State.room = r.state;
-        State.answeredCurrent = false;
-        State.lastQIndex = -1;
-        $('gameTitle').textContent = '⚔️ Дуель';
-        $('teacherGameBtns').classList.add('hidden');
-        go('screen-game');
-        renderGame(r.state);
-      });
-    }
-    State.currentDuelInvite = null;
-  }
-
-  function teacherTab(t) {
-    qsa('#screen-teacher .tab').forEach(x => x.classList.toggle('active', x.dataset.tab === t));
-    ['class','marks','points','create','mine','hw','analytics','subjects'].forEach(name => {
-      const el = $('teacher' + name.charAt(0).toUpperCase() + name.slice(1) + 'Tab');
-      if (el) el.classList.toggle('hidden', name !== t);
-    });
-    if (t === 'mine') loadMyQuizzes();
-    if (t === 'hw') loadMyHomework();
-    if (t === 'analytics') loadGeneralAnalytics();
-    if (t === 'marks') loadMarksAll();
-    if (t === 'points') loadPointsAll();
-    if (t === 'subjects') renderSubjects();
-  }
-  function renderTeacher() {
-    if (!State.user || State.user.role !== 'teacher') { toast('Тільки для вчителя'); go('screen-welcome'); return; }
-    loadClass();
-  }
-  async function loadClass() {
-    if (!State.token) return;
-    const res = await api('/api/teacher/class', { token: State.token });
-    if (!res.ok) return;
-    const wrap = $('classList');
-    wrap.innerHTML = '';
-    const markSel = $('markStudentSelect');
-    const pointSel = $('pointStudentSelect');
-    if (markSel) markSel.innerHTML = '';
-    if (pointSel) pointSel.innerHTML = '';
-    if (res.students.length === 0) {
-      wrap.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:10px">Порожньо</p>';
-      return;
-    }
-    res.students.forEach(s => {
-      const row = document.createElement('div');
-      row.className = 'student-row';
-      row.innerHTML = '<div style="flex:1"><div class="s-name">' + esc(s.name) + '</div>' +
-        '<div class="s-login">' + esc(s.login) + ' • 🪙 ' + s.coins + ' • ⭐ ' + s.xp + '</div></div>' +
-        '<button class="danger small" onclick="App.removeStudent(\'' + esc(s.login) + '\')">🗑️</button>';
-      wrap.appendChild(row);
-      if (markSel) { const o = document.createElement('option'); o.value = s.login; o.textContent = s.name; markSel.appendChild(o); }
-      if (pointSel) { const o = document.createElement('option'); o.value = s.login; o.textContent = s.name; pointSel.appendChild(o); }
-    });
-  }
-  async function loadMarksAll() {
-    if (!State.token) return;
-    const res = await api('/api/marks/all', { token: State.token });
-    if (!res.ok) return;
-    const wrap = $('marksAllList');
-    wrap.innerHTML = '';
-    if (res.students.length === 0) {
-      wrap.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:10px">Порожньо</p>';
-      return;
-    }
-    res.students.forEach(s => {
-      const h = document.createElement('div');
-      h.className = 'student-row';
-      h.style.background = 'transparent';
-      h.innerHTML = '<div style="flex:1"><div class="s-name">' + esc(s.name) + '</div>' +
-        '<div class="s-login">Середнє: ' + s.avg + ' • Оцінок: ' + s.marks.length + '</div></div>';
-      wrap.appendChild(h);
-      s.marks.forEach(m => {
-        const cls = m.value >= 10 ? 'mark-good' : m.value >= 7 ? 'mark-ok' : 'mark-bad';
-        const d = new Date(m.at).toLocaleString('uk-UA');
-        const row = document.createElement('div');
-        row.className = 'record-row';
-        row.innerHTML = '<div class="rec-value ' + cls + '">' + m.value + '</div>' +
-          '<div class="rec-info"><div class="rec-title">' + esc(m.subject || '') + '</div>' +
-          '<div class="rec-meta">' + esc(m.reason || '') + ' • ' + d + '</div></div>' +
-          '<div class="rec-actions"><button class="danger" onclick="App.deleteMark(\'' + esc(s.login) + '\',\'' + m.id + '\')">🗑️</button></div>';
-        wrap.appendChild(row);
-      });
-    });
-  }
-  async function loadPointsAll() {
-    if (!State.token) return;
-    const res = await api('/api/points/all', { token: State.token });
-    if (!res.ok) return;
-    const wrap = $('pointsAllList');
-    wrap.innerHTML = '';
-    if (res.students.length === 0) {
-      wrap.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:10px">Порожньо</p>';
-      return;
-    }
-    res.students.forEach(s => {
-      const h = document.createElement('div');
-      h.className = 'student-row';
-      h.style.background = 'transparent';
-      h.innerHTML = '<div style="flex:1"><div class="s-name">' + esc(s.name) + '</div>' +
-        '<div class="s-login">Сума: ' + s.sum + ' балів</div></div>';
-      wrap.appendChild(h);
-      s.points.forEach(p => {
-        const cls = p.value >= 0 ? 'point-pos' : 'point-neg';
-        const d = new Date(p.at).toLocaleString('uk-UA');
-        const row = document.createElement('div');
-        row.className = 'record-row';
-        row.innerHTML = '<div class="rec-value ' + cls + '">' + (p.value > 0 ? '+' : '') + p.value + '</div>' +
-          '<div class="rec-info"><div class="rec-title">' + esc(p.reason || '') + '</div>' +
-          '<div class="rec-meta">' + d + '</div></div>' +
-          '<div class="rec-actions"><button class="danger" onclick="App.deletePoint(\'' + esc(s.login) + '\',\'' + p.id + '\')">🗑️</button></div>';
-        wrap.appendChild(row);
-      });
-    });
-  }
-  async function setMark() {
-    if (!State.token) return;
-    const login = $('markStudentSelect').value;
-    const subject = $('markSubjectSelect').value;
-    const value = $('markValueInput').value;
-    const reason = $('markReasonInput').value.trim();
-    if (!login) { toast('Обери учня'); return; }
-    if (!value) { toast('Введи оцінку'); return; }
-    const res = await api('/api/marks/set', { token: State.token, studentLogin: login, value, subject, reason });
-    if (!res.ok) { toast(res.error || 'Помилка'); return; }
-    toast('✅ Оцінку поставлено');
-    $('markValueInput').value = '';
-    $('markReasonInput').value = '';
-    loadMarksAll();
-  }
-  async function deleteMark(login, markId) {
-    if (!confirm('Видалити оцінку?')) return;
-    if (!State.token) return;
-    const res = await api('/api/marks/delete', { token: State.token, studentLogin: login, markId });
-    if (!res.ok) { toast('Помилка'); return; }
-    toast('Видалено');
-    loadMarksAll();
-  }
-  async function setPoint() {
-    if (!State.token) return;
-    const login = $('pointStudentSelect').value;
-    const value = $('pointValueInput').value;
-    const reason = $('pointReasonInput').value.trim();
-    if (!login) { toast('Обери учня'); return; }
-    if (!value) { toast('Введи бали'); return; }
-    const res = await api('/api/points/set', { token: State.token, studentLogin: login, value, reason });
-    if (!res.ok) { toast(res.error || 'Помилка'); return; }
-    toast('✅ Бали додано');
-    $('pointValueInput').value = '';
-    $('pointReasonInput').value = '';
-    loadPointsAll();
-  }
-  async function deletePoint(login, pointId) {
-    if (!confirm('Видалити бали?')) return;
-    if (!State.token) return;
-    const res = await api('/api/points/delete', { token: State.token, studentLogin: login, pointId });
-    if (!res.ok) { toast('Помилка'); return; }
-    toast('Видалено');
-    loadPointsAll();
-  }
-  async function renderSubjects() {
-    if (!State.token) return;
-    const res = await api('/api/teacher/subjects', { token: State.token });
-    if (!res.ok) return;
-    State.subjects = res.subjects || [];
-    const wrap = $('subjectsList');
-    wrap.innerHTML = '';
-    const markSel = $('markSubjectSelect');
-    if (markSel) {
-      markSel.innerHTML = '';
-      State.subjects.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; markSel.appendChild(o); });
-    }
-    const quizSel = $('quizSubject');
-    if (quizSel) {
-      quizSel.innerHTML = '';
-      State.subjects.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; quizSel.appendChild(o); });
-    }
-    State.subjects.forEach(s => {
-      const row = document.createElement('div');
-      row.className = 'student-row';
-      row.innerHTML = '<div style="flex:1"><div class="s-name">' + esc(s) + '</div></div>' +
-        '<button class="danger small" onclick="App.deleteSubject(\'' + esc(s) + '\')">🗑️</button>';
-      wrap.appendChild(row);
-    });
-  }
-  async function addSubject() {
-    if (!State.token) return;
-    const name = $('newSubjectName').value.trim();
-    if (!name) { toast('Введи назву'); return; }
-    const res = await api('/api/teacher/subjects/add', { token: State.token, name });
-    if (!res.ok) { toast('Помилка'); return; }
-    toast('✅ Додано');
-    $('newSubjectName').value = '';
-    renderSubjects();
-  }
-  async function deleteSubject(name) {
-    if (!confirm('Видалити предмет?')) return;
-    if (!State.token) return;
-    const res = await api('/api/teacher/subjects/delete', { token: State.token, name });
-    if (!res.ok) { toast('Помилка'); return; }
-    toast('Видалено');
-    renderSubjects();
-  }
-  async function createStudent() {
-    if (!State.token) return;
-    const name = $('newStudentName').value.trim();
-    const login = $('newStudentLogin').value.trim().toLowerCase();
-    const password = $('newStudentPassword').value.trim();
-    if (!name || !login || !password) { toast('Заповни всі поля'); return; }
-    const res = await api('/api/teacher/create-student', { token: State.token, login, password, name });
-    if (!res.ok) { toast(res.error || 'Помилка'); return; }
-    toast('✅ Учня створено');
-    $('newStudentName').value = '';
-    $('newStudentLogin').value = '';
-    $('newStudentPassword').value = '';
-    loadClass();
-  }
-  async function addBots() {
-    if (!State.token) return;
-    const text = $('botsNames').value;
-    if (!text.trim()) { toast('Введи імена'); return; }
-    const res = await api('/api/teacher/add-bots', { token: State.token, namesText: text });
-    if (!res.ok) { toast(res.error || 'Помилка'); return; }
-    toast('🤖 Додано: ' + res.added.length);
-    $('botsNames').value = '';
-    loadClass();
-  }
-  async function removeStudent(login) {
-    if (!confirm('Видалити ' + login + '?')) return;
-    if (!State.token) return;
-    await api('/api/teacher/remove-student', { token: State.token, login });
-    toast('Видалено');
-    loadClass();
-  }
-
-  function addQuestion() {
-    State.questionsDraft.push({
-      text: 'Нове питання',
-      answers: ['Варіант 1', 'Варіант 2', 'Варіант 3', 'Варіант 4'],
-      correct: 0
-    });
-    renderQuestionsEditor();
-  }
-  function renderQuestionsEditor() {
-    const wrap = $('questionsEditor');
-    if (!wrap) return;
-    wrap.innerHTML = '';
-    if (State.questionsDraft.length === 0) {
-      wrap.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:10px">Питань немає</p>';
-      return;
-    }
-    State.questionsDraft.forEach((q, qi) => {
-      const item = document.createElement('div');
-      item.className = 'question-item';
-      const header = document.createElement('div');
-      header.className = 'q-header';
-      header.innerHTML = '<span class="q-index">#' + (qi + 1) + '</span>';
-      const del = document.createElement('button');
-      del.className = 'danger small';
-      del.textContent = '🗑️';
-      del.onclick = () => { State.questionsDraft.splice(qi, 1); renderQuestionsEditor(); };
-      header.appendChild(del);
-      item.appendChild(header);
-      const t = document.createElement('input');
-      t.type = 'text';
-      t.value = q.text;
-      t.placeholder = 'Текст';
-      t.oninput = () => { State.questionsDraft[qi].text = t.value; };
-      item.appendChild(t);
-      q.answers.forEach((ans, ai) => {
-        const row = document.createElement('div');
-        row.className = 'answer-input-row';
-        const r = document.createElement('input');
-        r.type = 'radio';
-        r.name = 'c_' + qi;
-        r.checked = q.correct === ai;
-        r.onchange = () => { State.questionsDraft[qi].correct = ai; };
-        row.appendChild(r);
-        const inp = document.createElement('input');
-        inp.type = 'text';
-        inp.value = ans;
-        inp.placeholder = 'Варіант ' + (ai + 1);
-        inp.oninput = () => { State.questionsDraft[qi].answers[ai] = inp.value; };
-        row.appendChild(inp);
-        item.appendChild(row);
-      });
-      wrap.appendChild(item);
-    });
-  }
-  function loadTemplate(key) {
-    const templates = {
-      math: [
-        { text: '7 × 8 = ?', answers: ['54', '56', '48', '64'], correct: 1 },
-        { text: 'Яке число просте?', answers: ['9', '15', '17', '21'], correct: 2 },
-        { text: '144 : 12 = ?', answers: ['10', '11', '12', '14'], correct: 2 },
-        { text: 'Хвилин у 2,5 год?', answers: ['120', '135', '150', '180'], correct: 2 },
-        { text: 'Площа квадрата 9 см?', answers: ['18', '36', '81', '90'], correct: 2 }
-      ],
-      ukrainian: [
-        { text: 'Букв в алфавіті?', answers: ['32', '33', '34', '35'], correct: 1 },
-        { text: 'Іменник означає:', answers: ['дію', 'предмет', 'ознаку', 'кількість'], correct: 1 },
-        { text: 'Голосних:', answers: ['5', '6', '7', '8'], correct: 1 },
-        { text: 'Дієслово:', answers: ['швидкий', 'швидкість', 'швидко', 'швидшати'], correct: 3 },
-        { text: 'Апостроф:', answers: ['св..ято', 'п..ять', 'б..юро', 'цв..ях'], correct: 1 }
-      ],
-      history: [
-        { text: 'Князь 980-1015?', answers: ['Ярослав', 'Володимир', 'Святослав', 'Олег'], correct: 1 },
-        { text: 'Хрещення Русі?', answers: ['862', '988', '1054', '1240'], correct: 1 },
-        { text: 'Столиця України?', answers: ['Харків', 'Одеса', 'Київ', 'Львів'], correct: 2 },
-        { text: '«Кобзар»:', answers: ['Франко', 'Шевченко', 'Леся', 'Сковорода'], correct: 1 },
-        { text: 'Незалежність у:', answers: ['1989', '1990', '1991', '1992'], correct: 2 }
-      ],
-      nature: [
-        { text: 'Рослини вбирають:', answers: ['Кисень', 'CO₂', 'Азот', 'Водень'], correct: 1 },
-        { text: 'Планет?', answers: ['7', '8', '9', '10'], correct: 1 },
-        { text: 'Океан найбільший?', answers: ['Атлантичний', 'Індійський', 'Тихий', 'Північний'], correct: 2 },
-        { text: 'Ссавець:', answers: ['Дельфін', 'Акула', 'Окунь', 'Кит'], correct: 3 },
-        { text: 'Ніг у комахи?', answers: ['4', '6', '8', '10'], correct: 1 }
-      ]
-    };
-    const t = templates[key];
-    if (!t) return;
-    State.questionsDraft = t.map(q => ({
-      text: q.text,
-      answers: q.answers.slice(),
-      correct: q.correct
-    }));
-    renderQuestionsEditor();
-    toast('Завантажено');
-  }
-  async function createQuiz() {
-    if (!State.token) return;
-    const title = $('quizTitle').value.trim();
-    const subject = $('quizSubject').value;
-    const difficulty = $('quizDifficulty').value;
-    if (!title) { toast('Введи назву'); return; }
-    if (State.questionsDraft.length === 0) { toast('Додай питання'); return; }
-    const res = await api('/api/quizzes/create', {
-      token: State.token, title, subject, difficulty,
-      questions: State.questionsDraft, isPublic: true
-    });
-    if (!res.ok) {
-      if (res.details) {
-        openModal('Помилки', '<ul style="padding-left:18px">' + res.details.map(e => '<li>' + esc(e) + '</li>').join('') + '</ul>');
-      } else toast(res.error || 'Помилка');
-      return;
-    }
-    toast('✅ Квіз створено!');
-    State.questionsDraft = [];
-    $('quizTitle').value = '';
-    renderQuestionsEditor();
-    loadCatalog();
-  }
-  async function loadMyQuizzes() {
-    if (!State.token) return;
-    const res = await api('/api/quizzes/mine', { token: State.token });
-    if (!res.ok) return;
-    State.allMyQuizzes = res.quizzes || [];
-    const wrap = $('myQuizzes');
-    wrap.innerHTML = '';
-    if (res.quizzes.length === 0) {
-      wrap.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:10px">Порожньо</p>';
-    } else {
-      res.quizzes.forEach(q => {
-        const row = document.createElement('div');
-        row.className = 'student-row';
-        row.innerHTML = '<div style="flex:1"><div class="s-name">' + esc(q.title) + '</div>' +
-          '<div class="s-login">' + esc(q.subject) + ' • ' + q.questionsCount + ' • 🎮 ' + q.plays + '</div></div>' +
-          '<button class="danger small" onclick="App.deleteQuiz(\'' + q.id + '\')">🗑️</button>';
-        wrap.appendChild(row);
-      });
-    }
-    const sel = $('hwQuizSelect');
-    if (sel) {
-      sel.innerHTML = '';
-      res.quizzes.forEach(q => { const o = document.createElement('option'); o.value = q.id; o.textContent = q.title; sel.appendChild(o); });
-    }
-    const asel = $('analyticsQuizSelect');
-    if (asel) {
-      asel.innerHTML = '';
-      res.quizzes.forEach(q => { const o = document.createElement('option'); o.value = q.id; o.textContent = q.title; asel.appendChild(o); });
-    }
-  }
-  async function deleteQuiz(id) {
-    if (!confirm('Видалити?')) return;
-    if (!State.token) return;
-    await api('/api/quizzes/' + id + '/delete', { token: State.token });
-    toast('Видалено');
-    loadMyQuizzes();
-    loadCatalog();
-  }
-  async function createHomework() {
-    if (!State.token) return;
-    const quizId = $('hwQuizSelect').value;
-    const title = $('hwTitle').value.trim();
-    const dl = $('hwDeadline').value;
-    const autoPoints = $('hwAutoPoints').checked;
-    if (!quizId) { toast('Обери квіз'); return; }
-    if (!dl) { toast('Вкажи дедлайн'); return; }
-    const deadline = new Date(dl).getTime();
-    const res = await api('/api/homework/create', { token: State.token, quizId, title, deadline, autoPoints });
-    if (!res.ok) { toast(res.error || 'Помилка'); return; }
-    toast('📝 ДЗ створено');
-    $('hwTitle').value = '';
-    $('hwDeadline').value = '';
-    loadMyHomework();
-  }
-  async function loadMyHomework() {
-    if (!State.token) return;
-    const res = await api('/api/homework/mine', { token: State.token });
-    if (!res.ok) return;
-    const wrap = $('myHomework');
-    wrap.innerHTML = '';
-    if (res.homework.length === 0) {
-      wrap.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:10px">Порожньо</p>';
-      return;
-    }
-    res.homework.forEach(h => {
-      const row = document.createElement('div');
-      row.className = 'hw-row';
-      const dl = new Date(h.deadline).toLocaleString('uk-UA');
-      row.innerHTML = '<div class="hw-info"><div class="hw-title">' + esc(h.title) + '</div>' +
-        '<div class="hw-meta">' + esc(h.quizTitle) + ' • до ' + dl + ' • здали: ' + h.submissionsCount + '/' + h.classLogins.length + '</div></div>';
-      row.onclick = () => showHomeworkGrades(h.id);
-      wrap.appendChild(row);
-    });
-  }
-  async function showHomeworkGrades(hid) {
-    if (!State.token) return;
-    const res = await api('/api/grades/for-homework', { token: State.token, homeworkId: hid });
-    if (!res.ok) { toast('Помилка'); return; }
-    $('hwgTitle').textContent = 'Оцінки';
-    const wrap = $('hwGradesList');
-    wrap.innerHTML = '';
-    res.students.forEach(s => {
-      const row = document.createElement('div');
-      row.className = 'hw-row';
-      const g = s.submission ? s.submission.grade : null;
-      const gCls = g ? ('grade-' + g) : '';
-      row.innerHTML = '<div class="hw-info"><div class="hw-title">' + esc(s.name) + '</div>' +
-        (s.submitted
-          ? '<div class="hw-meta">' + s.submission.correct + '/' + s.submission.total + ' (' + s.submission.percent + '%) ' +
-            (s.submission.isLate ? '⚠️' : '') + ' • ' + (s.submission.gradedBy === 'auto' ? 'авто' : 'вручну') +
-            (s.submission.comment ? ' • 💬 ' + esc(s.submission.comment) : '') + '</div>'
-          : '<div class="hw-meta">Не здав</div>') +
-        '</div>' +
-        (s.submission
-          ? '<div class="grade-badge ' + gCls + '">' + g + '</div>' +
-            '<button class="small ghost" onclick="App.editGrade(\'' + hid + '\',\'' + esc(s.login) + '\',' + g + ')">✏️</button>'
-          : '<button class="small gold" onclick="App.editGrade(\'' + hid + '\',\'' + esc(s.login) + '\',0)">Виставити</button>');
-      wrap.appendChild(row);
-    });
-    go('screen-hw-grades');
-  }
-  async function editGrade(hid, login, current) {
-    const val = prompt('Оцінка (1-12):', current || '');
-    if (val === null) return;
-    const g = parseInt(val, 10);
-    if (isNaN(g) || g < 1 || g > 12) { toast('1-12'); return; }
-    const comment = prompt('Коментар:') || '';
-    const res = await api('/api/grades/set', { token: State.token, homeworkId: hid, studentLogin: login, grade: g, comment });
-    if (!res.ok) { toast(res.error || 'Помилка'); return; }
-    toast('Оцінку виставлено');
-    showHomeworkGrades(hid);
-  }
-  async function loadGeneralAnalytics() {
-    if (!State.token) return;
-    const res = await api('/api/analytics/teacher', { token: State.token });
-    if (!res.ok) return;
-    const wrap = $('generalAnalytics');
-    wrap.innerHTML = '';
-    wrap.innerHTML = '<div class="student-row"><div class="s-name">📚 Квізів: ' + res.quizzesCount + '</div></div>' +
-      '<div class="student-row"><div class="s-name">🎮 Ігор: ' + res.totalGames + '</div></div>' +
-      '<div class="student-row"><div class="s-name">❤️ Лайків: ' + res.totalLikes + '</div></div>';
-    if (res.hardest.length > 0) {
-      const h = document.createElement('div');
-      h.style.marginTop = '10px';
-      h.innerHTML = '<div class="panel-title">🔥 Найскладніші</div>';
-      res.hardest.forEach(q => {
-        const d = document.createElement('div');
-        d.className = 'analytics-q';
-        d.innerHTML = '<div class="aq-text">' + esc(q.text) + '</div>' +
-          '<div class="aq-bar"><div class="aq-fill" style="width:' + q.wrongPercent + '%"></div></div>' +
-          '<div style="font-size:11px;color:var(--text-dim)">' + esc(q.quizTitle) + ' • ' + q.wrongPercent + '%</div>';
-        h.appendChild(d);
-      });
-      wrap.appendChild(h);
-    }
-  }
-  async function loadQuizAnalytics() {
-    if (!State.token) return;
-    const quizId = $('analyticsQuizSelect').value;
-    if (!quizId) { toast('Обери квіз'); return; }
-    const res = await api('/api/analytics/quiz', { token: State.token, quizId });
-    if (!res.ok) { toast('Помилка'); return; }
-    const wrap = $('quizAnalytics');
-    wrap.innerHTML = '';
-    wrap.innerHTML = '<div class="student-row"><div class="s-name">📝 ' + esc(res.quizTitle) + ' • Ігор: ' + res.games + '</div></div>';
-    const h1 = document.createElement('div');
-    h1.style.marginTop = '10px';
-    h1.innerHTML = '<div class="panel-title">🔥 Питання</div>';
-    res.questions.forEach(q => {
-      if (q.totalAttempts === 0) return;
-      const d = document.createElement('div');
-      d.className = 'analytics-q';
-      d.innerHTML = '<div class="aq-text">' + esc(q.text) + '</div>' +
-        '<div class="aq-bar"><div class="aq-fill" style="width:' + q.wrongPercent + '%"></div></div>' +
-        '<div style="font-size:11px;color:var(--text-dim)">✅ ' + q.correctCount + ' • ❌ ' + q.wrongCount + ' • ' + q.wrongPercent + '%</div>';
-      h1.appendChild(d);
-    });
-    wrap.appendChild(h1);
-    if (res.players.length > 0) {
-      const h2 = document.createElement('div');
-      h2.style.marginTop = '10px';
-      h2.innerHTML = '<div class="panel-title">🏆 Гравці</div>';
-      res.players.forEach(p => {
-        const d = document.createElement('div');
-        d.className = 'student-row';
-        d.innerHTML = '<div style="flex:1"><div class="s-name">' + esc(p.name) + '</div>' +
-          '<div class="s-login">' + p.totalCorrect + '/' + p.totalQuestions + ' • ' + p.percent + '%</div></div>';
-        h2.appendChild(d);
-      });
-      wrap.appendChild(h2);
-    }
-  }
-
-  async function loadHomework() {
-    if (!State.user || State.user.role !== 'student') { toast('Треба увійти як учень'); go('screen-welcome'); return; }
-    if (!State.token) return;
-    const r1 = await api('/api/homework/for-student', { login: State.user.login });
-    if (r1.ok) renderHomeworkList(r1.homework);
-    const r2 = await api('/api/grades/for-student', { login: State.user.login });
-    if (r2.ok) renderGradesList(r2.grades);
-  }
-  function hwTab(t) {
-    State.hwTabName = t;
-    qsa('#screen-homework .tab').forEach(x => x.classList.toggle('active', x.dataset.hwtab === t));
-    $('hwList').classList.toggle('hidden', t !== 'hw');
-    $('gradesList').classList.toggle('hidden', t !== 'grades');
-  }
-  function renderHomeworkList(list) {
-    const wrap = $('hwList');
-    wrap.innerHTML = '';
-    if (list.length === 0) {
-      wrap.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:10px">ДЗ немає</p>';
-      return;
-    }
-    list.forEach(h => {
-      const row = document.createElement('div');
-      row.className = 'hw-row' + (h.submitted ? ' done' : '') + (h.deadline < Date.now() && !h.submitted ? ' late' : '');
-      const dl = new Date(h.deadline).toLocaleString('uk-UA');
-      row.innerHTML = '<div class="hw-info"><div class="hw-title">' + esc(h.title) + '</div>' +
-        '<div class="hw-meta">' + esc(h.quizTitle) + ' • до ' + dl + (h.submitted ? ' • ✅ ' + h.submission.grade + '/12' : '') + '</div></div>';
-      row.onclick = () => openHomework(h);
-      wrap.appendChild(row);
-    });
-  }
-  function renderGradesList(list) {
-    const wrap = $('gradesList');
-    wrap.innerHTML = '';
-    if (list.length === 0) {
-      wrap.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:10px">Оцінок немає</p>';
-      return;
-    }
-    list.forEach(g => {
-      const row = document.createElement('div');
-      row.className = 'hw-row';
-      const gCls = 'grade-' + g.grade;
-      const dl = new Date(g.submittedAt).toLocaleString('uk-UA');
-      row.innerHTML = '<div class="hw-info"><div class="hw-title">' + esc(g.title) + '</div>' +
-        '<div class="hw-meta">' + esc(g.quizTitle) + ' • ' + g.correct + '/' + g.total + ' (' + g.percent + '%) • ' + dl +
-        (g.isLate ? ' ⚠️' : '') + ' • ' + (g.gradedBy === 'auto' ? 'авто' : 'вручну') +
-        (g.comment ? ' • 💬 ' + esc(g.comment) : '') + '</div></div>' +
-        '<div class="grade-badge ' + gCls + '">' + g.grade + '</div>';
-      wrap.appendChild(row);
-    });
-  }
-  function openHomework(h) {
-    State.currentHomework = h;
-    $('hwdTitle').textContent = h.title;
-    $('hwdSubtitle').textContent = h.quizTitle;
-    const btn = $('hwdStartBtn');
-    if (h.submitted) {
-      btn.textContent = '✅ Вже здано (' + h.submission.grade + '/12)';
-      btn.disabled = true;
-    } else {
-      btn.textContent = '▶️ Почати';
-      btn.disabled = false;
-    }
-    go('screen-hw-detail');
-  }
-  function startHomework() {
-    if (!State.currentHomework) return;
-    if (!State.socket || !State.connected) { toast('Немає з\'єднання'); return; }
-    State.socket.emit('startHomeworkGame', {
-      homeworkId: State.currentHomework.id,
-      login: State.user.login
-    }, res => {
-      if (!res.ok) { toast(res.error || 'Помилка'); return; }
-      State.role = 'student';
-      State.pin = res.pin;
-      State.playerId = res.playerId;
-      State.room = res.state;
-      State.answeredCurrent = false;
-      State.lastQIndex = -1;
-      $('gameTitle').textContent = '📝 ДЗ';
-      $('teacherGameBtns').classList.add('hidden');
-      go('screen-game');
-      renderGame(res.state);
-    });
-  }
-  function renderHomeworkResult(state) {
-    if (!state) return;
-    if (State.socket) State.socket.emit('finishHomeworkGame', {}, res => {
-      if (!res.ok) { toast('Помилка'); return; }
-      const s = res.submission;
-      if (!s) {
-        openModal('📝 ДЗ завершено', '<p>ДЗ завершено, але оцінку не вдалось зберегти.</p>');
-        loadHomework();
-        return;
-      }
-      openModal('📝 ДЗ завершено',
-        '<div style="text-align:center"><div class="grade-badge grade-' + s.grade + '" style="margin:10px auto">' + s.grade + '</div>' +
-        '<p>Правильних: ' + s.correct + '/' + s.total + ' (' + s.percent + '%)</p>' +
-        (s.isLate ? '<p style="color:#ff3d6e">⚠️ Здано після дедлайну (−1 бал)</p>' : '') + '</div>');
-      loadHomework();
-    });
-  }
-
-  function init() {
-    if (State.initDone) return;
-    State.initDone = true;
-    loadProfile();
-    const savedTheme = Storage.get('sunlorem_theme', 'neon');
-    applyTheme(State.profile.ownedThemes.includes('t_' + savedTheme) ? savedTheme : 'neon');
-    updateAllBalances();
-    $('modalOverlay').addEventListener('click', e => {
-      if (e.target === $('modalOverlay')) closeModal();
-    });
-    $('joinPin').addEventListener('input', e => {
-      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6);
-    });
-    const params = new URLSearchParams(window.location.search);
-    const pinParam = params.get('pin');
-    if (pinParam && /^\d{6}$/.test(pinParam)) {
-      $('joinPin').value = pinParam;
-      go('screen-join');
-    }
-    tryAutoLogin().then(() => {
-      showUserUI();
-      initSocket();
-      loadCatalog();
-    }).catch(() => {
-      showUserUI();
-      initSocket();
-      loadCatalog();
-    });
-  }
-
-  return {
-    go, doLogin, logout, continueAsGuest,
-    filterCatalog, playSolo, playPublic, playRoom, joinByPin,
-    startGame, nextQuestion, finishGame, closeRoom,
-    activatePower, saveProfile,
-    shopTab, teacherTab,
-    createStudent, addBots, removeStudent,
-    addQuestion, loadTemplate, createQuiz, deleteQuiz,
-    closeModal, init,
-    hwTab, loadHomework, openHomework, startHomework, createHomework,
-    showHomeworkGrades, editGrade, loadQuizAnalytics, loadGeneralAnalytics,
-    inviteDuel, respondDuel,
-    loadMyMarks, loadMyPoints,
-    setMark, deleteMark, setPoint, deletePoint,
-    addSubject, deleteSubject, renderSubjects
-  };
+const App=(function(){
+const State={theme:'neon',role:null,pin:null,playerId:null,playerName:null,user:null,token:null,isGuest:true,
+profile:{coins:0,xp:0,ownedAvatars:['a_smile','a_grin','a_cool'],ownedAccessories:[],ownedThemes:['t_neon','t_pastel'],equippedAvatar:'a_smile',equippedHead:'',equippedEyes:'',equippedEffect:'',completedQuests:{}},
+todayCoins:0,dailyCap:100,
+catalog:[],currentQuiz:null,shop:null,economy:null,questDefs:null,
+reactionEmojis:['🎉','🔥','👏','🤔','🚀','😂','😮','💪','❓','💯'],
+chatPhrases:['Вау!','Я знаю!','Дай шанс','Клас!','Ой…','Складно','Перемога!','Ще раз'],
+room:null,socket:null,connected:false,initDone:false,
+shopTabName:'avatars',hwTabName:'hw',answeredCurrent:false,
+lastQIndex:-1,lastQStart:0,questionStart:0,_localTimer:null,_prizeApplied:false,
+questionsDraft:[],currentHomework:null,allMyQuizzes:[],currentDuelInvite:null,isSpectator:false,
+subjects:['Математика','Українська мова','Історія','Природознавство','Інше'],
+_savingProfile:false};
+function $(id){return document.getElementById(id)}
+function qsa(s,r=document){return Array.from(r.querySelectorAll(s))}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+const Storage={set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},get(k,d=null){try{const r=localStorage.getItem(k);return r===null?d:JSON.parse(r)}catch(e){return d}},remove(k){try{localStorage.removeItem(k)}catch(e){}}};
+const SVG_ACC={x_crown:'<svg class="acc-svg acc-head" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><path d="M10 50 L20 20 L35 35 L50 10 L65 35 L80 20 L90 50 Z" fill="#ffd75f" stroke="#b8860b" stroke-width="2" stroke-linejoin="round"/><circle cx="20" cy="20" r="4" fill="#ff5ff0"/><circle cx="50" cy="10" r="5" fill="#5ff0ff"/><circle cx="80" cy="20" r="4" fill="#ff5ff0"/><rect x="10" y="48" width="80" height="8" fill="#ffaa00" stroke="#b8860b" stroke-width="2"/></svg>',x_hat:'<svg class="acc-svg acc-head" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="48" rx="42" ry="8" fill="#8b4513" stroke="#5a2d0a" stroke-width="2"/><path d="M25 48 Q25 20 50 20 Q75 20 75 48 Z" fill="#a0522d" stroke="#5a2d0a" stroke-width="2"/><rect x="25" y="42" width="50" height="6" fill="#ff5ff0" stroke="#5a2d0a" stroke-width="1"/></svg>',x_partyhat:'<svg class="acc-svg acc-head" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><path d="M50 5 L75 50 L25 50 Z" fill="#ff5ff0" stroke="#b56bff" stroke-width="2" stroke-linejoin="round"/><circle cx="50" cy="5" r="5" fill="#ffd75f"/><circle cx="40" cy="25" r="3" fill="#5ff0ff"/><circle cx="60" cy="35" r="3" fill="#5fff9b"/></svg>',x_cap:'<svg class="acc-svg acc-head" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><path d="M20 45 Q20 15 50 15 Q80 15 80 45 Z" fill="#5f9fff" stroke="#2a5fa8" stroke-width="2"/><path d="M15 45 L85 45 L90 52 L80 52 Z" fill="#5f9fff" stroke="#2a5fa8" stroke-width="2"/></svg>',x_grad:'<svg class="acc-svg acc-head" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="35" width="40" height="15" fill="#1a1a2e" stroke="#000" stroke-width="2"/><path d="M10 30 L50 15 L90 30 L50 45 Z" fill="#1a1a2e" stroke="#000" stroke-width="2"/><line x1="85" y1="32" x2="85" y2="48" stroke="#ffd75f" stroke-width="2"/><circle cx="85" cy="50" r="3" fill="#ffd75f"/></svg>',x_beanie:'<svg class="acc-svg acc-head" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><path d="M20 45 Q20 20 50 20 Q80 20 80 45 Z" fill="#c0392b" stroke="#7a1e16" stroke-width="2"/><rect x="18" y="42" width="64" height="10" fill="#e74c3c" stroke="#7a1e16" stroke-width="2" rx="3"/><circle cx="50" cy="15" r="6" fill="#ffd75f"/></svg>',x_helmet:'<svg class="acc-svg acc-head" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><path d="M15 50 Q15 15 50 15 Q85 15 85 50 Z" fill="#ff8040" stroke="#a04010" stroke-width="2"/><rect x="15" y="45" width="70" height="8" fill="#ffaa00" stroke="#a04010" stroke-width="2"/><circle cx="50" cy="32" r="5" fill="#fff"/></svg>',x_top_hat:'<svg class="acc-svg acc-head" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="52" rx="40" ry="6" fill="#1a1a1a"/><rect x="30" y="15" width="40" height="38" fill="#1a1a1a" stroke="#444" stroke-width="2"/><rect x="28" y="48" width="44" height="6" fill="#ff5ff0"/></svg>',x_glasses:'<svg class="acc-svg acc-eyes" viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="8" width="30" height="18" rx="4" fill="#000" opacity="0.85" stroke="#5ff0ff" stroke-width="2"/><rect x="60" y="8" width="30" height="18" rx="4" fill="#000" opacity="0.85" stroke="#5ff0ff" stroke-width="2"/><line x1="40" y1="17" x2="60" y2="17" stroke="#5ff0ff" stroke-width="2"/></svg>',x_goggles:'<svg class="acc-svg acc-eyes" viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="8" width="34" height="18" rx="9" fill="#ffaa00" opacity="0.85" stroke="#000" stroke-width="2"/><rect x="56" y="8" width="34" height="18" rx="9" fill="#ffaa00" opacity="0.85" stroke="#000" stroke-width="2"/><rect x="44" y="14" width="12" height="6" fill="#333"/></svg>',x_monocle:'<svg class="acc-svg acc-eyes" viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="15" r="12" fill="none" stroke="#ffd75f" stroke-width="3"/><circle cx="50" cy="15" r="9" fill="#fff" opacity="0.2"/><line x1="62" y1="20" x2="80" y2="28" stroke="#ffd75f" stroke-width="2"/></svg>',x_aura:'<svg class="acc-svg acc-effect" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" fill="none" stroke="#5ff0ff" stroke-width="3" opacity="0.6"/><circle cx="50" cy="50" r="38" fill="none" stroke="#ffd75f" stroke-width="2" opacity="0.5"/></svg>',x_fire:'<svg class="acc-svg acc-effect" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 90 Q30 75 30 55 Q40 60 45 50 Q45 70 55 65 Q65 60 60 45 Q75 60 70 75 Q65 90 50 90 Z" fill="#ff8040" stroke="#a04010" stroke-width="2"/><path d="M50 85 Q40 75 42 60 Q48 65 50 55 Q55 65 58 60 Q60 75 50 85 Z" fill="#ffd75f"/></svg>',x_star:'<svg class="acc-svg acc-effect" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 10 L60 40 L90 45 L65 65 L75 95 L50 78 L25 95 L35 65 L10 45 L40 40 Z" fill="#ffd75f" stroke="#b8860b" stroke-width="2" stroke-linejoin="round"/></svg>',x_rainbow:'<svg class="acc-svg acc-effect" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M10 70 Q50 10 90 70" fill="none" stroke="#ff3d6e" stroke-width="6"/><path d="M15 70 Q50 20 85 70" fill="none" stroke="#ffaa00" stroke-width="6"/><path d="M20 70 Q50 30 80 70" fill="none" stroke="#5fff9b" stroke-width="6"/></svg>',x_lightning:'<svg class="acc-svg acc-effect" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M60 5 L35 50 L50 50 L40 95 L75 45 L60 45 Z" fill="#ffd75f" stroke="#ffaa00" stroke-width="2"/></svg>',x_heart:'<svg class="acc-svg acc-effect" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 85 Q15 60 15 35 Q15 15 35 15 Q50 15 50 35 Q50 15 65 15 Q85 15 85 35 Q85 60 50 85 Z" fill="#ff5f8f" stroke="#a02050" stroke-width="2"/></svg>',x_leaf:'<svg class="acc-svg acc-effect" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 15 Q80 30 75 70 Q60 90 30 80 Q20 50 50 15 Z" fill="#ff8040" stroke="#a04010" stroke-width="2"/></svg>',x_snow:'<svg class="acc-svg acc-effect" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><line x1="50" y1="10" x2="50" y2="90" stroke="#5ff0ff" stroke-width="4"/><line x1="10" y1="50" x2="90" y2="50" stroke="#5ff0ff" stroke-width="4"/><line x1="22" y1="22" x2="78" y2="78" stroke="#5ff0ff" stroke-width="4"/><line x1="78" y1="22" x2="22" y2="78" stroke="#5ff0ff" stroke-width="4"/></svg>'};
+function renderAvatar(e,acc){let h='<span class="avatar-render">'+e;if(acc){if(acc.effect&&SVG_ACC[acc.effect])h+=SVG_ACC[acc.effect];if(acc.head&&SVG_ACC[acc.head])h+=SVG_ACC[acc.head];if(acc.eyes&&SVG_ACC[acc.eyes])h+=SVG_ACC[acc.eyes];}h+='</span>';return h;}
+function renderAccSVG(acc){let h='';if(acc.effect&&SVG_ACC[acc.effect])h+=SVG_ACC[acc.effect];if(acc.head&&SVG_ACC[acc.head])h+=SVG_ACC[acc.head];if(acc.eyes&&SVG_ACC[acc.eyes])h+=SVG_ACC[acc.eyes];return h;}
+let toastTimer=null;
+function toast(m,ms=2400){const t=$('toast');if(!t)return;t.textContent=m;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),ms);}
+function openModal(title,body,actions){$('modalTitle').textContent=title;$('modalBody').innerHTML=body;const ac=$('modalActions');ac.innerHTML='';if(actions){actions.forEach(a=>{const b=document.createElement('button');b.className=a.cls||'primary';b.textContent=a.text;b.onclick=()=>{closeModal();a.fn&&a.fn();};ac.appendChild(b);});}else{const b=document.createElement('button');b.className='primary';b.textContent='Гаразд';b.onclick=closeModal;ac.appendChild(b);}$('modalOverlay').classList.add('active');}
+function closeModal(){$('modalOverlay').classList.remove('active');}
+function go(id){qsa('.screen').forEach(s=>s.classList.remove('active'));const el=$(id);if(el){el.classList.add('active');el.scrollTop=0;}if(id==='screen-catalog')loadCatalog();else if(id==='screen-shop')renderShop();else if(id==='screen-quests')renderQuests();else if(id==='screen-teacher')renderTeacher();else if(id==='screen-homework')loadHomework();else if(id==='screen-duel')loadDuelScreen();else if(id==='screen-marks')loadMyMarks();else if(id==='screen-points')loadMyPoints();updateAllBalances();}
+function updateAllBalances(){const p=State.profile;const pairs=[['welcomeCoins',p.coins],['catalogCoins',p.coins],['shopCoins',p.coins],['questsCoins',p.coins],['hwCoins',p.coins],['welcomeXp',p.xp],['catalogXp',p.xp],['shopXp',p.xp],['questsXp',p.xp],['hwXp',p.xp],['welcomeLevel',Math.floor(p.xp/100)+1],['welcomeTodayCoins',State.todayCoins],['catalogTodayCoins',State.todayCoins],['shopTodayCoins',State.todayCoins]];pairs.forEach(([id,v])=>{const el=$(id);if(el)el.textContent=v;});}
+function applyTheme(t){const all=['neon','pastel','space','cyber','forest','sunset','ocean','candy','autumn'].map(x=>'theme-'+x);document.body.classList.remove(...all);document.body.classList.add('theme-'+t);State.theme=t;Storage.set('sunlorem_theme',t);}
+function loadProfile(){const s=Storage.get('sunlorem_profile');if(s&&typeof s==='object')State.profile=Object.assign(State.profile,s);const free=['a_smile','a_grin','a_cool'];free.forEach(id=>{if(!State.profile.ownedAvatars.includes(id))State.profile.ownedAvatars.push(id);});if(!Array.isArray(State.profile.ownedAccessories))State.profile.ownedAccessories=[];if(!Array.isArray(State.profile.ownedThemes))State.profile.ownedThemes=['t_neon','t_pastel'];if(!State.profile.completedQuests)State.profile.completedQuests={};}
+function saveProfile(){Storage.set('sunlorem_profile',State.profile);if(State.socket&&State.connected&&State.room&&State.playerId){State.socket.emit('updateProfile',{playerId:State.playerId,avatarId:State.profile.equippedAvatar,accessories:{head:State.profile.equippedHead,eyes:State.profile.equippedEyes,effect:State.profile.equippedEffect},xp:State.profile.xp});}if(State.token&&State.user&&!State.isGuest){if(State._savingProfile)return;State._savingProfile=true;api('/api/user/save-profile',{token:State.token,profile:{xp:State.profile.xp,ownedAvatars:State.profile.ownedAvatars,ownedAccessories:State.profile.ownedAccessories,ownedThemes:State.profile.ownedThemes,equippedAvatar:State.profile.equippedAvatar,equippedHead:State.profile.equippedHead,equippedEyes:State.profile.equippedEyes,equippedEffect:State.profile.equippedEffect,theme:State.theme,completedQuests:State.profile.completedQuests}}).then(res=>{State._savingProfile=false;if(res&&res.ok){State.user=res.user;toast('💾 Збережено!');}else toast('💾 Збережено локально');}).catch(()=>{State._savingProfile=false;toast('💾 Збережено локально');});}else{toast('💾 Збережено локально');}}
+function syncFromUser(u){if(!u)return;State.user=u;State.profile.coins=u.coins||0;State.profile.xp=u.xp||0;State.todayCoins=u.todayCoins||0;State.dailyCap=u.dailyCap||100;const free=['a_smile','a_grin','a_cool'];const owned=u.ownedAvatars||[];State.profile.ownedAvatars=Array.from(new Set(free.concat(owned)));State.profile.ownedAccessories=u.ownedAccessories||[];State.profile.ownedThemes=u.ownedThemes||['t_neon','t_pastel'];State.profile.equippedAvatar=u.avatarId||'a_smile';State.profile.equippedHead=u.equippedHead||'';State.profile.equippedEyes=u.equippedEyes||'';State.profile.equippedEffect=u.equippedEffect||'';State.profile.completedQuests=u.completedQuests||{};if(u.subjects&&Array.isArray(u.subjects))State.subjects=u.subjects;Storage.set('sunlorem_profile',State.profile);updateAllBalances();if(u.theme)applyTheme(u.theme);}
+function showUserUI(){const isT=State.user&&State.user.role==='teacher';const isS=State.user&&State.user.role==='student';$('btnTeacherPanel').classList.toggle('hidden',!isT);$('btnHW').classList.toggle('hidden',!isS);$('btnMarks').classList.toggle('hidden',!isS);$('btnPoints').classList.toggle('hidden',!isS);$('welcomeGuestBox').classList.toggle('hidden',!!State.user);$('welcomeUserBox').classList.toggle('hidden',!State.user);if(State.user)$('welcomeUserName').textContent=(isT?'👩‍🏫 ':'🎒 ')+State.user.name;if(State.socket&&State.socket.connected&&State.user&&!State.user.isBot)State.socket.emit('registerOnline',{login:State.user.login});}
+async function api(path,body){const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})});return r.json();}
+async function doLogin(){const login=$('loginInput').value.trim();const password=$('passwordInput').value;if(!login||!password){toast('Введи логін і пароль');return;}const res=await api('/api/auth/login',{login,password});if(!res.ok){toast(res.error||'Помилка');return;}State.token=res.token;Storage.set('sunlorem_token',res.token);State.isGuest=false;syncFromUser(res.user);showUserUI();toast('👋 Вітаю, '+(res.user.name||res.user.login)+'!');go('screen-welcome');}
+async function tryAutoLogin(){const t=Storage.get('sunlorem_token');if(!t)return false;const res=await api('/api/auth/me',{token:t});if(!res.ok)return false;State.token=t;State.isGuest=false;syncFromUser(res.user);showUserUI();return true;}
+function logout(){State.user=null;State.token=null;State.isGuest=true;Storage.remove('sunlorem_token');showUserUI();go('screen-welcome');toast('Вийшли');}
+function continueAsGuest(){State.isGuest=true;State.user=null;showUserUI();go('screen-catalog');}
+async function loadCatalog(){try{const r=await fetch('/api/quizzes');const j=await r.json();if(j.ok)State.catalog=j.quizzes||[];renderCatalog();}catch(e){}}
+function renderCatalog(){const wrap=$('catalogList');if(!wrap)return;const q=$('searchQuiz')?$('searchQuiz').value.toLowerCase():'';const s=$('filterSubject')?$('filterSubject').value:'';const list=State.catalog.filter(x=>{if(q&&!x.title.toLowerCase().includes(q))return false;if(s&&x.subject!==s)return false;return true;});wrap.innerHTML='';if(list.length===0){wrap.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:20px">Квізів немає.</p>';return;}const se={'Математика':'➗','Українська мова':'📖','Історія':'🏛️','Природознавство':'🌿','Інше':'📚'};list.forEach(x=>{const c=document.createElement('div');c.className='quiz-card';c.innerHTML='<span class="q-emoji">'+(se[x.subject]||'📚')+'</span><div class="q-title">'+esc(x.title)+'</div><div class="q-author">Автор: '+esc(x.author)+'</div><div class="q-meta"><span>'+esc(x.subject)+'</span><span>📝 '+x.questionsCount+'</span><span>🎮 '+x.plays+'</span><span>❤️ '+x.likes+'</span></div>';c.onclick=()=>openQuiz(x);wrap.appendChild(c);});}
+function filterCatalog(){renderCatalog();}
+async function openQuiz(x){State.currentQuiz=x;$('qmTitle').textContent=x.title;$('qmSubtitle').textContent=x.subject+' • '+x.questionsCount+' питань';go('screen-quiz-mode');}
+function playerInfo(){if(State.user)return{name:State.user.name,login:State.user.login};return{name:State.playerName||'Гість',login:'guest'};}
+function playSolo(){if(!State.currentQuiz)return;if(!State.socket||!State.connected){toast('Немає з\'єднання');return;}const p=playerInfo();State.socket.emit('startSoloGame',{quizId:State.currentQuiz.id,mode:'arcade',name:p.name,login:p.login},res=>{if(!res.ok){toast(res.error||'Помилка');return;}State.role='student';State.pin=res.pin;State.playerId=res.playerId;State.room=res.state;State.answeredCurrent=false;State.lastQIndex=-1;$('gameTitle').textContent='🎯 Соло';$('teacherGameBtns').classList.add('hidden');go('screen-game');renderGame(res.state);});}
+function playPublic(){if(!State.currentQuiz)return;if(!State.socket||!State.connected){toast('Немає з\'єднання');return;}const p=playerInfo();State.socket.emit('startPublicGame',{quizId:State.currentQuiz.id,mode:'arcade',targetCount:5,name:p.name,login:p.login},res=>{if(!res.ok){toast(res.error||'Помилка');return;}State.role='student';State.pin=res.pin;State.playerId=res.playerId;State.room=res.state;State.answeredCurrent=false;State.lastQIndex=-1;$('gameTitle').textContent='🌐 З людьми';$('teacherGameBtns').classList.add('hidden');go('screen-game');renderGame(res.state);});}
+function playRoom(){if(!State.currentQuiz)return;if(!State.socket||!State.connected){toast('Немає з\'єднання');return;}State.socket.emit('createRoomFromQuiz',{quizId:State.currentQuiz.id,mode:'arcade',timePerQuestion:20,botCount:0},res=>{if(!res.ok){toast(res.error||'Помилка');return;}State.role='teacher';State.pin=res.pin;State.room=res.state;$('roomPin').textContent=res.pin;renderQR(res.pin);updateLobby(res.state);go('screen-lobby');});}
+function renderQR(pin){const box=$('qrBox');if(!box)return;box.innerHTML='';const link=window.location.origin+window.location.pathname+'?pin='+pin;const img=document.createElement('img');img.width=200;img.height=200;img.alt='QR';img.src='https://api.qrserver.com/v1/create-qr-code/?size=220x220&data='+encodeURIComponent(link);img.onerror=()=>{box.innerHTML='<div class="qr-fallback"><div style="font-size:15px">PIN:</div><div class="pin-big">'+pin+'</div></div>';};box.appendChild(img);}
+function joinByPin(){const pin=$('joinPin').value.trim();const name=$('joinName').value.trim();if(!/^\d{6}$/.test(pin)){toast('6-значний PIN');return;}if(name.length<2){toast('Ім\'я закоротке');return;}State.playerName=name;if(!State.socket||!State.connected){toast('Немає з\'єднання');return;}State.socket.emit('joinRoom',{pin,name,avatarId:State.profile.equippedAvatar,accessories:{head:State.profile.equippedHead,eyes:State.profile.equippedEyes,effect:State.profile.equippedEffect},xp:State.profile.xp},res=>{if(!res.ok){toast(res.error||'Помилка');return;}State.role='student';State.pin=pin;State.playerId=res.playerId;State.room=res.state;State.answeredCurrent=false;State.lastQIndex=-1;$('gameTitle').textContent='🎮 Гра';if(res.state.status==='lobby')go('screen-lobby');else{go('screen-game');renderGame(res.state);}});}
+function startGame(){if(!State.socket)return;State.socket.emit('startGame',res=>{if(!res.ok)toast(res.error||'Помилка');else toast('Гра почалася!');});}
+function nextQuestion(){if(!State.socket)return;State.socket.emit('nextQuestion',res=>{if(!res.ok)toast(res.error||'Помилка');});}
+function finishGame(){if(!State.socket)return;State.socket.emit('finishGame',res=>{if(!res.ok)toast(res.error||'Помилка');});}
+function closeRoom(){if(!confirm('Закрити?'))return;if(!State.socket){go('screen-welcome');return;}State.socket.emit('closeRoom',()=>{State.room=null;go('screen-welcome');});}
+function renderGame(state){if(!state)return;const q=state.questions[state.currentQuestion];if(!q)return;const me=state.players.find(p=>p.id===State.playerId);const changed=(state.currentQuestion!==State.lastQIndex)||(state.questionStartedAt!==State.lastQStart);if(changed){State.lastQIndex=state.currentQuestion;State.lastQStart=state.questionStartedAt;State.questionStart=Date.now();State.answeredCurrent=false;$('gFeedback').textContent='';const w=$('gAnswers');w.innerHTML='';q.answers.forEach((a,i)=>{const b=document.createElement('button');b.className='answer-btn';b.innerHTML='<span style="display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent-1),var(--accent-2));color:#fff;font-weight:900;margin-right:10px">'+String.fromCharCode(65+i)+'</span>'+esc(a);b.onclick=()=>sendAnswer(i);w.appendChild(b);});startLocalTimer(state.timePerQuestion);}$('gIndex').textContent=state.currentQuestion+1;$('gTotal').textContent=state.questions.length;$('gText').textContent=q.text;if(me){$('gScore').textContent='Бали: '+me.score;$('gStreak').textContent='🔥 Серія: '+(me.streak||0);$('gXp').textContent='⭐ XP: '+(me.xp||0);}const spec=me&&!me.alive&&state.mode==='survival';State.isSpectator=spec;$('gSpectator').classList.toggle('hidden',!spec);$('gAnswered').textContent='Відповіли: '+state.players.filter(p=>p.answeredThisRound).length+'/'+state.players.length;if(State.answeredCurrent||!me||!me.alive){qsa('#gAnswers .answer-btn').forEach((b,i)=>{b.disabled=true;if(i===q.correct)b.classList.add('correct');});}const canP=me&&(me.streak||0)>=3&&!me.powerActive&&me.alive;['btnPowDouble','btnPowShield','btnPowReveal'].forEach(id=>{const b=$(id);if(b)b.disabled=!canP;});$('teacherGameBtns').classList.toggle('hidden',State.role!=='teacher');if(State.role==='teacher'){const b=$('btnNext');if(b)b.textContent=(state.currentQuestion>=state.questions.length-1)?'🏁 Завершити':'⏭️ Далі';}renderLB(state,'gLeaderboard');renderFeed(state,'gFeed');}
+function sendAnswer(i){if(State.answeredCurrent)return;if(!State.socket||!State.room)return;State.answeredCurrent=true;const q=State.room.questions[State.room.currentQuestion];if(!q)return;qsa('#gAnswers .answer-btn').forEach((b,idx)=>{b.disabled=true;if(idx===q.correct)b.classList.add('correct');if(idx===i&&idx!==q.correct)b.classList.add('wrong');});const ok=i===q.correct;$('gFeedback').textContent=ok?'✅ Правильно!':'❌ Неправильно';$('gFeedback').style.color=ok?'var(--accent-5)':'#ff3d6e';State.socket.emit('answer',{playerId:State.playerId,q:State.room.currentQuestion,a:i},res=>{if(res&&res.ok&&typeof res.xp==='number'&&State.user){State.user.xp=res.xp;State.profile.xp=res.xp;Storage.set('sunlorem_profile',State.profile);updateAllBalances();}});}
+function activatePower(type){if(!State.socket)return;State.socket.emit('activatePower',{playerId:State.playerId,type},res=>{if(!res.ok){toast(res.error||'Помилка');return;}const n={double:'⚡ Подвійні',shield:'🛡️ Щит',reveal:'🔍 Підказка'};toast('Активовано: '+n[type]);if(type==='reveal'&&Array.isArray(res.hintIndexes)){const b=qsa('#gAnswers .answer-btn');res.hintIndexes.forEach(i=>{if(b[i])b[i].style.opacity=.25;});}['btnPowDouble','btnPowShield','btnPowReveal'].forEach(id=>{const btn=$(id);if(btn)btn.disabled=true;});});}
+function renderLB(state,tid){const w=$(tid);if(!w)return;w.innerHTML='';state.players.slice().sort((a,b)=>b.score-a.score).slice(0,15).forEach((p,i)=>{const c=document.createElement('div');c.className='player-card';if(i===0)c.classList.add('leader');if(p.id===State.playerId)c.classList.add('self');if(state.mode==='survival'&&!p.alive)c.classList.add('spectator');c.innerHTML='<span class="avatar">'+renderAvatar(p.avatar||'😶',p.accessories)+'</span><span class="name">'+esc(p.name)+(state.mode==='survival'&&!p.alive?' 👀':'')+'</span><span class="score">'+(p.score||0)+' 🏅</span>';w.appendChild(c);});}
+function renderFeed(state,tid){const w=$(tid);if(!w)return;w.innerHTML='';const f=state.feed||[];if(f.length===0){w.innerHTML='<div class="event-line" style="opacity:.5">Подій немає...</div>';return;}f.slice(0,15).forEach(ev=>{const d=document.createElement('div');d.className='event-line';d.textContent=ev.text;w.appendChild(d);});}
+function updateLobby(state){if(!state)return;$('lobbyCount').textContent='Гравців: '+state.players.length;$('lobbyCountInline').textContent=state.players.length;const w=$('lobbyPlayerList');w.innerHTML='';if(state.players.length===0){w.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:14px">Очікуємо...</p>';return;}state.players.slice().sort((a,b)=>b.score-a.score).forEach(p=>{const c=document.createElement('div');c.className='player-card';if(p.id===State.playerId)c.classList.add('self');c.innerHTML='<span class="avatar">'+renderAvatar(p.avatar||'😶',p.accessories)+'</span><span class="name">'+esc(p.name)+'</span><span class="score">'+(p.score||0)+' 🏅</span>';w.appendChild(c);});}
+function renderResults(state){if(!state)return;const sorted=state.players.slice().sort((a,b)=>b.score-a.score);const p=$('podium');p.innerHTML='';const t3=[sorted[1],sorted[0],sorted[2]];const lb2=['p2','p1','p3'];const md=['🥈','🥇','🥉'];for(let i=0;i<3;i++){const pl=t3[i];const el=document.createElement('div');el.className='podium-place '+lb2[i];if(!pl)el.innerHTML='<div class="avatar">—</div><div class="name">—</div><div class="pedestal">—</div>';else el.innerHTML='<div class="avatar">'+renderAvatar(pl.avatar||'😶',pl.accessories)+'</div><div class="name">'+esc(pl.name)+'</div><div style="font-size:11px;color:var(--accent-4);font-weight:900">+'+(pl.finalPrize||0)+' 🪙</div><div class="pedestal">'+md[i]+'</div>';p.appendChild(el);}const lb=$('finalLeaderboard');lb.innerHTML='';sorted.slice(0,50).forEach((p,i)=>{const c=document.createElement('div');c.className='player-card';if(i===0)c.classList.add('leader');c.innerHTML='<span class="avatar">'+renderAvatar(p.avatar||'😶',p.accessories)+'</span><span class="name">'+esc(p.name)+'</span><span class="score">'+(p.score||0)+' 🏅 +'+(p.finalPrize||0)+' 🪙</span>';lb.appendChild(c);});const w=sorted[0];if(w){$('certName').textContent=w.name;$('certScore').textContent='Балів: '+w.score;$('certCoins').textContent='🪙 Разом: '+(w.coins||0);}$('certDate').textContent=new Date().toLocaleDateString('uk-UA',{day:'numeric',month:'long',year:'numeric'});}
+function startLocalTimer(d){stopLocalTimer();State.questionStart=Date.now();State._localTimer=setInterval(()=>{const el=(Date.now()-State.questionStart)/1000;const l=Math.max(0,d-el);updateTimer(Math.ceil(l),d);if(l<=0)stopLocalTimer();},100);}
+function stopLocalTimer(){if(State._localTimer){clearInterval(State._localTimer);State._localTimer=null;}}
+function updateTimer(l,t){const p=Math.max(0,(l/(t||1))*100);const f=$('gTimerFill');if(f)f.style.width=p+'%';const tx=$('gTimerText');if(tx)tx.textContent=l;}
+function initSocket(){const s=io();State.socket=s;s.on('connect',()=>{State.connected=true;showConn(true,'🟢 Онлайн');s.emit('getShop',res=>{if(res&&res.ok){State.shop=res.shop;State.economy=res.economy;State.questDefs=res.quests;State.reactionEmojis=res.reactions||State.reactionEmojis;State.chatPhrases=res.chatPhrases||State.chatPhrases;if(res.dailyCoinCap)State.dailyCap=res.dailyCoinCap;buildReactions();buildChat();renderQuests();renderShop();}});if(State.user&&!State.user.isBot)s.emit('registerOnline',{login:State.user.login});});s.on('disconnect',()=>{State.connected=false;showConn(false,'🔴 Офлайн');});s.on('connect_error',()=>showConn(false,'🔴 Помилка'));s.on('state',state=>{State.room=state;if(state.status==='finished'&&state.isHomework){renderHWResult(state);return;}if(State.role==='teacher'){if(state.status==='lobby'){updateLobby(state);if(!$('screen-lobby').classList.contains('active'))go('screen-lobby');}else if(state.status==='running'){if(!$('screen-game').classList.contains('active'))go('screen-game');renderGame(state);}else if(state.status==='finished'){renderResults(state);go('screen-results');}}else if(State.role==='student'){const me=state.players.find(p=>p.id===State.playerId);if(state.status==='finished'){if(me&&me.finalPrize&&!State._prizeApplied){State._prizeApplied=true;toast('🏆 +'+me.finalPrize+' 🪙 за '+me.finalRank+' місце!');if(State.token&&State.user){api('/api/auth/me',{token:State.token}).then(r=>{if(r&&r.ok)syncFromUser(r.user);});}}renderResults(state);go('screen-results');}else if(state.status==='running'){if(!$('screen-game').classList.contains('active'))go('screen-game');renderGame(state);}else if(state.status==='lobby'){if(!$('screen-lobby').classList.contains('active'))go('screen-lobby');updateLobby(state);}}});s.on('tick',d=>updateTimer(d.timeLeft,d.total));s.on('playerReaction',d=>spawnFloatEmoji(d.emoji));s.on('playerChat',d=>{showChatBubble(d.playerName,d.phrase);spawnFloatEmoji('💬');});s.on('roomClosed',()=>openModal('Кімнату закрито','Вчитель закрив кімнату.'));s.on('duelInvite',d=>{State.currentDuelInvite=d;openModal('⚔️ Виклик на дуель','<div style="text-align:center"><div style="font-size:44px">'+d.fromAvatar+'</div><p><b>'+esc(d.fromName)+'</b> викликає тебе на дуель!</p><p style="color:var(--text-dim);font-size:13px">Перемога +10 🪙, поразка −10 🪙</p></div>',[{text:'❌ Відхилити',cls:'danger',fn:()=>respondDuel(d.inviteId,false)},{text:'✅ Прийняти',cls:'success',fn:()=>respondDuel(d.inviteId,true)}]);});s.on('duelResponse',d=>{if(d.accept)toast('✅ Виклик прийнято!');else toast('❌ Виклик відхилено');State.currentDuelInvite=null;});s.on('duelStarted',d=>{State.role='student';State.pin=d.pin;State.playerId=d.playerId;State.room=d.state;State.answeredCurrent=false;State.lastQIndex=-1;$('gameTitle').textContent='⚔️ Дуель';$('teacherGameBtns').classList.add('hidden');go('screen-game');renderGame(d.state);toast('⚔️ Дуель почалася!');});}
+function showConn(ok,text){const el=$('connStatus');if(!el)return;el.textContent=text;el.className='conn-status show '+(ok?'ok':'err');if(ok){clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2000);}}
+function spawnFloatEmoji(e){const l=$('floatLayer')||document.body;const el=document.createElement('div');el.className='float-emoji';el.textContent=e;el.style.left=(20+Math.random()*60)+'vw';el.style.bottom=(10+Math.random()*20)+'vh';l.appendChild(el);setTimeout(()=>el.remove(),2600);}
+function showChatBubble(name,phrase){const cards=qsa('.player-card');cards.forEach(c=>{const n=c.querySelector('.name');if(n&&n.textContent.indexOf(name)!==-1){const old=c.querySelector('.chat-bubble');if(old)old.remove();const b=document.createElement('div');b.className='chat-bubble';b.textContent=phrase;c.appendChild(b);setTimeout(()=>b.remove(),2500);}});}
+function buildReactions(){const b=$('gameReactions');if(!b)return;b.innerHTML='';State.reactionEmojis.forEach(e=>{const btn=document.createElement('button');btn.className='reaction-btn';btn.textContent=e;btn.onclick=()=>sendReaction(e);b.appendChild(btn);});}
+function buildChat(){const b=$('chatBar');if(!b)return;b.innerHTML='';State.chatPhrases.forEach(p=>{const btn=document.createElement('button');btn.className='chat-btn';btn.textContent=p;btn.onclick=()=>sendChat(p);b.appendChild(btn);});}
+function sendReaction(e){if(!State.socket||!State.playerId)return;State.socket.emit('sendReaction',{playerId:State.playerId,emoji:e},res=>{if(res&&res.ok)spawnFloatEmoji(e);});}
+function sendChat(p){if(!State.socket||!State.playerId)return;State.socket.emit('sendChatPhrase',{playerId:State.playerId,phrase:p},res=>{if(res&&res.ok)showChatBubble(State.playerName||(State.user&&State.user.name)||'',p);});}
+function shopTab(t){State.shopTabName=t;qsa('#screen-shop .tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===t));renderShop();}
+function renderShop(){if(!State.shop)return;const w=$('shopGrid');if(!w)return;w.innerHTML='';const pv=$('shopPreviewAvatar');if(pv){const av=State.shop.avatars.find(a=>a.id===State.profile.equippedAvatar);pv.innerHTML=(av?av.emoji:'😶')+renderAccSVG({head:State.profile.equippedHead,eyes:State.profile.equippedEyes,effect:State.profile.equippedEffect});}const pn=$('shopPreviewName');if(pn){const av=State.shop.avatars.find(a=>a.id===State.profile.equippedAvatar);pn.textContent=av?av.name:'Смайлик';}if(State.shopTabName==='avatars'){State.shop.avatars.forEach(a=>{const o=State.profile.ownedAvatars.includes(a.id);const eq=State.profile.equippedAvatar===a.id;const c=document.createElement('div');c.className='shop-card'+(eq?' equipped':'');c.innerHTML='<span class="preview">'+a.emoji+'</span><div class="name">'+esc(a.name)+'</div><div class="price '+(o?'owned':(State.profile.coins<a.price?'cant':''))+'">'+(o?'✓':(a.price+' 🪙'))+'</div>';c.onclick=()=>buyOrEquipAvatar(a);w.appendChild(c);});}else if(State.shopTabName==='accessories'){State.shop.accessories.forEach(a=>{const o=State.profile.ownedAccessories.includes(a.id);const eq=(a.slot==='head'&&State.profile.equippedHead===a.id)||(a.slot==='eyes'&&State.profile.equippedEyes===a.id)||(a.slot==='effect'&&State.profile.equippedEffect===a.id);const c=document.createElement('div');c.className='shop-card'+(eq?' equipped':'');const sv=SVG_ACC[a.id]?'<div style="width:70px;height:50px;margin:6px auto;position:relative">'+SVG_ACC[a.id].replace('acc-svg','acc-svg preview-acc')+'</div>':'<span class="preview">'+a.emoji+'</span>';c.innerHTML=sv+'<div class="name">'+esc(a.name)+'</div><div style="font-size:11px;color:var(--text-dim)">'+(a.slot==='head'?'голова':a.slot==='eyes'?'очі':'ефект')+'</div><div class="price '+(o?'owned':(State.profile.coins<a.price?'cant':''))+'">'+(o?'✓':(a.price+' 🪙'))+'</div>';c.onclick=()=>buyOrEquipAcc(a);w.appendChild(c);});const clr=document.createElement('div');clr.className='shop-card';clr.innerHTML='<span class="preview">∅</span><div class="name">Зняти все</div>';clr.onclick=()=>{State.profile.equippedHead='';State.profile.equippedEyes='';State.profile.equippedEffect='';saveProfile();renderShop();};w.appendChild(clr);}else if(State.shopTabName==='themes'){const em={t_neon:'🌌',t_pastel:'🍑',t_space:'🌠',t_cyber:'⚡',t_forest:'🌲',t_sunset:'🌅',t_ocean:'🌊',t_candy:'🍭',t_autumn:'🍂'};State.shop.themes.forEach(t=>{const o=State.profile.ownedThemes.includes(t.id);const eq=State.theme===t.id.replace('t_','');const c=document.createElement('div');c.className='shop-card'+(eq?' equipped':'');c.innerHTML='<span class="preview">'+(em[t.id]||'🎨')+'</span><div class="name">'+esc(t.name)+'</div><div class="price '+(o?'owned':(State.profile.coins<t.price?'cant':''))+'">'+(o?'✓':(t.price+' 🪙'))+'</div>';c.onclick=()=>buyOrEquipTheme(t);w.appendChild(c);});}updateAllBalances();}
+async function spendCoins(amount,itemId,itemType){const cost=parseInt(amount,10);if(isNaN(cost)||cost<=0){toast('Помилка ціни');return false;}if(State.isGuest||!State.token){if(State.profile.coins<cost){toast('Недостатньо СанКоїнів');return false;}State.profile.coins-=cost;Storage.set('sunlorem_profile',State.profile);updateAllBalances();return true;}const res=await api('/api/user/spend-coins',{token:State.token,amount:cost,itemId:String(itemId),itemType:String(itemType)});if(!res.ok){toast(res.error||'Помилка покупки');return false;}State.profile.coins=res.coins;if(State.user)State.user.coins=res.coins;Storage.set('sunlorem_profile',State.profile);updateAllBalances();return true;}
+async function buyOrEquipAvatar(a){if(State.profile.ownedAvatars.includes(a.id)){State.profile.equippedAvatar=a.id;saveProfile();renderShop();return;}if(State.profile.coins<a.price){toast('Треба ще '+(a.price-State.profile.coins)+' 🪙');return;}if(!confirm('Купити "'+a.name+'" за '+a.price+' 🪙?'))return;const ok=await spendCoins(a.price,a.id,'avatar');if(!ok)return;State.profile.ownedAvatars.push(a.id);State.profile.equippedAvatar=a.id;saveProfile();renderShop();toast('🎉 Куплено!');}
+async function buyOrEquipAcc(a){if(State.profile.ownedAccessories.includes(a.id)){if(a.slot==='head')State.profile.equippedHead=State.profile.equippedHead===a.id?'':a.id;if(a.slot==='eyes')State.profile.equippedEyes=State.profile.equippedEyes===a.id?'':a.id;if(a.slot==='effect')State.profile.equippedEffect=State.profile.equippedEffect===a.id?'':a.id;saveProfile();renderShop();return;}if(State.profile.coins<a.price){toast('Треба ще '+(a.price-State.profile.coins)+' 🪙');return;}if(!confirm('Купити "'+a.name+'" за '+a.price+' 🪙?'))return;const ok=await spendCoins(a.price,a.id,'accessory');if(!ok)return;State.profile.ownedAccessories.push(a.id);if(a.slot==='head')State.profile.equippedHead=a.id;if(a.slot==='eyes')State.profile.equippedEyes=a.id;if(a.slot==='effect')State.profile.equippedEffect=a.id;saveProfile();renderShop();toast('🎉 Куплено!');}
+async function buyOrEquipTheme(t){if(State.profile.ownedThemes.includes(t.id)){applyTheme(t.id.replace('t_',''));saveProfile();renderShop();return;}if(State.profile.coins<t.price){toast('Треба ще '+(t.price-State.profile.coins)+' 🪙');return;}if(!confirm('Розблокувати "'+t.name+'" за '+t.price+' 🪙?'))return;const ok=await spendCoins(t.price,t.id,'theme');if(!ok)return;State.profile.ownedThemes.push(t.id);applyTheme(t.id.replace('t_',''));saveProfile();renderShop();toast('🎉 Розблоковано!');}
+function renderQuests(){const w=$('questsList');if(!w||!State.questDefs)return;w.innerHTML='';Object.values(State.questDefs).forEach(def=>{const d=!!State.profile.completedQuests[def.id];const i=document.createElement('div');i.className='quest-item'+(d?' done':'');i.innerHTML='<div class="q-icon">'+def.icon+'</div><div class="q-info"><div class="q-title">'+esc(def.title)+(d?' ✓':'')+'</div><div class="q-desc">'+esc(def.desc)+'</div></div><div class="q-reward">'+(d?'✅':'+'+def.reward+' 🪙')+'</div>';w.appendChild(i);});}
+async function loadMyMarks(){if(!State.user||State.user.role!=='student'){toast('Треба увійти як учень');go('screen-welcome');return;}const res=await api('/api/marks/for-student',{login:State.user.login});if(!res.ok){toast('Помилка');return;}$('marksAvg').textContent=res.avg||0;const w=$('marksList');w.innerHTML='';if(res.marks.length===0){w.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:14px">Оцінок немає</p>';return;}res.marks.forEach(m=>{const c=m.value>=10?'mark-good':m.value>=7?'mark-ok':'mark-bad';const d=new Date(m.at).toLocaleString('uk-UA');const r=document.createElement('div');r.className='record-row';r.innerHTML='<div class="rec-value '+c+'">'+m.value+'</div><div class="rec-info"><div class="rec-title">'+esc(m.subject||'Без предмету')+'</div><div class="rec-meta">'+esc(m.reason||'')+' • '+d+'</div></div>';w.appendChild(r);});}
+async function loadMyPoints(){if(!State.user||State.user.role!=='student'){toast('Треба увійти як учень');go('screen-welcome');return;}const res=await api('/api/points/for-student',{login:State.user.login});if(!res.ok){toast('Помилка');return;}$('pointsSum').textContent=res.sum||0;const w=$('pointsList');w.innerHTML='';if(res.points.length===0){w.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:14px">Балів немає</p>';return;}res.points.forEach(p=>{const c=p.value>=0?'point-pos':'point-neg';const d=new Date(p.at).toLocaleString('uk-UA');const r=document.createElement('div');r.className='record-row';r.innerHTML='<div class="rec-value '+c+'">'+(p.value>0?'+':'')+p.value+'</div><div class="rec-info"><div class="rec-title">'+esc(p.reason||'')+'</div><div class="rec-meta">'+d+'</div></div>';w.appendChild(r);});}
+async function loadDuelScreen(){if(!State.user||State.user.role!=='student'){toast('Треба увійти як учень');go('screen-welcome');return;}if(!State.token)return;const qr=await fetch('/api/quizzes');const qj=await qr.json();const sel=$('duelQuizSelect');sel.innerHTML='';if(qj.ok&&qj.quizzes){qj.quizzes.forEach(q=>{const o=document.createElement('option');o.value=q.id;o.textContent=q.title;sel.appendChild(o);});}const res=await api('/api/duel/class-online',{token:State.token});if(!res.ok){toast('Помилка');return;}const w=$('duelClassList');w.innerHTML='';if(res.students.length===0){w.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:14px">Клас порожній</p>';return;}res.students.forEach(s=>{const r=document.createElement('div');r.className='duel-row';r.innerHTML='<div class="dr-avatar">'+s.avatar+'</div><div class="dr-info"><div class="dr-name">'+esc(s.name)+'</div><div class="dr-status '+(s.online?'dr-online':'dr-offline')+'">'+(s.online?'🟢 онлайн':'⚫ офлайн')+' • 🎖️ рів. '+s.level+'</div></div>';if(s.online){const b=document.createElement('button');b.className='primary dr-invite';b.textContent='⚔️ Виклик';b.onclick=()=>inviteDuel(s.login);r.appendChild(b);}w.appendChild(r);});}
+async function inviteDuel(opp){if(!State.token){toast('Треба увійти');return;}const q=$('duelQuizSelect').value;if(!q){toast('Обери квіз');return;}State.currentDuelQuizId=q;const res=await api('/api/duel/invite',{fromLogin:State.user.login,toLogin:opp});if(!res.ok){toast(res.error||'Помилка');return;}toast('⚔️ Виклик надіслано!');}
+async function respondDuel(id,acc){if(!State.token)return;const res=await api('/api/duel/respond',{inviteId:id,accept:acc});if(!res.ok){toast(res.error||'Помилка');return;}if(acc){const inv=State.currentDuelInvite;if(!inv)return;const q=State.currentDuelQuizId||(State.catalog[0]&&State.catalog[0].id);if(!q){toast('Немає квізу');return;}State.socket.emit('startDuelRoom',{quizId:q,login:State.user.login,opponent:inv.fromLogin},r=>{if(!r.ok){toast(r.error||'Помилка');return;}State.role='student';State.pin=r.pin;State.playerId=r.playerId;State.room=r.state;State.answeredCurrent=false;State.lastQIndex=-1;$('gameTitle').textContent='⚔️ Дуель';$('teacherGameBtns').classList.add('hidden');go('screen-game');renderGame(r.state);});}State.currentDuelInvite=null;}
+function teacherTab(t){qsa('#screen-teacher .tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===t));['class','marks','points','create','mine','hw','analytics','subjects'].forEach(n=>{const e=$('teacher'+n.charAt(0).toUpperCase()+n.slice(1)+'Tab');if(e)e.classList.toggle('hidden',n!==t);});if(t==='mine')loadMyQuizzes();if(t==='hw')loadMyHomework();if(t==='analytics')loadGeneralAnalytics();if(t==='marks')loadMarksAll();if(t==='points')loadPointsAll();if(t==='subjects')renderSubjects();}
+function renderTeacher(){if(!State.user||State.user.role!=='teacher'){toast('Тільки для вчителя');go('screen-welcome');return;}loadClass();}
+async function loadClass(){if(!State.token)return;const res=await api('/api/teacher/class',{token:State.token});if(!res.ok)return;const w=$('classList');w.innerHTML='';const ms=$('markStudentSelect');const ps=$('pointStudentSelect');if(ms)ms.innerHTML='';if(ps)ps.innerHTML='';if(res.students.length===0){w.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:10px">Порожньо</p>';return;}res.students.forEach(s=>{const r=document.createElement('div');r.className='student-row';r.innerHTML='<div style="flex:1"><div class="s-name">'+esc(s.name)+'</div><div class="s-login">'+esc(s.login)+' • 🪙 '+s.coins+' • ⭐ '+s.xp+'</div></div><button class="danger small" onclick="App.removeStudent(\''+esc(s.login)+'\')">🗑️</button>';w.appendChild(r);if(ms){const o=document.createElement('option');o.value=s.login;o.textContent=s.name;ms.appendChild(o);}if(ps){const o=document.createElement('option');o.value=s.login;o.textContent=s.name;ps.appendChild(o);}});}
+async function loadMarksAll(){if(!State.token)return;const res=await api('/api/marks/all',{token:State.token});if(!res.ok)return;const w=$('marksAllList');w.innerHTML='';if(res.students.length===0){w.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:10px">Порожньо</p>';return;}res.students.forEach(s=>{const h=document.createElement('div');h.className='student-row';h.style.background='transparent';h.innerHTML='<div style="flex:1"><div class="s-name">'+esc(s.name)+'</div><div class="s-login">Середнє: '+s.avg+' • Оцінок: '+s.marks.length+'</div></div>';w.appendChild(h);s.marks.forEach(m=>{const c=m.value>=10?'mark-good':m.value>=7?'mark-ok':'mark-bad';const d=new Date(m.at).toLocaleString('uk-UA');const r=document.createElement('div');r.className='record-row';r.innerHTML='<div class="rec-value '+c+'">'+m.value+'</div><div class="rec-info"><div class="rec-title">'+esc(m.subject||'')+'</div><div class="rec-meta">'+esc(m.reason||'')+' • '+d+'</div></div><div class="rec-actions"><button class="danger" onclick="App.deleteMark(\''+esc(s.login)+'\',\''+m.id+'\')">🗑️</button></div>';w.appendChild(r);});});}
+async function loadPointsAll(){if(!State.token)return;const res=await api('/api/points/all',{token:State.token});if(!res.ok)return;const w=$('pointsAllList');w.innerHTML='';if(res.students.length===0){w.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:10px">Порожньо</p>';return;}res.students.forEach(s=>{const h=document.createElement('div');h.className='student-row';h.style.background='transparent';h.innerHTML='<div style="flex:1"><div class="s-name">'+esc(s.name)+'</div><div class="s-login">Сума: '+s.sum+' балів</div></div>';w.appendChild(h);s.points.forEach(p=>{const c=p.value>=0?'point-pos':'point-neg';const d=new Date(p.at).toLocaleString('uk-UA');const r=document.createElement('div');r.className='record-row';r.innerHTML='<div class="rec-value '+c+'">'+(p.value>0?'+':'')+p.value+'</div><div class="rec-info"><div class="rec-title">'+esc(p.reason||'')+'</div><div class="rec-meta">'+d+'</div></div><div class="rec-actions"><button class="danger" onclick="App.deletePoint(\''+esc(s.login)+'\',\''+p.id+'\')">🗑️</button></div>';w.appendChild(r);});});}
+async function setMark(){if(!State.token)return;const l=$('markStudentSelect').value;const s=$('markSubjectSelect').value;const v=$('markValueInput').value;const r=$('markReasonInput').value.trim();if(!l){toast('Обери учня');return;}if(!v){toast('Введи оцінку');return;}const res=await api('/api/marks/set',{token:State.token,studentLogin:l,value:v,subject:s,reason:r});if(!res.ok){toast(res.error||'Помилка');return;}toast('✅ Оцінку поставлено');$('markValueInput').value='';$('markReasonInput').value='';loadMarksAll();}
+async function deleteMark(l,id){if(!confirm('Видалити оцінку?'))return;if(!State.token)return;const res=await api('/api/marks/delete',{token:State.token,studentLogin:l,markId:id});if(!res.ok){toast('Помилка');return;}toast('Видалено');loadMarksAll();}
+async function setPoint(){if(!State.token)return;const l=$('pointStudentSelect').value;const v=$('pointValueInput').value;const r=$('pointReasonInput').value.trim();if(!l){toast('Обери учня');return;}if(!v){toast('Введи бали');return;}const res=await api('/api/points/set',{token:State.token,studentLogin:l,value:v,reason:r});if(!res.ok){toast(res.error||'Помилка');return;}toast('✅ Бали додано');$('pointValueInput').value='';$('pointReasonInput').value='';loadPointsAll();}
+async function deletePoint(l,id){if(!confirm('Видалити бали?'))return;if(!State.token)return;const res=await api('/api/points/delete',{token:State.token,studentLogin:l,pointId:id});if(!res.ok){toast('Помилка');return;}toast('Видалено');loadPointsAll();}
+async function renderSubjects(){if(!State.token)return;const res=await api('/api/teacher/subjects',{token:State.token});if(!res.ok)return;State.subjects=res.subjects||[];const w=$('subjectsList');w.innerHTML='';const ms=$('markSubjectSelect');if(ms){ms.innerHTML='';State.subjects.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;ms.appendChild(o);});}const qs=$('quizSubject');if(qs){qs.innerHTML='';State.subjects.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;qs.appendChild(o);});}State.subjects.forEach(s=>{const r=document.createElement('div');r.className='student-row';r.innerHTML='<div style="flex:1"><div class="s-name">'+esc(s)+'</div></div><button class="danger small" onclick="App.deleteSubject(\''+esc(s)+'\')">🗑️</button>';w.appendChild(r);});}
+async function addSubject(){if(!State.token)return;const n=$('newSubjectName').value.trim();if(!n){toast('Введи назву');return;}const res=await api('/api/teacher/subjects/add',{token:State.token,name:n});if(!res.ok){toast('Помилка');return;}toast('✅ Додано');$('newSubjectName').value='';renderSubjects();}
+async function deleteSubject(n){if(!confirm('Видалити предмет?'))return;if(!State.token)return;const res=await api('/api/teacher/subjects/delete',{token:State.token,name:n});if(!res.ok){toast('Помилка');return;}toast('Видалено');renderSubjects();}
+async function createStudent(){if(!State.token)return;const n=$('newStudentName').value.trim();const l=$('newStudentLogin').value.trim().toLowerCase();const p=$('newStudentPassword').value.trim();if(!n||!l||!p){toast('Заповни всі поля');return;}const res=await api('/api/teacher/create-student',{token:State.token,login:l,password:p,name:n});if(!res.ok){toast(res.error||'Помилка');return;}toast('✅ Учня створено');$('newStudentName').value='';$('newStudentLogin').value='';$('newStudentPassword').value='';loadClass();}
+async function addBots(){if(!State.token)return;const t=$('botsNames').value;if(!t.trim()){toast('Введи імена');return;}const res=await api('/api/teacher/add-bots',{token:State.token,namesText:t});if(!res.ok){toast(res.error||'Помилка');return;}toast('🤖 Додано: '+res.added.length);$('botsNames').value='';loadClass();}
+async function removeStudent(l){if(!confirm('Видалити '+l+'?'))return;if(!State.token)return;await api('/api/teacher/remove-student',{token:State.token,login:l});toast('Видалено');loadClass();}
+function addQuestion(){State.questionsDraft.push({text:'Нове питання',answers:['Варіант 1','Варіант 2','Варіант 3','Варіант 4'],correct:0});renderQEditor();}
+function renderQEditor(){const w=$('questionsEditor');if(!w)return;w.innerHTML='';if(State.questionsDraft.length===0){w.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:10px">Питань немає</p>';return;}State.questionsDraft.forEach((q,qi)=>{const it=document.createElement('div');it.className='question-item';const h=document.createElement('div');h.className='q-header';h.innerHTML='<span class="q-index">#'+(qi+1)+'</span>';const d=document.createElement('button');d.className='danger small';d.textContent='🗑️';d.onclick=()=>{State.questionsDraft.splice(qi,1);renderQEditor();};h.appendChild(d);it.appendChild(h);const t=document.createElement('input');t.type='text';t.value=q.text;t.placeholder='Текст';t.oninput=()=>{State.questionsDraft[qi].text=t.value;};it.appendChild(t);q.answers.forEach((a,ai)=>{const r=document.createElement('div');r.className='answer-input-row';const rd=document.createElement('input');rd.type='radio';rd.name='c_'+qi;rd.checked=q.correct===ai;rd.onchange=()=>{State.questionsDraft[qi].correct=ai;};r.appendChild(rd);const i=document.createElement('input');i.type='text';i.value=a;i.placeholder='Варіант '+(ai+1);i.oninput=()=>{State.questionsDraft[qi].answers[ai]=i.value;};r.appendChild(i);it.appendChild(r);});w.appendChild(it);});}
+function loadTemplate(k){const T={math:[{text:'7 × 8 = ?',answers:['54','56','48','64'],correct:1},{text:'Яке число просте?',answers:['9','15','17','21'],correct:2},{text:'144 : 12 = ?',answers:['10','11','12','14'],correct:2},{text:'Хвилин у 2,5 год?',answers:['120','135','150','180'],correct:2},{text:'Площа квадрата 9 см?',answers:['18','36','81','90'],correct:2}],ukrainian:[{text:'Букв в алфавіті?',answers:['32','33','34','35'],correct:1},{text:'Іменник означає:',answers:['дію','предмет','ознаку','кількість'],correct:1},{text:'Голосних:',answers:['5','6','7','8'],correct:1},{text:'Дієслово:',answers:['швидкий','швидкість','швидко','швидшати'],correct:3},{text:'Апостроф:',answers:['св..ято','п..ять','б..юро','цв..ях'],correct:1}],history:[{text:'Князь 980-1015?',answers:['Ярослав','Володимир','Святослав','Олег'],correct:1},{text:'Хрещення Русі?',answers:['862','988','1054','1240'],correct:1},{text:'Столиця України?',answers:['Харків','Одеса','Київ','Львів'],correct:2},{text:'«Кобзар»:',answers:['Франко','Шевченко','Леся','Сковорода'],correct:1},{text:'Незалежність у:',answers:['1989','1990','1991','1992'],correct:2}],nature:[{text:'Рослини вбирають:',answers:['Кисень','CO₂','Азот','Водень'],correct:1},{text:'Планет?',answers:['7','8','9','10'],correct:1},{text:'Океан найбільший?',answers:['Атлантичний','Індійський','Тихий','Північний'],correct:2},{text:'Ссавець:',answers:['Дельфін','Акула','Окунь','Кит'],correct:3},{text:'Ніг у комахи?',answers:['4','6','8','10'],correct:1}]};const t=T[k];if(!t)return;State.questionsDraft=t.map(q=>({text:q.text,answers:q.answers.slice(),correct:q.correct}));renderQEditor();toast('Завантажено');}
+async function createQuiz(){if(!State.token)return;const t=$('quizTitle').value.trim();const s=$('quizSubject').value;const d=$('quizDifficulty').value;if(!t){toast('Введи назву');return;}if(State.questionsDraft.length===0){toast('Додай питання');return;}const res=await api('/api/quizzes/create',{token:State.token,title:t,subject:s,difficulty:d,questions:State.questionsDraft,isPublic:true});if(!res.ok){if(res.details)openModal('Помилки','<ul style="padding-left:18px">'+res.details.map(e=>'<li>'+esc(e)+'</li>').join('')+'</ul>');else toast(res.error||'Помилка');return;}toast('✅ Квіз створено!');State.questionsDraft=[];$('quizTitle').value='';renderQEditor();loadCatalog();}
+async function loadMyQuizzes(){if(!State.token)return;const res=await api('/api/quizzes/mine',{token:State.token});if(!res.ok)return;State.allMyQuizzes=res.quizzes||[];const w=$('myQuizzes');w.innerHTML='';if(res.quizzes.length===0){w.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:10px">Порожньо</p>';}else res.quizzes.forEach(q=>{const r=document.createElement('div');r.className='student-row';r.innerHTML='<div style="flex:1"><div class="s-name">'+esc(q.title)+'</div><div class="s-login">'+esc(q.subject)+' • '+q.questionsCount+' • 🎮 '+q.plays+'</div></div><button class="danger small" onclick="App.deleteQuiz(\''+q.id+'\')">🗑️</button>';w.appendChild(r);});const sel=$('hwQuizSelect');if(sel){sel.innerHTML='';res.quizzes.forEach(q=>{const o=document.createElement('option');o.value=q.id;o.textContent=q.title;sel.appendChild(o);});}const as=$('analyticsQuizSelect');if(as){as.innerHTML='';res.quizzes.forEach(q=>{const o=document.createElement('option');o.value=q.id;o.textContent=q.title;as.appendChild(o);});}}
+async function deleteQuiz(id){if(!confirm('Видалити?'))return;if(!State.token)return;await api('/api/quizzes/'+id+'/delete',{token:State.token});toast('Видалено');loadMyQuizzes();loadCatalog();}
+async function createHomework(){if(!State.token)return;const q=$('hwQuizSelect').value;const t=$('hwTitle').value.trim();const dl=$('hwDeadline').value;const ap=$('hwAutoPoints').checked;if(!q){toast('Обери квіз');return;}if(!dl){toast('Вкажи дедлайн');return;}const deadline=new Date(dl).getTime();const res=await api('/api/homework/create',{token:State.token,quizId:q,title:t,deadline,autoPoints:ap});if(!res.ok){toast(res.error||'Помилка');return;}toast('📝 ДЗ створено');$('hwTitle').value='';$('hwDeadline').value='';loadMyHomework();}
+async function loadMyHomework(){if(!State.token)return;const res=await api('/api/homework/mine',{token:State.token});if(!res.ok)return;const w=$('myHomework');w.innerHTML='';if(res.homework.length===0){w.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:10px">Порожньо</p>';return;}res.homework.forEach(h=>{const r=document.createElement('div');r.className='hw-row';const dl=new Date(h.deadline).toLocaleString('uk-UA');r.innerHTML='<div class="hw-info"><div class="hw-title">'+esc(h.title)+'</div><div class="hw-meta">'+esc(h.quizTitle)+' • до '+dl+' • здали: '+h.submissionsCount+'/'+h.classLogins.length+'</div></div>';r.onclick=()=>showHWGrades(h.id);w.appendChild(r);});}
+async function showHWGrades(hid){if(!State.token)return;const res=await api('/api/grades/for-homework',{token:State.token,homeworkId:hid});if(!res.ok){toast('Помилка');return;}$('hwgTitle').textContent='Оцінки';const w=$('hwGradesList');w.innerHTML='';res.students.forEach(s=>{const r=document.createElement('div');r.className='hw-row';const g=s.submission?s.submission.grade:null;const gc=g?('grade-'+g):'';r.innerHTML='<div class="hw-info"><div class="hw-title">'+esc(s.name)+'</div>'+(s.submitted?'<div class="hw-meta">'+s.submission.correct+'/'+s.submission.total+' ('+s.submission.percent+'%) '+(s.submission.isLate?'⚠️':'')+' • '+(s.submission.gradedBy==='auto'?'авто':'вручну')+(s.submission.comment?' • 💬 '+esc(s.submission.comment):'')+'</div>':'<div class="hw-meta">Не здав</div>')+'</div>'+(s.submission?'<div class="grade-badge '+gc+'">'+g+'</div><button class="small ghost" onclick="App.editGrade(\''+hid+'\',\''+esc(s.login)+'\','+g+')">✏️</button>':'<button class="small gold" onclick="App.editGrade(\''+hid+'\',\''+esc(s.login)+'\',0)">Виставити</button>');w.appendChild(r);});go('screen-hw-grades');}
+async function editGrade(hid,l,curr){const v=prompt('Оцінка (1-12):',curr||'');if(v===null)return;const g=parseInt(v,10);if(isNaN(g)||g<1||g>12){toast('1-12');return;}const c=prompt('Коментар:')||'';const res=await api('/api/grades/set',{token:State.token,homeworkId:hid,studentLogin:l,grade:g,comment:c});if(!res.ok){toast(res.error||'Помилка');return;}toast('Оцінку виставлено');showHWGrades(hid);}
+async function loadGeneralAnalytics(){if(!State.token)return;const res=await api('/api/analytics/teacher',{token:State.token});if(!res.ok)return;const w=$('generalAnalytics');w.innerHTML='';w.innerHTML='<div class="student-row"><div class="s-name">📚 Квізів: '+res.quizzesCount+'</div></div><div class="student-row"><div class="s-name">🎮 Ігор: '+res.totalGames+'</div></div><div class="student-row"><div class="s-name">❤️ Лайків: '+res.totalLikes+'</div></div>';if(res.hardest.length>0){const h=document.createElement('div');h.style.marginTop='10px';h.innerHTML='<div class="panel-title">🔥 Найскладніші</div>';res.hardest.forEach(q=>{const d=document.createElement('div');d.className='analytics-q';d.innerHTML='<div class="aq-text">'+esc(q.text)+'</div><div class="aq-bar"><div class="aq-fill" style="width:'+q.wrongPercent+'%"></div></div><div style="font-size:11px;color:var(--text-dim)">'+esc(q.quizTitle)+' • '+q.wrongPercent+'%</div>';h.appendChild(d);});w.appendChild(h);}}
+async function loadQuizAnalytics(){if(!State.token)return;const q=$('analyticsQuizSelect').value;if(!q){toast('Обери квіз');return;}const res=await api('/api/analytics/quiz',{token:State.token,quizId:q});if(!res.ok){toast('Помилка');return;}const w=$('quizAnalytics');w.innerHTML='';w.innerHTML='<div class="student-row"><div class="s-name">📝 '+esc(res.quizTitle)+' • Ігор: '+res.games+'</div></div>';const h1=document.createElement('div');h1.style.marginTop='10px';h1.innerHTML='<div class="panel-title">🔥 Питання</div>';res.questions.forEach(q=>{if(q.totalAttempts===0)return;const d=document.createElement('div');d.className='analytics-q';d.innerHTML='<div class="aq-text">'+esc(q.text)+'</div><div class="aq-bar"><div class="aq-fill" style="width:'+q.wrongPercent+'%"></div></div><div style="font-size:11px;color:var(--text-dim)">✅ '+q.correctCount+' • ❌ '+q.wrongCount+' • '+q.wrongPercent+'%</div>';h1.appendChild(d);});w.appendChild(h1);if(res.players.length>0){const h2=document.createElement('div');h2.style.marginTop='10px';h2.innerHTML='<div class="panel-title">🏆 Гравці</div>';res.players.forEach(p=>{const d=document.createElement('div');d.className='student-row';d.innerHTML='<div style="flex:1"><div class="s-name">'+esc(p.name)+'</div><div class="s-login">'+p.totalCorrect+'/'+p.totalQuestions+' • '+p.percent+'%</div></div>';h2.appendChild(d);});w.appendChild(h2);}}
+async function loadHomework(){if(!State.user||State.user.role!=='student'){toast('Треба увійти як учень');go('screen-welcome');return;}if(!State.token)return;const r1=await api('/api/homework/for-student',{login:State.user.login});if(r1.ok)renderHWList(r1.homework);const r2=await api('/api/grades/for-student',{login:State.user.login});if(r2.ok)renderGradesList(r2.grades);}
+function hwTab(t){State.hwTabName=t;qsa('#screen-homework .tab').forEach(x=>x.classList.toggle('active',x.dataset.hwtab===t));$('hwList').classList.toggle('hidden',t!=='hw');$('gradesList').classList.toggle('hidden',t!=='grades');}
+function renderHWList(list){const w=$('hwList');w.innerHTML='';if(list.length===0){w.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:10px">ДЗ немає</p>';return;}list.forEach(h=>{const r=document.createElement('div');r.className='hw-row'+(h.submitted?' done':'')+(h.deadline<Date.now()&&!h.submitted?' late':'');const dl=new Date(h.deadline).toLocaleString('uk-UA');r.innerHTML='<div class="hw-info"><div class="hw-title">'+esc(h.title)+'</div><div class="hw-meta">'+esc(h.quizTitle)+' • до '+dl+(h.submitted?' • ✅ '+h.submission.grade+'/12':'')+'</div></div>';r.onclick=()=>openHomework(h);w.appendChild(r);});}
+function renderGradesList(list){const w=$('gradesList');w.innerHTML='';if(list.length===0){w.innerHTML='<p style="color:var(--text-dim);text-align:center;padding:10px">Оцінок немає</p>';return;}list.forEach(g=>{const r=document.createElement('div');r.className='hw-row';const gc='grade-'+g.grade;const dl=new Date(g.submittedAt).toLocaleString('uk-UA');r.innerHTML='<div class="hw-info"><div class="hw-title">'+esc(g.title)+'</div><div class="hw-meta">'+esc(g.quizTitle)+' • '+g.correct+'/'+g.total+' ('+g.percent+'%) • '+dl+(g.isLate?' ⚠️':'')+' • '+(g.gradedBy==='auto'?'авто':'вручну')+(g.comment?' • 💬 '+esc(g.comment):'')+'</div></div><div class="grade-badge '+gc+'">'+g.grade+'</div>';w.appendChild(r);});}
+function openHomework(h){State.currentHomework=h;$('hwdTitle').textContent=h.title;$('hwdSubtitle').textContent=h.quizTitle;const b=$('hwdStartBtn');if(h.submitted){b.textContent='✅ Вже здано ('+h.submission.grade+'/12)';b.disabled=true;}else{b.textContent='▶️ Почати';b.disabled=false;}go('screen-hw-detail');}
+function startHomework(){if(!State.currentHomework)return;if(!State.socket||!State.connected){toast('Немає з\'єднання');return;}State.socket.emit('startHomeworkGame',{homeworkId:State.currentHomework.id,login:State.user.login},res=>{if(!res.ok){toast(res.error||'Помилка');return;}State.role='student';State.pin=res.pin;State.playerId=res.playerId;State.room=res.state;State.answeredCurrent=false;State.lastQIndex=-1;$('gameTitle').textContent='📝 ДЗ';$('teacherGameBtns').classList.add('hidden');go('screen-game');renderGame(res.state);});}
+function renderHWResult(state){if(!state)return;if(State.socket)State.socket.emit('finishHomeworkGame',{},res=>{if(!res.ok){toast('Помилка');return;}const s=res.submission;if(!s){openModal('📝 ДЗ завершено','<p>ДЗ завершено, але оцінку не вдалось зберегти.</p>');loadHomework();return;}openModal('📝 ДЗ завершено','<div style="text-align:center"><div class="grade-badge grade-'+s.grade+'" style="margin:10px auto">'+s.grade+'</div><p>Правильних: '+s.correct+'/'+s.total+' ('+s.percent+'%)</p>'+(s.isLate?'<p style="color:#ff3d6e">⚠️ Здано після дедлайну (−1 бал)</p>':'')+'</div>');loadHomework();});}
+function init(){if(State.initDone)return;State.initDone=true;loadProfile();const st=Storage.get('sunlorem_theme','neon');applyTheme(State.profile.ownedThemes.includes('t_'+st)?st:'neon');updateAllBalances();$('modalOverlay').addEventListener('click',e=>{if(e.target===$('modalOverlay'))closeModal();});$('joinPin').addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,6);});const p=new URLSearchParams(window.location.search);const pin=p.get('pin');if(pin&&/^\d{6}$/.test(pin)){$('joinPin').value=pin;go('screen-join');}tryAutoLogin().then(()=>{showUserUI();initSocket();loadCatalog();}).catch(()=>{showUserUI();initSocket();loadCatalog();});}
+return{go,doLogin,logout,continueAsGuest,filterCatalog,playSolo,playPublic,playRoom,joinByPin,startGame,nextQuestion,finishGame,closeRoom,activatePower,saveProfile,shopTab,teacherTab,createStudent,addBots,removeStudent,addQuestion,loadTemplate,createQuiz,deleteQuiz,closeModal,init,hwTab,loadHomework,openHomework,startHomework,createHomework,showHWGrades,editGrade,loadQuizAnalytics,loadGeneralAnalytics,inviteDuel,respondDuel,loadMyMarks,loadMyPoints,setMark,deleteMark,setPoint,deletePoint,addSubject,deleteSubject,renderSubjects};
 })();
-document.addEventListener('DOMContentLoaded', () => {
-  if (!document.body.className.startsWith('theme-')) document.body.classList.add('theme-neon');
-  App.init();
-});
+document.addEventListener('DOMContentLoaded',()=>{if(!document.body.className.startsWith('theme-'))document.body.classList.add('theme-neon');App.init();});
 </script>
 </body>
 </html>
