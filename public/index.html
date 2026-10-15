@@ -272,10 +272,10 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
         <div class="panel-title">🎮 Як грати</div>
         <p style="font-size:13px;line-height:1.6">
             1. Обери квіз у каталозі.<br>
-            2. Соло / з людьми / кімната.<br>
-            3. Або приєднайся за PIN.<br>
-            4. Виклич друга на дуель.<br>
-            5. СанКоїни — до 100/день. Купуй у магазині!
+            2. Соло (макс. 5 🪙) або з людьми.<br>
+            3. Призові: 1м=30, 2м=20, 3м=10, решта=5.<br>
+            4. Дуель: перемога +10 🪙, поразка −10 🪙.<br>
+            5. Ліміт: 100 🪙/день. Купуй у магазині!
         </p>
     </div>
 </div>
@@ -327,7 +327,7 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
     <p class="subtitle" id="qmSubtitle">Обери режим</p>
     <div class="panel panel-narrow">
         <div class="button-grid">
-            <button class="success" onclick="App.playSolo()">🎯 Соло</button>
+            <button class="success" onclick="App.playSolo()">🎯 Соло (макс. 5 🪙)</button>
             <button class="primary" onclick="App.playPublic()">🌐 З людьми</button>
             <button class="gold" onclick="App.playRoom()">🎮 Кімната (PIN)</button>
             <button class="ghost" onclick="App.go('screen-catalog')">← Назад</button>
@@ -396,7 +396,6 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
         <p id="gFeedback" style="text-align:center;margin-top:10px;font-weight:800;font-size:15px;min-height:22px"></p>
         <div style="display:flex;justify-content:space-between;font-size:clamp(12px,2.8vw,14px);color:var(--text-dim);font-weight:700;margin-top:8px;flex-wrap:wrap;gap:6px">
             <span id="gStreak">🔥 Серія: 0</span>
-            <span id="gCoins">🪙 0</span>
             <span id="gXp">⭐ XP: 0</span>
         </div>
         <div class="button-row" style="margin-top:10px">
@@ -458,7 +457,7 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
 
 <div id="screen-duel" class="screen">
     <h1>⚔️ Дуель</h1>
-    <p class="subtitle">Виклич однокласника на 1-на-1</p>
+    <p class="subtitle">Виклич однокласника на 1-на-1 (+10 🪙 / −10 🪙)</p>
     <div class="panel panel-narrow">
         <div class="panel-title">📚 Обери квіз</div>
         <select id="duelQuizSelect"></select>
@@ -671,8 +670,8 @@ label{display:block;font-size:clamp(12px,2.9vw,14px);font-weight:700;color:var(-
             <span class="xp">⭐ XP: <span id="shopXp">0</span></span>
         </div>
         <div class="shop-avatar-preview">
-            <div class="big-avatar"><span class="avatar-render" id="shopPreviewAvatar">🐱</span></div>
-            <div id="shopPreviewName" style="font-size:14px;font-weight:800;margin-top:8px">Кіт</div>
+            <div class="big-avatar"><span class="avatar-render" id="shopPreviewAvatar">😶</span></div>
+            <div id="shopPreviewName" style="font-size:14px;font-weight:800;margin-top:8px">Смайлик</div>
         </div>
         <div class="tabs">
             <div class="tab active" data-tab="avatars" onclick="App.shopTab('avatars')">🐾 Аватари</div>
@@ -724,9 +723,10 @@ const State={
     user:null, token:null, isGuest:true,
     profile:{
         coins:0, xp:0,
-        ownedAvatars:['a_cat'], ownedAccessories:[],
+        ownedAvatars:['a_smile','a_grin','a_cool'],
+        ownedAccessories:[],
         ownedThemes:['t_neon','t_pastel'],
-        equippedAvatar:'a_cat',
+        equippedAvatar:'a_smile',
         equippedHead:'', equippedEyes:'', equippedEffect:'',
         completedQuests:{}
     },
@@ -868,7 +868,11 @@ function applyTheme(themeId){
 function loadProfile(){
     const saved = Storage.get('sunlorem_profile');
     if (saved && typeof saved === 'object') State.profile = Object.assign(State.profile, saved);
-    if (!Array.isArray(State.profile.ownedAvatars)) State.profile.ownedAvatars = ['a_cat'];
+    const freeAvatars = ['a_smile', 'a_grin', 'a_cool'];
+    freeAvatars.forEach(id => {
+        if (!State.profile.ownedAvatars.includes(id)) State.profile.ownedAvatars.push(id);
+    });
+    if (!Array.isArray(State.profile.ownedAvatars)) State.profile.ownedAvatars = freeAvatars.slice();
     if (!Array.isArray(State.profile.ownedAccessories)) State.profile.ownedAccessories = [];
     if (!Array.isArray(State.profile.ownedThemes)) State.profile.ownedThemes = ['t_neon', 't_pastel'];
     if (!State.profile.completedQuests) State.profile.completedQuests = {};
@@ -929,10 +933,12 @@ function syncFromUser(u){
     State.profile.xp = u.xp || 0;
     State.todayCoins = u.todayCoins || 0;
     State.dailyCap = u.dailyCap || 100;
-    State.profile.ownedAvatars = u.ownedAvatars || ['a_cat'];
+    const freeAvatars = ['a_smile', 'a_grin', 'a_cool'];
+    const serverOwned = u.ownedAvatars || [];
+    State.profile.ownedAvatars = Array.from(new Set(freeAvatars.concat(serverOwned)));
     State.profile.ownedAccessories = u.ownedAccessories || [];
     State.profile.ownedThemes = u.ownedThemes || ['t_neon', 't_pastel'];
-    State.profile.equippedAvatar = u.avatarId || 'a_cat';
+    State.profile.equippedAvatar = u.avatarId || 'a_smile';
     State.profile.equippedHead = u.equippedHead || '';
     State.profile.equippedEyes = u.equippedEyes || '';
     State.profile.equippedEffect = u.equippedEffect || '';
@@ -1216,7 +1222,6 @@ function renderGame(state){
     if (me) {
         $('gScore').textContent = 'Бали: ' + me.score;
         $('gStreak').textContent = '🔥 Серія: ' + (me.streak || 0);
-        $('gCoins').textContent = '🪙 ' + (me.coinsEarnedThisGame || 0);
         $('gXp').textContent = '⭐ XP: ' + (me.xp || 0);
     }
 
@@ -1301,10 +1306,10 @@ function renderLeaderboard(state, targetId){
         if (i === 0) c.classList.add('leader');
         if (p.id === State.playerId) c.classList.add('self');
         if (state.mode === 'survival' && !p.alive) c.classList.add('spectator');
-        const accHtml = renderAvatar(p.avatar || '🐱', p.accessories);
+        const accHtml = renderAvatar(p.avatar || '😶', p.accessories);
         c.innerHTML = '<span class="avatar">' + accHtml + '</span>' +
             '<span class="name">' + esc(p.name) + (state.mode === 'survival' && !p.alive ? ' 👀' : '') + '</span>' +
-            '<span class="score">' + (p.score || 0) + ' 🏅 ' + (p.coins || 0) + ' 🪙</span>';
+            '<span class="score">' + (p.score || 0) + ' 🏅</span>';
         wrap.appendChild(c);
     });
 }
@@ -1338,7 +1343,7 @@ function updateLobby(state){
         const c = document.createElement('div');
         c.className = 'player-card';
         if (p.id === State.playerId) c.classList.add('self');
-        const accHtml = renderAvatar(p.avatar || '🐱', p.accessories);
+        const accHtml = renderAvatar(p.avatar || '😶', p.accessories);
         c.innerHTML = '<span class="avatar">' + accHtml + '</span>' +
             '<span class="name">' + esc(p.name) + '</span>' +
             '<span class="score">' + (p.score || 0) + ' 🏅</span>';
@@ -1360,7 +1365,7 @@ function renderResults(state){
         if (!p) {
             pl.innerHTML = '<div class="avatar">—</div><div class="name">—</div><div class="pedestal">—</div>';
         } else {
-            pl.innerHTML = '<div class="avatar">' + renderAvatar(p.avatar || '🐱', p.accessories) + '</div>' +
+            pl.innerHTML = '<div class="avatar">' + renderAvatar(p.avatar || '😶', p.accessories) + '</div>' +
                 '<div class="name">' + esc(p.name) + '</div>' +
                 '<div style="font-size:11px;color:var(--accent-4);font-weight:900">+' + (p.finalPrize || 0) + ' 🪙</div>' +
                 '<div class="pedestal">' + medals[i] + '</div>';
@@ -1373,7 +1378,7 @@ function renderResults(state){
         const c = document.createElement('div');
         c.className = 'player-card';
         if (i === 0) c.classList.add('leader');
-        c.innerHTML = '<span class="avatar">' + renderAvatar(p.avatar || '🐱', p.accessories) + '</span>' +
+        c.innerHTML = '<span class="avatar">' + renderAvatar(p.avatar || '😶', p.accessories) + '</span>' +
             '<span class="name">' + esc(p.name) + '</span>' +
             '<span class="score">' + (p.score || 0) + ' 🏅 +' + (p.finalPrize || 0) + ' 🪙</span>';
         lb.appendChild(c);
@@ -1460,11 +1465,12 @@ function initSocket(){
             if (state.status === 'finished') {
                 if (me && me.finalPrize && !State._prizeApplied) {
                     State._prizeApplied = true;
-                    if (State.user) {
-                        State.user.coins = (State.user.coins || 0) + me.finalPrize;
-                        syncFromUser(State.user);
-                    }
                     toast('🏆 +' + me.finalPrize + ' 🪙 за ' + me.finalRank + ' місце!');
+                    if (State.token && State.user) {
+                        api('/api/auth/me', { token: State.token }).then(r => {
+                            if (r && r.ok) syncFromUser(r.user);
+                        });
+                    }
                 }
                 renderResults(state);
                 go('screen-results');
@@ -1484,7 +1490,7 @@ function initSocket(){
     socket.on('duelInvite', d => {
         State.currentDuelInvite = d;
         openModal('⚔️ Виклик на дуель',
-            '<div style="text-align:center"><div style="font-size:44px">' + d.fromAvatar + '</div><p><b>' + esc(d.fromName) + '</b> викликає тебе на дуель!</p></div>',
+            '<div style="text-align:center"><div style="font-size:44px">' + d.fromAvatar + '</div><p><b>' + esc(d.fromName) + '</b> викликає тебе на дуель!</p><p style="color:var(--text-dim);font-size:13px">Перемога +10 🪙, поразка −10 🪙</p></div>',
             [
                 { text: '❌ Відхилити', cls: 'danger', fn: () => respondDuel(d.inviteId, false) },
                 { text: '✅ Прийняти', cls: 'success', fn: () => respondDuel(d.inviteId, true) }
@@ -1594,7 +1600,7 @@ function renderShop(){
     const preview = $('shopPreviewAvatar');
     if (preview) {
         const av = State.shop.avatars.find(a => a.id === State.profile.equippedAvatar);
-        preview.innerHTML = (av ? av.emoji : '🐱') + renderAccessoriesSVG({
+        preview.innerHTML = (av ? av.emoji : '😶') + renderAccessoriesSVG({
             head: State.profile.equippedHead,
             eyes: State.profile.equippedEyes,
             effect: State.profile.equippedEffect
@@ -1603,7 +1609,7 @@ function renderShop(){
     const pn = $('shopPreviewName');
     if (pn) {
         const av = State.shop.avatars.find(a => a.id === State.profile.equippedAvatar);
-        pn.textContent = av ? av.name : 'Аватар';
+        pn.textContent = av ? av.name : 'Смайлик';
     }
     if (State.shopTabName === 'avatars') {
         State.shop.avatars.forEach(a => {
@@ -1669,20 +1675,20 @@ function renderShop(){
 }
 
 async function spendCoins(amount, itemId, itemType){
-    if (State.isGuest) {
-        if (State.profile.coins < amount) return false;
-        State.profile.coins -= amount;
+    const cost = parseInt(amount, 10);
+    if (isNaN(cost) || cost <= 0) { toast('Помилка ціни'); return false; }
+    if (State.isGuest || !State.token) {
+        if (State.profile.coins < cost) { toast('Недостатньо СанКоїнів'); return false; }
+        State.profile.coins -= cost;
         Storage.set('sunlorem_profile', State.profile);
         updateAllBalances();
         return true;
     }
     const res = await api('/api/user/spend-coins', {
-        token: State.token, amount, itemId, itemType
+        token: State.token, amount: cost,
+        itemId: String(itemId), itemType: String(itemType)
     });
-    if (!res.ok) {
-        toast(res.error || 'Помилка покупки');
-        return false;
-    }
+    if (!res.ok) { toast(res.error || 'Помилка покупки'); return false; }
     State.profile.coins = res.coins;
     if (State.user) State.user.coins = res.coins;
     Storage.set('sunlorem_profile', State.profile);
@@ -1697,10 +1703,7 @@ async function buyOrEquipAvatar(a){
         renderShop();
         return;
     }
-    if (State.profile.coins < a.price) {
-        toast('Треба ще ' + (a.price - State.profile.coins) + ' 🪙');
-        return;
-    }
+    if (State.profile.coins < a.price) { toast('Треба ще ' + (a.price - State.profile.coins) + ' 🪙'); return; }
     if (!confirm('Купити "' + a.name + '" за ' + a.price + ' 🪙?')) return;
     const ok = await spendCoins(a.price, a.id, 'avatar');
     if (!ok) return;
@@ -1719,10 +1722,7 @@ async function buyOrEquipAcc(a){
         renderShop();
         return;
     }
-    if (State.profile.coins < a.price) {
-        toast('Треба ще ' + (a.price - State.profile.coins) + ' 🪙');
-        return;
-    }
+    if (State.profile.coins < a.price) { toast('Треба ще ' + (a.price - State.profile.coins) + ' 🪙'); return; }
     if (!confirm('Купити "' + a.name + '" за ' + a.price + ' 🪙?')) return;
     const ok = await spendCoins(a.price, a.id, 'accessory');
     if (!ok) return;
@@ -1741,10 +1741,7 @@ async function buyOrEquipTheme(t){
         renderShop();
         return;
     }
-    if (State.profile.coins < t.price) {
-        toast('Треба ще ' + (t.price - State.profile.coins) + ' 🪙');
-        return;
-    }
+    if (State.profile.coins < t.price) { toast('Треба ще ' + (t.price - State.profile.coins) + ' 🪙'); return; }
     if (!confirm('Розблокувати "' + t.name + '" за ' + t.price + ' 🪙?')) return;
     const ok = await spendCoins(t.price, t.id, 'theme');
     if (!ok) return;
@@ -1932,18 +1929,8 @@ async function loadClass(){
             '<div class="s-login">' + esc(s.login) + ' • 🪙 ' + s.coins + ' • ⭐ ' + s.xp + '</div></div>' +
             '<button class="danger small" onclick="App.removeStudent(\'' + esc(s.login) + '\')">🗑️</button>';
         wrap.appendChild(row);
-        if (markSel) {
-            const o = document.createElement('option');
-            o.value = s.login;
-            o.textContent = s.name;
-            markSel.appendChild(o);
-        }
-        if (pointSel) {
-            const o = document.createElement('option');
-            o.value = s.login;
-            o.textContent = s.name;
-            pointSel.appendChild(o);
-        }
+        if (markSel) { const o = document.createElement('option'); o.value = s.login; o.textContent = s.name; markSel.appendChild(o); }
+        if (pointSel) { const o = document.createElement('option'); o.value = s.login; o.textContent = s.name; pointSel.appendChild(o); }
     });
 }
 async function loadMarksAll(){
@@ -2014,10 +2001,7 @@ async function setMark(){
     const reason = $('markReasonInput').value.trim();
     if (!login) { toast('Обери учня'); return; }
     if (!value) { toast('Введи оцінку'); return; }
-    const res = await api('/api/marks/set', {
-        token: State.token, studentLogin: login,
-        value, subject, reason
-    });
+    const res = await api('/api/marks/set', { token: State.token, studentLogin: login, value, subject, reason });
     if (!res.ok) { toast(res.error || 'Помилка'); return; }
     toast('✅ Оцінку поставлено');
     $('markValueInput').value = '';
@@ -2039,9 +2023,7 @@ async function setPoint(){
     const reason = $('pointReasonInput').value.trim();
     if (!login) { toast('Обери учня'); return; }
     if (!value) { toast('Введи бали'); return; }
-    const res = await api('/api/points/set', {
-        token: State.token, studentLogin: login, value, reason
-    });
+    const res = await api('/api/points/set', { token: State.token, studentLogin: login, value, reason });
     if (!res.ok) { toast(res.error || 'Помилка'); return; }
     toast('✅ Бали додано');
     $('pointValueInput').value = '';
@@ -2066,22 +2048,12 @@ async function renderSubjects(){
     const markSel = $('markSubjectSelect');
     if (markSel) {
         markSel.innerHTML = '';
-        State.subjects.forEach(s => {
-            const o = document.createElement('option');
-            o.value = s;
-            o.textContent = s;
-            markSel.appendChild(o);
-        });
+        State.subjects.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; markSel.appendChild(o); });
     }
     const quizSel = $('quizSubject');
     if (quizSel) {
         quizSel.innerHTML = '';
-        State.subjects.forEach(s => {
-            const o = document.createElement('option');
-            o.value = s;
-            o.textContent = s;
-            quizSel.appendChild(o);
-        });
+        State.subjects.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; quizSel.appendChild(o); });
     }
     State.subjects.forEach(s => {
         const row = document.createElement('div');
@@ -2115,9 +2087,7 @@ async function createStudent(){
     const login = $('newStudentLogin').value.trim().toLowerCase();
     const password = $('newStudentPassword').value.trim();
     if (!name || !login || !password) { toast('Заповни всі поля'); return; }
-    const res = await api('/api/teacher/create-student', {
-        token: State.token, login, password, name
-    });
+    const res = await api('/api/teacher/create-student', { token: State.token, login, password, name });
     if (!res.ok) { toast(res.error || 'Помилка'); return; }
     toast('✅ Учня створено');
     $('newStudentName').value = '';
@@ -2168,10 +2138,7 @@ function renderQuestionsEditor(){
         const del = document.createElement('button');
         del.className = 'danger small';
         del.textContent = '🗑️';
-        del.onclick = () => {
-            State.questionsDraft.splice(qi, 1);
-            renderQuestionsEditor();
-        };
+        del.onclick = () => { State.questionsDraft.splice(qi, 1); renderQuestionsEditor(); };
         header.appendChild(del);
         item.appendChild(header);
         const t = document.createElement('input');
@@ -2286,22 +2253,12 @@ async function loadMyQuizzes(){
     const sel = $('hwQuizSelect');
     if (sel) {
         sel.innerHTML = '';
-        res.quizzes.forEach(q => {
-            const o = document.createElement('option');
-            o.value = q.id;
-            o.textContent = q.title;
-            sel.appendChild(o);
-        });
+        res.quizzes.forEach(q => { const o = document.createElement('option'); o.value = q.id; o.textContent = q.title; sel.appendChild(o); });
     }
     const asel = $('analyticsQuizSelect');
     if (asel) {
         asel.innerHTML = '';
-        res.quizzes.forEach(q => {
-            const o = document.createElement('option');
-            o.value = q.id;
-            o.textContent = q.title;
-            asel.appendChild(o);
-        });
+        res.quizzes.forEach(q => { const o = document.createElement('option'); o.value = q.id; o.textContent = q.title; asel.appendChild(o); });
     }
 }
 async function deleteQuiz(id){
@@ -2321,9 +2278,7 @@ async function createHomework(){
     if (!quizId) { toast('Обери квіз'); return; }
     if (!dl) { toast('Вкажи дедлайн'); return; }
     const deadline = new Date(dl).getTime();
-    const res = await api('/api/homework/create', {
-        token: State.token, quizId, title, deadline, autoPoints
-    });
+    const res = await api('/api/homework/create', { token: State.token, quizId, title, deadline, autoPoints });
     if (!res.ok) { toast(res.error || 'Помилка'); return; }
     toast('📝 ДЗ створено');
     $('hwTitle').value = '';
@@ -2383,10 +2338,7 @@ async function editGrade(hid, login, current){
     const g = parseInt(val, 10);
     if (isNaN(g) || g < 1 || g > 12) { toast('1-12'); return; }
     const comment = prompt('Коментар:') || '';
-    const res = await api('/api/grades/set', {
-        token: State.token, homeworkId: hid,
-        studentLogin: login, grade: g, comment
-    });
+    const res = await api('/api/grades/set', { token: State.token, homeworkId: hid, studentLogin: login, grade: g, comment });
     if (!res.ok) { toast(res.error || 'Помилка'); return; }
     toast('Оцінку виставлено');
     showHomeworkGrades(hid);
