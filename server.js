@@ -76,225 +76,6 @@ function saveMarks()     { saveJSON('marks.json', DB.marks); }
 function savePoints()    { saveJSON('points.json', DB.points); }
 function saveCoinsLog()  { saveJSON('coins_log.json', DB.coinsLog); }
 
-function todayKey() {
-    const d = new Date();
-    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-}
-function dateKey(ts) {
-    const d = new Date(ts);
-    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-}
-function getTodayCoins(login) {
-    const list = DB.coinsLog[login] || [];
-    const key = todayKey();
-    return list.filter(c => dateKey(c.at) === key).reduce((s, c) => s + (c.value > 0 ? c.value : 0), 0);
-}
-function logCoins(login, value, reason) {
-    if (!DB.coinsLog[login]) DB.coinsLog[login] = [];
-    DB.coinsLog[login].unshift({
-        id: makeId('cn'),
-        value: parseInt(value, 10) || 0,
-        reason: String(reason || '').slice(0, 200),
-        at: Date.now()
-    });
-    if (DB.coinsLog[login].length > 500) DB.coinsLog[login].length = 500;
-    saveCoinsLog();
-}
-function addCoinsWithCap(login, value, reason) {
-    const u = DB.users[login];
-    if (!u) return { ok: false };
-    if (value <= 0) {
-        u.coins = Math.max(0, (u.coins || 0) + value);
-        saveUsers();
-        return { ok: true, added: value, todayCoins: getTodayCoins(login), cap: DAILY_COIN_CAP };
-    }
-    const today = getTodayCoins(login);
-    if (today >= DAILY_COIN_CAP) {
-        return { ok: false, skipped: value, todayCoins: today, cap: DAILY_COIN_CAP };
-    }
-    let allowed = value;
-    const remaining = DAILY_COIN_CAP - today;
-    if (allowed > remaining) allowed = remaining;
-    if (allowed <= 0) return { ok: false, skipped: value, todayCoins: today, cap: DAILY_COIN_CAP };
-    u.coins = (u.coins || 0) + allowed;
-    logCoins(login, allowed, reason);
-    saveUsers();
-    return { ok: true, added: allowed, todayCoins: today + allowed, cap: DAILY_COIN_CAP };
-}
-function subtractCoins(login, value, reason) {
-    const u = DB.users[login];
-    if (!u) return;
-    u.coins = Math.max(0, (u.coins || 0) - value);
-    logCoins(login, -value, reason);
-    saveUsers();
-}
-
-function ensureDefaultTeacher() {
-    const login = 'місс.стівенс';
-    if (!DB.users[login]) {
-        DB.users[login] = {
-            login, password: '102938', role: 'teacher', name: 'Місс.Стівенс',
-            coins: 0, xp: 0, avatar: '👩‍🏫', avatarId: 'a_smile',
-            ownedAvatars: ['a_smile', 'a_grin', 'a_cool'],
-            ownedAccessories: [],
-            ownedThemes: ['t_neon', 't_pastel'], theme: 'neon',
-            completedQuests: {}, classStudents: [],
-            subjects: DEFAULT_SUBJECTS.slice(),
-            createdAt: Date.now()
-        };
-        saveUsers();
-    } else if (!DB.users[login].subjects) {
-        DB.users[login].subjects = DEFAULT_SUBJECTS.slice();
-        saveUsers();
-    }
-}
-
-function ensureDefaultQuizzes() {
-    if (Object.keys(DB.quizzes).length > 0) return;
-    const authorLogin = 'місс.стівенс';
-    const author = 'Місс.Стівенс';
-    const defaults = [
-        { title: 'Математика 5 клас', subject: 'Математика', difficulty: 'medium', questions: [
-            { text: 'Скільки буде 7 × 8?', answers: ['54', '56', '48', '64'], correct: 1 },
-            { text: 'Яке число є простим?', answers: ['9', '15', '17', '21'], correct: 2 },
-            { text: 'Чому дорівнює 144 : 12?', answers: ['10', '11', '12', '14'], correct: 2 },
-            { text: 'Скільки хвилин у 2,5 годинах?', answers: ['120', '135', '150', '180'], correct: 2 },
-            { text: 'Площа квадрата зі стороною 9 см?', answers: ['18 см²', '36 см²', '81 см²', '90 см²'], correct: 2 },
-            { text: 'Обчисли: 25 + 75 : 5', answers: ['20', '35', '40', '45'], correct: 2 },
-            { text: 'Який дріб дорівнює 0,5?', answers: ['1/5', '1/2', '2/5', '5/10'], correct: 1 },
-            { text: 'Скільки сторін має шестикутник?', answers: ['5', '6', '7', '8'], correct: 1 },
-            { text: 'Яке число ділиться на 3?', answers: ['14', '22', '27', '31'], correct: 2 },
-            { text: 'Скільки грамів у 3 кілограмах?', answers: ['30', '300', '3000', '30000'], correct: 2 }
-        ]},
-        { title: 'Українська мова', subject: 'Українська мова', difficulty: 'medium', questions: [
-            { text: 'Скільки букв в українському алфавіті?', answers: ['32', '33', '34', '35'], correct: 1 },
-            { text: 'Яке слово написано правильно?', answers: ['проїзд', 'проезд', 'пройізд', 'пройзд'], correct: 0 },
-            { text: 'Іменник — це частина мови, яка означає:', answers: ['дію', 'предмет', 'ознаку', 'кількість'], correct: 1 },
-            { text: 'Скільки голосних звуків в українській мові?', answers: ['5', '6', '7', '8'], correct: 1 },
-            { text: 'Яке слово є дієсловом?', answers: ['швидкий', 'швидкість', 'швидко', 'швидшати'], correct: 3 },
-            { text: 'Апостроф пишемо у слові:', answers: ['св..ято', 'п..ять', 'б..юро', 'цв..ях'], correct: 1 },
-            { text: 'Прикметник відповідає на питання:', answers: ['хто? що?', 'який? чий?', 'що робити?', 'скільки?'], correct: 1 },
-            { text: 'Яке слово — синонім до «гарний»?', answers: ['поганий', 'вродливий', 'сумний', 'старий'], correct: 1 },
-            { text: 'М\'який знак пишемо у слові:', answers: ['міл..ярд', 'кін..', 'піс..ня', 'стіл..'], correct: 1 },
-            { text: 'Речення за метою висловлювання бувають:', answers: ['прості й складні', 'розповідні, питальні, спонукальні', 'головні й другорядні', 'довгі й короткі'], correct: 1 }
-        ]},
-        { title: 'Історія України', subject: 'Історія', difficulty: 'medium', questions: [
-            { text: 'Хто був князем Київської Русі у 980–1015 рр.?', answers: ['Ярослав Мудрий', 'Володимир Великий', 'Святослав', 'Олег'], correct: 1 },
-            { text: 'Коли відбулося хрещення Русі?', answers: ['862 р.', '988 р.', '1054 р.', '1240 р.'], correct: 1 },
-            { text: 'Хто очолював козаків у XVII столітті?', answers: ['Богдан Хмельницький', 'Іван Мазепа', 'Петро Сагайдачний', 'Усі варіанти'], correct: 3 },
-            { text: 'Яке місто є столицею України?', answers: ['Харків', 'Одеса', 'Київ', 'Львів'], correct: 2 },
-            { text: 'Запорозька Січ розташовувалась на:', answers: ['Дністрі', 'Дніпрі', 'Дунаї', 'Доні'], correct: 1 },
-            { text: 'Хто написав «Кобзар»?', answers: ['Іван Франко', 'Тарас Шевченко', 'Леся Українка', 'Григорій Сковорода'], correct: 1 },
-            { text: 'Столиця УНР у 1918 році:', answers: ['Київ', 'Львів', 'Харків', 'Одеса'], correct: 0 },
-            { text: 'Рік проголошення незалежності України:', answers: ['1989', '1990', '1991', '1992'], correct: 2 },
-            { text: 'Козацька держава називалась:', answers: ['Гетьманщина', 'Королівство', 'Князівство', 'Республіка'], correct: 0 },
-            { text: 'Хто очолив українське військо у 1648 році?', answers: ['Мазепа', 'Хмельницький', 'Дорошенко', 'Виговський'], correct: 1 }
-        ]},
-        { title: 'Природознавство', subject: 'Природознавство', difficulty: 'easy', questions: [
-            { text: 'Який газ рослини вбирають із повітря?', answers: ['Кисень', 'Вуглекислий газ', 'Азот', 'Водень'], correct: 1 },
-            { text: 'Скільки планет у Сонячній системі?', answers: ['7', '8', '9', '10'], correct: 1 },
-            { text: 'Найбільший океан Землі:', answers: ['Атлантичний', 'Індійський', 'Тихий', 'Північний Льодовитий'], correct: 2 },
-            { text: 'Яка тварина належить до ссавців?', answers: ['Дельфін', 'Акула', 'Окунь', 'Кит'], correct: 3 },
-            { text: 'Скільки ніг у комахи?', answers: ['4', '6', '8', '10'], correct: 1 },
-            { text: 'Що виробляють рослини на світлі?', answers: ['Крохмаль', 'Кисень', 'Цукор', 'Усе разом'], correct: 3 },
-            { text: 'Найбільша планета Сонячної системи:', answers: ['Сатурн', 'Юпітер', 'Уран', 'Нептун'], correct: 1 },
-            { text: 'Яка пора року йде після зими?', answers: ['Літо', 'Осінь', 'Весна', 'Зима'], correct: 2 },
-            { text: 'Кров у тілі людини переносить:', answers: ['Кисень', 'Поживні речовини', 'Вуглекислий газ', 'Усе перелічене'], correct: 3 },
-            { text: 'Вода замерзає при температурі:', answers: ['-10°C', '0°C', '+4°C', '+10°C'], correct: 1 }
-        ]},
-        { title: 'Географія світу', subject: 'Інше', difficulty: 'medium', questions: [
-            { text: 'Найвища гора світу?', answers: ['Ельбрус', 'Еверест', 'Кіліманджаро', 'Монблан'], correct: 1 },
-            { text: 'Найдовша річка світу?', answers: ['Амазонка', 'Ніл', 'Янцзи', 'Міссісіпі'], correct: 1 },
-            { text: 'Столиця Франції?', answers: ['Лондон', 'Берлін', 'Париж', 'Мадрид'], correct: 2 },
-            { text: 'Найбільша країна світу за площею?', answers: ['Китай', 'США', 'Канада', 'Росія'], correct: 3 },
-            { text: 'Який материк найменший?', answers: ['Європа', 'Антарктида', 'Австралія', 'Південна Америка'], correct: 2 },
-            { text: 'Столиця Японії?', answers: ['Пекін', 'Сеул', 'Токіо', 'Бангкок'], correct: 2 },
-            { text: 'Найбільше озеро світу?', answers: ['Байкал', 'Каспійське море', 'Вікторія', 'Верхнє'], correct: 1 },
-            { text: 'Який океан найменший?', answers: ['Тихий', 'Атлантичний', 'Індійський', 'Північний Льодовитий'], correct: 3 },
-            { text: 'Столиця Єгипту?', answers: ['Каїр', 'Александрія', 'Луксор', 'Асуан'], correct: 0 },
-            { text: 'Найбільша пустеля світу?', answers: ['Сахара', 'Гобі', 'Калахарі', 'Атакама'], correct: 0 }
-        ]},
-        { title: 'Література', subject: 'Інше', difficulty: 'medium', questions: [
-            { text: 'Хто автор «Кобзаря»?', answers: ['Франко', 'Шевченко', 'Леся Українка', 'Сковорода'], correct: 1 },
-            { text: 'Хто написав «Лісову пісню»?', answers: ['Шевченко', 'Франко', 'Леся Українка', 'Коцюбинський'], correct: 2 },
-            { text: 'Головний герой «Енеїди»?', answers: ['Тарас', 'Еней', 'Козак', 'Князь'], correct: 1 },
-            { text: 'Хто автор «Захара Беркута»?', answers: ['Франко', 'Шевченко', 'Коцюбинський', 'Стельмах'], correct: 0 },
-            { text: 'Хто написав казку «Рукавичка»?', answers: ['Народ', 'Шевченко', 'Франко', 'Леся'], correct: 0 },
-            { text: 'Як звати дівчинку з казки «Попелюшка»?', answers: ['Попелюшка', 'Білосніжка', 'Рапунцель', 'Аріель'], correct: 0 },
-            { text: 'Хто автор байки «Вовк та Ягня»?', answers: ['Крилов', 'Глібов', 'Езоп', 'Лафонтен'], correct: 1 },
-            { text: 'Як звати чарівника з «Гаррі Поттера»?', answers: ['Дамблдор', 'Снейп', 'Волдеморт', 'Гаррі'], correct: 0 },
-            { text: 'Хто автор «Мойсея»?', answers: ['Шевченко', 'Франко', 'Леся', 'Стус'], correct: 1 },
-            { text: 'Кобзар — це:', answers: ['Народний співець', 'Письменник', 'Козак', 'Князь'], correct: 0 }
-        ]},
-        { title: 'Англійська мова — Basic', subject: 'Інше', difficulty: 'easy', questions: [
-            { text: 'Як перекладається "cat"?', answers: ['Пес', 'Кіт', 'Птах', 'Риба'], correct: 1 },
-            { text: 'Скільки букв в англійському алфавіті?', answers: ['24', '25', '26', '27'], correct: 2 },
-            { text: 'Як сказати "привіт"?', answers: ['Goodbye', 'Hello', 'Thanks', 'Sorry'], correct: 1 },
-            { text: '"Book" — це...', answers: ['Ручка', 'Книга', 'Стіл', 'Вікно'], correct: 1 },
-            { text: 'Як сказати "дякую"?', answers: ['Please', 'Sorry', 'Thank you', 'Hello'], correct: 2 },
-            { text: '"Red" — який колір?', answers: ['Синій', 'Зелений', 'Червоний', 'Жовтий'], correct: 2 },
-            { text: 'Як сказати "один"?', answers: ['Two', 'One', 'Three', 'Four'], correct: 1 },
-            { text: '"Mother" — це...', answers: ['Батько', 'Мати', 'Брат', 'Сестра'], correct: 1 },
-            { text: 'Як сказати "до побачення"?', answers: ['Hello', 'Goodbye', 'Please', 'Yes'], correct: 1 },
-            { text: '"School" — це...', answers: ['Дім', 'Школа', 'Магазин', 'Парк'], correct: 1 }
-        ]},
-        { title: 'Логіка та кмітливість', subject: 'Інше', difficulty: 'hard', questions: [
-            { text: 'Продовж: 2, 4, 8, 16, ...', answers: ['24', '32', '20', '18'], correct: 1 },
-            { text: 'Скільки буде 100 - 10 × 5?', answers: ['450', '50', '90', '500'], correct: 1 },
-            { text: 'Якщо 5 машин за 5 хв роблять 5 деталей, скільки зробить 1 машина за 5 хв?', answers: ['1', '5', '25', '0.2'], correct: 0 },
-            { text: 'Продовж: 1, 1, 2, 3, 5, 8, ...', answers: ['11', '13', '12', '15'], correct: 1 },
-            { text: 'Що важче: 1 кг пір\'я чи 1 кг заліза?', answers: ['Пір\'я', 'Залізо', 'Однаково', 'Залежить'], correct: 2 },
-            { text: 'Батько і син разом — 60 років. Батькові — 40. Скільки сину?', answers: ['30', '20', '25', '15'], correct: 1 },
-            { text: 'Скільки разів можна відняти 5 від 25?', answers: ['4', '5', '6', '1'], correct: 1 },
-            { text: 'Продовж: А, Б, В, Г, ...', answers: ['Д', 'Е', 'Ж', 'Є'], correct: 0 },
-            { text: 'У кошику 5 яблук. Як роздати 5 дітям, щоб 1 яблуко залишилось у кошику?', answers: ['Неможливо', 'Віддати разом з кошиком', 'Розрізати', 'З\'їсти'], correct: 1 },
-            { text: 'Яке число наступне: 10, 20, 30, 40, ...', answers: ['45', '50', '60', '55'], correct: 1 }
-        ]},
-        { title: 'Мистецтво та музика', subject: 'Інше', difficulty: 'easy', questions: [
-            { text: 'Скільки кольорів у веселці?', answers: ['5', '6', '7', '8'], correct: 2 },
-            { text: 'Хто написав «Мону Лізу»?', answers: ['Ван Гог', 'Леонардо да Вінчі', 'Пікассо', 'Моне'], correct: 1 },
-            { text: 'Скільки струн у класичній гітарі?', answers: ['4', '5', '6', '7'], correct: 2 },
-            { text: 'Який колір утворюється при змішуванні синього та жовтого?', answers: ['Червоний', 'Зелений', 'Фіолетовий', 'Помаранчевий'], correct: 1 },
-            { text: 'Який інструмент має клавіші?', answers: ['Скрипка', 'Піаніно', 'Флейта', 'Барабан'], correct: 1 },
-            { text: 'Хто композитор «Місячної сонати»?', answers: ['Моцарт', 'Бетховен', 'Бах', 'Шопен'], correct: 1 },
-            { text: 'Як називається картина з зображенням людини?', answers: ['Пейзаж', 'Портрет', 'Натюрморт', 'Абстракція'], correct: 1 },
-            { text: 'Яка країна батьківщина опери?', answers: ['Франція', 'Італія', 'Німеччина', 'Іспанія'], correct: 1 },
-            { text: 'Як називається швидкий темп у музиці?', answers: ['Адажіо', 'Алегро', 'Анданте', 'Ларго'], correct: 1 },
-            { text: 'Хто автор «Кобзаря»?', answers: ['Франко', 'Шевченко', 'Леся Українка', 'Сковорода'], correct: 1 }
-        ]},
-        { title: 'Космос', subject: 'Інше', difficulty: 'medium', questions: [
-            { text: 'Скільки планет у Сонячній системі?', answers: ['7', '8', '9', '10'], correct: 1 },
-            { text: 'Найбільша планета Сонячної системи?', answers: ['Сатурн', 'Юпітер', 'Уран', 'Нептун'], correct: 1 },
-            { text: 'Яка планета найближче до Сонця?', answers: ['Венера', 'Меркурій', 'Земля', 'Марс'], correct: 1 },
-            { text: 'Червона планета — це:', answers: ['Венера', 'Марс', 'Юпітер', 'Сатурн'], correct: 1 },
-            { text: 'Супутник Землі?', answers: ['Сонце', 'Місяць', 'Марс', 'Венера'], correct: 1 },
-            { text: 'Скільки планет мають кільця?', answers: ['1', '2', '4', '8'], correct: 2 },
-            { text: 'Що таке Сонце?', answers: ['Планета', 'Зірка', 'Комета', 'Супутник'], correct: 1 },
-            { text: 'Перший космонавт світу?', answers: ['Гагарін', 'Армстронг', 'Леонов', 'Титов'], correct: 0 },
-            { text: 'Перший космонавт незалежної України?', answers: ['Каденюк', 'Гагарін', 'Леонов', 'Терешкова'], correct: 0 },
-            { text: 'Найменша планета Сонячної системи?', answers: ['Марс', 'Меркурій', 'Венера', 'Плутон'], correct: 1 }
-        ]}
-    ];
-    defaults.forEach((q, idx) => {
-        const id = makeId('quiz');
-        DB.quizzes[id] = {
-            id,
-            title: q.title,
-            author,
-            authorLogin,
-            subject: q.subject,
-            difficulty: q.difficulty,
-            questions: q.questions,
-            public: true,
-            plays: 0,
-            likes: 0,
-            createdAt: Date.now() + idx
-        };
-    });
-    saveQuizzes();
-    console.log('[db] created', defaults.length, 'default quizzes');
-}
-
 function makeId(prefix) { return prefix + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8); }
 function makePin() {
     for (let i = 0; i < 200; i++) {
@@ -328,19 +109,68 @@ function autoGrade(percent) {
     return 1;
 }
 
+function todayKey() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function dateKey(ts) {
+    const d = new Date(ts);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function getTodayCoins(login) {
+    const list = DB.coinsLog[login] || [];
+    const key = todayKey();
+    return list.filter(c => dateKey(c.at) === key).reduce((s, c) => s + (c.value > 0 ? c.value : 0), 0);
+}
+function logCoins(login, value, reason) {
+    if (!DB.coinsLog[login]) DB.coinsLog[login] = [];
+    DB.coinsLog[login].unshift({
+        id: makeId('cn'),
+        value: parseInt(value, 10) || 0,
+        reason: String(reason || '').slice(0, 200),
+        at: Date.now()
+    });
+    if (DB.coinsLog[login].length > 500) DB.coinsLog[login].length = 500;
+    saveCoinsLog();
+}
+function addCoinsWithCap(login, value, reason) {
+    const u = DB.users[login];
+    if (!u) return { ok: false };
+    if (value <= 0) {
+        u.coins = Math.max(0, (u.coins || 0) + value);
+        saveUsers();
+        return { ok: true, added: value };
+    }
+    const today = getTodayCoins(login);
+    if (today >= DAILY_COIN_CAP) return { ok: false, skipped: value };
+    let allowed = value;
+    const remaining = DAILY_COIN_CAP - today;
+    if (allowed > remaining) allowed = remaining;
+    if (allowed <= 0) return { ok: false, skipped: value };
+    u.coins = (u.coins || 0) + allowed;
+    logCoins(login, allowed, reason);
+    saveUsers();
+    return { ok: true, added: allowed };
+}
+function subtractCoins(login, value, reason) {
+    const u = DB.users[login];
+    if (!u) return;
+    u.coins = Math.max(0, (u.coins || 0) - value);
+    logCoins(login, -value, reason);
+    saveUsers();
+}
+
 /* ============================================================
-   ЕКОНОМІКА — ЖОРСТКА
-   - соло: максимум 5 за гру
-   - з людьми / кімната: 1 за правильну, стеля 5
-   - призові: 30 / 20 / 10 / 5
-   - дуель: перемога +10, поразка -10
+   ЕКОНОМІКА
    ============================================================ */
 const ECONOMY = {
+    coinsCorrect: 1,
     soloGameCap: 5,
     multiGameCap: 5,
     duelWin: 10,
     duelLose: 10,
-    baseScore: 100, timeBonusMax: 50,
+    baseScore: 100,
+    timeBonusMax: 50,
     streakScoreMultiplier: { 3: 1.1, 5: 1.2, 7: 1.35, 10: 1.5, 15: 1.75 },
     finalPrizes: { 1: 30, 2: 20, 3: 10, other: 5 }
 };
@@ -363,7 +193,7 @@ const QUEST_DEFS = {
 };
 
 /* ============================================================
-   SHOP — ЦІНИ ×3, БЕЗКОШТОВНІ ТІЛЬКИ 😶😀😎
+   SHOP
    ============================================================ */
 const SHOP = {
     collections: [
@@ -378,7 +208,6 @@ const SHOP = {
         { id: 'a_smile', emoji: '😶', name: 'Смайлик', price: 0, col: 'col_base' },
         { id: 'a_grin', emoji: '😀', name: 'Усмішка', price: 0, col: 'col_base' },
         { id: 'a_cool', emoji: '😎', name: 'Крутий', price: 0, col: 'col_base' },
-
         { id: 'a_cat', emoji: '🐱', name: 'Кіт', price: 135, col: 'col_base' },
         { id: 'a_dog', emoji: '🐶', name: 'Пес', price: 135, col: 'col_base' },
         { id: 'a_fox', emoji: '🦊', name: 'Лис', price: 150, col: 'col_base' },
@@ -440,7 +269,7 @@ const SHOP = {
         { id: 't_sunset', name: 'Захід', price: 540, desc: 'Теплий' },
         { id: 't_ocean', name: 'Океан', price: 630, desc: 'Блакитний' },
         { id: 't_candy', name: 'Цукеркова', price: 480, desc: 'Рожева' },
-        { id: 't_autumn', name: 'Осінь', price: 720, desc: 'Багряна' }
+        { id: 't_autumn', name: 'Осінь', price: 720, desc: 'Баграна' }
     ]
 };
 
@@ -476,6 +305,202 @@ function checkRateLimit(ip, max = 60) {
     return e.count <= max;
 }
 
+function ensureDefaultTeacher() {
+    const login = 'місс.стівенс';
+    if (!DB.users[login]) {
+        DB.users[login] = {
+            login, password: '102938', role: 'teacher', name: 'Місс.Стівенс',
+            coins: 0, xp: 0, avatar: '👩‍🏫', avatarId: 'a_smile',
+            ownedAvatars: ['a_smile', 'a_grin', 'a_cool'],
+            ownedAccessories: [],
+            ownedThemes: ['t_neon', 't_pastel'], theme: 'neon',
+            completedQuests: {}, classStudents: [],
+            subjects: DEFAULT_SUBJECTS.slice(),
+            createdAt: Date.now()
+        };
+        saveUsers();
+    } else if (!DB.users[login].subjects) {
+        DB.users[login].subjects = DEFAULT_SUBJECTS.slice();
+        saveUsers();
+    }
+}
+
+function ensureDefaultQuizzes() {
+    if (Object.keys(DB.quizzes).length > 0) return;
+    const authorLogin = 'місс.стівенс';
+    const author = 'Місс.Стівенс';
+    const defaults = [
+        {
+            title: 'Математика 5 клас', subject: 'Математика', difficulty: 'medium',
+            questions: [
+                { text: 'Скільки буде 7 × 8?', answers: ['54', '56', '48', '64'], correct: 1 },
+                { text: 'Яке число є простим?', answers: ['9', '15', '17', '21'], correct: 2 },
+                { text: 'Чому дорівнює 144 : 12?', answers: ['10', '11', '12', '14'], correct: 2 },
+                { text: 'Скільки хвилин у 2,5 годинах?', answers: ['120', '135', '150', '180'], correct: 2 },
+                { text: 'Площа квадрата зі стороною 9 см?', answers: ['18 см²', '36 см²', '81 см²', '90 см²'], correct: 2 },
+                { text: 'Обчисли: 25 + 75 : 5', answers: ['20', '35', '40', '45'], correct: 2 },
+                { text: 'Який дріб дорівнює 0,5?', answers: ['1/5', '1/2', '2/5', '5/10'], correct: 1 },
+                { text: 'Скільки сторін має шестикутник?', answers: ['5', '6', '7', '8'], correct: 1 },
+                { text: 'Яке число ділиться на 3?', answers: ['14', '22', '27', '31'], correct: 2 },
+                { text: 'Скільки грамів у 3 кілограмах?', answers: ['30', '300', '3000', '30000'], correct: 2 }
+            ]
+        },
+        {
+            title: 'Українська мова', subject: 'Українська мова', difficulty: 'medium',
+            questions: [
+                { text: 'Скільки букв в українському алфавіті?', answers: ['32', '33', '34', '35'], correct: 1 },
+                { text: 'Яке слово написано правильно?', answers: ['проїзд', 'проезд', 'пройізд', 'пройзд'], correct: 0 },
+                { text: 'Іменник — це частина мови, яка означає:', answers: ['дію', 'предмет', 'ознаку', 'кількість'], correct: 1 },
+                { text: 'Скільки голосних звуків в українській мові?', answers: ['5', '6', '7', '8'], correct: 1 },
+                { text: 'Яке слово є дієсловом?', answers: ['швидкий', 'швидкість', 'швидко', 'швидшати'], correct: 3 },
+                { text: 'Апостроф пишемо у слові:', answers: ['св..ято', 'п..ять', 'б..юро', 'цв..ях'], correct: 1 },
+                { text: 'Прикметник відповідає на питання:', answers: ['хто? що?', 'який? чий?', 'що робити?', 'скільки?'], correct: 1 },
+                { text: 'Яке слово — синонім до «гарний»?', answers: ['поганий', 'вродливий', 'сумний', 'старий'], correct: 1 },
+                { text: 'М\'який знак пишемо у слові:', answers: ['міл..ярд', 'кін..', 'піс..ня', 'стіл..'], correct: 1 },
+                { text: 'Речення за метою висловлювання бувають:', answers: ['прості й складні', 'розповідні, питальні, спонукальні', 'головні й другорядні', 'довгі й короткі'], correct: 1 }
+            ]
+        },
+        {
+            title: 'Історія України', subject: 'Історія', difficulty: 'medium',
+            questions: [
+                { text: 'Хто був князем Київської Русі у 980–1015 рр.?', answers: ['Ярослав Мудрий', 'Володимир Великий', 'Святослав', 'Олег'], correct: 1 },
+                { text: 'Коли відбулося хрещення Русі?', answers: ['862 р.', '988 р.', '1054 р.', '1240 р.'], correct: 1 },
+                { text: 'Хто очолював козаків у XVII столітті?', answers: ['Богдан Хмельницький', 'Іван Мазепа', 'Петро Сагайдачний', 'Усі варіанти'], correct: 3 },
+                { text: 'Яке місто є столицею України?', answers: ['Харків', 'Одеса', 'Київ', 'Львів'], correct: 2 },
+                { text: 'Запорозька Січ розташовувалась на:', answers: ['Дністрі', 'Дніпрі', 'Дунаї', 'Доні'], correct: 1 },
+                { text: 'Хто написав «Кобзар»?', answers: ['Іван Франко', 'Тарас Шевченко', 'Леся Українка', 'Григорій Сковорода'], correct: 1 },
+                { text: 'Столиця УНР у 1918 році:', answers: ['Київ', 'Львів', 'Харків', 'Одеса'], correct: 0 },
+                { text: 'Рік проголошення незалежності України:', answers: ['1989', '1990', '1991', '1992'], correct: 2 },
+                { text: 'Козацька держава називалась:', answers: ['Гетьманщина', 'Королівство', 'Князівство', 'Республіка'], correct: 0 },
+                { text: 'Хто очолив українське військо у 1648 році?', answers: ['Мазепа', 'Хмельницький', 'Дорошенко', 'Виговський'], correct: 1 }
+            ]
+        },
+        {
+            title: 'Природознавство', subject: 'Природознавство', difficulty: 'easy',
+            questions: [
+                { text: 'Який газ рослини вбирають із повітря?', answers: ['Кисень', 'Вуглекислий газ', 'Азот', 'Водень'], correct: 1 },
+                { text: 'Скільки планет у Сонячній системі?', answers: ['7', '8', '9', '10'], correct: 1 },
+                { text: 'Найбільший океан Землі:', answers: ['Атлантичний', 'Індійський', 'Тихий', 'Північний Льодовитий'], correct: 2 },
+                { text: 'Яка тварина належить до ссавців?', answers: ['Дельфін', 'Акула', 'Окунь', 'Кит'], correct: 3 },
+                { text: 'Скільки ніг у комахи?', answers: ['4', '6', '8', '10'], correct: 1 },
+                { text: 'Що виробляють рослини на світлі?', answers: ['Крохмаль', 'Кисень', 'Цукор', 'Усе разом'], correct: 3 },
+                { text: 'Найбільша планета Сонячної системи:', answers: ['Сатурн', 'Юпітер', 'Уран', 'Нептун'], correct: 1 },
+                { text: 'Яка пора року йде після зими?', answers: ['Літо', 'Осінь', 'Весна', 'Зима'], correct: 2 },
+                { text: 'Кров у тілі людини переносить:', answers: ['Кисень', 'Поживні речовини', 'Вуглекислий газ', 'Усе перелічене'], correct: 3 },
+                { text: 'Вода замерзає при температурі:', answers: ['-10°C', '0°C', '+4°C', '+10°C'], correct: 1 }
+            ]
+        },
+        {
+            title: 'Географія світу', subject: 'Інше', difficulty: 'medium',
+            questions: [
+                { text: 'Найвища гора світу?', answers: ['Ельбрус', 'Еверест', 'Кіліманджаро', 'Монблан'], correct: 1 },
+                { text: 'Найдовша річка світу?', answers: ['Амазонка', 'Ніл', 'Янцзи', 'Міссісіпі'], correct: 1 },
+                { text: 'Столиця Франції?', answers: ['Лондон', 'Берлін', 'Париж', 'Мадрид'], correct: 2 },
+                { text: 'Найбільша країна світу за площею?', answers: ['Китай', 'США', 'Канада', 'Росія'], correct: 3 },
+                { text: 'Який материк найменший?', answers: ['Європа', 'Антарктида', 'Австралія', 'Південна Америка'], correct: 2 },
+                { text: 'Столиця Японії?', answers: ['Пекін', 'Сеул', 'Токіо', 'Бангкок'], correct: 2 },
+                { text: 'Найбільше озеро світу?', answers: ['Байкал', 'Каспійське море', 'Вікторія', 'Верхнє'], correct: 1 },
+                { text: 'Який океан найменший?', answers: ['Тихий', 'Атлантичний', 'Індійський', 'Північний Льодовитий'], correct: 3 },
+                { text: 'Столиця Єгипту?', answers: ['Каїр', 'Александрія', 'Луксор', 'Асуан'], correct: 0 },
+                { text: 'Найбільша пустеля світу?', answers: ['Сахара', 'Гобі', 'Калахарі', 'Атакама'], correct: 0 }
+            ]
+        },
+        {
+            title: 'Література', subject: 'Інше', difficulty: 'medium',
+            questions: [
+                { text: 'Хто автор «Кобзаря»?', answers: ['Франко', 'Шевченко', 'Леся Українка', 'Сковорода'], correct: 1 },
+                { text: 'Хто написав «Лісову пісню»?', answers: ['Шевченко', 'Франко', 'Леся Українка', 'Коцюбинський'], correct: 2 },
+                { text: 'Головний герой «Енеїди»?', answers: ['Тарас', 'Еней', 'Козак', 'Князь'], correct: 1 },
+                { text: 'Хто автор «Захара Беркута»?', answers: ['Франко', 'Шевченко', 'Коцюбинський', 'Стельмах'], correct: 0 },
+                { text: 'Хто написав казку «Рукавичка»?', answers: ['Народ', 'Шевченко', 'Франко', 'Леся'], correct: 0 },
+                { text: 'Як звати дівчинку з казки «Попелюшка»?', answers: ['Попелюшка', 'Білосніжка', 'Рапунцель', 'Аріель'], correct: 0 },
+                { text: 'Хто автор байки «Вовк та Ягня»?', answers: ['Крилов', 'Глібов', 'Езоп', 'Лафонтен'], correct: 1 },
+                { text: 'Як звати чарівника з «Гаррі Поттера»?', answers: ['Дамблдор', 'Снейп', 'Волдеморт', 'Гаррі'], correct: 0 },
+                { text: 'Хто автор «Мойсея»?', answers: ['Шевченко', 'Франко', 'Леся', 'Стус'], correct: 1 },
+                { text: 'Кобзар — це:', answers: ['Народний співець', 'Письменник', 'Козак', 'Князь'], correct: 0 }
+            ]
+        },
+        {
+            title: 'Англійська мова — Basic', subject: 'Інше', difficulty: 'easy',
+            questions: [
+                { text: 'Як перекладається "cat"?', answers: ['Пес', 'Кіт', 'Птах', 'Риба'], correct: 1 },
+                { text: 'Скільки букв в англійському алфавіті?', answers: ['24', '25', '26', '27'], correct: 2 },
+                { text: 'Як сказати "привіт"?', answers: ['Goodbye', 'Hello', 'Thanks', 'Sorry'], correct: 1 },
+                { text: '"Book" — це...', answers: ['Ручка', 'Книга', 'Стіл', 'Вікно'], correct: 1 },
+                { text: 'Як сказати "дякую"?', answers: ['Please', 'Sorry', 'Thank you', 'Hello'], correct: 2 },
+                { text: '"Red" — який колір?', answers: ['Синій', 'Зелений', 'Червоний', 'Жовтий'], correct: 2 },
+                { text: 'Як сказати "один"?', answers: ['Two', 'One', 'Three', 'Four'], correct: 1 },
+                { text: '"Mother" — це...', answers: ['Батько', 'Мати', 'Брат', 'Сестра'], correct: 1 },
+                { text: 'Як сказати "до побачення"?', answers: ['Hello', 'Goodbye', 'Please', 'Yes'], correct: 1 },
+                { text: '"School" — це...', answers: ['Дім', 'Школа', 'Магазин', 'Парк'], correct: 1 }
+            ]
+        },
+        {
+            title: 'Логіка та кмітливість', subject: 'Інше', difficulty: 'hard',
+            questions: [
+                { text: 'Продовж: 2, 4, 8, 16, ...', answers: ['24', '32', '20', '18'], correct: 1 },
+                { text: 'Скільки буде 100 - 10 × 5?', answers: ['450', '50', '90', '500'], correct: 1 },
+                { text: 'Якщо 5 машин за 5 хв роблять 5 деталей, скільки зробить 1 машина за 5 хв?', answers: ['1', '5', '25', '0.2'], correct: 0 },
+                { text: 'Продовж: 1, 1, 2, 3, 5, 8, ...', answers: ['11', '13', '12', '15'], correct: 1 },
+                { text: 'Що важче: 1 кг пір\'я чи 1 кг заліза?', answers: ['Пір\'я', 'Залізо', 'Однаково', 'Залежить'], correct: 2 },
+                { text: 'Батько і син разом — 60 років. Батькові — 40. Скільки сину?', answers: ['30', '20', '25', '15'], correct: 1 },
+                { text: 'Скільки разів можна відняти 5 від 25?', answers: ['4', '5', '6', '1'], correct: 1 },
+                { text: 'Продовж: А, Б, В, Г, ...', answers: ['Д', 'Е', 'Ж', 'Є'], correct: 0 },
+                { text: 'У кошику 5 яблук. Як роздати 5 дітям, щоб 1 яблуко залишилось у кошику?', answers: ['Неможливо', 'Віддати разом з кошиком', 'Розрізати', 'З\'їсти'], correct: 1 },
+                { text: 'Яке число наступне: 10, 20, 30, 40, ...', answers: ['45', '50', '60', '55'], correct: 1 }
+            ]
+        },
+        {
+            title: 'Мистецтво та музика', subject: 'Інше', difficulty: 'easy',
+            questions: [
+                { text: 'Скільки кольорів у веселці?', answers: ['5', '6', '7', '8'], correct: 2 },
+                { text: 'Хто написав «Мону Лізу»?', answers: ['Ван Гог', 'Леонардо да Вінчі', 'Пікассо', 'Моне'], correct: 1 },
+                { text: 'Скільки струн у класичній гітарі?', answers: ['4', '5', '6', '7'], correct: 2 },
+                { text: 'Який колір утворюється при змішуванні синього та жовтого?', answers: ['Червоний', 'Зелений', 'Фіолетовий', 'Помаранчевий'], correct: 1 },
+                { text: 'Який інструмент має клавіші?', answers: ['Скрипка', 'Піаніно', 'Флейта', 'Барабан'], correct: 1 },
+                { text: 'Хто композитор «Місячної сонати»?', answers: ['Моцарт', 'Бетховен', 'Бах', 'Шопен'], correct: 1 },
+                { text: 'Як називається картина з зображенням людини?', answers: ['Пейзаж', 'Портрет', 'Натюрморт', 'Абстракція'], correct: 1 },
+                { text: 'Яка країна батьківщина опери?', answers: ['Франція', 'Італія', 'Німеччина', 'Іспанія'], correct: 1 },
+                { text: 'Як називається швидкий темп у музиці?', answers: ['Адажіо', 'Алегро', 'Анданте', 'Ларго'], correct: 1 },
+                { text: 'Хто автор «Кобзаря»?', answers: ['Франко', 'Шевченко', 'Леся Українка', 'Сковорода'], correct: 1 }
+            ]
+        },
+        {
+            title: 'Космос', subject: 'Інше', difficulty: 'medium',
+            questions: [
+                { text: 'Скільки планет у Сонячній системі?', answers: ['7', '8', '9', '10'], correct: 1 },
+                { text: 'Найбільша планета Сонячної системи?', answers: ['Сатурн', 'Юпітер', 'Уран', 'Нептун'], correct: 1 },
+                { text: 'Яка планета найближче до Сонця?', answers: ['Венера', 'Меркурій', 'Земля', 'Марс'], correct: 1 },
+                { text: 'Червона планета — це:', answers: ['Венера', 'Марс', 'Юпітер', 'Сатурн'], correct: 1 },
+                { text: 'Супутник Землі?', answers: ['Сонце', 'Місяць', 'Марс', 'Венера'], correct: 1 },
+                { text: 'Скільки планет мають кільця?', answers: ['1', '2', '4', '8'], correct: 2 },
+                { text: 'Що таке Сонце?', answers: ['Планета', 'Зірка', 'Комета', 'Супутник'], correct: 1 },
+                { text: 'Перший космонавт світу?', answers: ['Гагарін', 'Армстронг', 'Леонов', 'Титов'], correct: 0 },
+                { text: 'Перший космонавт незалежної України?', answers: ['Каденюк', 'Гагарін', 'Леонов', 'Терешкова'], correct: 0 },
+                { text: 'Найменша планета Сонячної системи?', answers: ['Марс', 'Меркурій', 'Венера', 'Плутон'], correct: 1 }
+            ]
+        }
+    ];
+    defaults.forEach((q, idx) => {
+        const id = makeId('quiz');
+        DB.quizzes[id] = {
+            id,
+            title: q.title,
+            author,
+            authorLogin,
+            subject: q.subject,
+            difficulty: q.difficulty,
+            questions: q.questions,
+            public: true,
+            plays: 0,
+            likes: 0,
+            createdAt: Date.now() + idx
+        };
+    });
+    saveQuizzes();
+    console.log('[db] created', defaults.length, 'default quizzes');
+}
+
 /* ============================================================
    AUTH
    ============================================================ */
@@ -505,9 +530,6 @@ app.post('/api/auth/me', (req, res) => {
     res.json({ ok: true, user: publicUser(user, getTodayCoins(user.login)) });
 });
 
-/* ============================================================
-   SAVE PROFILE
-   ============================================================ */
 app.post('/api/user/save-profile', (req, res) => {
     const { token, profile } = req.body || {};
     if (!token) return res.json({ ok: false, error: 'Немає токена' });
@@ -542,9 +564,6 @@ app.post('/api/user/save-profile', (req, res) => {
     res.json({ ok: true, user: publicUser(user, getTodayCoins(user.login)) });
 });
 
-/* ============================================================
-   SPEND COINS
-   ============================================================ */
 app.post('/api/user/spend-coins', (req, res) => {
     const { token, amount, itemId, itemType } = req.body || {};
     if (!token) return res.json({ ok: false, error: 'Немає токена' });
@@ -893,15 +912,6 @@ app.post('/api/homework/submit', (req, res) => {
     if (hw.autoPoints !== false) {
         addPointAuto(login, correct * 10, 'За ДЗ «' + hw.title + '»', 'homework');
     }
-    if (!DB.analytics[hw.quizId]) DB.analytics[hw.quizId] = { questions: {}, games: 0, players: {} };
-    const an = DB.analytics[hw.quizId];
-    an.games = (an.games || 0) + 1;
-    if (!an.players) an.players = {};
-    if (!an.players[login]) an.players[login] = { attempts: 0, totalCorrect: 0, totalQuestions: 0 };
-    an.players[login].attempts++;
-    an.players[login].totalCorrect += correct;
-    an.players[login].totalQuestions += total;
-    saveAnalytics();
     res.json({ ok: true, submission: hw.submissions[login] });
 });
 
@@ -1173,7 +1183,7 @@ app.post('/api/coins/log', (req, res) => {
 });
 
 /* ============================================================
-   DUEL — БОТИ ПРИЙМАЮТЬ ВИКЛИК
+   DUEL
    ============================================================ */
 const duelInvites = new Map();
 const onlineUsers = new Map();
@@ -1236,9 +1246,6 @@ app.post('/api/duel/respond', (req, res) => {
     res.json({ ok: true });
 });
 
-/* ============================================================
-   ДУЕЛЬ — ВЕСЬ КЛАС (включно з ботами)
-   ============================================================ */
 app.post('/api/duel/class-online', (req, res) => {
     const { token } = req.body || {};
     if (!token) return res.json({ ok: false });
@@ -1441,7 +1448,6 @@ function autoFinishRoom(room) {
 
     const ranked = room.players.slice().sort((a, b) => b.score - a.score);
 
-    /* Дуель: перемога/поразка */
     if (room.isDuel && ranked.length === 2) {
         const winner = ranked[0];
         const loser = ranked[1];
@@ -1451,8 +1457,11 @@ function autoFinishRoom(room) {
         if (loser && loser.login) {
             subtractCoins(loser.login, ECONOMY.duelLose, 'Дуель — поразка');
         }
+        ranked.forEach((p, idx) => {
+            p.finalRank = idx + 1;
+            p.finalPrize = idx === 0 ? ECONOMY.duelWin : -ECONOMY.duelLose;
+        });
     } else {
-        /* Звичайна гра: призові за місце + залишок за відповіді */
         ranked.forEach((p, idx) => {
             const rank = idx + 1;
             const prize = getFinalPrize(rank);
@@ -2372,77 +2381,3 @@ process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 process.on('uncaughtException', (err) => console.error('[uncaughtException]', err));
 process.on('unhandledRejection', (err) => console.error('[unhandledRejection]', err));
-        { id: 'col_autumn', name: 'Осінь', emoji: '🍂', bonus: 150 },
-        { id: 'col_space', name: 'Космос', emoji: '🚀', bonus: 210 },
-        { id: 'col_cyber', name: 'Кібер', emoji: '🤖', bonus: 210 },
-        { id: 'col_magic', name: 'Магія', emoji: '🔮', bonus: 240 },
-        { id: 'col_super', name: 'Супергерої', emoji: '🦸', bonus: 270 }
-    ],
-    avatars: [
-        { id: 'a_smile', emoji: '😶', name: 'Смайлик', price: 0, col: 'col_base' },
-        { id: 'a_grin', emoji: '😀', name: 'Усмішка', price: 0, col: 'col_base' },
-        { id: 'a_cool', emoji: '😎', name: 'Крутий', price: 0, col: 'col_base' },
-        { id: 'a_cat', emoji: '🐱', name: 'Кіт', price: 135, col: 'col_base' },
-        { id: 'a_dog', emoji: '🐶', name: 'Пес', price: 135, col: 'col_base' },
-        { id: 'a_fox', emoji: '🦊', name: 'Лис', price: 150, col: 'col_base' },
-        { id: 'a_owl', emoji: '🦉', name: 'Сова', price: 180, col: 'col_autumn' },
-        { id: 'a_hedgehog', emoji: '🦔', name: 'Їжак', price: 195, col: 'col_autumn' },
-        { id: 'a_squirrel', emoji: '🐿️', name: 'Білка', price: 210, col: 'col_autumn' },
-        { id: 'a_deer', emoji: '🦌', name: 'Олень', price: 270, col: 'col_autumn' },
-        { id: 'a_bear', emoji: '🐻', name: 'Ведмідь', price: 330, col: 'col_autumn' },
-        { id: 'a_astronaut', emoji: '👨‍🚀', name: 'Астронавт', price: 360, col: 'col_space' },
-        { id: 'a_alien', emoji: '👽', name: 'Прибулець', price: 330, col: 'col_space' },
-        { id: 'a_rocket', emoji: '🚀', name: 'Ракета', price: 240, col: 'col_space' },
-        { id: 'a_comet', emoji: '☄️', name: 'Комета', price: 390, col: 'col_space' },
-        { id: 'a_ufo', emoji: '🛸', name: 'НЛО', price: 450, col: 'col_space' },
-        { id: 'a_saturn', emoji: '🪐', name: 'Сатурн', price: 510, col: 'col_space' },
-        { id: 'a_robot', emoji: '🤖', name: 'Робот', price: 360, col: 'col_cyber' },
-        { id: 'a_cyborg', emoji: '🦾', name: 'Кіборг', price: 480, col: 'col_cyber' },
-        { id: 'a_ninja', emoji: '🥷', name: 'Ніндзя', price: 420, col: 'col_cyber' },
-        { id: 'a_dragon', emoji: '🐉', name: 'Дракон', price: 660, col: 'col_cyber' },
-        { id: 'a_chip', emoji: '💠', name: 'Чип', price: 540, col: 'col_cyber' },
-        { id: 'a_wizard', emoji: '🧙', name: 'Маг', price: 480, col: 'col_magic' },
-        { id: 'a_unicorn', emoji: '🦄', name: 'Єдиноріг', price: 510, col: 'col_magic' },
-        { id: 'a_fairy', emoji: '🧚', name: 'Фея', price: 570, col: 'col_magic' },
-        { id: 'a_genie', emoji: '🧞', name: 'Джин', price: 630, col: 'col_magic' },
-        { id: 'a_phoenix', emoji: '🔥', name: 'Фенікс', price: 780, col: 'col_magic' },
-        { id: 'a_super', emoji: '🦸', name: 'Герой', price: 600, col: 'col_super' },
-        { id: 'a_hero_f', emoji: '🦸‍♀️', name: 'Героїня', price: 600, col: 'col_super' },
-        { id: 'a_bat', emoji: '🦇', name: 'Бетмен', price: 720, col: 'col_super' },
-        { id: 'a_spider', emoji: '🕷️', name: 'Павук', price: 690, col: 'col_super' },
-        { id: 'a_shield', emoji: '🛡️', name: 'Капітан', price: 660, col: 'col_super' },
-        { id: 'a_lightning', emoji: '⚡', name: 'Громовержець', price: 840, col: 'col_super' }
-    ],
-    accessories: [
-        { id: 'x_crown', emoji: '👑', name: 'Корона', price: 300, slot: 'head' },
-        { id: 'x_hat', emoji: '👒', name: 'Капелюшок', price: 180, slot: 'head' },
-        { id: 'x_partyhat', emoji: '🎉', name: 'Ковпак', price: 120, slot: 'head' },
-        { id: 'x_cap', emoji: '🧢', name: 'Кепка', price: 90, slot: 'head' },
-        { id: 'x_grad', emoji: '🎓', name: 'Шапочка', price: 240, slot: 'head' },
-        { id: 'x_beanie', emoji: '🧣', name: 'Шарф', price: 150, slot: 'head' },
-        { id: 'x_helmet', emoji: '⛑️', name: 'Шолом', price: 270, slot: 'head' },
-        { id: 'x_top_hat', emoji: '🎩', name: 'Циліндр', price: 330, slot: 'head' },
-        { id: 'x_glasses', emoji: '🕶️', name: 'Окуляри', price: 150, slot: 'eyes' },
-        { id: 'x_goggles', emoji: '🥽', name: 'Захисні', price: 210, slot: 'eyes' },
-        { id: 'x_monocle', emoji: '🧐', name: 'Монокль', price: 240, slot: 'eyes' },
-        { id: 'x_aura', emoji: '✨', name: 'Сяйво', price: 360, slot: 'effect' },
-        { id: 'x_fire', emoji: '🔥', name: 'Полум\'я', price: 420, slot: 'effect' },
-        { id: 'x_star', emoji: '⭐', name: 'Зірки', price: 270, slot: 'effect' },
-        { id: 'x_rainbow', emoji: '🌈', name: 'Веселка', price: 330, slot: 'effect' },
-        { id: 'x_lightning', emoji: '⚡', name: 'Блискавка', price: 390, slot: 'effect' },
-        { id: 'x_heart', emoji: '💖', name: 'Сердечка', price: 240, slot: 'effect' },
-        { id: 'x_leaf', emoji: '🍁', name: 'Листя', price: 180, slot: 'effect' },
-        { id: 'x_snow', emoji: '❄️', name: 'Сніжинки', price: 210, slot: 'effect' }
-    ],
-    themes: [
-        { id: 't_neon', name: 'Неон', price: 0, desc: 'Базовий' },
-        { id: 't_pastel', name: 'Пастель', price: 0, desc: 'Базовий' },
-        { id: 't_space', name: 'Космос', price: 600, desc: 'Зорі' },
-        { id: 't_cyber', name: 'Кіберпанк', price: 780, desc: 'Неон' },
-        { id: 't_forest', name: 'Ліс', price: 660, desc: 'Зелений' },
-        { id: 't_sunset', name: 'Захід', price: 540, desc: 'Теплий' },
-        { id: 't_ocean', name: 'Океан', price: 630, desc: 'Блакитний' },
-        { id: 't_candy', name: 'Цукеркова', price: 480, desc: 'Рожева' },
-        { id: 't_autumn', name: 'Осінь', price: 720, desc: 'Баграна' }
-    ]
-};
