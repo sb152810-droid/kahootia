@@ -1,10 +1,11 @@
 {
   "name": "sunlorem",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "SunLorem — квіз-гра для 5 класу",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -12,5 +13,7 @@
   "dependencies": {
     "express": "^4.19.2",
     "socket.io": "^4.7.5"
-  }
+  },
+  "license": "MIT",
+  "private": true
 }
