@@ -43,11 +43,15 @@ const DB = {
     analytics: {},
     marks: {},
     points: {},
-    coinsLog: {}
+    coinsLog: {},
+    tokens: {}
 };
 
 const DAILY_COIN_CAP = 100;
 const DEFAULT_SUBJECTS = ['Математика', 'Українська мова', 'Історія', 'Природознавство', 'Інше'];
+const TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+const GUEST_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+const MAX_TOKENS_PER_USER = 5;
 
 function loadJSON(file, fallback) {
     const p = path.join(DATA_DIR, file);
@@ -63,7 +67,9 @@ function loadJSON(file, fallback) {
 function saveJSON(file, data) {
     const p = path.join(DATA_DIR, file);
     try {
-        fs.writeFileSync(p, JSON.stringify(data, null, 2), 'utf8');
+        const tmp = p + '.tmp';
+        fs.writeFileSync(tmp, JSON.stringify(data, null, 2), 'utf8');
+        fs.renameSync(tmp, p);
     } catch (e) {
         console.error('[db] save error', file, e.message);
     }
@@ -79,9 +85,11 @@ function loadDB() {
     DB.marks = loadJSON('marks.json', {});
     DB.points = loadJSON('points.json', {});
     DB.coinsLog = loadJSON('coins_log.json', {});
+    DB.tokens = loadJSON('tokens.json', {});
     console.log('[db] users:', Object.keys(DB.users).length,
         '| quizzes:', Object.keys(DB.quizzes).length,
-        '| homework:', Object.keys(DB.homework).length);
+        '| homework:', Object.keys(DB.homework).length,
+        '| tokens:', Object.keys(DB.tokens).length);
 }
 
 function saveUsers()     { saveJSON('users.json', DB.users); }
@@ -93,6 +101,7 @@ function saveAnalytics() { saveJSON('analytics.json', DB.analytics); }
 function saveMarks()     { saveJSON('marks.json', DB.marks); }
 function savePoints()    { saveJSON('points.json', DB.points); }
 function saveCoinsLog()  { saveJSON('coins_log.json', DB.coinsLog); }
+function saveTokens()    { saveJSON('tokens.json', DB.tokens); }
 
 function makeId(prefix) {
     return prefix + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
@@ -424,25 +433,65 @@ const MODES = {
 
 const rateLimits = new Map();
 
-function checkRateLimit(ip, max = 60) {
+function checkRateLimit(key, max = 120) {
     const now = Date.now();
-    let e = rateLimits.get(ip);
+    let e = rateLimits.get(key);
     if (!e || now > e.resetAt) {
         e = { count: 0, resetAt: now + 60000 };
-        rateLimits.set(ip, e);
+        rateLimits.set(key, e);
     }
     e.count++;
     return e.count <= max;
 }
 
-function rateLimitMiddleware(max = 60) {
+function rateLimitMiddleware(max = 120) {
     return (req, res, next) => {
         const ip = req.ip || 'unknown';
-        if (!checkRateLimit(ip, max)) {
+        const token = (req.body && req.body.token) || '';
+        const key = token ? ('t:' + token) : ('ip:' + ip);
+        const limit = token ? max * 2 : max;
+        if (!checkRateLimit(key, limit)) {
             return res.status(429).json({ ok: false, error: 'Занадто багато запитів' });
         }
         next();
     };
+}
+
+function issueToken(user) {
+    const token = makeId('tok');
+    DB.tokens[token] = {
+        login: user.login,
+        createdAt: Date.now(),
+        expiresAt: Date.now() + TOKEN_TTL_MS
+    };
+    const myTokens = Object.entries(DB.tokens)
+        .filter(([, t]) => t.login === user.login)
+        .sort((a, b) => b[1].createdAt - a[1].createdAt);
+    if (myTokens.length > MAX_TOKENS_PER_USER) {
+        myTokens.slice(MAX_TOKENS_PER_USER).forEach(([t]) => { delete DB.tokens[t]; });
+    }
+    saveTokens();
+    return token;
+}
+
+function findUserByToken(token) {
+    if (!token) return null;
+    const entry = DB.tokens[token];
+    if (!entry) return null;
+    if (entry.expiresAt && entry.expiresAt < Date.now()) {
+        delete DB.tokens[token];
+        saveTokens();
+        return null;
+    }
+    return DB.users[entry.login] || null;
+}
+
+function revokeToken(token) {
+    if (!token) return;
+    if (DB.tokens[token]) {
+        delete DB.tokens[token];
+        saveTokens();
+    }
 }
 
 function ensureDefaultTeacher() {
@@ -474,10 +523,6 @@ function ensureDefaultTeacher() {
 }
 
 function ensureDefaultQuizzes() {
-    if (Object.keys(DB.quizzes).length > 0) return;
-    const authorLogin = 'місс.стівенс';
-    const author = 'Місс.Стівенс';
-
     const defaults = [
         {
             title: 'Математика 5 клас',
@@ -651,7 +696,14 @@ function ensureDefaultQuizzes() {
         }
     ];
 
+    const authorLogin = 'місс.стівенс';
+    const author = 'Місс.Стівенс';
+    let created = 0;
     defaults.forEach((q, idx) => {
+        const existing = Object.values(DB.quizzes).find(x =>
+            x.title === q.title && x.authorLogin === authorLogin
+        );
+        if (existing) return;
         const id = makeId('quiz');
         DB.quizzes[id] = {
             id,
@@ -666,9 +718,12 @@ function ensureDefaultQuizzes() {
             likes: 0,
             createdAt: Date.now() + idx
         };
+        created++;
     });
-    saveQuizzes();
-    console.log('[db] created', defaults.length, 'default quizzes');
+    if (created > 0) {
+        saveQuizzes();
+        console.log('[db] created', created, 'default quizzes');
+    }
 }
 
 const GUEST_PREFIX = 'guest_';
@@ -722,8 +777,7 @@ app.post('/api/auth/login', rateLimitMiddleware(30), (req, res) => {
     if (!ok) {
         return res.json({ ok: false, error: 'Невірний логін або пароль' });
     }
-    const token = makeId('tok');
-    user.lastToken = token;
+    const token = issueToken(user);
     user.lastLoginAt = Date.now();
     saveUsers();
     res.json({
@@ -736,8 +790,7 @@ app.post('/api/auth/login', rateLimitMiddleware(30), (req, res) => {
 app.post('/api/auth/guest', rateLimitMiddleware(20), (req, res) => {
     const guestId = crypto.randomBytes(6).toString('hex');
     const u = ensureGuestUser(guestId);
-    const token = makeId('tok');
-    u.lastToken = token;
+    const token = issueToken(u);
     u.lastLoginAt = Date.now();
     saveUsers();
     res.json({
@@ -751,9 +804,15 @@ app.post('/api/auth/guest', rateLimitMiddleware(20), (req, res) => {
 app.post('/api/auth/me', (req, res) => {
     const { token } = req.body || {};
     if (!token) return res.json({ ok: false });
-    const user = Object.values(DB.users).find(u => u.lastToken === token);
+    const user = findUserByToken(token);
     if (!user) return res.json({ ok: false });
     res.json({ ok: true, user: publicUser(user, getTodayCoins(user.login)) });
+});
+
+app.post('/api/auth/logout', (req, res) => {
+    const { token } = req.body || {};
+    revokeToken(token);
+    res.json({ ok: true });
 });
 
 app.post('/api/user/save-profile', (req, res) => {
@@ -762,7 +821,7 @@ app.post('/api/user/save-profile', (req, res) => {
     if (!profile || typeof profile !== 'object') {
         return res.json({ ok: false, error: 'Немає профілю' });
     }
-    const user = Object.values(DB.users).find(u => u.lastToken === token);
+    const user = findUserByToken(token);
     if (!user) return res.json({ ok: false, error: 'Юзера не знайдено' });
 
     if (typeof profile.xp === 'number') user.xp = Math.max(0, profile.xp);
@@ -795,7 +854,7 @@ app.post('/api/user/save-profile', (req, res) => {
 app.post('/api/user/spend-coins', (req, res) => {
     const { token, amount, itemId, itemType } = req.body || {};
     if (!token) return res.json({ ok: false, error: 'Немає токена' });
-    const user = Object.values(DB.users).find(u => u.lastToken === token);
+    const user = findUserByToken(token);
     if (!user) return res.json({ ok: false, error: 'Юзера не знайдено' });
     const cost = parseInt(amount, 10);
     if (isNaN(cost) || cost <= 0) return res.json({ ok: false, error: 'Хибна сума' });
@@ -839,10 +898,10 @@ function publicUser(u, todayCoins) {
 function requireTeacher(req, res, next) {
     const { token } = req.body || {};
     if (!token) return res.status(401).json({ ok: false, error: 'Немає токена' });
-    const user = Object.values(DB.users).find(u =>
-        u.lastToken === token && u.role === 'teacher'
-    );
-    if (!user) return res.status(403).json({ ok: false, error: 'Тільки для вчителя' });
+    const user = findUserByToken(token);
+    if (!user || user.role !== 'teacher') {
+        return res.status(403).json({ ok: false, error: 'Тільки для вчителя' });
+    }
     req.teacher = user;
     next();
 }
@@ -1062,6 +1121,115 @@ app.post('/api/quizzes/mine', requireTeacher, (req, res) => {
     res.json({ ok: true, quizzes: list });
 });
 
+const botHomeworkTimers = new Map();
+
+function scheduleBotHomework(hw) {
+    const quiz = DB.quizzes[hw.quizId];
+    if (!quiz) return;
+    const questionsCount = quiz.questions.length;
+    hw.classLogins.forEach(login => {
+        const u = DB.users[login];
+        if (!u || !u.isBot) return;
+        if (hw.submissions[login]) return;
+
+        const roll = Math.random();
+        let tier;
+        if (roll < 0.05) tier = 'none';
+        else if (roll < 0.15) tier = 'bad';
+        else if (roll < 0.40) tier = 'ok';
+        else tier = 'good';
+
+        if (tier === 'none') return;
+
+        const delay = 5 * 60 * 1000 + Math.random() * (55 * 60 * 1000);
+        const key = hw.id + ':' + login;
+
+        const timer = setTimeout(() => {
+            botHomeworkTimers.delete(key);
+            submitBotHomework(hw.id, login, questionsCount, tier);
+        }, delay);
+        botHomeworkTimers.set(key, { timer, due: Date.now() + delay });
+    });
+    saveBotHomeworkState();
+}
+
+function submitBotHomework(hwId, login, questionsCount, tier) {
+    const h = DB.homework[hwId];
+    if (!h) return;
+    if (h.submissions[login]) return;
+
+    let percent;
+    if (tier === 'good') percent = 80 + Math.round(Math.random() * 20);
+    else if (tier === 'ok') percent = 60 + Math.round(Math.random() * 15);
+    else percent = 35 + Math.round(Math.random() * 15);
+
+    const total = questionsCount;
+    let correct = Math.round((percent / 100) * total);
+    if (correct > total) correct = total;
+    if (correct < 0) correct = 0;
+    percent = Math.round((correct / total) * 100);
+
+    const now = Date.now();
+    const isLate = now > h.deadline;
+    let grade = autoGrade(percent);
+    if (isLate) grade = Math.max(1, grade - 1);
+
+    const comments = BOT_HW_COMMENTS[tier] || [''];
+    const comment = comments[Math.floor(Math.random() * comments.length)];
+
+    h.submissions[login] = {
+        login,
+        correct,
+        total,
+        percent,
+        grade,
+        autoGrade: autoGrade(percent),
+        isLate,
+        timeSpent: 60 + Math.round(Math.random() * 600),
+        submittedAt: now,
+        gradedBy: 'auto',
+        gradedAt: now,
+        comment: comment || ''
+    };
+    saveHomework();
+    if (h.autoPoints !== false) {
+        addPointAuto(login, correct * 10, 'За ДЗ «' + h.title + '»', 'homework');
+    }
+}
+
+function saveBotHomeworkState() {
+    const out = {};
+    for (const [key, val] of botHomeworkTimers) {
+        out[key] = { due: val.due };
+    }
+    saveJSON('bot_hw_pending.json', out);
+}
+
+function restoreBotHomeworkTimers() {
+    const pending = loadJSON('bot_hw_pending.json', {});
+    const now = Date.now();
+    let restored = 0;
+    for (const [key, val] of Object.entries(pending)) {
+        const [hwId, login] = key.split(':');
+        if (!hwId || !login) continue;
+        const h = DB.homework[hwId];
+        if (!h) continue;
+        if (h.submissions[login]) continue;
+        const quiz = DB.quizzes[h.quizId];
+        if (!quiz) continue;
+        const delay = Math.max(1000, (val.due || now) - now);
+        const timer = setTimeout(() => {
+            botHomeworkTimers.delete(key);
+            const roll = Math.random();
+            let tier = roll < 0.15 ? 'bad' : roll < 0.40 ? 'ok' : 'good';
+            submitBotHomework(hwId, login, quiz.questions.length, tier);
+        }, delay);
+        botHomeworkTimers.set(key, { timer, due: val.due || now });
+        restored++;
+    }
+    if (restored > 0) console.log('[bot-hw] restored', restored, 'pending timers');
+}
+
 app.post('/api/homework/create', requireTeacher, (req, res) => {
     const { quizId, title, deadline, classLogins, autoPoints } = req.body || {};
     if (!quizId || !DB.quizzes[quizId]) {
@@ -1102,71 +1270,6 @@ app.post('/api/homework/create', requireTeacher, (req, res) => {
     scheduleBotHomework(hw);
     res.json({ ok: true, homework: hw });
 });
-
-function scheduleBotHomework(hw) {
-    const quiz = DB.quizzes[hw.quizId];
-    if (!quiz) return;
-    const questionsCount = quiz.questions.length;
-    hw.classLogins.forEach(login => {
-        const u = DB.users[login];
-        if (!u || !u.isBot) return;
-        if (hw.submissions[login]) return;
-
-        const roll = Math.random();
-        let tier;
-        if (roll < 0.05) tier = 'none';
-        else if (roll < 0.15) tier = 'bad';
-        else if (roll < 0.40) tier = 'ok';
-        else tier = 'good';
-
-        const delay = 5 * 60 * 1000 + Math.random() * (55 * 60 * 1000);
-
-        setTimeout(() => {
-            const h = DB.homework[hw.id];
-            if (!h) return;
-            if (h.submissions[login]) return;
-            if (tier === 'none') return;
-
-            let percent;
-            if (tier === 'good') percent = 80 + Math.round(Math.random() * 20);
-            else if (tier === 'ok') percent = 60 + Math.round(Math.random() * 15);
-            else percent = 35 + Math.round(Math.random() * 15);
-
-            const total = questionsCount;
-            let correct = Math.round((percent / 100) * total);
-            if (correct > total) correct = total;
-            if (correct < 0) correct = 0;
-            percent = Math.round((correct / total) * 100);
-
-            const now = Date.now();
-            const isLate = now > h.deadline;
-            let grade = autoGrade(percent);
-            if (isLate) grade = Math.max(1, grade - 1);
-
-            const comments = BOT_HW_COMMENTS[tier] || [''];
-            const comment = comments[Math.floor(Math.random() * comments.length)];
-
-            h.submissions[login] = {
-                login,
-                correct,
-                total,
-                percent,
-                grade,
-                autoGrade: autoGrade(percent),
-                isLate,
-                timeSpent: 60 + Math.round(Math.random() * 600),
-                submittedAt: now,
-                gradedBy: 'auto',
-                gradedAt: now,
-                comment: comment || ''
-            };
-            saveHomework();
-            if (h.autoPoints !== false) {
-                addPointAuto(login, correct * 10, 'За ДЗ «' + h.title + '»', 'homework');
-            }
-        }, delay);
-    });
-}
 
 app.post('/api/homework/mine', requireTeacher, (req, res) => {
     const list = Object.values(DB.homework)
@@ -1549,12 +1652,22 @@ app.post('/api/coins/log', (req, res) => {
 const duelInvites = new Map();
 const onlineUsers = new Map();
 
+function cleanupDuelInvites() {
+    const now = Date.now();
+    for (const [id, inv] of duelInvites) {
+        if (now - inv.createdAt > 60000) {
+            duelInvites.delete(id);
+        }
+    }
+}
+
 app.post('/api/duel/invite', (req, res) => {
     const { fromLogin, toLogin } = req.body || {};
     if (!fromLogin || !toLogin) return res.json({ ok: false });
     if (fromLogin === toLogin) {
         return res.json({ ok: false, error: 'Себе не можна' });
     }
+    cleanupDuelInvites();
     const fromUser = DB.users[fromLogin];
     const toUser = DB.users[toLogin];
     if (!fromUser || !toUser) {
@@ -1595,6 +1708,7 @@ app.post('/api/duel/invite', (req, res) => {
                     opponentName: toUser.name
                 });
             }
+            duelInvites.delete(inviteId);
         }, 2000);
     }
     res.json({ ok: true, inviteId });
@@ -1616,14 +1730,14 @@ app.post('/api/duel/respond', (req, res) => {
             fromLogin: inv.toLogin
         });
     }
-    if (!accept) duelInvites.delete(inviteId);
+    duelInvites.delete(inviteId);
     res.json({ ok: true });
 });
 
 app.post('/api/duel/class-online', (req, res) => {
     const { token } = req.body || {};
     if (!token) return res.json({ ok: false });
-    const me = Object.values(DB.users).find(u => u.lastToken === token);
+    const me = findUserByToken(token);
     if (!me) return res.json({ ok: false });
     const teacher = Object.values(DB.users).find(u =>
         u.role === 'teacher' && u.classStudents && u.classStudents.includes(me.login)
@@ -1663,6 +1777,8 @@ app.get('/health', (req, res) => {
         users: Object.keys(DB.users).length,
         quizzes: Object.keys(DB.quizzes).length,
         homework: Object.keys(DB.homework).length,
+        tokens: Object.keys(DB.tokens).length,
+        rooms: rooms.size,
         games: DB.games.length
     });
 });
@@ -1723,7 +1839,8 @@ function getPublicState(room) {
             powerActive: p.powerActive || null,
             reaction: p.reaction || null,
             finalRank: p.finalRank || 0,
-            finalPrize: p.finalPrize || 0
+            finalPrize: p.finalPrize || 0,
+            hitDailyCap: !!p.hitDailyCap
         })),
         feed: room.feed || []
     };
@@ -1779,6 +1896,7 @@ function scheduleAutoAdvance(room) {
     room._autoAdvanceTimer = setTimeout(() => {
         const r = rooms.get(room.pin);
         if (!r || r.status !== 'running') return;
+        r._autoAdvanceTimer = null;
         if (r.currentQuestion + 1 >= r.questions.length) {
             autoFinishRoom(r);
         } else {
@@ -1799,7 +1917,10 @@ function scheduleAutoAdvance(room) {
 }
 
 function autoFinishRoom(room) {
-    if (!room || room.status === 'finished') return;
+    if (!room) return;
+    if (room.status === 'finished') return;
+    if (room._finishing) return;
+    room._finishing = true;
     stopTimer(room);
     stopBotTimers(room);
     if (room._autoAdvanceTimer) {
@@ -1849,6 +1970,7 @@ function autoFinishRoom(room) {
         if (winner && winner.login && DB.users[winner.login] && !DB.users[winner.login].isGuest) {
             const r = addCoinsWithCap(winner.login, ECONOMY.duelWin, 'Дуель — перемога');
             winner.coinsEarnedThisGame = r.added || 0;
+            if (r.reason === 'cap') winner.hitDailyCap = true;
         }
         if (loser && loser.login && DB.users[loser.login] && !DB.users[loser.login].isGuest) {
             subtractCoins(loser.login, ECONOMY.duelLose, 'Дуель — поразка');
@@ -1866,6 +1988,7 @@ function autoFinishRoom(room) {
             if (!p.isBot && p.login && DB.users[p.login]) {
                 const r = addCoinsWithCap(p.login, prize, 'Призове місце #' + rank + ' (' + room.quizTitle + ')');
                 p.coinsEarnedThisGame = r.added || 0;
+                if (r.reason === 'cap') p.hitDailyCap = true;
             }
         });
     }
@@ -1984,7 +2107,8 @@ function generateBots(count, customNames) {
             finalRank: 0,
             finalPrize: 0,
             quests: {},
-            socketId: null
+            socketId: null,
+            hitDailyCap: false
         });
     }
     return bots;
@@ -2045,6 +2169,13 @@ function scheduleBotAnswers(room) {
                 }
             }
             broadcastState(room);
+            if (room.isSolo || room.isHomework || room.isDuel || room.isPublic) {
+                const allAnswered = room.players.every(x => x.answeredThisRound || !x.alive);
+                if (allAnswered) {
+                    stopTimer(room);
+                    scheduleAutoAdvance(room);
+                }
+            }
         }, delayMs);
         room.botTimers.push(timer);
     });
@@ -2123,8 +2254,27 @@ function buildDuelPlayer(u) {
         quests: {},
         finalRank: 0,
         finalPrize: 0,
+        hitDailyCap: false,
         botSpeed: 0.5 + Math.random() * 0.5
     };
+}
+
+function findUniquePlayerName(room, name, exceptId) {
+    const base = String(name || '').trim().slice(0, 24);
+    if (!base) return 'Учень';
+    let candidate = base;
+    let n = 1;
+    while (room.players.some(p =>
+        p.id !== exceptId &&
+        !p.isBot &&
+        p.name.toLowerCase() === candidate.toLowerCase()
+    )) {
+        n++;
+        const suffix = ' (' + n + ')';
+        candidate = base.slice(0, 24 - suffix.length) + suffix;
+        if (n > 100) break;
+    }
+    return candidate;
 }
 
 io.on('connection', socket => {
@@ -2198,12 +2348,15 @@ io.on('connection', socket => {
                 timer: null,
                 cleanupTimer: null,
                 teacherDisconnectTimer: null,
-                botTimers: []
+                botTimers: [],
+                _finishing: false
             };
             rooms.set(pin, room);
             currentRoomPin = pin;
             role = 'student';
             socket.join('room_' + pin);
+            quiz.plays = (quiz.plays || 0) + 1;
+            saveQuizzes();
             if (p2.socketId) {
                 const s = io.sockets.sockets.get(p2.socketId);
                 if (s) {
@@ -2257,7 +2410,8 @@ io.on('connection', socket => {
                 timer: null,
                 cleanupTimer: null,
                 teacherDisconnectTimer: null,
-                botTimers: []
+                botTimers: [],
+                _finishing: false
             };
             rooms.set(pin, room);
             currentRoomPin = pin;
@@ -2313,7 +2467,8 @@ io.on('connection', socket => {
                 reaction: null,
                 quests: {},
                 finalRank: 0,
-                finalPrize: 0
+                finalPrize: 0,
+                hitDailyCap: false
             };
             const room = {
                 pin,
@@ -2335,7 +2490,8 @@ io.on('connection', socket => {
                 timer: null,
                 cleanupTimer: null,
                 teacherDisconnectTimer: null,
-                botTimers: []
+                botTimers: [],
+                _finishing: false
             };
             rooms.set(pin, room);
             currentRoomPin = pin;
@@ -2391,7 +2547,8 @@ io.on('connection', socket => {
                 reaction: null,
                 quests: {},
                 finalRank: 0,
-                finalPrize: 0
+                finalPrize: 0,
+                hitDailyCap: false
             };
             const bots = generateBots(targetCount - 1, null);
             const room = {
@@ -2414,7 +2571,8 @@ io.on('connection', socket => {
                 timer: null,
                 cleanupTimer: null,
                 teacherDisconnectTimer: null,
-                botTimers: []
+                botTimers: [],
+                _finishing: false
             };
             rooms.set(pin, room);
             currentRoomPin = pin;
@@ -2472,7 +2630,8 @@ io.on('connection', socket => {
                 reaction: null,
                 quests: {},
                 finalRank: 0,
-                finalPrize: 0
+                finalPrize: 0,
+                hitDailyCap: false
             };
             const room = {
                 pin,
@@ -2497,7 +2656,8 @@ io.on('connection', socket => {
                 timer: null,
                 cleanupTimer: null,
                 teacherDisconnectTimer: null,
-                botTimers: []
+                botTimers: [],
+                _finishing: false
             };
             rooms.set(pin, room);
             currentRoomPin = pin;
@@ -2514,32 +2674,38 @@ io.on('connection', socket => {
     socket.on('joinRoom', (payload, cb) => {
         try {
             const pin = String((payload && payload.pin) || '').trim();
-            const name = String((payload && payload.name) || '').trim().slice(0, 24);
+            const nameInput = String((payload && payload.name) || '').trim().slice(0, 24);
             const avatarId = String((payload && payload.avatarId) || 'a_smile');
             const accessories = (payload && payload.accessories) || { head: '', eyes: '', effect: '' };
             const xp = Math.max(0, parseInt(payload && payload.xp, 10) || 0);
             const login = String((payload && payload.login) || '').trim();
             if (!/^\d{6}$/.test(pin)) return cb && cb({ ok: false, error: 'Невірний PIN' });
-            if (name.length < 2) return cb && cb({ ok: false, error: 'Ім\'я закоротке' });
+            if (nameInput.length < 2) return cb && cb({ ok: false, error: 'Ім\'я закоротке' });
             const room = rooms.get(pin);
             if (!room) return cb && cb({ ok: false, error: 'Не знайдено' });
             if (room.status === 'finished') return cb && cb({ ok: false, error: 'Гра завершена' });
             let avatarEmoji = '😀';
             const found = SHOP.avatars.find(a => a.id === avatarId);
             if (found) avatarEmoji = found.emoji;
-            const existing = room.players.find(p =>
-                !p.isBot && p.name.toLowerCase() === name.toLowerCase()
-            );
+
+            const existingByLogin = login
+                ? room.players.find(p => !p.isBot && p.login === login)
+                : null;
+            const existingBySocket = room.players.find(p => !p.isBot && p.socketId === socket.id);
             let player;
-            if (existing) {
-                existing.avatarId = avatarId;
-                existing.avatar = avatarEmoji;
-                existing.accessories = accessories;
-                existing.xp = Math.max(existing.xp || 0, xp);
-                existing.socketId = socket.id;
-                player = existing;
+            let name;
+
+            if (existingByLogin || existingBySocket) {
+                player = existingByLogin || existingBySocket;
+                player.avatarId = avatarId;
+                player.avatar = avatarEmoji;
+                player.accessories = accessories;
+                player.xp = Math.max(player.xp || 0, xp);
+                player.socketId = socket.id;
+                name = player.name;
                 addFeed(room, '🔄 ' + name + ' повернувся');
             } else {
+                name = findUniquePlayerName(room, nameInput, null);
                 player = {
                     id: makeId('pl'),
                     name,
@@ -2564,7 +2730,8 @@ io.on('connection', socket => {
                     reaction: null,
                     quests: {},
                     finalRank: 0,
-                    finalPrize: 0
+                    finalPrize: 0,
+                    hitDailyCap: false
                 };
                 room.players.push(player);
                 addFeed(room, '🎒 ' + name + ' приєднався!');
@@ -2572,7 +2739,7 @@ io.on('connection', socket => {
             currentRoomPin = pin;
             role = 'student';
             socket.join('room_' + pin);
-            if (cb) cb({ ok: true, playerId: player.id, state: getPublicState(room) });
+            if (cb) cb({ ok: true, playerId: player.id, state: getPublicState(room), name: player.name });
             broadcastState(room);
         } catch (err) {
             if (cb) cb({ ok: false });
@@ -2674,6 +2841,7 @@ io.on('connection', socket => {
             room.currentQuestion = 0;
             room.feed = [];
             room.firstAnswer = null;
+            room._finishing = false;
             room.players.forEach(p => {
                 p.answeredThisRound = false;
                 p.lastCorrect = null;
@@ -2689,6 +2857,7 @@ io.on('connection', socket => {
                 p.coinsEarnedThisGame = 0;
                 p.finalPrize = 0;
                 p.finalRank = 0;
+                p.hitDailyCap = false;
             });
             addFeed(room, '🚀 Гру розпочато!');
             stopTimer(room);
@@ -2749,9 +2918,9 @@ io.on('connection', socket => {
             if (isNaN(aIndex) || aIndex < 0 || aIndex >= q.answers.length) {
                 return cb && cb({ ok: false });
             }
+            player.answeredThisRound = true;
             const isCorrect = (aIndex === q.correct);
             trackQuestionAnswer(room, room.currentQuestion, isCorrect);
-            player.answeredThisRound = true;
             player.lastCorrect = isCorrect;
             const elapsed = (Date.now() - room.questionStartedAt) / 1000;
             if (!room.firstAnswer) room.firstAnswer = player.id;
@@ -2866,7 +3035,7 @@ io.on('connection', socket => {
         try {
             const room = rooms.get(currentRoomPin);
             if (!room) return cb && cb({ ok: false });
-            if (room.teacherSocketId !== socket.id && !room.isSolo && !room.isPublic && !room.isHomework) {
+            if (room.teacherSocketId !== socket.id && !room.isSolo && !room.isPublic && !room.isHomework && !room.isDuel) {
                 return cb && cb({ ok: false });
             }
             io.to('room_' + room.pin).emit('roomClosed');
@@ -2945,23 +3114,53 @@ setInterval(() => {
     if (cleaned > 0) console.log('[cleanup]', cleaned);
 }, 5 * 60 * 1000);
 
+setInterval(() => {
+    const now = Date.now();
+    let removedGuests = 0;
+    let removedTokens = 0;
+    for (const [token, entry] of Object.entries(DB.tokens)) {
+        if (entry.expiresAt && entry.expiresAt < now) {
+            delete DB.tokens[token];
+            removedTokens++;
+        }
+    }
+    if (removedTokens > 0) saveTokens();
+    for (const [login, u] of Object.entries(DB.users)) {
+        if (!u.isGuest) continue;
+        if (now - (u.lastLoginAt || u.createdAt || 0) > GUEST_TTL_MS) {
+            delete DB.users[login];
+            delete DB.coinsLog[login];
+            removedGuests++;
+        }
+    }
+    if (removedGuests > 0) {
+        saveUsers();
+        saveCoinsLog();
+        console.log('[cleanup] removed', removedGuests, 'old guest accounts,', removedTokens, 'expired tokens');
+    } else if (removedTokens > 0) {
+        console.log('[cleanup] removed', removedTokens, 'expired tokens');
+    }
+}, 60 * 60 * 1000);
+
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
-app.get(/^\/(?!socket\.io|api\/).*/, (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get(/^\/(?!socket\.io|api\/|health).*/, (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
 loadDB();
 ensureDefaultTeacher();
 ensureDefaultQuizzes();
+restoreBotHomeworkTimers();
 
 const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0';
 
 httpServer.listen(PORT, HOST, () => {
     console.log('==============================================');
-    console.log('🌟 SunLorem v3.2 — Фінальна');
+    console.log('🌟 SunLorem v3.3 — Фінальна (баг-фікс)');
     console.log('🚀 http://' + HOST + ':' + PORT);
     console.log('👩‍🏫 Вчитель: місс.стівенс / 102938');
     console.log('🪙 Ліміт СанКоїнів/день: ' + DAILY_COIN_CAP);
     console.log('📚 Квізів: ' + Object.keys(DB.quizzes).length);
+    console.log('🔑 Токенів: ' + Object.keys(DB.tokens).length);
     console.log('==============================================');
 });
 
@@ -2976,11 +3175,24 @@ function gracefulShutdown(signal) {
     saveMarks();
     savePoints();
     saveCoinsLog();
+    saveTokens();
+    saveBotHomeworkState();
     io.close(() => httpServer.close(() => process.exit(0)));
     setTimeout(() => process.exit(0), 5000);
 }
 
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
-process.on('uncaughtException', err => console.error('[uncaughtException]', err));
+process.on('uncaughtException', err => {
+    console.error('[uncaughtException]', err);
+    try {
+        saveUsers();
+        saveQuizzes();
+        saveHomework();
+        saveTokens();
+    } catch (e) {
+        console.error('[uncaughtException] save failed', e.message);
+    }
+    setTimeout(() => process.exit(1), 1000);
+});
 process.on('unhandledRejection', err => console.error('[unhandledRejection]', err));
